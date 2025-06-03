@@ -1,0 +1,33 @@
+.shadowCustonDeep {
+    box-shadow: 0px 10px 15px -3px rgba(0,0,0,0.1), 0px 5px 15px -3px rgba(0,0,0,0.1);
+}
+
+::ng-deep #sidebar-carousel .p-carousel-prev-button,
+::ng-deep #sidebar-carousel .p-carousel-next-button {
+  position: absolute !important;
+  top: 36% !important;
+  transform: translateY(-1rem) !important;
+  z-index: 20 !important;
+  background-color: rgba(0, 0, 0, 0.4) !important;
+  border-radius: 50% !important;
+  width: 2.5rem !important;
+  height: 2.5rem !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: white !important;
+  transition: background-color 0.3s ease !important;
+}
+
+::ng-deep #sidebar-carousel .p-carousel-prev-button {
+  left: 1rem !important;
+}
+
+::ng-deep #sidebar-carousel .p-carousel-next-button {
+  right: 1rem !important;
+}
+
+::ng-deep #sidebar-carousel .p-carousel-indicator-active .p-carousel-indicator-button {
+    background: var(--color-aldy-primary-600) !important;
+}
+

@@ -1,0 +1,52 @@
+/* A FUTURO DESAPARECERA NG-DEEP, EN ESE CASO USAREMOS O ACTUALIZAMOS A [DT] QUE SON DESIGN TOKENS, AUNQUE AUN NO LLEGA  A CUBRIR TODOS LOS ESTILOS BIEN */
+
+::ng-deep .p-drawer .p-drawer-header {
+    display: none !important;
+}
+::ng-deep .p-drawer {
+    border: 0 !important;
+}
+
+::ng-deep .p-drawer-content {
+  padding: 0 !important;
+}
+
+
+::ng-deep .p-drawer-left {
+    width: 100% !important;
+    transition: max-width 0.3s ease-in-out !important;
+    max-width: 18rem !important;
+}
+
+@media (min-width: 640px) {
+    ::ng-deep .p-drawer-left {
+        width: 100% !important;
+        max-width: 30rem !important;
+    }
+}
+
+::ng-deep .p-badge {
+  min-width: 1.2rem !important;
+  width: 1.2rem;
+  height: 1.2rem !important;
+  font-size: 0.70rem !important;
+  padding: 0 !important;
+  align-items: center !important;
+  border-radius: 50% !important;
+}
+::ng-deep .p-overlaybadge .p-badge {
+    transform: translate(74%, -30%) !important;
+}
+
+::ng-deep .p-accordionheader {
+    padding: 1.125rem 0 !important;
+}
+
+::ng-deep .p-accordioncontent-content {
+    padding: 0px !important;
+}
+
+::ng-deep .pi {
+    font-size:  22px !important;
+    font-weight: normal !important;
+}

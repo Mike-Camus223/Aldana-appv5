@@ -1,0 +1,19 @@
+<h2 class="text-lg sm:text-xl md:text-2xl font-semibold mb-4 sm:mb-5">NUEVO EN JUNIO</h2>
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6">
+  <div *ngFor="let product of products" class="flex rounded-sm shadow-md flex-col space-y-2">
+    <div class="overflow-hidden shadow-sm rounded-t-sm">
+      <img
+        [src]="product.image"
+        alt="Producto"
+        class="w-full aspect-[2/3] object-cover max-h-72 sm:max-h-80 md:max-h-120"
+      />
+    </div>
+    <div class="text-sm sm:text-base font-medium px-4">{{ product.title }}</div>
+    <a
+      [href]="product.link"
+      class="text-xs sm:text-sm p-4 text-gray-900 underline decoration-current hover:text-aldy-primary-600 hover:decoration-aldy-primary-600 transition-colors duration-300 font-semibold tracking-wide"
+    >
+      VER AHORA
+    </a>
+  </div>
+</div>

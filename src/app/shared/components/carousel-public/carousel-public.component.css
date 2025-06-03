@@ -1,0 +1,82 @@
+::ng-deep #hero-carousel .p-carousel-indicator-list {
+  position: absolute !important;
+  bottom: 5rem !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  display: flex !important;
+  gap: 0.5rem !important;
+  z-index: 20 !important;
+}
+
+::ng-deep .p-carousel-indicator-active .p-carousel-indicator-button {
+  background: var(--color-aldy-primary-600) !important;
+}
+
+::ng-deep .p-carousel-indicator-button {
+  width: 0.7rem !important;
+  height: 0.7rem !important;
+  border-radius: 50% !important;
+  transition: all 2s ease-in-out;
+}
+
+::ng-deep #hero-carousel .p-carousel-prev-button,
+::ng-deep #hero-carousel .p-carousel-next-button {
+  position: absolute !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  z-index: 30 !important;
+  background-color: transparent !important;
+  width: 2.5rem !important;
+  height: 2.5rem !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: white !important;
+  transition: color 0.3s ease !important;
+  border-radius: 0 !important;
+}
+
+::ng-deep .p-carousel-prev-button svg,
+::ng-deep .p-carousel-next-button svg {
+  color: #fff !important;
+}
+
+::ng-deep .p-button-text.p-button-secondary:hover {
+  background-color: transparent !important;
+}
+
+::ng-deep #hero-carousel .p-carousel-prev-button {
+  left: 1rem !important;
+}
+
+::ng-deep #hero-carousel .p-carousel-next-button {
+  right: 1rem !important;
+}
+
+@media (max-width: 768px) {
+  ::ng-deep .p-carousel-indicator-button {
+    width: 0.5rem !important;
+    height: 0.5rem !important;
+    border-radius: 50% !important;
+  }
+}
+
+@keyframes zoomInSlow {
+  from {
+    transform: scale(1);
+  }
+
+  to {
+    transform: scale(1.5);
+  }
+}
+
+.carousel-zoom-active img.zooming {
+  animation: zoomInSlow 10s ease-in-out forwards;
+  will-change: transform;
+}
+
+.carousel-zoom-active img.reset-zoom {
+  transition: transform 0.5s ease-out, opacity 0.5s ease-out;
+  transform: scale(1);
+}

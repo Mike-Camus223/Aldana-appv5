@@ -1,0 +1,23 @@
+<div class="px-4 sm:px-6 lg:px-12 xl:px-16 2xl:px-24 w-full">
+  <div class="max-w-screen-3xl mx-auto">
+    <p-breadcrumb [model]="items" class="max-w-full">
+      <ng-template let-item pTemplate="item">
+        <ng-container *ngIf="item.route; else elseBlock">
+          <a [routerLink]="item.route"
+             routerLinkActive="active-breadcrumb"
+             class="p-breadcrumb-item-link flex items-center gap-2 text-sm sm:text-base md:text-base lg:text-lg xl:text-base transition-colors">
+            <span *ngIf="item.icon" [ngClass]="item.icon" class="text-md"></span>
+            <span *ngIf="item.label" class="truncate">{{ item.label }}</span>
+          </a>
+        </ng-container>
+        <ng-template #elseBlock>
+          <a [href]="item.url"
+             class="p-breadcrumb-item-link flex items-center gap-2 text-sm sm:text-base md:text-base lg:text-lg xl:text-base">
+            <span *ngIf="item.icon" [ngClass]="item.icon" class="text-md"></span>
+            <span *ngIf="item.label" class="truncate">{{ item.label }}</span>
+          </a>
+        </ng-template>
+      </ng-template>
+    </p-breadcrumb>
+  </div>
+</div>

@@ -1,0 +1,8 @@
+::ng-deep .p-rating-option-active .p-rating-icon	 {
+    color: rgb(240, 240, 157) !important ;
+}
+
+::ng-deep #testimonialcar .p-carousel-prev-button,
+::ng-deep #testimonialcar .p-carousel-next-button {
+      background-color: transparent !important;
+}

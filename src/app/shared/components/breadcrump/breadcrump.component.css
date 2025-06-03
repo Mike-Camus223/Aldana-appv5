@@ -1,0 +1,8 @@
+::ng-deep .p-breadcrumb-item-link.active-breadcrumb {
+  font-weight: 600 !important;
+}
+
+
+::ng-deep .p-breadcrumb {
+    padding: 16px 0 !important;
+}

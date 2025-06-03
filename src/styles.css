@@ -1,0 +1,62 @@
+@import "tailwindcss";
+@import "primeicons/primeicons.css";
+
+@theme {
+  --color-aldy-primary-50: #f1fafa;
+  --color-aldy-primary-100: #d7f1ef;
+  --color-aldy-primary-200: #bae6e1;
+  --color-aldy-primary-300: #9edbd5;
+  --color-aldy-primary-400: #85ccc6;
+  --color-aldy-primary-500: #6cbab4;
+  --color-aldy-primary-600: #5ca29d;
+  --color-aldy-primary-700: #4d8a86;
+  --color-aldy-primary-800: #3f726f;
+  --color-aldy-primary-900: #335c59;
+  --color-aldy-primary-1000: #293d3b;
+
+  --color-aldy-bg: #ffffff;
+  --color-aldy-surface: #f9f9f9;
+  --color-aldy-surface-alt: #f1f4f4;
+  --color-aldy-border: #dcdcdc;
+
+  --color-aldy-text: #1a1a1a;
+  --color-aldy-text-muted: #4f4f4f;
+  --color-aldy-text-soft: #717171;
+  --color-aldy-text-light: #a3a3a3;
+  --color-aldy-text-invert: #ffffff;
+
+  --color-aldy-accent-100: #fdf1f5;
+  --color-aldy-accent-200: #fad7e1;
+  --color-aldy-accent-300: #f4aec9;
+  --color-aldy-accent-400: #e58fb0;
+
+  --color-aldy-secondary-100: #edf6f5;
+  --color-aldy-secondary-200: #d3ebe9;
+  --color-aldy-secondary-300: #a7dcd8;
+  --color-aldy-secondary-400: #74c7c2;
+
+  --color-aldy-success: #70c1b3;
+  --color-aldy-info: #5fb1cf;
+  --color-aldy-warning: #f4c95d;
+  --color-aldy-danger: #e27d7d;
+}
+
+::-webkit-scrollbar {
+  width: 6px; 
+  height: 6px; 
+  background: #dddddd; 
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgb(0, 0, 0); 
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(34, 34, 34); 
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+

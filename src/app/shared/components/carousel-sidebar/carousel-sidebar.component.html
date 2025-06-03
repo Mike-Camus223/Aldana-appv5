@@ -1,0 +1,38 @@
+<div class="card ">
+    <p-carousel   id="sidebar-carousel"
+ [value]="dresses" [numVisible]="2" [numScroll]="2" [circular]="true" [showIndicators]="true" 
+        [showNavigators]="false" [responsiveOptions]="responsiveOptions">
+        <ng-template let-dress #item>
+            <div class="rounded-md m-2 p-2 shadowCustonDeep">
+                <div class="mb-2">
+                    <div class="relative mx-auto">
+                        <img [src]="dress.image" [alt]="dress.name" class="w-full h-40 object-cover rounded-md" />
+                        <p-tag [value]="dress.inventoryStatus" [severity]="getSeverity(dress.inventoryStatus)"
+                            class="absolute" [ngStyle]="{ 'left.px': 5, 'top.px': 5 }" />
+                    </div>
+                </div>
+                <div class="mb-2 font-medium text-sm md:text-base  text-center">{{ dress.name }}</div>
+                <div class="flex justify-between items-center">
+                    <div class="text-sm md:text-base  font-semibold text-aldy-primary-700">{{ formatPrice(dress.price)
+                        }}</div>
+                    <div>
+                        <button type="button" [ngClass]="{
+                        'bg-red-400 text-white hover:bg-red-500': dress.wishlisted,
+                        'bg-gray-100 text-gray-300 hover:bg-gray-200': !dress.wishlisted
+                        }" class="cursor-pointer me-2 py-1 px-2 rounded-md shadow transition-colors duration-300"
+                            (click)="dress.wishlisted = !dress.wishlisted">
+                            <i class="fa-regular fa-heart text-md" [ngClass]="{
+                        'text-white': dress.wishlisted,
+                        'text-gray-400': !dress.wishlisted
+                        }"></i>
+                        </button>
+                        <button
+                            class="px-2 py-1 rounded-md transition duration-150 ease-in-out focus:ring-4 focus:ring-aldy-primary-200 bg-aldy-primary-600 hover:bg-aldy-primary-700 cursor-pointer">
+                            <i class="fa-solid fa-cart-shopping text-md text-white"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </ng-template>
+    </p-carousel>
+</div>
