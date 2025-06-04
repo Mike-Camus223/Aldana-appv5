@@ -1,0 +1,3 @@
+::ng-deep .p-checkbox-input::checkmark {
+    background-color: var(--color-aldy-primary-600) !important;
+}

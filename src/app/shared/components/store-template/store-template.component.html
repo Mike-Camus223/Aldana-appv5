@@ -1,0 +1,111 @@
+<div class="flex flex-col lg:flex-row gap-4">
+    <aside class="w-full lg:w-1/6 lg:me-2">
+        <p-accordion>
+            <p-accordionTab header="Marca">
+                <div class="flex items-center mb-2">
+                    <p-checkbox inputId="brandAll" name="brand" value="all" [(ngModel)]="selectedBrands" />
+                    <label for="brandAll" class="ml-2">Todas</label>
+                </div>
+                <div class="flex items-center mb-2">
+                    <p-checkbox inputId="brand1" name="brand" value="colab 1" [(ngModel)]="selectedBrands" />
+                    <label for="brand1" class="ml-2">colab 1</label>
+                </div>
+                <div class="flex items-center mb-2">
+                    <p-checkbox inputId="brand2" name="brand" value="colab 2" [(ngModel)]="selectedBrands" />
+                    <label for="brand2" class="ml-2">colab 2</label>
+                </div>
+                <div class="flex items-center mb-2">
+                    <p-checkbox inputId="brand3" name="brand" value="colab 3" [(ngModel)]="selectedBrands" />
+                    <label for="brand3" class="ml-2">colab 3</label>
+                </div>
+            </p-accordionTab>
+            <p-accordionTab header="Precio">
+                <p-slider [(ngModel)]="priceRange" [min]="0" [max]="4300" [range]="true"></p-slider>
+                <div class="flex justify-between text-sm mt-2">
+                    <span>ARS ${{ priceRange[0] }}</span>
+                    <span>ARS ${{ priceRange[1] }}</span>
+                </div>
+            </p-accordionTab>
+            <p-accordionTab header="Disponibilidad">
+                <div class="flex items-center mb-2">
+                    <p-checkbox inputId="stock1" name="stock" value="in" [(ngModel)]="selectedStock" />
+                    <label for="stock1" class="ml-2">En stock</label>
+                </div>
+                <div class="flex items-center mb-2">
+                    <p-checkbox inputId="stock2" name="stock" value="out" [(ngModel)]="selectedStock" />
+                    <label for="stock2" class="ml-2">Agotado</label>
+                </div>
+                <div class="flex items-center mb-2">
+                    <p-checkbox inputId="stock3" name="stock" value="preorder" [(ngModel)]="selectedStock" />
+                    <label for="stock3" class="ml-2">Preventa</label>
+                </div>
+            </p-accordionTab>
+            <p-accordionTab header="Categoría">
+                <div class="flex items-center mb-2">
+                    <p-checkbox inputId="cat1" name="category" value="clothing" [(ngModel)]="selectedCategories" />
+                    <label for="cat1" class="ml-2">Ropa</label>
+                </div>
+                <div class="flex items-center mb-2">
+                    <p-checkbox inputId="cat2" name="category" value="accessories" [(ngModel)]="selectedCategories" />
+                    <label for="cat2" class="ml-2">Accesorios</label>
+                </div>
+                <div class="flex items-center mb-2">
+                    <p-checkbox inputId="cat3" name="category" value="shoes" [(ngModel)]="selectedCategories" />
+                    <label for="cat3" class="ml-2">Calzado</label>
+                </div>
+                <div class="flex items-center mb-2">
+                    <p-checkbox inputId="cat4" name="category" value="outerwear" [(ngModel)]="selectedCategories" />
+                    <label for="cat4" class="ml-2">Abrigos</label>
+                </div>
+                <div class="flex items-center mb-2">
+                    <p-checkbox inputId="cat5" name="category" value="pants" [(ngModel)]="selectedCategories" />
+                    <label for="cat5" class="ml-2">Pantalones</label>
+                </div>
+            </p-accordionTab>
+        </p-accordion>
+        <div class="flex gap-2 mt-4">
+            <button type="button" class="flex items-center justify-center px-4 py-2 rounded-md transition duration-150 ease-in-out
+             text-gray-700 text-sm md:text-base xl:text-base font-medium
+             bg-gray-200 hover:bg-gray-300
+             focus:ring-4 focus:ring-gray-100
+             shadow-md hover:shadow-lg cursor-pointer w-full">
+                Limpiar
+            </button>
+            <button type="button" class="flex items-center justify-center px-4 py-2 rounded-md transition duration-150 ease-in-out
+             text-white text-sm md:text-base xl:text-base font-medium
+             bg-aldy-primary-600 hover:bg-aldy-primary-700
+             focus:ring-4 focus:ring-aldy-primary-200
+             shadow-md hover:shadow-lg cursor-pointer w-full">
+                Buscar
+            </button>
+        </div>
+    </aside>
+    <main class="w-full lg:w-5/6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div *ngFor="let product of products"
+            class="rounded-sm border-1 border-gray-200 shadow-md transition relative overflow-hidden  flex flex-col">
+            <button type="button" aria-label="Añadir a favoritos" (click)="toggleWishlist(product)"
+                class="absolute z-5 top-3 right-3 text-xl cursor-pointer leading-none transition-colors focus:outline-none">
+                <i class="fa-solid fa-heart" [ngClass]="{
+            'text-aldy-primary-600': product.wishlisted,
+            'text-gray-300': !product.wishlisted
+          }"></i>
+            </button>
+            <div class="relative shadow-sm rounded-t-sm h-72 flex items-center justify-center overflow-hidden">
+                <img [src]="product.image" [alt]="product.name" class="h-full w-full object-cover" />
+            </div>
+            <div class="px-4 pb-4">
+                <h3 class="text-sm sm:text-base md:text-lg font-medium mt-3">{{ product.name }}</h3>
+                <p class="text-xs sm:text-sm text-gray-600 mt-1">{{ product.description }}</p>
+                <p class="text-sm sm:text-base font-bold mt-1">ARS ${{ product.price }}</p>
+                <div class="mt-3 flex gap-2">
+                    <button *ngFor="let color of product.colors" (click)="selectColor(product.id, color)"
+                        [ngStyle]="{ backgroundColor: color }" class="w-5 h-5 rounded-sm transition-all border"
+                        [ngClass]="{
+    'border-white border-2 ring-2 ring-gray-800 cursor-default': selectedColors[product.id] === color,
+    'border-transparent cursor-pointer': selectedColors[product.id] !== color
+  }" aria-label="Elegir color"></button>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>

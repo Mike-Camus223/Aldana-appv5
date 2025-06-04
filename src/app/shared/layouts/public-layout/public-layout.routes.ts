@@ -17,6 +17,10 @@ export default [
       {
         path: 'gallery',
         loadComponent: () => import('../../../features/landing/pages/gallery/gallery.component').then(c => c.GalleryComponent),
+      },
+      {
+        path: 'store',
+        loadComponent: () => import('../../../features/landing/pages/shop/shop.component').then(c => c.ShopComponent),
       }
     ]
   }

@@ -78,7 +78,7 @@ export class CarouselPublicComponent implements AfterViewInit, OnDestroy {
   }
 
   startAutoplay() {
-    if (this.autoplayInterval) return; // No duplicar timers
+    if (this.autoplayInterval) return;
 
     this.zooming = true;
     this.autoplayInterval = setInterval(() => {
