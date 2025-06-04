@@ -19,11 +19,16 @@ import { FormsModule } from '@angular/forms';
   styleUrls: ['./store-template.component.css']
 })
 export class StoreTemplateComponent {
-  priceRange: number[] = [0, 4300];
   selectedBrands: string[] = [];
   selectedStock: string[] = [];
   selectedCategories: string[] = [];
+  priceRange: number[] = [0, 4300];
   selectedColors: Record<number, string> = {};
+isChecked: boolean = false;
+
+
+
+
 
   products = [
     {
