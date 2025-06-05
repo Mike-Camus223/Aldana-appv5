@@ -1,0 +1,31 @@
+::ng-deep #drawerNav .p-drawer-header {
+    display: none !important;
+}
+
+::ng-deep #drawerNav .p-drawer {
+    border: 0 !important;
+}
+
+::ng-deep #drawerNav .p-drawer-content {
+  padding: 0 !important;
+}
+
+::ng-deep .p-drawer-left {
+    position: absolute !important;
+    top: -60% !important;
+}
+
+.fade-slide-down {
+  animation: fadeSlideDown 0.3s ease-out;
+}
+
+@keyframes fadeSlideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

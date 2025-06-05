@@ -47,16 +47,16 @@
 ::-webkit-scrollbar {
   width: 6px; 
   height: 6px; 
-  background: #dddddd; 
+  background: #fff; 
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgb(0, 0, 0); 
+  background: var(--color-aldy-primary-400); 
   border-radius: 6px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgb(34, 34, 34); 
+  background: var(--color-aldy-primary-500); 
 }
 
 ::-webkit-scrollbar-corner {
@@ -78,4 +78,18 @@
   font-family: "PT Sans Narrow", sans-serif;
   font-weight: 700;
   font-style: normal;
+}
+
+.titles {
+font-family: "PT Sans Narrow", sans-serif;
+  font-weight: 500;
+  font-style: normal;
+}
+
+.navbarColorBG {
+  background-color: #fffffff1;
+}
+
+.tolol {
+  background-color: #ffffffe7;
 }

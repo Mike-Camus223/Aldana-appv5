@@ -1,4 +1,4 @@
-import {Component,HostListener,OnDestroy,ChangeDetectionStrategy,ChangeDetectorRef} from '@angular/core';
+import { Component, HostListener, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { DrawerModule } from 'primeng/drawer';
 import { ButtonModule } from 'primeng/button';
 import { CommonModule } from '@angular/common';
@@ -14,7 +14,7 @@ import { RouterModule } from '@angular/router';
   selector: 'app-navbar-public',
   standalone: true,
   imports: [
-    CommonModule,DrawerModule,ButtonModule,OverlayBadgeModule,BadgeModule,CarouselSidebarComponent,AccordionModule,RouterModule],
+    CommonModule, DrawerModule, ButtonModule, OverlayBadgeModule, BadgeModule, CarouselSidebarComponent, AccordionModule, RouterModule],
   templateUrl: './navbar-public.component.html',
   styleUrls: ['navbar-public.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -32,13 +32,13 @@ import { RouterModule } from '@angular/router';
 })
 export class NavbarPublicComponent implements OnDestroy {
   MoverScroll = false;
-  visible:boolean = false;
+  visible: boolean = false;
   visible2: boolean = false;
   items: string[] = ['Novias', 'Vestidos', 'Tops', 'Diseños'];
   currentIndex = 0;
   private intervalId?: ReturnType<typeof setInterval>;
 
-  constructor(private cdr: ChangeDetectorRef) {}
+  constructor(private cdr: ChangeDetectorRef) { }
 
   @HostListener('window:scroll', [])
   onWindowScroll() {

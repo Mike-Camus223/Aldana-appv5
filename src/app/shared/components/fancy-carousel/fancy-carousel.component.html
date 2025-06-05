@@ -1,18 +1,13 @@
-<div
-  class="relative w-full max-w-full sm:max-w-[70%] mx-auto"
-  style="--f-thumb-width: 64px;"
->
-  <div class="f-carousel overflow-visible">
-    <div
-      *ngFor="let image of images"
-      class="f-carousel__slide flex justify-center items-center bg-neutral-100 overflow-hidden"
-      [attr.data-thumb-src]="image.thumb"
-    >
-      <img
-        [attr.data-lazy-src]="image.src"
-        alt=""
-        class="object-contain max-h-[80vh] w-auto max-w-full transition duration-300 ease-in-out"
-      />
+<div class="flex w-full justify-center lg:justify-end">
+  <div class="relative w-full max-w-full sm:max-w-[100%] md:max-w-[90%] lg:max-w-[640px]"
+    style="--f-thumb-width: 64px;">
+    <div class="f-carousel overflow-visible w-full">
+      <div *ngFor="let image of images"
+        class="f-carousel__slide flex justify-center items-center w-full bg-white overflow-hidden"
+        [attr.data-thumb-src]="image.thumb">
+        <img [attr.data-lazy-src]="image.src" alt=""
+          class="object-contain w-full max-w-[40vh] sm:max-w-[50vh] max-h-[80vh] transition duration-300 ease-in-out" />
+      </div>
     </div>
   </div>
 </div>

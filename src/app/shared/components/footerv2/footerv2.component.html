@@ -1,0 +1,52 @@
+<footer class="bg-white border-t border-gray-200 text-gray-700 text-sm sm:text-base">
+  <div class="w-[90%] mx-auto py-10 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-8">
+    <div>
+      <h3 class="font-semibold uppercase mb-4 tracking-wider">Conocenos</h3>
+      <ul class="space-y-2">
+        <li><a routerLink="/acerca" class="hover:text-aldy-primary-400 transition">Acerca de mí</a></li>
+        <li><a routerLink="/contacto" class="hover:text-aldy-primary-400 transition">Contacto</a></li>
+      </ul>
+    </div>
+
+    <div>
+      <h3 class="font-semibold uppercase mb-4 tracking-wider">Novias</h3>
+      <ul class="space-y-2">
+        <li><a routerLink="/novias" class="hover:text-aldy-primary-400 transition">Novias</a></li>
+      </ul>
+    </div>
+
+    <div>
+      <h3 class="font-semibold uppercase mb-4 tracking-wider">Tienda</h3>
+      <ul class="space-y-2">
+        <li *ngFor="let item of tiendaItems">
+          <a [routerLink]="formatRoute(item)" class="hover:text-aldy-primary-400 transition">{{ item }}</a>
+        </li>
+      </ul>
+    </div>
+
+    <div>
+      <h3 class="font-semibold uppercase mb-4 tracking-wider">Síguenos</h3>
+      <div class="flex space-x-4 text-xl">
+        <a href="#" aria-label="Instagram" class="hover:text-aldy-primary-400 transition">
+          <i class="fab fa-instagram"></i>
+        </a>
+        <a href="#" aria-label="Facebook" class="hover:text-aldy-primary-400 transition">
+          <i class="fab fa-facebook-f"></i>
+        </a>
+        <a href="#" aria-label="Pinterest" class="hover:text-aldy-primary-400 transition">
+          <i class="fab fa-pinterest-p"></i>
+        </a>
+        <a href="#" aria-label="Twitter" class="hover:text-aldy-primary-400 transition">
+          <i class="fab fa-twitter"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="border-t border-gray-200 py-6 text-center text-xs sm:text-sm text-gray-500">
+    <a routerLink="/" class="block mb-2">
+      <img src="../../../../assets/images/LogotypeD.png" alt="logo" class="h-8 mx-auto object-contain" />
+    </a>
+    © {{ 2025 }} Aldy. Todos los derechos reservados.
+  </div>
+</footer>

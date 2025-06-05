@@ -1,29 +1,35 @@
-/* Fuerza las flechas afuera del slide sin solaparlas */
-.f-carousel__nav {
+.f-carousel {
+  position: relative;
+  background-color: #fff;
+}
+
+.f-button.is-prev,
+.f-button.is-next {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  width: 100%;
-  padding: 0 1rem;
-  pointer-events: none; /* para que no bloqueen clics */
-  z-index: 10;
-}
-
-.f-carousel__nav .f-button {
-  pointer-events: all;
-  background: rgba(0, 0, 0, 0.5);
-  color: white;
+  z-index: 30;
+  width: 20px;
+  height: 20px;
+  background-color: rgba(255, 255, 255, 0.6);
   border-radius: 9999px;
-  width: 2.5rem;
-  height: 2.5rem;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
+  padding: 4px;
+}
+.f-button.is-prev {
+  left: -1.75rem; 
+}
+.f-button.is-next {
+  right: -1.75rem;
 }
 
-.f-carousel__nav .f-button.is-prev {
-  left: 0;
-  position: absolute;
+
+@media (max-width: 1023px) {
+  .f-button.is-prev,
+  .f-button.is-next {
+    display: none;
+  }
 }
 
-.f-carousel__nav .f-button.is-next {
-  right: 0;
-  position: absolute;
-}
+

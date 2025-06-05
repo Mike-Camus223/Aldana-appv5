@@ -1,59 +1,72 @@
-<div class="h-[80px]"></div>
-<div class="grid lg:grid-cols-2 gap-8 p-6 font-main text-gray-800">
-    <div class="relative overflow-hidden">
-        <app-fancy-carousel [images]="product.images" />
-    </div>
-    <div class="relative space-y-6 font-main">
-        <h1 class="text-md sm:text-xl">{{ product.name }}</h1>
-        <p class="text-sm sm:text-lg font-main font-normal text-gray-600">{{ product.description }}</p>
-        <p class="text-sm sm:text-lg font-normal mt-1">{{ product.price | currency:'ARS':'symbol-narrow':'1.2-2':'es-AR'}}</p>
-        <div class="flex items-center gap-3">
-            <span class="text-sm sm:text-lg font-main text-gray-600 me-3">Colores:</span>
-            <button *ngFor="let color of product.colors" (click)="selectColor(product.id, color)"
-                [ngStyle]="{ backgroundColor: color }" class="w-5 h-5 rounded-sm transition-all border" [ngClass]="{
-            'border-white border-2 ring-2 ring-gray-800 cursor-default': selectedColors[product.id] === color,
-            ' border-transparent cursor-pointer': selectedColors[product.id] !== color
-          }" aria-label="Elegir color">
-            </button>
-        </div>
-        <div class="flex items-center flex-wrap gap-2">
-            <span class="text-sm sm:text-lg font-main text-gray-600 me-3">Tallas:</span>
-            <ng-container *ngFor="let size of ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL']">
-                <button (click)="selectedSize = size" class="text-sm sm:text-lg px-3 py-1 border-b-2 transition-all cursor-pointer" [ngClass]="{
-          'border-aldy-primary-400 text-aldy-primary-400 font-semibold': selectedSize === size,
-          'border-transparent text-gray-600 hover:border-gray-400': selectedSize !== size
-        }">
-                    {{ size }}
-                </button>
-            </ng-container>
-        </div>
-        <div class="flex items-center mt-4">
-            <div class="relative">
-                <select
-                    class="appearance-none rounded-l-md border border-aldy-primary-400   py-3 pl-3 pr-8 text-sm focus:outline-none">
-                    <option *ngFor="let qty of [1,2,3,4,5]">{{ qty }}</option>
-                </select>
-                <div
-                    class="pointer-events-none absolute right-2 top-1/2 transform -translate-y-1/2 text-aldy-primary-400 text-xs">
-                    ▼
+
+
+<div class="h-[88px] lg:h-[124px]"></div>
+<div class="px-4 sm:px-6 lg:px-12 xl:px-16 2xl:px-24 py-8 w-full">
+    <div class="max-w-screen-3xl mx-auto">
+        <div class="grid lg:grid-cols-2 gap-8 font-main text-gray-800">
+            <div class="relative overflow-hidden">
+                <app-fancy-carousel [images]="product.images" />
+            </div>
+            <div class="relative space-y-6 font-main">
+                <h1 class="text-md sm:text-xl">{{ product.name }}</h1>
+                <p class="text-sm sm:text-lg font-main font-normal text-gray-600">{{ product.description }}</p>
+                <p class="text-sm sm:text-lg font-[sans-serif] mt-1">{{ product.price |
+                    currency:'ARS':'symbol-narrow':'1.2-2':'es-AR'}}</p>
+                <div class="flex items-center gap-3">
+                    <span class="text-sm sm:text-lg font-main text-gray-600 me-3">Colores:</span>
+                    <button *ngFor="let color of product.colors" (click)="selectColor(product.id, color)"
+                        [ngStyle]="{ backgroundColor: color }" class="w-5 h-5 rounded-sm transition-all border" [ngClass]="{
+                    'border-white border-2 ring-2 ring-gray-800 cursor-default': selectedColors[product.id] === color,
+                    ' border-transparent cursor-pointer': selectedColors[product.id] !== color
+                  }" aria-label="Elegir color">
+                    </button>
+                </div>
+                <div class="flex items-center flex-wrap gap-2">
+                    <span class="text-sm sm:text-lg font-main text-gray-600 me-3">Tallas:</span>
+                    <ng-container *ngFor="let size of ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL']">
+                        <button (click)="selectedSize = size"
+                            class="text-sm sm:text-lg px-3 py-1 border-b-2 transition-all cursor-pointer" [ngClass]="{
+                  'border-aldy-primary-400 text-aldy-primary-400 font-semibold': selectedSize === size,
+                  'border-transparent text-gray-600 hover:border-gray-400': selectedSize !== size
+                }">
+                            {{ size }}
+                        </button>
+                    </ng-container>
+                </div>
+                <div class="flex items-center mt-4">
+                    <div class="relative">
+                        <select
+                            class="appearance-none rounded-l-md border border-aldy-primary-400   py-3 pl-3 pr-8 text-sm focus:outline-none">
+                            <option *ngFor="let qty of [1,2,3,4,5]">{{ qty }}</option>
+                        </select>
+                        <div
+                            class="pointer-events-none absolute right-2 top-1/2 transform -translate-y-1/2 text-aldy-primary-400 text-xs">
+                            ▼
+                        </div>
+                    </div>
+                    <button
+                        class="flex-1 cursor-pointer flex items-center justify-center gap-3 rounded-r-md bg-aldy-primary-400 border border-aldy-primary-400 text-white uppercase tracking-wide text-sm sm:text-md font-bold py-3 px-4 text-center transition-colors hover:bg-aldy-primary-500 hover:border-aldy-primary-500">
+                        <span>
+                            Añadir al carrito
+                        </span>
+                        <i class="fa-solid fa-bag-shopping text-white text-lg"></i>
+                    </button>
+                </div>
+                <p-accordion id="acordionItem" class="w-full mt-4">
+                    <p-accordion-tab header="Detalles" class="text-sm sm:text-lg font-main text-gray-600">
+                        <p>Descripción técnica del producto...</p>
+                    </p-accordion-tab>
+                    <p-accordion-tab header="Talles" class="text-sm sm:text-lg font-main text-gray-600">
+                        <p>Tabla de medidas y ajustes disponibles.</p>
+                    </p-accordion-tab>
+                </p-accordion>
+                <div class="text-md sm:text-lg text-gray-600 mt-4">
+                    <p>Para más detalles sobre métodos de pago haz clic <a href="#"
+                            class="underline hover:text-aldy-primary-400 transition-colors duration-300">aquí</a>.</p>
+                    <p>Para tasas e impuestos haz clic <a href="#"
+                            class="underline hover:text-aldy-primary-400 transition-colors duration-300">aquí</a>.</p>
                 </div>
             </div>
-            <button
-                class="flex-1 rounded-r-md bg-aldy-primary-400 border border-aldy-primary-400 text-white uppercase tracking-wide text-sm py-3 px-4 text-center transition-colors hover:bg-aldy-primary-500 hover:border-aldy-primary-500">
-                Añadir al carrito
-            </button>
         </div>
-        <p-accordion id="acordionItem" class="w-full mt-4">
-            <p-accordion-tab header="Detalles" class="text-sm sm:text-lg font-main text-gray-600">
-                <p>Descripción técnica del producto...</p>
-            </p-accordion-tab>
-            <p-accordion-tab header="Talles" class="text-sm sm:text-lg font-main text-gray-600">
-                <p>Tabla de medidas y ajustes disponibles.</p>
-            </p-accordion-tab>
-        </p-accordion>
-        <div class="text-md sm:text-lg text-gray-600 mt-4">
-            <p>Para más detalles sobre métodos de pago haz clic <a href="#" class="underline hover:text-aldy-primary-400 transition-colors duration-300">aquí</a>.</p>
-            <p>Para tasas e impuestos haz clic <a href="#" class="underline hover:text-aldy-primary-400 transition-colors duration-300">aquí</a>.</p>
-        </div>
-    </div>
+  </div>
 </div>
