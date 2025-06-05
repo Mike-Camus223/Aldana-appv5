@@ -16,7 +16,6 @@ import { RouterModule } from '@angular/router';
     CheckboxModule,
     SliderModule,
     FormsModule,
-    AldyCheckboxV1Directive,
     RouterModule
   ],
   templateUrl: './store-template.component.html',
@@ -30,6 +29,17 @@ export class StoreTemplateComponent {
   selectedMaterials: Record<string, boolean> = {};
   priceRange: number[] = [0, 500000];
   selectedColors: Record<number, string> = {};
+
+  sections = [
+    'Camisas y blusas',
+    'Faldas',
+    'Pantalón',
+    'Abrigos',
+    'Vestidos'
+  ];
+
+
+
 
   products = [
     {

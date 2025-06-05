@@ -10,11 +10,11 @@
         </div>
     </div>
     <div class="relative space-y-6 font-main">
-        <h1 class="text-sm sm:text-lg">{{ product.name }}</h1>
+        <h1 class="text-md sm:text-xl">{{ product.name }}</h1>
         <p class="text-sm sm:text-lg font-main font-normal text-gray-600">{{ product.description }}</p>
         <p class="text-sm sm:text-lg font-normal mt-1">{{ product.price | currency:'ARS':'symbol-narrow':'1.2-2':'es-AR'}}</p>
         <div class="flex items-center gap-3">
-            <span class="text-sm sm:text-base font-main text-gray-600 me-3">Colores:</span>
+            <span class="text-sm sm:text-lg font-main text-gray-600 me-3">Colores:</span>
             <button *ngFor="let color of product.colors" (click)="selectColor(product.id, color)"
                 [ngStyle]="{ backgroundColor: color }" class="w-5 h-5 rounded-sm transition-all border" [ngClass]="{
             'border-white border-2 ring-2 ring-gray-800 cursor-default': selectedColors[product.id] === color,
@@ -22,10 +22,10 @@
           }" aria-label="Elegir color">
             </button>
         </div>
-        <div class="flex flex-wrap gap-2">
-            <span class="text-sm sm:text-base font-main text-gray-600 me-3">Tallas:</span>
+        <div class="flex items-center flex-wrap gap-2">
+            <span class="text-sm sm:text-lg font-main text-gray-600 me-3">Tallas:</span>
             <ng-container *ngFor="let size of ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL']">
-                <button (click)="selectedSize = size" class="text-sm px-3 py-1 border-b-2 transition-all cursor-pointer" [ngClass]="{
+                <button (click)="selectedSize = size" class="text-sm sm:text-lg px-3 py-1 border-b-2 transition-all cursor-pointer" [ngClass]="{
           'border-aldy-primary-400 text-aldy-primary-400 font-semibold': selectedSize === size,
           'border-transparent text-gray-600 hover:border-gray-400': selectedSize !== size
         }">
@@ -60,9 +60,9 @@
                 <p>Políticas de envío y devolución.</p>
             </p-accordion-tab>
         </p-accordion>
-        <div class="text-xs text-gray-600 mt-4">
-            <p>Para más detalles sobre métodos de pago haz clic <a href="#" class="underline">aquí</a>.</p>
-            <p>Para tasas e impuestos haz clic <a href="#" class="underline">aquí</a>.</p>
+        <div class="text-md sm:text-lg text-gray-600 mt-4">
+            <p>Para más detalles sobre métodos de pago haz clic <a href="#" class="underline hover:text-aldy-primary-400 transition-colors duration-300">aquí</a>.</p>
+            <p>Para tasas e impuestos haz clic <a href="#" class="underline hover:text-aldy-primary-400 transition-colors duration-300">aquí</a>.</p>
         </div>
     </div>
 </div>

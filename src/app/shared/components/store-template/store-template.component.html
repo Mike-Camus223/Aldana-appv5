@@ -1,5 +1,5 @@
 <div class="flex flex-col lg:flex-row gap-4">
-  <aside class="w-full lg:w-1/6 lg:me-2">
+  <!-- <aside class="w-full lg:w-1/6 lg:me-2">
     <p-accordion id="acordionShop">
       <p-accordionTab header="Categoría" class="text-sm sm:text-lg font-main text-gray-600">
         <div *ngFor="let category of ['Camisas y blusas', 'Faldas', 'Pantalón', 'Abrigos', 'Vestidos']; let i = index"
@@ -68,7 +68,17 @@
         Buscar
       </button>
     </div>
+  </aside> -->
+  <aside class="w-full lg:w-1/6 lg:me-2">
+    <nav class="text-sm sm:text-lg font-main text-gray-600 border-t border-gray-200 divide-y divide-gray-200">
+      <a *ngFor="let section of sections" href="#"
+        class="flex justify-between items-center py-3 px-2 hover:text-gray-800 transition-colors">
+        <span>{{ section }}</span>
+        <i class="fas fa-chevron-right text-xs text-gray-500"></i>
+      </a>
+    </nav>
   </aside>
+
   <div class="w-full lg:w-5/6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
     <div *ngFor="let product of products"
       class="rounded-sm border-1 border-gray-200 shadow-md transition relative overflow-hidden flex flex-col">
