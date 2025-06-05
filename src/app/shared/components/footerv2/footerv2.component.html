@@ -1,23 +1,24 @@
 <footer class="bg-white border-t border-gray-200 text-gray-700 text-sm sm:text-base">
-  <div class="w-[90%] mx-auto py-10 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-8">
+  <div class="w-full max-w-screen-xl mx-auto py-10 px-6 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-8 text-center">
+    
     <div>
-      <h3 class="font-semibold uppercase mb-4 tracking-wider">Conocenos</h3>
-      <ul class="space-y-2">
-        <li><a routerLink="/acerca" class="hover:text-aldy-primary-400 transition">Acerca de mí</a></li>
+      <h3 class="titles font-semibold uppercase mb-4 tracking-wider">Conócenos</h3>
+      <ul class="space-y-2 font-main text-sm md:text-md">
+        <li><a routerLink="/acerca-de" class="hover:text-aldy-primary-400 transition">Acerca de mí</a></li>
         <li><a routerLink="/contacto" class="hover:text-aldy-primary-400 transition">Contacto</a></li>
       </ul>
     </div>
 
     <div>
-      <h3 class="font-semibold uppercase mb-4 tracking-wider">Novias</h3>
-      <ul class="space-y-2">
+      <h3 class="titles font-semibold uppercase mb-4 tracking-wider">Novias</h3>
+      <ul class="space-y-2 font-main text-sm md:text-md">
         <li><a routerLink="/novias" class="hover:text-aldy-primary-400 transition">Novias</a></li>
       </ul>
     </div>
 
     <div>
-      <h3 class="font-semibold uppercase mb-4 tracking-wider">Tienda</h3>
-      <ul class="space-y-2">
+      <h3 class="titles font-semibold uppercase mb-4 tracking-wider">Tienda</h3>
+      <ul class="space-y-2 font-main text-sm md:text-md">
         <li *ngFor="let item of tiendaItems">
           <a [routerLink]="formatRoute(item)" class="hover:text-aldy-primary-400 transition">{{ item }}</a>
         </li>
@@ -25,8 +26,8 @@
     </div>
 
     <div>
-      <h3 class="font-semibold uppercase mb-4 tracking-wider">Síguenos</h3>
-      <div class="flex space-x-4 text-xl">
+      <h3 class="titles font-semibold uppercase mb-4 tracking-wider">Síguenos</h3>
+      <div class="flex justify-center space-x-4 text-lg md:text-xl">
         <a href="#" aria-label="Instagram" class="hover:text-aldy-primary-400 transition">
           <i class="fab fa-instagram"></i>
         </a>
