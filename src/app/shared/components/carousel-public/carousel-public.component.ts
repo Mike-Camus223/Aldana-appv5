@@ -16,7 +16,7 @@ interface Product {
   standalone: true,
   imports: [CommonModule, CarouselModule, ButtonModule],
   templateUrl: './carousel-public.component.html',
-  styleUrls: ['./carousel-public.component.css']
+  styleUrls: ['./carousel-public.component.css'],
 })
 export class CarouselPublicComponent implements AfterViewInit, OnDestroy {
   products: Product[] = [
@@ -25,22 +25,22 @@ export class CarouselPublicComponent implements AfterViewInit, OnDestroy {
       title: 'Descubrí la colección de primavera',
       description: 'Estilo y frescura para esta temporada. Renová tu guardarropa con nuestras prendas exclusivas.',
       button: 'Ver colección',
-      icon: 'fa-bag-shopping'
+      icon: 'fa-bag-shopping',
     },
     {
       image: 'https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?w=1200&auto=format',
       title: 'Momentos que inspiran',
       description: 'Capturamos lo mejor de nuestras experiencias. Conocé nuestra galería y dejate inspirar.',
       button: 'Ver galería',
-      icon: 'fa-camera-retro'
+      icon: 'fa-camera-retro',
     },
     {
       image: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=1200&auto=format',
       title: 'Conocenos mejor',
       description: 'Descubrí quiénes somos, qué nos mueve y por qué hacemos lo que hacemos.',
       button: 'Nuestra historia',
-      icon: 'fa-brands fa-envira'
-    }
+      icon: 'fa-brands fa-envira',
+    },
   ];
 
   currentIndex = 0;
@@ -96,7 +96,6 @@ export class CarouselPublicComponent implements AfterViewInit, OnDestroy {
 
   nextSlide() {
     this.zooming = false;
-
     this.currentIndex = (this.currentIndex + 1) % this.products.length;
 
     setTimeout(() => {
@@ -110,6 +109,7 @@ export class CarouselPublicComponent implements AfterViewInit, OnDestroy {
     if (this.inactivityTimeout) {
       clearTimeout(this.inactivityTimeout);
     }
+
     this.inactivityTimeout = setTimeout(() => {
       if (this.isVisible) {
         this.startAutoplay();

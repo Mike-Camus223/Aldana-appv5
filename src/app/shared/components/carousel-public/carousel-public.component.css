@@ -53,6 +53,10 @@
   right: 1rem !important;
 }
 
+.touch-pan-y {
+  touch-action: pan-y;
+}
+
 @media (max-width: 768px) {
   ::ng-deep .p-carousel-indicator-button {
     width: 0.5rem !important;
