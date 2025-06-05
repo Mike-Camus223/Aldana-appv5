@@ -1,6 +1,6 @@
 ::ng-deep #hero-carousel .p-carousel-indicator-list {
   position: absolute !important;
-  bottom: 5rem !important;
+  bottom: 19rem !important;
   left: 50% !important;
   transform: translateX(-50%) !important;
   display: flex !important;
@@ -22,7 +22,7 @@
 ::ng-deep #hero-carousel .p-carousel-prev-button,
 ::ng-deep #hero-carousel .p-carousel-next-button {
   position: absolute !important;
-  top: 50% !important;
+  top: 43% !important;
   transform: translateY(-50%) !important;
   z-index: 30 !important;
   background-color: transparent !important;
@@ -56,6 +56,16 @@
 .touch-pan-y {
   touch-action: pan-y;
 }
+
+@media (max-width: 1024px) {
+
+  ::ng-deep #hero-carousel .p-carousel-prev-button,
+  ::ng-deep #hero-carousel .p-carousel-next-button {
+  top: 39% !important;
+
+  }
+}
+
 
 @media (max-width: 768px) {
   ::ng-deep .p-carousel-indicator-button {
