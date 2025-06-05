@@ -1,0 +1,16 @@
+::ng-deep #acordionItem .p-icon {
+    font-size:  0.5rem !important;
+    height: 0.7rem !important;
+    width: 0.7rem !important;
+}
+
+
+::ng-deep .p-accordionheader {
+    font-weight: normal !important;
+}
+
+h1 {
+font-family: "PT Sans Narrow", sans-serif;
+  font-weight: 500;
+  font-style: normal;
+}

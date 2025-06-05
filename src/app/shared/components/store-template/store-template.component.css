@@ -1,3 +1,24 @@
 ::ng-deep .p-checkbox-input::checkmark {
     background-color: var(--color-aldy-primary-600) !important;
 }
+
+::ng-deep .p-slider-range {
+    background-color: var(--color-aldy-primary-600) !important;
+}
+
+::ng-deep .p-accordionheader {
+    font-weight: normal !important;
+}
+
+::ng-deep #acordionShop .p-icon {
+    font-size:  0.5rem !important;
+    height: 0.7rem !important;
+    width: 0.7rem !important;
+}
+
+h3 {
+font-family: "PT Sans Narrow", sans-serif;
+  font-weight: 500;
+  font-style: normal;
+}
+

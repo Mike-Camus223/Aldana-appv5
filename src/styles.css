@@ -1,5 +1,7 @@
 @import "tailwindcss";
 @import "primeicons/primeicons.css";
+@import '@fancyapps/ui/dist/carousel/carousel.css';
+@import '@fancyapps/ui/dist/carousel/carousel.thumbs.css';
 
 @theme {
   --color-aldy-primary-50: #f1fafa;
@@ -61,3 +63,19 @@
   background: transparent;
 }
 
+.font-main {
+  font-family: "PT Sans Narrow", sans-serif;
+  font-style: normal;
+}
+
+.font-number {
+  font-family: "PT Sans Narrow", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.font-number-bold {
+  font-family: "PT Sans Narrow", sans-serif;
+  font-weight: 700;
+  font-style: normal;
+}

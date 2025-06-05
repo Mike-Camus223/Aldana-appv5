@@ -4,6 +4,8 @@ import { AccordionModule } from 'primeng/accordion';
 import { CheckboxModule } from 'primeng/checkbox';
 import { SliderModule } from 'primeng/slider';
 import { FormsModule } from '@angular/forms';
+import { AldyCheckboxV1Directive } from '../../utils/directives/aldy-checkbox-v1.directive';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-store-template',
@@ -13,22 +15,21 @@ import { FormsModule } from '@angular/forms';
     AccordionModule,
     CheckboxModule,
     SliderModule,
-    FormsModule
+    FormsModule,
+    AldyCheckboxV1Directive,
+    RouterModule
   ],
   templateUrl: './store-template.component.html',
   styleUrls: ['./store-template.component.css']
 })
 export class StoreTemplateComponent {
-  selectedBrands: string[] = [];
-  selectedStock: string[] = [];
-  selectedCategories: string[] = [];
-  priceRange: number[] = [0, 4300];
+  selectedStock: Record<string, boolean> = {};
+  selectedCategories: Record<string, boolean> = {};
+  selectedSizes: Record<string, boolean> = {};
+  selectedColorsStock: Record<string, boolean> = {};
+  selectedMaterials: Record<string, boolean> = {};
+  priceRange: number[] = [0, 500000];
   selectedColors: Record<number, string> = {};
-isChecked: boolean = false;
-
-
-
-
 
   products = [
     {
