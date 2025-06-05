@@ -57,6 +57,16 @@
   touch-action: pan-y;
 }
 
+
+::ng-deep #hero-carousel .p-carousel .p-carousel-content {
+  touch-action: pan-y !important;
+}
+
+
+::ng-deep .p-carousel .p-carousel-content {
+  touch-action: pan-y !important;
+}
+
 @media (max-width: 1024px) {
 
   ::ng-deep #hero-carousel .p-carousel-prev-button,
