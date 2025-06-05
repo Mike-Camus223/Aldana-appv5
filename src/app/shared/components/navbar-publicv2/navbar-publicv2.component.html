@@ -5,25 +5,25 @@
     <a href="/" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
       <img src="../../../../assets/images/LogotypeD.png" alt="logo" class="h-20 object-cover" />
     </a>
-    <!-- <div class="flex items-center space-x-6 text-xl">
-      <button 
+    <div class="flex items-center space-x-6 text-xl">
+      <button href="/busqueda"
         class="text-aldy-primary-400 flex items-center hover:text-aldy-primary-500 cursor-pointer">
-        <span class="material-symbols-outlined">search</span>
+        <i class="fas fa-search"></i>
       </button>
-      <button 
+      <button href="/perfil"
         class="text-aldy-primary-400 flex items-center hover:text-aldy-primary-500 cursor-pointer">
-        <span class="material-symbols-outlined">person</span>
+        <i class="fas fa-user"></i>
       </button>
-      <button 
+      <button href="/favoritos"
         class="text-aldy-primary-400 flex items-center hover:text-aldy-primary-500 cursor-pointer">
-        <span class="material-symbols-outlined">favorite</span>
+        <i class="fas fa-heart"></i>
       </button>
-      <button 
+      <button href="/carrito"
         class="text-aldy-primary-400 flex items-center hover:text-aldy-primary-500 cursor-pointer">
-        <span class="material-symbols-outlined">shopping_bag</span>
-        <span class="text-base text-gray-600">{{ cartItemCount }}</span>
+        <i class="fas fa-shopping-bag"></i>
+        <span class="text-base text-gray-600 ms-1">{{ cartItemCount }}</span>
       </button>
-    </div> -->
+    </div>
   </div>
   <div class="w-full">
     <div class="w-[90%] mx-auto flex items-center justify-center py-1">
@@ -67,35 +67,37 @@
     </div>
   </div>
 </nav>
+
+<!-- Navbar mobile -->
 <nav [ngClass]="{ 'py-0': MoverScroll, 'py-1': !MoverScroll }"
   class="block lg:hidden w-full fixed top-0 z-50 bg-white shadow-md font-titles transition-all duration-300 ease-in-out">
   <div class="w-[90%] mx-auto flex items-center justify-between h-20 relative">
-    <!-- <div class="flex items-center transition-all space-x-2 sm:space-x-4 text-lg sm:text-xl">
-      <button 
+    <div class="flex items-center transition-all space-x-2 sm:space-x-4 text-lg sm:text-xl">
+      <button href="/busqueda"
         class="text-aldy-primary-400 flex items-center hover:text-aldy-primary-500 cursor-pointer">
-        <span class="material-symbols-outlined">search</span>
+        <i class="fas fa-search"></i>
       </button>
-      <button 
+      <button href="/favoritos"
         class="text-aldy-primary-400 flex items-center hover:text-aldy-primary-500 cursor-pointer">
-        <span class="material-symbols-outlined">favorite</span>
+        <i class="fas fa-heart"></i>
       </button>
-      <button 
+      <button href="/perfil"
         class="text-aldy-primary-400 flex items-center hover:text-aldy-primary-500 cursor-pointer">
-        <span class="material-symbols-outlined">person</span>
+        <i class="fas fa-user"></i>
       </button>
-    </div> -->
+    </div>
     <a href="/" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
       <img src="../../../../assets/images/LogotypeD.png" alt="logo" class="h-16 sm:h-16 transition-all object-cover" />
     </a>
     <div class="flex items-center transition-all space-x-4 sm:space-x-6 text-lg sm:text-xl">
       <button href="/carrito"
         class="text-aldy-primary-400 flex items-center hover:text-aldy-primary-500 cursor-pointer">
-        <!-- <span class="material-symbols-outlined">shopping_bag</span> -->
-        <span class="text-base text-gray-600">{{ cartItemCount }}</span>
+        <i class="fas fa-shopping-bag"></i>
+        <span class="text-base text-gray-600 ms-1">{{ cartItemCount }}</span>
       </button>
       <button (click)="toggleMenu()"
         class="text-aldy-primary-400 flex items-center hover:text-aldy-primary-500 cursor-pointer">
-        <span class="material-symbols-outlined">=</span>
+        <i class="fas fa-bars"></i>
       </button>
     </div>
   </div>
