@@ -3,7 +3,7 @@
   <div class="w-[90%] mx-auto flex items-center justify-between h-20 relative">
     <div class="w-6"></div>
     <a href="/" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-      <img src="../../../../assets/images/LogotypeD.png" alt="logo" class="h-20 object-cover" />
+      <img src="../../../../assets/images/LogotypeD.png" alt="logo" class="h-14 object-cover" />
     </a>
     <div class="flex items-center space-x-6 text-xl">
       <button href="/busqueda"
@@ -30,22 +30,22 @@
       <ul class="flex space-x-10 font-semibold uppercase">
         <li>
           <a href="/acerca-de"
-            class="transition-colors text-md sm:text-lg text-gray-600 titles hover:text-gray-700 tracking-widest">Acerca
+            class="transition-colors text-md sm:text-md text-gray-600 titles hover:text-gray-700 tracking-widest">Acerca
             de mí</a>
         </li>
         <li>
           <a href="/novias"
-            class="transition-colors text-md sm:text-lg text-gray-600 titles hover:text-gray-700 tracking-widest">Novias</a>
+            class="transition-colors text-md sm:text-md text-gray-600 titles hover:text-gray-700 tracking-widest">Novias</a>
         </li>
         <li class="relative">
           <button (click)="toggleDropdown()"
-            class="transition-colors text-md sm:text-lg text-gray-600 titles hover:text-gray-700 tracking-widest cursor-pointer">
+            class="transition-colors text-md sm:text-md text-gray-600 titles hover:text-gray-700 cursor-pointer">
             TIENDA
           </button>
           <div *ngIf="dropdownOpen" #dropdownRef @dropdownAnimation
             class="absolute left-1/2 -translate-x-1/2 top-full mt-1 w-64 bg-white shadow-lg py-6 z-50 flex justify-center rounded-b-lg transition-transform duration-200 ease-in-out">
             <div>
-              <h3 class="font-bold border-b-2 text-md sm:text-lg border-black pb-2 mb-4 titles text-center">TIENDA</h3>
+              <h3 class="font-bold border-b-2 text-md sm:text-md border-black pb-2 mb-4 titles text-center">TIENDA</h3>
               <ul class="space-y-2 text-center text-md font-medium">
                 <!-- <li *ngFor="let item of tiendaItems">
                   <a (click)="closeDropdown()" [href]="formatRoute(item)"
@@ -53,7 +53,7 @@
                 </li> -->
                 <li *ngFor="let item of tiendaItems">
                   <a (click)="closeDropdown()" href="/tienda"
-                    class="transition-colors text-gray-600 titles hover:text-gray-700">{{ item }}</a>
+                    class="transition-colors text-gray-600 text-sm titles hover:text-gray-700">{{ item }}</a>
                 </li>
               </ul>
             </div>
@@ -61,15 +61,20 @@
         </li>
         <li>
           <a href="/galeria"
-            class="transition-colors text-md sm:text-lg titles text-gray-600 tracking-widest hover:text-gray-700">GALERÍA</a>
+            class="transition-colors text-md sm:text-md titles text-gray-600 tracking-widest hover:text-gray-700">GALERÍA</a>
+        </li>
+        <li>
+          <a href="/contacto"
+            class="transition-colors text-md sm:text-md titles text-gray-600 tracking-widest hover:text-gray-700">CONTACTO</a>
         </li>
       </ul>
     </div>
   </div>
 </nav>
+
 <nav [ngClass]="{ 'py-0': MoverScroll, 'py-1': !MoverScroll }"
   class="block lg:hidden w-full fixed top-0 z-50 bg-white shadow-md font-titles transition-all duration-300 ease-in-out">
-  <div class="w-[90%] mx-auto flex items-center justify-between h-20 relative">
+  <div class="w-[90%] mx-auto flex items-center justify-between h-14 relative">
     <div class="flex items-center transition-all space-x-2 sm:space-x-4 text-lg sm:text-xl">
       <button href="/busqueda"
         class="text-aldy-primary-400 flex items-center hover:text-aldy-primary-500 cursor-pointer">
@@ -85,7 +90,7 @@
       </button>
     </div>
     <a href="/" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-      <img src="../../../../assets/images/LogotypeD.png" alt="logo" class="h-16 sm:h-16 transition-all object-cover" />
+      <img src="../../../../assets/images/LogotypeD.png" alt="logo" class="h-12 sm:h-16 transition-all object-cover" />
     </a>
     <div class="flex items-center transition-all space-x-4 sm:space-x-6 text-lg sm:text-xl">
       <button href="/carrito"
@@ -125,5 +130,7 @@
     </div>
     <a href="/galeria" (click)="onMenuLinkClick()"
       class="block hover:text-gray-700 tracking-widest uppercase titles">galeria</a>
+    <a href="/contacto" (click)="onMenuLinkClick()"
+      class="block hover:text-gray-700 tracking-widest uppercase titles">contacto</a>
   </div>
 </nav>

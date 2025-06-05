@@ -1,0 +1,104 @@
+<div class="p-4 md:p-8 space-y-6 text-center md:text-left">
+  <section class="space-y-3 md:space-y-4">
+    <h2 class="text-lg md:text-xl">Atención al Cliente</h2>
+
+    <p>Para consultas generales, pedidos o devoluciones:</p>
+    <a href="mailto:enquiries@meandem.com" class="text-aldy-primary-400 hover:text-aldy-primary-500 transition block">
+       {{'aldanavilcabana@gmail.com'}}
+    </a>
+
+    <p>Para estilismo personalizado y asesoramiento sobre tallas:</p>
+    <a href="mailto:onlinestyling@meandem.com" class="text-aldy-primary-400 hover:text-aldy-primary-500 transition block">
+      {{'aldanavilcabana@gmail.com'}}
+    </a>
+
+    <p><span class="font-[sans-serif] text-sm">+44 (0)3456 800 975</span></p>
+    <p><span class="font-[sans-serif] text-sm">+44 (0)3456 800 975</span></p>
+
+    <p class="flex justify-center md:justify-start items-center gap-2">
+      <i class="pi pi-envelope text-aldy-primary-400"></i> Correó: <span class="font-[sans-serif] text-sm"> {{'aldanavilcabana@gmail.com'}}</span>
+    </p>
+
+    <p class="flex justify-center md:justify-start items-center gap-2">
+      <i class="pi pi-whatsapp text-aldy-primary-400"></i> WhatsApp: <span class="font-[sans-serif] text-sm">+44 7123 456789</span>
+    </p>
+  </section>
+
+  <section class="space-y-3 md:space-y-4">
+    <h2 class="text-lg md:text-xl">Horario de Atención</h2>
+    <p>Lunes a Viernes: 08:30 - 18:30</p>
+    <p>Sábado: 09:00 - 17:00</p>
+    <p>Domingo: Cerrado</p>
+  </section>
+
+  <section>
+    <p class="text-aldy-primary-400 hover:text-aldy-primary-500 transition cursor-pointer font-medium"
+       (click)="displayContactDialog = true">
+      Formulario de Contacto
+    </p>
+  </section>
+
+  <p-dialog [(visible)]="displayContactDialog" modal="true" header="Formulario de Contacto"
+            [style.width]="'90vw'" [breakpoints]="{'960px': '95vw', '640px': '100vw'}">
+    <form [formGroup]="contactForm" (ngSubmit)="onSubmit()" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <p-floatlabel variant="in">
+          <input pInputText id="name" formControlName="name" class="w-full text-xs py-1.5" autocomplete="off" />
+          <label for="name" class="text-xs">Nombre</label>
+        </p-floatlabel>
+        <small *ngIf="isInvalid('name')" class="text-red-500 text-xs">
+          {{ getErrorMessage('name') }}
+        </small>
+      </div>
+
+      <div>
+        <p-floatlabel variant="in">
+          <input pInputText id="email" formControlName="email" class="w-full text-xs py-1.5" autocomplete="off" />
+          <label for="email" class="text-xs">Correo Electrónico</label>
+        </p-floatlabel>
+        <small *ngIf="isInvalid('email')" class="text-red-500 text-xs">
+          {{ getErrorMessage('email') }}
+        </small>
+      </div>
+
+      <div>
+        <p-floatlabel variant="in">
+          <input pInputText id="phone" formControlName="phone" class="w-full text-xs py-1.5" autocomplete="off" />
+          <label for="phone" class="text-xs">Teléfono</label>
+        </p-floatlabel>
+        <small *ngIf="isInvalid('phone')" class="text-red-500 text-xs">
+          {{ getErrorMessage('phone') }}
+        </small>
+      </div>
+
+      <div>
+        <p-floatlabel variant="in">
+          <input pInputText id="subject" formControlName="subject" class="w-full text-xs py-1.5" autocomplete="off" />
+          <label for="subject" class="text-xs">Asunto</label>
+        </p-floatlabel>
+        <small *ngIf="isInvalid('subject')" class="text-red-500 text-xs">
+          {{ getErrorMessage('subject') }}
+        </small>
+      </div>
+
+      <div class="md:col-span-2">
+        <p-floatlabel variant="in">
+          <textarea pInputTextarea id="message" formControlName="message" rows="4"
+                    class="w-full text-xs py-1.5"></textarea>
+          <label for="message" class="text-xs">Mensaje</label>
+        </p-floatlabel>
+        <small *ngIf="isInvalid('message')" class="text-red-500 text-xs">
+          {{ getErrorMessage('message') }}
+        </small>
+      </div>
+
+      <div class="md:col-span-2 flex justify-end">
+        <button type="submit"
+                class="bg-aldy-primary-400 hover:bg-aldy-primary-500 text-white px-6 py-2 rounded transition"
+                [disabled]="contactForm.invalid">
+          Enviar
+        </button>
+      </div>
+    </form>
+  </p-dialog>
+</div>

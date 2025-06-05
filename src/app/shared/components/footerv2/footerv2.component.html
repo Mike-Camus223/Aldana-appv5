@@ -1,3 +1,29 @@
+<section class="bg-white px-4 py-10 border-t border-b border-gray-200 text-center">
+  <h2 class="title text-lg sm:text-xl mb-4">SUSCRIBITE A NUESTRO NEWSLETTER</h2>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="max-w-md mx-auto flex flex-col sm:flex-row items-center gap-3">
+    <input
+      formControlName="email"
+      type="email"
+      placeholder="Email"
+      class="w-full sm:w-auto flex-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-aldy-primary-400  transition text-sm"
+    />
+    <button
+      type="submit"
+      class="px-4 py-2 bg-aldy-primary-400 hover:bg-aldy-primary-500 transition-al duration-300 cursor-pointer text-white rounded-md  transition text-sm"
+    >
+      →
+    </button>
+  </form>
+
+  <div *ngIf="submitted && email?.invalid" class="text-red-500 text-xs mt-2 font-main">
+    Por favor ingresa un email válido.
+  </div>
+
+  <div *ngIf="success" class="text-green-600 text-sm mt-2 font-main">
+    ¡Gracias por suscribirte!
+  </div>
+</section>
 <footer class="bg-white border-t border-gray-200 text-gray-700 text-sm sm:text-base">
   <div class="w-full max-w-screen-xl mx-auto py-10 px-6 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-8 text-center">
     
@@ -19,15 +45,11 @@
     <div>
       <h3 class="titles font-semibold uppercase mb-4 tracking-wider">Tienda</h3>
       <ul class="space-y-2 font-main text-sm md:text-md">
-        <!-- <li *ngFor="let item of tiendaItems">
-          <a [href]="formatRoute(item)" class="hover:text-aldy-primary-400 transition">{{ item }}</a>
-        </li> -->
         <li *ngFor="let item of tiendaItems">
-          <a href="/tienda" class="hover:text-aldy-primary-400 transition">{{ item }}</a>
+          <a [href]="formatRoute(item)" class="hover:text-aldy-primary-400 transition">{{ item }}</a>
         </li>
       </ul>
     </div>
-
     <div>
       <h3 class="titles font-semibold uppercase mb-4 tracking-wider">Síguenos</h3>
       <div class="flex justify-center space-x-4 text-lg md:text-xl">
@@ -46,7 +68,6 @@
       </div>
     </div>
   </div>
-
   <div class="border-t border-gray-200 py-6 text-center text-xs sm:text-sm text-gray-500">
     <a href="/" class="block mb-2">
       <img src="../../../../assets/images/LogotypeD.png" alt="logo" class="h-8 mx-auto object-contain" />

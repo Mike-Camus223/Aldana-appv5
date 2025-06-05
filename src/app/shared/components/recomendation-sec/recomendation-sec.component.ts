@@ -13,6 +13,7 @@ import { TagModule } from 'primeng/tag';
   styleUrls: ['./recomendation-sec.component.css'],
 })
 export class RecomendationSecComponent {
+    selectedColors: Record<number, string> = {};
   products = [
     {
       name: 'Linen Cinched-Waist Jumpsuit',
@@ -43,4 +44,13 @@ export class RecomendationSecComponent {
     { breakpoint: '438px', numVisible: 1, numScroll: 1 },
 
   ];
+
+  toggleWishlist(product: any): void {
+  product.wishlisted = !product.wishlisted;
+}
+
+selectColor(productId: number, color: string): void {
+  this.selectedColors[productId] = color;
+}
+
 }

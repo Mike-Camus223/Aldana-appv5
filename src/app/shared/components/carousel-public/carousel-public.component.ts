@@ -2,6 +2,7 @@ import { Component, ElementRef, AfterViewInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CarouselModule } from 'primeng/carousel';
 import { ButtonModule } from 'primeng/button';
+import { RouterModule } from '@angular/router';
 
 interface Product {
   image: string;
@@ -9,12 +10,13 @@ interface Product {
   description: string;
   button: string;
   icon: string;
+  route: string;
 }
 
 @Component({
   selector: 'app-carousel-public',
   standalone: true,
-  imports: [CommonModule, CarouselModule, ButtonModule],
+  imports: [CommonModule, CarouselModule, ButtonModule,RouterModule],
   templateUrl: './carousel-public.component.html',
   styleUrls: ['./carousel-public.component.css'],
 })
@@ -22,17 +24,19 @@ export class CarouselPublicComponent implements AfterViewInit, OnDestroy {
   products: Product[] = [
     {
       image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1200&auto=format',
-      title: 'Descubrí la colección de primavera',
-      description: 'Estilo y frescura para esta temporada. Renová tu guardarropa con nuestras prendas exclusivas.',
-      button: 'Ver colección',
-      icon: 'fa-bag-shopping',
+      title: 'Vestidos de novia únicos',
+      description: 'Explorá nuestra exclusiva colección de vestidos de novia diseñados para ese día tan especial.',
+      button: 'Ver galería',
+      icon: 'fa-camera',
+      route: '/novias',
     },
     {
       image: 'https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?w=1200&auto=format',
-      title: 'Momentos que inspiran',
-      description: 'Capturamos lo mejor de nuestras experiencias. Conocé nuestra galería y dejate inspirar.',
+      title: 'Nuestra galería de moda',
+      description: 'Descubrí la galería profesional de ropa donde cada prenda cuenta una historia de estilo y elegancia.',
       button: 'Ver galería',
-      icon: 'fa-camera-retro',
+      icon: 'fa-camera',
+      route: '/galeria',
     },
     {
       image: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=1200&auto=format',
@@ -40,6 +44,7 @@ export class CarouselPublicComponent implements AfterViewInit, OnDestroy {
       description: 'Descubrí quiénes somos, qué nos mueve y por qué hacemos lo que hacemos.',
       button: 'Nuestra historia',
       icon: 'fa-brands fa-envira',
+      route: '/acerca-de',
     },
   ];
 
