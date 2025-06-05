@@ -1,13 +1,7 @@
 <div class="h-[80px]"></div>
 <div class="grid lg:grid-cols-2 gap-8 p-6 font-main text-gray-800">
-    <div class="relative">
-        <div class="relative overflow-hidden" [attr.id]="'carousel-' + product.id">
-            <div class="f-carousel" *ngIf="product">
-                <div class="f-carousel__slide">
-                    <img [src]="product.image" alt="Imagen principal" class="mx-auto object-contain" />
-                </div>
-            </div>
-        </div>
+    <div class="relative overflow-hidden">
+        <app-fancy-carousel [images]="product.images" />
     </div>
     <div class="relative space-y-6 font-main">
         <h1 class="text-md sm:text-xl">{{ product.name }}</h1>
@@ -55,9 +49,6 @@
             </p-accordion-tab>
             <p-accordion-tab header="Talles" class="text-sm sm:text-lg font-main text-gray-600">
                 <p>Tabla de medidas y ajustes disponibles.</p>
-            </p-accordion-tab>
-            <p-accordion-tab header="Envíos y devoluciones" class="text-sm sm:text-lg font-main text-gray-600">
-                <p>Políticas de envío y devolución.</p>
             </p-accordion-tab>
         </p-accordion>
         <div class="text-md sm:text-lg text-gray-600 mt-4">

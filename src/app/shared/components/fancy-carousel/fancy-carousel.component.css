@@ -1,16 +1,29 @@
-img {
-  max-width: 100%;
-  height: auto;
+/* Fuerza las flechas afuera del slide sin solaparlas */
+.f-carousel__nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 100%;
+  padding: 0 1rem;
+  pointer-events: none; /* para que no bloqueen clics */
+  z-index: 10;
 }
 
-#myCarousel {
-  max-width: 640px;
-  margin: 0 auto;
+.f-carousel__nav .f-button {
+  pointer-events: all;
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  border-radius: 9999px;
+  width: 2.5rem;
+  height: 2.5rem;
 }
 
-#myCarousel .f-carousel__slide {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.f-carousel__nav .f-button.is-prev {
+  left: 0;
+  position: absolute;
 }
 
+.f-carousel__nav .f-button.is-next {
+  right: 0;
+  position: absolute;
+}

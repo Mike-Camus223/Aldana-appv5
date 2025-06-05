@@ -9,7 +9,7 @@ import { FancyCarouselComponent } from '../fancy-carousel/fancy-carousel.compone
 @Component({
   selector: 'app-items-purchase',
   templateUrl: './items-purchase.component.html',
-  imports: [CommonModule, AccordionModule],
+  imports: [CommonModule, AccordionModule,FancyCarouselComponent],
   standalone: true,
   styleUrls: ['./items-purchase.component.css'],
 })
@@ -64,14 +64,32 @@ import { FancyCarouselComponent } from '../fancy-carousel/fancy-carousel.compone
 
 export class ItemsPurchaseComponent implements AfterViewInit {
   product = {
-    id: 1,
-    name: 'BLUSA DRAPEADA BATIKK LAWN A',
-    description: 'Blusa oversize batik en rojo',
-    price: 2110,
-    image: 'https://picsum.photos/id/1025/600/800',
-    colors: ['#9c0b14', '#f1f1f1'],
-    wishlisted: false
-  };
+  id: 1,
+  name: 'BLUSA DRAPEADA BATIKK LAWN A',
+  description: 'Blusa oversize batik en rojo',
+  price: 2110,
+  colors: ['#9c0b14', '#f1f1f1'],
+  wishlisted: false,
+  cover: 'https://picsum.photos/id/1021/600/800',
+  images: [
+    {
+      src: 'https://picsum.photos/id/1025/600/800',
+      thumb: 'https://picsum.photos/id/1025/192/144'
+    },
+    {
+      src: 'https://picsum.photos/id/1035/600/800',
+      thumb: 'https://picsum.photos/id/1035/192/144'
+    },
+    {
+      src: 'https://picsum.photos/id/1045/600/800',
+      thumb: 'https://picsum.photos/id/1045/192/144'
+    },
+    {
+      src: 'https://picsum.photos/id/1055/600/800',
+      thumb: 'https://picsum.photos/id/1055/192/144'
+    }
+  ]
+};
 
   selectedColors: Record<number, string> = {};
   selectedSize: string = 'S'; 
