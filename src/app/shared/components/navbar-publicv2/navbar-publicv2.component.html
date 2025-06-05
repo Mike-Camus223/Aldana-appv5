@@ -2,23 +2,23 @@
   class="hidden lg:block bg-white w-full fixed top-0 z-50 shadow-md transition-all duration-300 ease-in-out">
   <div class="w-[90%] mx-auto flex items-center justify-between h-20 relative">
     <div class="w-6"></div>
-    <a routerLink="/" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+    <a href="/" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
       <img src="../../../../assets/images/LogotypeD.png" alt="logo" class="h-20 object-cover" />
     </a>
     <div class="flex items-center space-x-6 text-xl">
-      <button routerLink="/busqueda"
+      <button href="/busqueda"
         class="text-aldy-primary-400 flex items-center hover:text-aldy-primary-500 cursor-pointer">
         <span class="material-symbols-outlined">search</span>
       </button>
-      <button routerLink="/perfil"
+      <button href="/perfil"
         class="text-aldy-primary-400 flex items-center hover:text-aldy-primary-500 cursor-pointer">
         <span class="material-symbols-outlined">person</span>
       </button>
-      <button routerLink="/favoritos"
+      <button href="/favoritos"
         class="text-aldy-primary-400 flex items-center hover:text-aldy-primary-500 cursor-pointer">
         <span class="material-symbols-outlined">favorite</span>
       </button>
-      <button routerLink="/carrito"
+      <button href="/carrito"
         class="text-aldy-primary-400 flex items-center hover:text-aldy-primary-500 cursor-pointer">
         <span class="material-symbols-outlined">shopping_bag</span>
         <span class="text-base text-gray-600">{{ cartItemCount }}</span>
@@ -29,12 +29,12 @@
     <div class="w-[90%] mx-auto flex items-center justify-center py-1">
       <ul class="flex space-x-10 font-semibold uppercase">
         <li>
-          <a routerLink="/acerca-de"
+          <a href="/acerca-de"
             class="transition-colors text-md sm:text-lg text-gray-600 titles hover:text-gray-700 tracking-widest">Acerca
             de mí</a>
         </li>
         <li>
-          <a routerLink="/novias"
+          <a href="/novias"
             class="transition-colors text-md sm:text-lg text-gray-600 titles hover:text-gray-700 tracking-widest">Novias</a>
         </li>
         <li class="relative">
@@ -48,11 +48,11 @@
               <h3 class="font-bold border-b-2 text-md sm:text-lg border-black pb-2 mb-4 titles text-center">TIENDA</h3>
               <ul class="space-y-2 text-center text-md font-medium">
                 <!-- <li *ngFor="let item of tiendaItems">
-                  <a (click)="closeDropdown()" [routerLink]="formatRoute(item)"
+                  <a (click)="closeDropdown()" [href]="formatRoute(item)"
                     class="transition-colors text-gray-600 titles hover:text-gray-700">{{ item }}</a>
                 </li> -->
                 <li *ngFor="let item of tiendaItems">
-                  <a (click)="closeDropdown()" routerLink="/tienda"
+                  <a (click)="closeDropdown()" href="/tienda"
                     class="transition-colors text-gray-600 titles hover:text-gray-700">{{ item }}</a>
                 </li>
               </ul>
@@ -60,7 +60,7 @@
           </div>
         </li>
         <li>
-          <a routerLink="/galeria"
+          <a href="/galeria"
             class="transition-colors text-md sm:text-lg titles text-gray-600 tracking-widest hover:text-gray-700">GALERÍA</a>
         </li>
       </ul>
@@ -71,24 +71,24 @@
   class="block lg:hidden w-full fixed top-0 z-50 bg-white shadow-md font-titles transition-all duration-300 ease-in-out">
   <div class="w-[90%] mx-auto flex items-center justify-between h-20 relative">
     <div class="flex items-center transition-all space-x-2 sm:space-x-4 text-lg sm:text-xl">
-      <button routerLink="/busqueda"
+      <button href="/busqueda"
         class="text-aldy-primary-400 flex items-center hover:text-aldy-primary-500 cursor-pointer">
         <span class="material-symbols-outlined">search</span>
       </button>
-      <button routerLink="/favoritos"
+      <button href="/favoritos"
         class="text-aldy-primary-400 flex items-center hover:text-aldy-primary-500 cursor-pointer">
         <span class="material-symbols-outlined">favorite</span>
       </button>
-      <button routerLink="/perfil"
+      <button href="/perfil"
         class="text-aldy-primary-400 flex items-center hover:text-aldy-primary-500 cursor-pointer">
         <span class="material-symbols-outlined">person</span>
       </button>
     </div>
-    <a routerLink="/" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+    <a href="/" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
       <img src="../../../../assets/images/LogotypeD.png" alt="logo" class="h-16 sm:h-16 transition-all object-cover" />
     </a>
     <div class="flex items-center transition-all space-x-4 sm:space-x-6 text-lg sm:text-xl">
-      <button routerLink="/carrito"
+      <button href="/carrito"
         class="text-aldy-primary-400 flex items-center hover:text-aldy-primary-500 cursor-pointer">
         <span class="material-symbols-outlined">shopping_bag</span>
         <span class="text-base text-gray-600">{{ cartItemCount }}</span>
@@ -101,9 +101,9 @@
   </div>
   <div *ngIf="menuOpen" @expandCollapse
     class="w-[90%] mx-auto bg-white py-4 space-y-4 text-md text-gray-600 font-semibold overflow-hidden">
-    <a routerLink="/acerca-de" (click)="onMenuLinkClick()"
+    <a href="/acerca-de" (click)="onMenuLinkClick()"
       class="block hover:text-gray-700 tracking-widest uppercase titles">Acerca de mí</a>
-    <a routerLink="/novias" (click)="onMenuLinkClick()"
+    <a href="/novias" (click)="onMenuLinkClick()"
       class="block hover:text-gray-700 tracking-widest uppercase titles">Novias</a>
     <div #dropdownRef>
       <button (click)="toggleDropdown()"
@@ -112,14 +112,14 @@
       </button>
       <div *ngIf="dropdownOpen" @expandDropdown class="pl-4 space-y-2">
         <ng-container *ngFor="let item of tiendaItems">
-          <a (click)="onMenuLinkClick()" [routerLink]="formatRoute(item)"
+          <a (click)="onMenuLinkClick()" [href]="formatRoute(item)"
             class="block my-2 text-sm sm:text-base hover:text-gray-700 titles">
             {{ item }}
           </a>
         </ng-container>
       </div>
     </div>
-    <a routerLink="/galeria" (click)="onMenuLinkClick()"
+    <a href="/galeria" (click)="onMenuLinkClick()"
       class="block hover:text-gray-700 tracking-widest uppercase titles">galeria</a>
   </div>
 </nav>

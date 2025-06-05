@@ -4,15 +4,15 @@
     <div>
       <h3 class="titles font-semibold uppercase mb-4 tracking-wider">Conócenos</h3>
       <ul class="space-y-2 font-main text-sm md:text-md">
-        <li><a routerLink="/acerca-de" class="hover:text-aldy-primary-400 transition">Acerca de mí</a></li>
-        <li><a routerLink="/galeria" class="hover:text-aldy-primary-400 transition">Galería</a></li>
+        <li><a href="/acerca-de" class="hover:text-aldy-primary-400 transition">Acerca de mí</a></li>
+        <li><a href="/galeria" class="hover:text-aldy-primary-400 transition">Galería</a></li>
       </ul>
     </div>
 
     <div>
       <h3 class="titles font-semibold uppercase mb-4 tracking-wider">Novias</h3>
       <ul class="space-y-2 font-main text-sm md:text-md">
-        <li><a routerLink="/novias" class="hover:text-aldy-primary-400 transition">Novias</a></li>
+        <li><a href="/novias" class="hover:text-aldy-primary-400 transition">Novias</a></li>
       </ul>
     </div>
 
@@ -20,10 +20,10 @@
       <h3 class="titles font-semibold uppercase mb-4 tracking-wider">Tienda</h3>
       <ul class="space-y-2 font-main text-sm md:text-md">
         <!-- <li *ngFor="let item of tiendaItems">
-          <a [routerLink]="formatRoute(item)" class="hover:text-aldy-primary-400 transition">{{ item }}</a>
+          <a [href]="formatRoute(item)" class="hover:text-aldy-primary-400 transition">{{ item }}</a>
         </li> -->
         <li *ngFor="let item of tiendaItems">
-          <a routerLink="/tienda" class="hover:text-aldy-primary-400 transition">{{ item }}</a>
+          <a href="/tienda" class="hover:text-aldy-primary-400 transition">{{ item }}</a>
         </li>
       </ul>
     </div>
@@ -48,7 +48,7 @@
   </div>
 
   <div class="border-t border-gray-200 py-6 text-center text-xs sm:text-sm text-gray-500">
-    <a routerLink="/" class="block mb-2">
+    <a href="/" class="block mb-2">
       <img src="../../../../assets/images/LogotypeD.png" alt="logo" class="h-8 mx-auto object-contain" />
     </a>
     © {{ 2025 }} Aldy. Todos los derechos reservados.
