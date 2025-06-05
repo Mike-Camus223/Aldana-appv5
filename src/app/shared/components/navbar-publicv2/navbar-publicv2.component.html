@@ -112,7 +112,11 @@
       </button>
       <div *ngIf="dropdownOpen" @expandDropdown class="pl-4 space-y-2">
         <ng-container *ngFor="let item of tiendaItems">
-          <a (click)="onMenuLinkClick()" [href]="formatRoute(item)"
+          <!-- <a (click)="onMenuLinkClick()" [href]="formatRoute(item)"
+            class="block my-2 text-sm sm:text-base hover:text-gray-700 titles">
+            {{ item }}
+          </a> -->
+          <a (click)="onMenuLinkClick()" href="/tienda"
             class="block my-2 text-sm sm:text-base hover:text-gray-700 titles">
             {{ item }}
           </a>
