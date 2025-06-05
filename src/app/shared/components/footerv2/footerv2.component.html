@@ -5,7 +5,7 @@
       <h3 class="titles font-semibold uppercase mb-4 tracking-wider">Conócenos</h3>
       <ul class="space-y-2 font-main text-sm md:text-md">
         <li><a routerLink="/acerca-de" class="hover:text-aldy-primary-400 transition">Acerca de mí</a></li>
-        <li><a routerLink="/contacto" class="hover:text-aldy-primary-400 transition">Contacto</a></li>
+        <li><a routerLink="/galeria" class="hover:text-aldy-primary-400 transition">Galería</a></li>
       </ul>
     </div>
 
@@ -19,8 +19,11 @@
     <div>
       <h3 class="titles font-semibold uppercase mb-4 tracking-wider">Tienda</h3>
       <ul class="space-y-2 font-main text-sm md:text-md">
-        <li *ngFor="let item of tiendaItems">
+        <!-- <li *ngFor="let item of tiendaItems">
           <a [routerLink]="formatRoute(item)" class="hover:text-aldy-primary-400 transition">{{ item }}</a>
+        </li> -->
+        <li *ngFor="let item of tiendaItems">
+          <a routerLink="/tienda" class="hover:text-aldy-primary-400 transition">{{ item }}</a>
         </li>
       </ul>
     </div>

@@ -47,8 +47,12 @@
             <div>
               <h3 class="font-bold border-b-2 text-md sm:text-lg border-black pb-2 mb-4 titles text-center">TIENDA</h3>
               <ul class="space-y-2 text-center text-md font-medium">
-                <li *ngFor="let item of tiendaItems">
+                <!-- <li *ngFor="let item of tiendaItems">
                   <a (click)="closeDropdown()" [routerLink]="formatRoute(item)"
+                    class="transition-colors text-gray-600 titles hover:text-gray-700">{{ item }}</a>
+                </li> -->
+                <li *ngFor="let item of tiendaItems">
+                  <a (click)="closeDropdown()" routerLink="/tienda"
                     class="transition-colors text-gray-600 titles hover:text-gray-700">{{ item }}</a>
                 </li>
               </ul>
@@ -56,8 +60,8 @@
           </div>
         </li>
         <li>
-          <a routerLink="/contacto"
-            class="transition-colors text-md sm:text-lg titles text-gray-600 tracking-widest hover:text-gray-700">Contacto</a>
+          <a routerLink="/galeria"
+            class="transition-colors text-md sm:text-lg titles text-gray-600 tracking-widest hover:text-gray-700">GALERÍA</a>
         </li>
       </ul>
     </div>
@@ -115,7 +119,7 @@
         </ng-container>
       </div>
     </div>
-    <a routerLink="/contacto" (click)="onMenuLinkClick()"
-      class="block hover:text-gray-700 tracking-widest uppercase titles">Contacto</a>
+    <a routerLink="/galeria" (click)="onMenuLinkClick()"
+      class="block hover:text-gray-700 tracking-widest uppercase titles">galeria</a>
   </div>
 </nav>

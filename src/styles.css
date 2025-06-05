@@ -44,7 +44,7 @@
   --color-aldy-danger: #e27d7d;
 }
 
-::-webkit-scrollbar {
+/* ::-webkit-scrollbar {
   width: 6px; 
   height: 6px; 
   background: #fff; 
@@ -61,7 +61,7 @@
 
 ::-webkit-scrollbar-corner {
   background: transparent;
-}
+} */
 
 .font-main {
   font-family: "PT Sans Narrow", sans-serif;
