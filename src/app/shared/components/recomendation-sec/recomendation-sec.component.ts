@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
-import { CarouselModule } from 'primeng/carousel';
+import { CarouselModule, Carousel } from 'primeng/carousel';
 import { TagModule } from 'primeng/tag';
 
 @Component({
@@ -13,7 +13,8 @@ import { TagModule } from 'primeng/tag';
   styleUrls: ['./recomendation-sec.component.css'],
 })
 export class RecomendationSecComponent {
-    selectedColors: Record<number, string> = {};
+  selectedColors: Record<number, string> = {};
+
   products = [
     {
       name: 'Linen Cinched-Waist Jumpsuit',
@@ -42,15 +43,18 @@ export class RecomendationSecComponent {
     { breakpoint: '768px', numVisible: 3.05, numScroll: 2 },
     { breakpoint: '640px', numVisible: 2.05, numScroll: 1 },
     { breakpoint: '438px', numVisible: 1, numScroll: 1 },
-
   ];
 
+  constructor() {
+    Carousel.prototype.onTouchMove = function () {
+    };
+  }
+
   toggleWishlist(product: any): void {
-  product.wishlisted = !product.wishlisted;
-}
+    product.wishlisted = !product.wishlisted;
+  }
 
-selectColor(productId: number, color: string): void {
-  this.selectedColors[productId] = color;
-}
-
+  selectColor(productId: number, color: string): void {
+    this.selectedColors[productId] = color;
+  }
 }
