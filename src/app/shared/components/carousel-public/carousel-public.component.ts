@@ -1,6 +1,6 @@
 import { Component, ElementRef, AfterViewInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { CarouselModule } from 'primeng/carousel';
+import { CarouselModule, Carousel } from 'primeng/carousel';
 import { ButtonModule } from 'primeng/button';
 import { RouterModule } from '@angular/router';
 
@@ -16,7 +16,7 @@ interface Product {
 @Component({
   selector: 'app-carousel-public',
   standalone: true,
-  imports: [CommonModule, CarouselModule, ButtonModule,RouterModule],
+  imports: [CommonModule, CarouselModule, ButtonModule, RouterModule],
   templateUrl: './carousel-public.component.html',
   styleUrls: ['./carousel-public.component.css'],
 })
@@ -56,7 +56,10 @@ export class CarouselPublicComponent implements AfterViewInit, OnDestroy {
   private observer: IntersectionObserver | null = null;
   private isVisible = true;
 
-  constructor(private el: ElementRef) {}
+  constructor(private el: ElementRef) {
+    Carousel.prototype.onTouchMove = function () {
+    };
+  }
 
   ngAfterViewInit(): void {
     this.setupVisibilityObserver();
