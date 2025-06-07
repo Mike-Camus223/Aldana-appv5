@@ -15,7 +15,7 @@
   </aside>
 
   <div class="w-full lg:w-5/6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-    <div *ngFor="let product of products"
+    <div *ngFor="let product of products; trackBy: trackByProductId"
          class="rounded-sm border border-gray-200 shadow-md transition relative overflow-hidden flex flex-col">
 
       <button type="button" aria-label="Añadir a favoritos" (click)="toggleWishlist(product)"

@@ -4,7 +4,7 @@ import { AccordionModule } from 'primeng/accordion';
 import { CheckboxModule } from 'primeng/checkbox';
 import { SliderModule } from 'primeng/slider';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { RouterModule, ActivatedRoute } from '@angular/router';
 import { SupabaseService } from '../../../core/services/data-access/supabase.service';
 import { Product, ProductImage, ProductVariant } from '../../utils/models/Products-supabase.interface';
 
@@ -38,15 +38,34 @@ export class StoreTemplateComponent implements OnInit {
     { label: 'Vestidos', value: 'vestidos' }
   ];
 
-  constructor(private supabaseService: SupabaseService) {}
+  constructor(
+    private supabaseService: SupabaseService,
+    private route: ActivatedRoute
+  ) {}
 
-  async ngOnInit() {
-    const { data, error } = await this.supabaseService.getProducts();
-    if (data?.length) {
-      this.products = this.mapProducts(data);
-      this.allProducts = [...this.products];
-      this.loadWishlistFromStorage();
-    }
+  ngOnInit(): void {
+    this.route.queryParamMap.subscribe(async params => {
+      const categoriaParam = params.get('categoria');
+      const { data } = await this.supabaseService.getProducts();
+
+      if (data?.length) {
+        this.products = this.mapProducts(data);
+        this.allProducts = [...this.products];
+
+        this.products.forEach(p => {
+          if (p.colors.length) {
+            this.selectedColors[p.id] = p.colors[0];
+          }
+        });
+
+        this.loadWishlistFromStorage();
+
+        if (categoriaParam) {
+          this.selectedCategory = this.normalize(categoriaParam);
+          this.refreshProducts();
+        }
+      }
+    });
   }
 
   private mapProducts(data: any[]): Product[] {
@@ -55,23 +74,18 @@ export class StoreTemplateComponent implements OnInit {
       const colors = [...new Set(variants.map(v => v.color))];
       const allImages: ProductImage[] = variants.flatMap(v => v.product_images || []);
       const mainImage = allImages.find(img => img.is_main) || allImages[0] || { image_url: '' };
-      const price = variants.length ? variants[0].price : 0;
-      const id = p.id;
-      const category = p.category?.toLowerCase() || '';
-
-      if (colors.length) this.selectedColors[id] = colors[0];
 
       return {
-        id,
+        id: p.id,
         name: p.name,
         description: p.description,
-        price,
+        price: variants[0]?.price || 0,
         variants,
         product_images: allImages,
         mainImageUrl: mainImage.image_url,
         colors,
         wishlisted: false,
-        category
+        category: p.category?.toLowerCase() || ''
       };
     });
   }
@@ -97,17 +111,22 @@ export class StoreTemplateComponent implements OnInit {
   }
 
   async selectColor(productId: string, color: string): Promise<void> {
+    if (this.selectedColors[productId] === color) return;
+
     this.selectedColors[productId] = color;
     const product = this.products.find(p => p.id === productId);
     const variant = product?.variants.find(v => v.color === color);
     const img = variant?.product_images.find(i => i.is_main) || variant?.product_images[0];
     if (product && img) product.mainImageUrl = img.image_url;
+
     this.refreshProducts();
   }
 
   filterByCategory(section: string): void {
     const normalized = this.normalize(section);
-    this.selectedCategory = this.selectedCategory === normalized ? null : normalized;
+    if (this.selectedCategory === normalized) return;
+
+    this.selectedCategory = normalized;
     this.refreshProducts();
   }
 
@@ -120,5 +139,9 @@ export class StoreTemplateComponent implements OnInit {
 
   private normalize(text: string): string {
     return text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  }
+
+  trackByProductId(index: number, product: Product): string {
+    return product.id;
   }
 }

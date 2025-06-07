@@ -40,13 +40,15 @@ export class NavbarPublicv2Component {
   menuOpen = false;
   cartItemCount = 1;
 
-  tiendaItems = [
-    'Camisas y Blusas',
-    'Faldas',
-    'Pantalón',
-    'Abrigos',
-    'Vestidos'
-  ];
+ tiendaItems = [
+  'Camisas',
+  'Blusas',
+  'Faldas',
+  'Pantalón',
+  'Abrigos',
+  'Vestidos'
+];
+
 
   @ViewChild('dropdownRef') dropdownRef!: ElementRef;
 
