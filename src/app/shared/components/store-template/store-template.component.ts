@@ -1,4 +1,4 @@
- import { Component, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AccordionModule } from 'primeng/accordion';
 import { CheckboxModule } from 'primeng/checkbox';
@@ -6,33 +6,7 @@ import { SliderModule } from 'primeng/slider';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { SupabaseService } from '../../../core/services/data-access/supabase.service';
-
-export interface ProductImage {
-  id: string;
-  image_url: string;
-  is_main: boolean;
-}
-
-export interface ProductVariant {
-  id: string;
-  color: string;
-  size: string;
-  product_images: ProductImage[];
-  price: number;
-}
-
-export interface Product {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  variants: ProductVariant[];
-  product_images: ProductImage[];
-  mainImageUrl: string;
-  colors: string[];
-  category: string; 
-  wishlisted?: boolean;
-}
+import { Product, ProductImage, ProductVariant } from '../../utils/models/Products-supabase.interface';
 
 @Component({
   selector: 'app-store-template',
@@ -52,68 +26,55 @@ export class StoreTemplateComponent implements OnInit {
   products: Product[] = [];
   allProducts: Product[] = [];
   selectedColors: Record<string, string> = {};
-  selectedCategory: string | null = null; 
+  selectedCategory: string | null = null;
   private wishlistKey = 'wishlistProducts';
 
   sections = [
-  { label: 'Camisas', value: 'camisas' },
-  { label: 'Blusas', value: 'blusas' },
-  { label: 'Faldas', value: 'faldas' },
-  { label: 'Pantalón', value: 'pantalon' },
-  { label: 'Abrigos', value: 'abrigos' },
-  { label: 'Vestidos', value: 'vestidos' }
-];
+    { label: 'Camisas', value: 'camisas' },
+    { label: 'Blusas', value: 'blusas' },
+    { label: 'Faldas', value: 'faldas' },
+    { label: 'Pantalón', value: 'pantalon' },
+    { label: 'Abrigos', value: 'abrigos' },
+    { label: 'Vestidos', value: 'vestidos' }
+  ];
 
-
-
-  constructor(private supabaseService: SupabaseService) { }
+  constructor(private supabaseService: SupabaseService) {}
 
   async ngOnInit() {
-    try {
-      const { data, error } = await this.supabaseService.getProducts();
-      if (error) throw error;
-
-      if (Array.isArray(data) && data.length > 0) {
-        this.products = this.mapProducts(data);
-        this.allProducts = [...this.products];
-        this.loadWishlistFromStorage();
-      }
-    } catch (err) {
-      console.error('Error al cargar productos:', err);
+    const { data, error } = await this.supabaseService.getProducts();
+    if (data?.length) {
+      this.products = this.mapProducts(data);
+      this.allProducts = [...this.products];
+      this.loadWishlistFromStorage();
     }
   }
 
-  mapProducts(data: any[]): Product[] {
-  return data.map(p => {
-    const variants: ProductVariant[] = p.product_variants || [];
-    const colors = Array.from(new Set(variants.map(v => v.color)));
-    const allImages = variants.flatMap(v => v.product_images || []);
-    const mainImage = allImages.find(img => img.is_main) || allImages[0] || { image_url: '' };
-    const basePrice = variants.length > 0 ? variants[0].price : 0;
+  private mapProducts(data: any[]): Product[] {
+    return data.map(p => {
+      const variants: ProductVariant[] = p.product_variants || [];
+      const colors = [...new Set(variants.map(v => v.color))];
+      const allImages: ProductImage[] = variants.flatMap(v => v.product_images || []);
+      const mainImage = allImages.find(img => img.is_main) || allImages[0] || { image_url: '' };
+      const price = variants.length ? variants[0].price : 0;
+      const id = p.id;
+      const category = p.category?.toLowerCase() || '';
 
-    const normalizedCategory = p.category?.toLowerCase() || '';
-    const productId = p.id;
+      if (colors.length) this.selectedColors[id] = colors[0];
 
-    if (colors.length > 0) {
-      this.selectedColors[productId] = colors[0];
-    }
-
-    return {
-      id: productId,
-      name: p.name,
-      description: p.description,
-      price: basePrice,
-      variants,
-      product_images: allImages,
-      mainImageUrl: mainImage.image_url,
-      colors,
-      wishlisted: false,
-      category: normalizedCategory
-    };
-  });
-}
-
-
+      return {
+        id,
+        name: p.name,
+        description: p.description,
+        price,
+        variants,
+        product_images: allImages,
+        mainImageUrl: mainImage.image_url,
+        colors,
+        wishlisted: false,
+        category
+      };
+    });
+  }
 
   toggleWishlist(product: Product): void {
     product.wishlisted = !product.wishlisted;
@@ -131,68 +92,33 @@ export class StoreTemplateComponent implements OnInit {
 
     try {
       const wishlistedIds: string[] = JSON.parse(stored);
-      this.products.forEach(p => {
-        p.wishlisted = wishlistedIds.includes(p.id);
-      });
-    } catch (e) {
-      console.error('Error leyendo wishlist desde localStorage', e);
-    }
+      this.products.forEach(p => p.wishlisted = wishlistedIds.includes(p.id));
+    } catch {}
   }
 
-async selectColor(productId: string, color: string): Promise<void> {
-  this.selectedColors[productId] = color;
-
-  const product = this.products.find(p => p.id === productId);
-  if (product) {
-    const variant = product.variants.find(v => v.color === color);
-    if (variant) {
-      const mainImg = variant.product_images.find(img => img.is_main) || variant.product_images[0];
-      if (mainImg) {
-        product.mainImageUrl = mainImg.image_url;
-      }
-    }
+  async selectColor(productId: string, color: string): Promise<void> {
+    this.selectedColors[productId] = color;
+    const product = this.products.find(p => p.id === productId);
+    const variant = product?.variants.find(v => v.color === color);
+    const img = variant?.product_images.find(i => i.is_main) || variant?.product_images[0];
+    if (product && img) product.mainImageUrl = img.image_url;
+    this.refreshProducts();
   }
-
-  this.refreshProducts();
-}
-
 
   filterByCategory(section: string): void {
-  const normalize = (text: string): string =>
-    text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
-
-  const selected = normalize(section);
-
-  if (this.selectedCategory === selected) {
-    this.selectedCategory = null;
-    this.refreshProducts();
-  } else {
-    this.selectedCategory = selected;
+    const normalized = this.normalize(section);
+    this.selectedCategory = this.selectedCategory === normalized ? null : normalized;
     this.refreshProducts();
   }
+
+  private refreshProducts(): void {
+    this.products = this.allProducts.filter(p =>
+      (!this.selectedCategory || this.normalize(p.category) === this.selectedCategory) &&
+      (!this.selectedColors[p.id] || p.variants.some(v => v.color === this.selectedColors[p.id]))
+    );
+  }
+
+  private normalize(text: string): string {
+    return text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  }
 }
-
-refreshProducts(): void {
-  console.log('Categoría seleccionada:', this.selectedCategory);
-  this.products = this.allProducts.filter(p => this.matchCategory(p) && this.matchColor(p));
-}
-
-
-private matchCategory(p: Product): boolean {
-  return !this.selectedCategory || this.normalize(p.category) === this.selectedCategory;
-}
-
-
-
-private matchColor(p: Product): boolean {
-  const selectedColor = this.selectedColors[p.id];
-  return !selectedColor || p.variants.some(v => v.color === selectedColor);
-}
-
-
-normalize(text: string): string {
-  return text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
-}
-
-
-} 
