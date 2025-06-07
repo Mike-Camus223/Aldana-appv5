@@ -1,117 +1,57 @@
 <div class="flex flex-col lg:flex-row gap-4">
-  <!-- <aside class="w-full lg:w-1/6 lg:me-2">
-    <p-accordion id="acordionShop">
-      <p-accordionTab header="Categoría" class="text-sm sm:text-lg font-main text-gray-600">
-        <div *ngFor="let category of ['Camisas y blusas', 'Faldas', 'Pantalón', 'Abrigos', 'Vestidos']; let i = index"
-          class="flex items-center mb-3 ms-2 mt-1">
-          <input type="checkbox" [id]="'cat-' + i" [(ngModel)]="selectedCategories[category]"
-            class="w-5 h-5 text-white accent-aldy-primary-400 font-light mr-2" AldyCheckboxV1 />
-          <label [for]="'cat-' + i" class="text-sm text-gray-700 cursor-pointer">
-            {{ category }}
-          </label>
-        </div>
-      </p-accordionTab>
-      <p-accordionTab header="Tamaño" class="text-sm sm:text-lg font-main text-gray-600">
-        <div *ngFor="let size of ['XXL', 'XL', 'L', 'M', 'S', 'XS', 'Talla única']; let i = index"
-          class="flex items-center mb-3 ms-2 mt-1">
-          <input type="checkbox" [id]="'size-' + i" [(ngModel)]="selectedSizes[size]"
-            class="w-5 h-5 text-white accent-aldy-primary-400 font-light mr-2" AldyCheckboxV1 />
-          <label [for]="'size-' + i" class="text-sm text-gray-700 cursor-pointer">{{ size }}</label>
-        </div>
-      </p-accordionTab>
-      <p-accordionTab header="Precio" class="text-sm sm:text-lg font-main text-gray-600">
-        <p-slider [(ngModel)]="priceRange" [min]="0" [max]="500000" [range]="true"></p-slider>
-        <div class="flex justify-between text-sm mt-2">
-          <span class="font-[Open_Sans]">{{ priceRange[0] | currency:'ARS':'symbol-narrow':'1.2-2':'es-AR' }}</span>
-          <span class="font-[Open_Sans]">{{ priceRange[1] | currency:'ARS':'symbol-narrow':'1.2-2':'es-AR' }}</span>
-        </div>
-      </p-accordionTab>
-      <p-accordionTab header="Color" class="text-sm sm:text-lg font-main text-gray-600">
-        <div
-          *ngFor="let color of ['Beige', 'Rojo', 'Azul', 'Negro', 'Blanco', 'Verde', 'Gris', 'Amarillo', 'Rosa']; let i = index"
-          class="flex items-center mb-3 ms-2 mt-1">
-          <input type="checkbox" [id]="'color-' + i" [(ngModel)]="selectedColorsStock[color]"
-            class="w-5 h-5 text-white accent-aldy-primary-400 font-light mr-2" AldyCheckboxV1 />
-          <label [for]="'color-' + i" class="text-sm text-gray-700 cursor-pointer">{{ color }}</label>
-        </div>
-      </p-accordionTab>
-      <p-accordionTab header="Material" class="text-sm sm:text-lg font-main text-gray-600">
-        <div
-          *ngFor="let material of ['Cuero de vaca', 'Lino', 'Algodón', 'Cáñamo', 'Poliéster', 'Seda', 'Denim', 'Nylon', 'Lana']; let i = index"
-          class="flex items-center mb-3 ms-2 mt-1">
-          <input type="checkbox" [id]="'material-' + i" [(ngModel)]="selectedMaterials[material]"
-            class="w-5 h-5 text-white accent-aldy-primary-400 font-light mr-2" AldyCheckboxV1 />
-          <label [for]="'material-' + i" class="text-sm text-gray-700 cursor-pointer">{{ material }}</label>
-        </div>
-      </p-accordionTab>
-      <p-accordionTab header="Disponibilidad" class="text-sm sm:text-lg font-main text-gray-600">
-        <div *ngFor="let stock of ['En stock', 'Agotado']; let i = index" class="flex items-center mb-3 ms-2 mt-1">
-          <input type="checkbox" [id]="'stock-' + i" [(ngModel)]="selectedStock[stock]"
-            class="w-5 h-5 text-white accent-aldy-primary-400 font-light mr-2" AldyCheckboxV1 />
-          <label [for]="'stock-' + i" class="text-sm text-gray-700 cursor-pointer">{{ stock }}</label>
-        </div>
-      </p-accordionTab>
-    </p-accordion>
-    <div class="flex gap-2 mt-4">
-      <button type="button" class="flex items-center justify-center px-4 py-2 rounded-md transition duration-150 ease-in-out
-               text-gray-700 text-sm md:text-base xl:text-base font-main font-bold tracking-widest
-               bg-gray-200 hover:bg-gray-300
-               focus:ring-4 focus:ring-gray-100
-               shadow-md hover:shadow-lg cursor-pointer w-full">
-        Limpiar
-      </button>
-      <button type="button" class="flex items-center justify-center px-4 py-2 rounded-md transition duration-150 ease-in-out
-               text-white text-sm md:text-base xl:text-base font-main font-bold tracking-widest
-               bg-aldy-primary-400 hover:bg-aldy-primary-500
-               focus:ring-4 focus:ring-aldy-primary-200
-               shadow-md hover:shadow-lg cursor-pointer w-full">
-        Buscar
-      </button>
-    </div>
-  </aside> -->
   <aside class="w-full lg:w-1/6 lg:me-2">
     <nav class="text-sm sm:text-lg font-main text-gray-600 border-t border-gray-200 divide-y divide-gray-200">
-      <a *ngFor="let section of sections" href="#"
-        class="flex justify-between items-center py-3 px-2 hover:text-gray-800 transition-colors">
-        <span>{{ section }}</span>
-        <i class="fas fa-chevron-right text-xs text-gray-500"></i>
-      </a>
+     <a *ngFor="let section of sections"
+   (click)="filterByCategory(section.value); $event.preventDefault()"
+   [ngClass]="{
+     'text-aldy-primary-600 font-semibold': selectedCategory === section.value,
+     'text-gray-600': selectedCategory !== section.value
+   }"
+   class="flex justify-between items-center py-3 px-2 hover:text-gray-800 transition-colors cursor-pointer">
+  <span>{{ section.label }}</span>
+  <i class="fas fa-chevron-right text-xs text-gray-500"></i>
+</a>
+
+
     </nav>
   </aside>
 
   <div class="w-full lg:w-5/6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
     <div *ngFor="let product of products"
-      class="rounded-sm border-1 border-gray-200 shadow-md transition relative overflow-hidden flex flex-col">
+      class="rounded-sm border border-gray-200 shadow-md transition relative overflow-hidden flex flex-col">
+
       <button type="button" aria-label="Añadir a favoritos" (click)="toggleWishlist(product)"
-        class="absolute z-5 top-3 right-3 text-xl cursor-pointer leading-none transition-colors focus:outline-none">
-        <i class="fa-solid fa-heart" [ngClass]="{
-      'text-aldy-primary-600': product.wishlisted,
-      'text-gray-300': !product.wishlisted
-    }"></i>
+        class="absolute top-3 right-3 text-xl cursor-pointer leading-none transition-colors focus:outline-none z-10">
+        <i class="fa-solid fa-heart"
+          [ngClass]="{ 'text-aldy-primary-600': product.wishlisted, 'text-gray-300': !product.wishlisted }"></i>
       </button>
+
       <a [routerLink]="['/product', product.id]" class="group block">
         <div class="relative shadow-sm rounded-t-sm h-72 flex items-center justify-center overflow-hidden">
-          <img [src]="product.image" [alt]="product.name"
+          <img [src]="product.mainImageUrl" [alt]="product.name"
             class="transition-transform duration-500 group-hover:scale-110 h-full w-full object-cover" />
-          <div
-            class="absolute inset-0 bg-white/20 bg-opacity-10 opacity-0 group-hover:opacity-100 transition duration-300">
-          </div>
+          <div class="absolute inset-0 bg-white/20 bg-opacity-10 opacity-0 group-hover:opacity-100 transition duration-300"></div>
         </div>
         <div class="px-4">
           <h3 class="text-sm sm:text-lg mt-3">{{ product.name }}</h3>
           <p class="text-sm sm:text-lg font-main font-normal text-gray-600 mt-1">{{ product.description }}</p>
-          <p class="text-sm sm:text-lg font-normal mt-1">{{ product.price |
-            currency:'ARS':'symbol-narrow':'1.2-2':'es-AR' }}</p>
+          <p class="text-sm sm:text-lg font-normal mt-1">{{ product.price | currency:'ARS':'symbol-narrow':'1.2-2':'es-AR' }}</p>
         </div>
       </a>
+
       <div class="mt-3 pb-4 px-4 flex gap-2">
-        <button *ngFor="let color of product.colors" (click)="selectColor(product.id, color)"
-          [ngStyle]="{ backgroundColor: color }" class="w-5 h-5 rounded-sm transition-all border" [ngClass]="{
-        'border-white border-2 ring-2 ring-gray-800 cursor-default': selectedColors[product.id] === color,
-        'border-transparent cursor-pointer': selectedColors[product.id] !== color
-      }" aria-label="Elegir color">
+        <button *ngFor="let color of product.colors"
+          (click)="selectColor(product.id, color)"
+          [ngStyle]="{ backgroundColor: color }"
+          class="w-5 h-5 rounded-sm transition-all border"
+          [ngClass]="{
+            'border-white border-2 ring-2 ring-gray-800 cursor-default': selectedColors[product.id] === color,
+            'border-transparent cursor-pointer': selectedColors[product.id] !== color
+          }"
+          [title]="color"
+          aria-label="Elegir color">
         </button>
       </div>
     </div>
   </div>
-</div>
+</div> 

@@ -82,7 +82,12 @@ export class NavbarPublicv2Component {
     this.dropdownOpen = false;
   }
 
-  formatRoute(item: string): string {
-    return '/' + item.toLowerCase().replace(/\s+/g, '-');
+  // Función para normalizar y preparar la categoría para queryParams
+  normalizeCategory(item: string): string {
+    return item
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')  // quitar tildes
+      .toLowerCase()
+      .replace(/\s+/g, '-');            // espacios por guiones
   }
 }

@@ -1,136 +1,108 @@
+<!-- NAVBAR DESKTOP -->
 <nav [ngClass]="{ 'py-0': MoverScroll, 'py-1': !MoverScroll }"
   class="hidden lg:block bg-white w-full fixed top-0 z-50 shadow-md transition-all duration-300 ease-in-out">
   <div class="w-[90%] mx-auto flex items-center justify-between h-20 relative">
     <div class="w-6"></div>
-    <a href="/" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+    <a routerLink="/" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
       <img src="../../../../assets/images/LogotypeD.png" alt="logo" class="h-14 object-cover" />
     </a>
     <div class="flex items-center space-x-6 text-xl">
-      <button href="/busqueda"
+      <a routerLink="/busqueda"
         class="text-aldy-primary-400 flex items-center hover:text-aldy-primary-500 cursor-pointer">
         <i class="fas fa-search"></i>
-      </button>
-      <button href="/perfil"
+      </a>
+      <a routerLink="/perfil"
         class="text-aldy-primary-400 flex items-center hover:text-aldy-primary-500 cursor-pointer">
         <i class="fas fa-user"></i>
-      </button>
-      <button href="/favoritos"
+      </a>
+      <a routerLink="/favoritos"
         class="text-aldy-primary-400 flex items-center hover:text-aldy-primary-500 cursor-pointer">
         <i class="fas fa-heart"></i>
-      </button>
-      <button href="/carrito"
+      </a>
+      <a routerLink="/carrito"
         class="text-aldy-primary-400 flex items-center hover:text-aldy-primary-500 cursor-pointer">
         <i class="fas fa-shopping-bag"></i>
         <span class="text-base text-gray-600 ms-1">{{ cartItemCount }}</span>
-      </button>
+      </a>
     </div>
   </div>
+
   <div class="w-full">
     <div class="w-[90%] mx-auto flex items-center justify-center py-1">
       <ul class="flex space-x-10 font-semibold uppercase">
-        <li>
-          <a href="/acerca-de"
-            class="transition-colors text-md sm:text-md text-gray-600 titles hover:text-gray-700 tracking-widest">Acerca
-            de mí</a>
-        </li>
-        <li>
-          <a href="/novias"
-            class="transition-colors text-md sm:text-md text-gray-600 titles hover:text-gray-700 tracking-widest">Novias</a>
-        </li>
+        <li><a routerLink="/acerca-de" class="transition-colors text-md sm:text-md text-gray-600 titles hover:text-gray-700 tracking-widest">Acerca de mí</a></li>
+        <li><a routerLink="/novias" class="transition-colors text-md sm:text-md text-gray-600 titles hover:text-gray-700 tracking-widest">Novias</a></li>
         <li class="relative">
-          <button (click)="toggleDropdown()"
-            class="transition-colors text-md sm:text-md text-gray-600 titles hover:text-gray-700 cursor-pointer">
-            TIENDA
-          </button>
+          <button (click)="toggleDropdown()" class="transition-colors text-md sm:text-md text-gray-600 titles hover:text-gray-700 cursor-pointer">TIENDA</button>
           <div *ngIf="dropdownOpen" #dropdownRef @dropdownAnimation
             class="absolute left-1/2 -translate-x-1/2 top-full mt-1 w-64 bg-white shadow-lg py-6 z-50 flex justify-center rounded-b-lg transition-transform duration-200 ease-in-out">
             <div>
               <h3 class="font-bold border-b-2 text-md sm:text-md border-black pb-2 mb-4 titles text-center">TIENDA</h3>
               <ul class="space-y-2 text-center text-md font-medium">
-                <!-- <li *ngFor="let item of tiendaItems">
-                  <a (click)="closeDropdown()" [href]="formatRoute(item)"
-                    class="transition-colors text-gray-600 titles hover:text-gray-700">{{ item }}</a>
-                </li> -->
                 <li *ngFor="let item of tiendaItems">
-                  <a (click)="closeDropdown()" href="/tienda"
-                    class="transition-colors text-gray-600 text-sm titles hover:text-gray-700">{{ item }}</a>
+                  <a (click)="closeDropdown()" 
+                     [routerLink]="['/tienda']" 
+                     [queryParams]="{ categoria: normalizeCategory(item) }"
+                     class="transition-colors text-gray-600 text-sm titles hover:text-gray-700">{{ item }}</a>
                 </li>
               </ul>
             </div>
           </div>
         </li>
-        <li>
-          <a href="/galeria"
-            class="transition-colors text-md sm:text-md titles text-gray-600 tracking-widest hover:text-gray-700">GALERÍA</a>
-        </li>
-        <li>
-          <a href="/contacto"
-            class="transition-colors text-md sm:text-md titles text-gray-600 tracking-widest hover:text-gray-700">CONTACTO</a>
-        </li>
+        <li><a routerLink="/galeria" class="transition-colors text-md sm:text-md titles text-gray-600 tracking-widest hover:text-gray-700">GALERÍA</a></li>
+        <li><a routerLink="/contacto" class="transition-colors text-md sm:text-md titles text-gray-600 tracking-widest hover:text-gray-700">CONTACTO</a></li>
       </ul>
     </div>
   </div>
 </nav>
 
+<!-- NAVBAR MOBILE -->
 <nav [ngClass]="{ 'py-0': MoverScroll, 'py-1': !MoverScroll }"
   class="block lg:hidden w-full fixed top-0 z-50 bg-white shadow-md font-titles transition-all duration-300 ease-in-out">
   <div class="w-[90%] mx-auto flex items-center justify-between h-14 relative">
     <div class="flex items-center transition-all space-x-2 sm:space-x-4 text-lg sm:text-xl">
-      <button href="/busqueda"
-        class="text-aldy-primary-400 flex items-center hover:text-aldy-primary-500 cursor-pointer">
+      <a routerLink="/busqueda" class="text-aldy-primary-400 flex items-center hover:text-aldy-primary-500 cursor-pointer">
         <i class="fas fa-search"></i>
-      </button>
-      <button href="/favoritos"
-        class="text-aldy-primary-400 flex items-center hover:text-aldy-primary-500 cursor-pointer">
+      </a>
+      <a routerLink="/favoritos" class="text-aldy-primary-400 flex items-center hover:text-aldy-primary-500 cursor-pointer">
         <i class="fas fa-heart"></i>
-      </button>
-      <button href="/perfil"
-        class="text-aldy-primary-400 flex items-center hover:text-aldy-primary-500 cursor-pointer">
+      </a>
+      <a routerLink="/perfil" class="text-aldy-primary-400 flex items-center hover:text-aldy-primary-500 cursor-pointer">
         <i class="fas fa-user"></i>
-      </button>
+      </a>
     </div>
-    <a href="/" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+    <a routerLink="/" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
       <img src="../../../../assets/images/LogotypeD.png" alt="logo" class="h-12 sm:h-16 transition-all object-cover" />
     </a>
     <div class="flex items-center transition-all space-x-4 sm:space-x-6 text-lg sm:text-xl">
-      <button href="/carrito"
-        class="text-aldy-primary-400 flex items-center hover:text-aldy-primary-500 cursor-pointer">
+      <a routerLink="/carrito" class="text-aldy-primary-400 flex items-center hover:text-aldy-primary-500 cursor-pointer">
         <i class="fas fa-shopping-bag"></i>
         <span class="text-base text-gray-600 ms-1">{{ cartItemCount }}</span>
-      </button>
-      <button (click)="toggleMenu()"
-        class="text-aldy-primary-400 flex items-center hover:text-aldy-primary-500 cursor-pointer">
+      </a>
+      <button (click)="toggleMenu()" class="text-aldy-primary-400 flex items-center hover:text-aldy-primary-500 cursor-pointer">
         <i class="fas fa-bars"></i>
       </button>
     </div>
   </div>
+
   <div *ngIf="menuOpen" @expandCollapse
     class="w-[90%] mx-auto bg-white py-4 space-y-4 text-md text-gray-600 font-semibold overflow-hidden">
-    <a href="/acerca-de" (click)="onMenuLinkClick()"
-      class="block hover:text-gray-700 tracking-widest uppercase titles">Acerca de mí</a>
-    <a href="/novias" (click)="onMenuLinkClick()"
-      class="block hover:text-gray-700 tracking-widest uppercase titles">Novias</a>
+    <a routerLink="/acerca-de" (click)="onMenuLinkClick()" class="block hover:text-gray-700 tracking-widest uppercase titles">Acerca de mí</a>
+    <a routerLink="/novias" (click)="onMenuLinkClick()" class="block hover:text-gray-700 tracking-widest uppercase titles">Novias</a>
     <div #dropdownRef>
-      <button (click)="toggleDropdown()"
-        class="w-full text-left hover:text-gray-700 tracking-widest uppercase titles">
-        Tienda
-      </button>
+      <button (click)="toggleDropdown()" class="w-full text-left hover:text-gray-700 tracking-widest uppercase titles">Tienda</button>
       <div *ngIf="dropdownOpen" @expandDropdown class="pl-4 space-y-2">
         <ng-container *ngFor="let item of tiendaItems">
-          <!-- <a (click)="onMenuLinkClick()" [href]="formatRoute(item)"
-            class="block my-2 text-sm sm:text-base hover:text-gray-700 titles">
-            {{ item }}
-          </a> -->
-          <a (click)="onMenuLinkClick()" href="/tienda"
-            class="block my-2 text-sm sm:text-base hover:text-gray-700 titles">
+          <a (click)="onMenuLinkClick()" 
+             [routerLink]="['/tienda']" 
+             [queryParams]="{ categoria: normalizeCategory(item) }"
+             class="block my-2 text-sm sm:text-base hover:text-gray-700 titles">
             {{ item }}
           </a>
         </ng-container>
       </div>
     </div>
-    <a href="/galeria" (click)="onMenuLinkClick()"
-      class="block hover:text-gray-700 tracking-widest uppercase titles">galeria</a>
-    <a href="/contacto" (click)="onMenuLinkClick()"
-      class="block hover:text-gray-700 tracking-widest uppercase titles">contacto</a>
+    <a routerLink="/galeria" (click)="onMenuLinkClick()" class="block hover:text-gray-700 tracking-widest uppercase titles">Galería</a>
+    <a routerLink="/contacto" (click)="onMenuLinkClick()" class="block hover:text-gray-700 tracking-widest uppercase titles">Contacto</a>
   </div>
 </nav>

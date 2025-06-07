@@ -37,6 +37,10 @@ export default [
       {
         path: 'acerca-de',
         loadComponent: () => import('../../../features/landing/pages/about/about.component').then(c => c.AboutComponent),
+      },
+      {
+        path: 'carrito',
+        loadComponent: () => import('../../../features/landing/pages/cart/cart.component').then(c => c.CartComponent),
       }
     ]
   }

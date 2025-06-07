@@ -1,11 +1,38 @@
-import { Component } from '@angular/core';
+ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AccordionModule } from 'primeng/accordion';
 import { CheckboxModule } from 'primeng/checkbox';
 import { SliderModule } from 'primeng/slider';
 import { FormsModule } from '@angular/forms';
-import { AldyCheckboxV1Directive } from '../../utils/directives/aldy-checkbox-v1.directive';
 import { RouterModule } from '@angular/router';
+import { SupabaseService } from '../../../core/services/data-access/supabase.service';
+
+export interface ProductImage {
+  id: string;
+  image_url: string;
+  is_main: boolean;
+}
+
+export interface ProductVariant {
+  id: string;
+  color: string;
+  size: string;
+  product_images: ProductImage[];
+  price: number;
+}
+
+export interface Product {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  variants: ProductVariant[];
+  product_images: ProductImage[];
+  mainImageUrl: string;
+  colors: string[];
+  category: string; 
+  wishlisted?: boolean;
+}
 
 @Component({
   selector: 'app-store-template',
@@ -21,106 +48,151 @@ import { RouterModule } from '@angular/router';
   templateUrl: './store-template.component.html',
   styleUrls: ['./store-template.component.css']
 })
-export class StoreTemplateComponent {
-  selectedStock: Record<string, boolean> = {};
-  selectedCategories: Record<string, boolean> = {};
-  selectedSizes: Record<string, boolean> = {};
-  selectedColorsStock: Record<string, boolean> = {};
-  selectedMaterials: Record<string, boolean> = {};
-  priceRange: number[] = [0, 500000];
-  selectedColors: Record<number, string> = {};
+export class StoreTemplateComponent implements OnInit {
+  products: Product[] = [];
+  allProducts: Product[] = [];
+  selectedColors: Record<string, string> = {};
+  selectedCategory: string | null = null; 
+  private wishlistKey = 'wishlistProducts';
 
   sections = [
-    'Camisas y blusas',
-    'Faldas',
-    'Pantalón',
-    'Abrigos',
-    'Vestidos'
-  ];
+  { label: 'Camisas', value: 'camisas' },
+  { label: 'Blusas', value: 'blusas' },
+  { label: 'Faldas', value: 'faldas' },
+  { label: 'Pantalón', value: 'pantalon' },
+  { label: 'Abrigos', value: 'abrigos' },
+  { label: 'Vestidos', value: 'vestidos' }
+];
 
 
 
+  constructor(private supabaseService: SupabaseService) { }
 
-  products = [
-    {
-      id: 1,
-      name: 'BLUSA DRAPEADA BATIKK LAWN A',
-      description: 'Blusa oversize batik en rojo',
-      price: 2110,
-      image: 'https://picsum.photos/id/1025/600/800',
-      colors: ['#9c0b14', '#ffffff'],
-      wishlisted: false
-    },
-    {
-      id: 2,
-      name: 'BLUSA DRAPEADA BATIKK LAWN B',
-      description: 'Blusa oversize batik en azul',
-      price: 2150,
-      image: 'https://picsum.photos/id/1026/600/800',
-      colors: ['#000000', '#ececec'],
-      wishlisted: false
-    },
-    {
-      id: 3,
-      name: 'BLUSA DRAPEADA BATIKK LAWN C',
-      description: 'Blusa oversize batik en verde',
-      price: 2180,
-      image: 'https://picsum.photos/id/1027/600/800',
-      colors: ['#1e7e34', '#cce5ff'],
-      wishlisted: false
-    },
-    {
-      id: 4,
-      name: 'BLUSA DRAPEADA BATIKK LAWN D',
-      description: 'Blusa oversize batik en negro',
-      price: 2190,
-      image: 'https://picsum.photos/id/1028/600/800',
-      colors: ['#333333', '#aaaaaa'],
-      wishlisted: false
-    },
-    {
-      id: 5,
-      name: 'BLUSA DRAPEADA BATIKK LAWN A',
-      description: 'Blusa oversize batik en rojo',
-      price: 2110,
-      image: 'https://picsum.photos/id/1025/600/800',
-      colors: ['#9c0b14', '#ffffff'],
-      wishlisted: false
-    },
-    {
-      id: 6,
-      name: 'BLUSA DRAPEADA BATIKK LAWN A',
-      description: 'Blusa oversize batik en rojo',
-      price: 2110,
-      image: 'https://picsum.photos/id/1025/600/800',
-      colors: ['#9c0b14', '#ffffff'],
-      wishlisted: false
-    },
-    {
-      id: 7,
-      name: 'BLUSA DRAPEADA BATIKK LAWN A',
-      description: 'Blusa oversize batik en rojo',
-      price: 2110,
-      image: 'https://picsum.photos/id/1025/600/800',
-      colors: ['#9c0b14', '#ffffff'],
-      wishlisted: false
-    },
-    {
-      id: 8,
-      name: 'BLUSA DRAPEADA BATIKK LAWN A',
-      description: 'Blusa oversize batik en rojo',
-      price: 2110,
-      image: 'https://picsum.photos/id/1025/600/800',
-      colors: ['#9c0b14', '#ffffff'],
-      wishlisted: false
-    },
-  ];
+  async ngOnInit() {
+    try {
+      const { data, error } = await this.supabaseService.getProducts();
+      if (error) throw error;
 
-  toggleWishlist(product: any): void {
-    product.wishlisted = !product.wishlisted;
+      if (Array.isArray(data) && data.length > 0) {
+        this.products = this.mapProducts(data);
+        this.allProducts = [...this.products];
+        this.loadWishlistFromStorage();
+      }
+    } catch (err) {
+      console.error('Error al cargar productos:', err);
+    }
   }
 
-  selectColor(productId: number, color: string): void {
-    this.selectedColors[productId] = color;
+  mapProducts(data: any[]): Product[] {
+  return data.map(p => {
+    const variants: ProductVariant[] = p.product_variants || [];
+    const colors = Array.from(new Set(variants.map(v => v.color)));
+    const allImages = variants.flatMap(v => v.product_images || []);
+    const mainImage = allImages.find(img => img.is_main) || allImages[0] || { image_url: '' };
+    const basePrice = variants.length > 0 ? variants[0].price : 0;
+
+    const normalizedCategory = p.category?.toLowerCase() || '';
+    const productId = p.id;
+
+    if (colors.length > 0) {
+      this.selectedColors[productId] = colors[0];
+    }
+
+    return {
+      id: productId,
+      name: p.name,
+      description: p.description,
+      price: basePrice,
+      variants,
+      product_images: allImages,
+      mainImageUrl: mainImage.image_url,
+      colors,
+      wishlisted: false,
+      category: normalizedCategory
+    };
+  });
+}
+
+
+
+  toggleWishlist(product: Product): void {
+    product.wishlisted = !product.wishlisted;
+    this.saveWishlistToStorage();
+  }
+
+  private saveWishlistToStorage(): void {
+    const wishlistedIds = this.products.filter(p => p.wishlisted).map(p => p.id);
+    localStorage.setItem(this.wishlistKey, JSON.stringify(wishlistedIds));
+  }
+
+  private loadWishlistFromStorage(): void {
+    const stored = localStorage.getItem(this.wishlistKey);
+    if (!stored) return;
+
+    try {
+      const wishlistedIds: string[] = JSON.parse(stored);
+      this.products.forEach(p => {
+        p.wishlisted = wishlistedIds.includes(p.id);
+      });
+    } catch (e) {
+      console.error('Error leyendo wishlist desde localStorage', e);
+    }
+  }
+
+async selectColor(productId: string, color: string): Promise<void> {
+  this.selectedColors[productId] = color;
+
+  const product = this.products.find(p => p.id === productId);
+  if (product) {
+    const variant = product.variants.find(v => v.color === color);
+    if (variant) {
+      const mainImg = variant.product_images.find(img => img.is_main) || variant.product_images[0];
+      if (mainImg) {
+        product.mainImageUrl = mainImg.image_url;
+      }
+    }
+  }
+
+  this.refreshProducts();
+}
+
+
+  filterByCategory(section: string): void {
+  const normalize = (text: string): string =>
+    text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+
+  const selected = normalize(section);
+
+  if (this.selectedCategory === selected) {
+    this.selectedCategory = null;
+    this.refreshProducts();
+  } else {
+    this.selectedCategory = selected;
+    this.refreshProducts();
   }
 }
+
+refreshProducts(): void {
+  console.log('Categoría seleccionada:', this.selectedCategory);
+  this.products = this.allProducts.filter(p => this.matchCategory(p) && this.matchColor(p));
+}
+
+
+private matchCategory(p: Product): boolean {
+  return !this.selectedCategory || this.normalize(p.category) === this.selectedCategory;
+}
+
+
+
+private matchColor(p: Product): boolean {
+  const selectedColor = this.selectedColors[p.id];
+  return !selectedColor || p.variants.some(v => v.color === selectedColor);
+}
+
+
+normalize(text: string): string {
+  return text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+}
+
+
+} 
