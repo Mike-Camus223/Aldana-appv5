@@ -8,26 +8,25 @@
           [id]="'carousel-' + product.id"
         ></app-fancy-carousel>
       </div>
-            <div class="relative space-y-6 font-main">
+      <div class="relative space-y-6 font-main">
         <h1 class="text-md sm:text-xl">{{ product.name }}</h1>
         <p class="text-sm sm:text-lg text-gray-600">{{ product.description }}</p>
         <p class="text-sm sm:text-lg mt-1">
-          {{ selectedVariant?.price | currency: 'ARS':'symbol-narrow':'1.2-2':'es-AR' }}
+          {{ product.price | currency: 'ARS':'symbol-narrow':'1.2-2':'es-AR' }}
         </p>
         <div class="flex items-center gap-3">
           <span class="text-sm sm:text-lg text-gray-600 me-3">Colores:</span>
           <button
-            *ngFor="let color of getUniqueColors()"
+            *ngFor="let color of product.colors"
             (click)="selectColor(color)"
             [ngStyle]="{ backgroundColor: color }"
             class="w-5 h-5 rounded-sm transition-all border"
             [ngClass]="{
-              'border-white border-2 ring-2 ring-gray-800 cursor-default': selectedColors[product.id] === color,
-              'border-transparent cursor-pointer': selectedColors[product.id] !== color
+              'border-white border-2 ring-2 ring-gray-800 cursor-default': isColorSelected(color),
+              'border-transparent cursor-pointer': !isColorSelected(color)
             }"
             aria-label="Elegir color"
-          >
-          </button>
+          ></button>
         </div>
         <div class="flex items-center flex-wrap gap-2">
           <span class="text-sm sm:text-lg text-gray-600 me-3">Tallas:</span>
@@ -46,14 +45,10 @@
         </div>
         <div class="flex items-center mt-4">
           <div class="relative">
-            <select
-              class="appearance-none rounded-l-md border border-aldy-primary-400 py-3 pl-3 pr-8 text-sm focus:outline-none"
-            >
+            <select class="appearance-none rounded-l-md border border-aldy-primary-400 py-3 pl-3 pr-8 text-sm focus:outline-none">
               <option *ngFor="let qty of [1,2,3,4,5]">{{ qty }}</option>
             </select>
-            <div
-              class="pointer-events-none absolute right-2 top-1/2 transform -translate-y-1/2 text-aldy-primary-400 text-xs"
-            >
+            <div class="pointer-events-none absolute right-2 top-1/2 transform -translate-y-1/2 text-aldy-primary-400 text-xs">
               ▼
             </div>
           </div>
@@ -72,15 +67,11 @@
         <div class="text-md sm:text-lg text-gray-600 mt-4">
           <p>
             Para más detalles sobre métodos de pago haz clic
-            <a href="#" class="underline hover:text-aldy-primary-400 transition-colors duration-300"
-              >aquí</a
-            >.
+            <a href="#" class="underline hover:text-aldy-primary-400 transition-colors duration-300">aquí</a>.
           </p>
           <p>
             Para tasas e impuestos haz clic
-            <a href="#" class="underline hover:text-aldy-primary-400 transition-colors duration-300"
-              >aquí</a
-            >.
+            <a href="#" class="underline hover:text-aldy-primary-400 transition-colors duration-300">aquí</a>.
           </p>
         </div>
       </div>

@@ -96,7 +96,7 @@ export class StoreTemplateComponent implements OnInit {
         name: p.name,
         details: p.details || '',
         description: p.description,
-        price: variants[0]?.price || 0,
+        price: p.price || 0,
         variants,
         product_images: allImages,
         mainImageUrl: mainImage.image_url,

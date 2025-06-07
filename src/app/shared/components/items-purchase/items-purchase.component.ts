@@ -4,24 +4,25 @@ import { SupabaseService } from '../../../core/services/data-access/supabase.ser
 import { CommonModule } from '@angular/common';
 import { AccordionModule } from 'primeng/accordion';
 import { FancyCarouselComponent } from '../fancy-carousel/fancy-carousel.component';
+import { Product, ProductVariant, ProductImage } from '../../utils/models/Products-supabase.interface';
 
 @Component({
   selector: 'app-items-purchase',
   templateUrl: './items-purchase.component.html',
   styleUrls: ['./items-purchase.component.css'],
+  standalone: true,
   imports: [CommonModule, AccordionModule, FancyCarouselComponent]
 })
 export class ItemsPurchaseComponent implements OnInit {
-  product: any = null;
-  selectedColors: { [productId: string]: string } = {};
+  product: Product | null = null;
+  selectedVariant: ProductVariant | null = null;
   selectedSize: string | null = null;
-  selectedVariant: any = null;
   carouselImages: { src: string; thumb: string }[] = [];
 
   constructor(
     private route: ActivatedRoute,
     private supabaseService: SupabaseService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
@@ -33,43 +34,47 @@ export class ItemsPurchaseComponent implements OnInit {
   async loadProduct(id: string) {
     const { data, error } = await this.supabaseService.getProducts(id);
     if (!error && data) {
-      this.product = data;
-      // Seleccionar el primer color por defecto
-      const firstColor = this.getUniqueColors()[0];
-      if (firstColor) {
-        this.selectColor(firstColor);
-      }
-    }
-  }
+      const productData = Array.isArray(data) ? data[0] : data;
+      if (!productData) return;
 
-  getUniqueColors(): string[] {
-    if (!this.product || !this.product.product_variants) {
-      return [];
+      this.product = {
+        id: productData.id,
+        name: productData.name,
+        description: productData.description,
+        details: productData.details,
+        price: productData.price,
+        category: productData.category,
+        variants: productData.product_variants || [],
+        product_images: [],
+        mainImageUrl: '',
+        colors: (productData.product_variants || []).map((v: any) => v.color),
+      };
+
+      const firstColor = this.product.colors[0];
+      if (firstColor) this.selectColor(firstColor);
     }
-    const colors = this.product.product_variants.map((v: any) => v.color);
-    return Array.from(new Set(colors));
   }
 
   selectColor(color: string) {
-    if (!this.product) return;
-    this.selectedColors[this.product.id] = color;
-    // Encontrar la variante que coincide con ese color
-    this.selectedVariant = this.product.product_variants.find(
-      (v: any) => v.color === color
-    );
+    if (!this.product || this.selectedVariant?.color === color) return;
+
+    const newVariant = this.product.variants.find(v => v.color === color);
+    if (!newVariant) return;
+
+    this.selectedVariant = newVariant;
     this.selectedSize = null;
-    // Actualizar imágenes del carousel
-    if (this.selectedVariant?.product_images) {
-      this.carouselImages = this.selectedVariant.product_images.map((img: any) => ({
-        src: img.image_url,
-        thumb: img.image_url
-      }));
-    } else {
-      this.carouselImages = [];
-    }
+
+    this.carouselImages = newVariant.product_images.map((img: ProductImage) => ({
+      src: img.image_url,
+      thumb: img.image_url
+    }));
   }
 
   selectSize(size: string) {
     this.selectedSize = size;
+  }
+
+  isColorSelected(color: string): boolean {
+    return this.selectedVariant?.color === color;
   }
 }

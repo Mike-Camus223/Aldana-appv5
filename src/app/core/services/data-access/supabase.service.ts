@@ -11,33 +11,36 @@ export class SupabaseService {
   }
 
 
-   async getProducts(id?: string) {
+  async getProducts(id?: string) {
     const query = this.supabase
       .from('products')
       .select(`
+      id,
+      name,
+      description,
+      details,
+      category,
+      price,
+      product_variants (
         id,
-        name,
-        description,
-        details,
-        category,
-        product_variants (
+        color,
+        product_images!product_images_variant_id_fkey (
           id,
-          color,
-          price,
-          product_images!product_images_variant_id_fkey (
-            id,
-            image_url,
-            is_main
-          ),
-          product_sizes!product_sizes_variant_id_fkey (
-            id,
-            size
-          )
+          image_url,
+          is_main
+        ),
+        product_sizes!product_sizes_variant_id_fkey (
+          id,
+          size
         )
-      `);
+      )
+    `);
 
     if (id) {
-      const { data, error } = await query.eq('id', id).single();
+      const { data, error } = await query
+        .eq('id', id)
+        .single();
+
       return { data: error ? null : data, error };
     } else {
       const { data, error } = await query;
@@ -45,5 +48,6 @@ export class SupabaseService {
     }
   }
 
-  
+
+
 }

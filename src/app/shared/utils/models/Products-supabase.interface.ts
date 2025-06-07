@@ -4,11 +4,16 @@ export interface ProductImage {
   is_main: boolean;
 }
 
+export interface ProductSize {
+  id: string;
+  size: string;
+}
+
 export interface ProductVariant {
   id: string;
   color: string;
-  price: number;
   product_images: ProductImage[];
+  product_sizes: ProductSize[];
 }
 
 export interface Product {
@@ -17,10 +22,10 @@ export interface Product {
   description: string;
   details: string;
   price: number;
-  variants: ProductVariant[];
-  product_images: ProductImage[];
-  mainImageUrl: string;
-  colors: string[];
   category: string;
+  variants: ProductVariant[];
+  product_images: ProductImage[]; // general, no usada
+  mainImageUrl: string; // opcional
+  colors: string[];
   wishlisted?: boolean;
 }
