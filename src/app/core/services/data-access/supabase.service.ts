@@ -10,13 +10,15 @@ export class SupabaseService {
     this.supabase = createClient(environment.SUPABASE_URL, environment.SUPABASE_KEY);
   }
 
-  async getProducts() {
-    const { data, error } = await this.supabase
+
+   async getProducts(id?: string) {
+    const query = this.supabase
       .from('products')
       .select(`
         id,
         name,
         description,
+        details,
         category,
         product_variants (
           id,
@@ -26,31 +28,22 @@ export class SupabaseService {
             id,
             image_url,
             is_main
+          ),
+          product_sizes!product_sizes_variant_id_fkey (
+            id,
+            size
           )
         )
       `);
 
-    return { data: error ? null : data, error };
+    if (id) {
+      const { data, error } = await query.eq('id', id).single();
+      return { data: error ? null : data, error };
+    } else {
+      const { data, error } = await query;
+      return { data: error ? null : data, error };
+    }
   }
 
-  async getProductsByColor(color: string) {
-    const { data, error } = await this.supabase
-      .from('products')
-      .select(`
-        id,
-        name,
-        description,
-        price,
-        colors,
-        product_images (
-          id,
-          product_id,
-          url,
-          is_main
-        )
-      `)
-      .contains('colors', [color]);
-
-    return { data: error ? null : data, error };
-  }
+  
 }

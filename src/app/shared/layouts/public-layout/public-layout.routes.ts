@@ -23,8 +23,8 @@ export default [
         loadComponent: () => import('../../../features/landing/pages/shop/shop.component').then(c => c.ShopComponent),
       },
       {
-        path: 'test',
-        loadComponent: () => import('../../../shared/components/items-purchase/items-purchase.component').then(c => c.ItemsPurchaseComponent),
+        path: 'product/:id',
+        loadComponent: () => import('../../../shared/components/items-purchase/items-purchase.component').then(m => m.ItemsPurchaseComponent)
       },
       {
         path: 'contacto',

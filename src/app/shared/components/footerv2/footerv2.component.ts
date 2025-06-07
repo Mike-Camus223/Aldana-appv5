@@ -12,7 +12,8 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 })
 export class Footerv2Component {
   readonly tiendaItems = [
-    'Camisas y Blusas',
+    'Camisas',
+    'Blusas',
     'Faldas',
     'Pantalón',
     'Abrigos',
@@ -33,9 +34,10 @@ export class Footerv2Component {
     return this.form.get('email');
   }
 
-  formatRoute(item: string): string {
-    return '/' + item.toLowerCase().replace(/\s+/g, '-');
+  normalizeCategory(item: string): string {
+    return item.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/\s+/g, '-');
   }
+
 
   onSubmit(): void {
     this.submitted = true;

@@ -6,20 +6,16 @@
       <img src="../../../../assets/images/LogotypeD.png" alt="logo" class="h-14 object-cover" />
     </a>
     <div class="flex items-center space-x-6 text-xl">
-      <a routerLink="/busqueda"
-        class="text-aldy-primary-400 flex items-center hover:text-aldy-primary-500 cursor-pointer">
+      <a routerLink="/busqueda" class="text-aldy-primary-400 flex items-center hover:text-aldy-primary-500 cursor-pointer">
         <i class="fas fa-search"></i>
       </a>
-      <a routerLink="/perfil"
-        class="text-aldy-primary-400 flex items-center hover:text-aldy-primary-500 cursor-pointer">
+      <a routerLink="/perfil" class="text-aldy-primary-400 flex items-center hover:text-aldy-primary-500 cursor-pointer">
         <i class="fas fa-user"></i>
       </a>
-      <a routerLink="/favoritos"
-        class="text-aldy-primary-400 flex items-center hover:text-aldy-primary-500 cursor-pointer">
+      <a routerLink="/favoritos" class="text-aldy-primary-400 flex items-center hover:text-aldy-primary-500 cursor-pointer">
         <i class="fas fa-heart"></i>
       </a>
-      <a routerLink="/carrito"
-        class="text-aldy-primary-400 flex items-center hover:text-aldy-primary-500 cursor-pointer">
+      <a routerLink="/carrito" class="text-aldy-primary-400 flex items-center hover:text-aldy-primary-500 cursor-pointer">
         <i class="fas fa-shopping-bag"></i>
         <span class="text-base text-gray-600 ms-1">{{ cartItemCount }}</span>
       </a>
@@ -39,10 +35,9 @@
               <h3 class="font-bold border-b-2 text-md sm:text-md border-black pb-2 mb-4 titles text-center">TIENDA</h3>
               <ul class="space-y-2 text-center text-md font-medium">
                 <li *ngFor="let item of tiendaItems">
-                  <a (click)="closeDropdown()" 
-                     [routerLink]="['/tienda']" 
-                     [queryParams]="{ categoria: normalizeCategory(item) }"
-                     class="transition-colors text-gray-600 text-sm titles hover:text-gray-700">{{ item }}</a>
+                  <a (click)="goToCategory(item)" class="transition-colors cursor-pointer text-gray-600 text-sm titles hover:text-gray-700">
+                    {{ item }}
+                  </a>
                 </li>
               </ul>
             </div>
@@ -55,7 +50,6 @@
   </div>
 </nav>
 
-<!-- NAVBAR MOBILE -->
 <nav [ngClass]="{ 'py-0': MoverScroll, 'py-1': !MoverScroll }"
   class="block lg:hidden w-full fixed top-0 z-50 bg-white shadow-md font-titles transition-all duration-300 ease-in-out">
   <div class="w-[90%] mx-auto flex items-center justify-between h-14 relative">
@@ -84,18 +78,14 @@
     </div>
   </div>
 
-  <div *ngIf="menuOpen" @expandCollapse
-    class="w-[90%] mx-auto bg-white py-4 space-y-4 text-md text-gray-600 font-semibold overflow-hidden">
+  <div *ngIf="menuOpen" @expandCollapse class="w-[90%] mx-auto bg-white py-4 space-y-4 text-md text-gray-600 font-semibold overflow-hidden">
     <a routerLink="/acerca-de" (click)="onMenuLinkClick()" class="block hover:text-gray-700 tracking-widest uppercase titles">Acerca de mí</a>
     <a routerLink="/novias" (click)="onMenuLinkClick()" class="block hover:text-gray-700 tracking-widest uppercase titles">Novias</a>
     <div #dropdownRef>
       <button (click)="toggleDropdown()" class="w-full text-left hover:text-gray-700 tracking-widest uppercase titles">Tienda</button>
       <div *ngIf="dropdownOpen" @expandDropdown class="pl-4 space-y-2">
         <ng-container *ngFor="let item of tiendaItems">
-          <a (click)="onMenuLinkClick()" 
-             [routerLink]="['/tienda']" 
-             [queryParams]="{ categoria: normalizeCategory(item) }"
-             class="block my-2 text-sm sm:text-base hover:text-gray-700 titles">
+          <a (click)="goToCategory(item)" class="block cursor-pointer my-2 text-sm sm:text-base hover:text-gray-700 titles">
             {{ item }}
           </a>
         </ng-container>

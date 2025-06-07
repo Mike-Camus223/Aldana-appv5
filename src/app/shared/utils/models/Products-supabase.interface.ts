@@ -1,4 +1,3 @@
-
 export interface ProductImage {
   id: string;
   image_url: string;
@@ -8,20 +7,20 @@ export interface ProductImage {
 export interface ProductVariant {
   id: string;
   color: string;
-  size: string;
-  product_images: ProductImage[];
   price: number;
+  product_images: ProductImage[];
 }
 
 export interface Product {
   id: string;
   name: string;
   description: string;
+  details: string;
   price: number;
   variants: ProductVariant[];
   product_images: ProductImage[];
   mainImageUrl: string;
   colors: string[];
-  category: string; 
+  category: string;
   wishlisted?: boolean;
 }

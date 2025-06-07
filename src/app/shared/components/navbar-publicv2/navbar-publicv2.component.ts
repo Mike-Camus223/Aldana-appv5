@@ -1,12 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, HostListener, ViewChild } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Component, ElementRef, ViewChild, HostListener } from '@angular/core';
+import { Router, RouterModule } from '@angular/router';
 import {
   trigger,
   state,
   style,
   transition,
-  animate,
+  animate
 } from '@angular/animations';
 
 @Component({
@@ -20,7 +20,7 @@ import {
       state('void', style({ opacity: 0, transform: 'translateY(-10px)' })),
       state('*', style({ opacity: 1, transform: 'translateY(0)' })),
       transition('void => *', animate('250ms ease-out')),
-      transition('* => void', animate('200ms ease-in')),
+      transition('* => void', animate('200ms ease-in'))
     ]),
     trigger('expandCollapse', [
       state('void', style({ height: '0px', opacity: 0, overflow: 'hidden' })),
@@ -32,7 +32,7 @@ import {
       state('*', style({ height: '*', opacity: 1, overflow: 'hidden' })),
       transition('void <=> *', animate('250ms ease'))
     ])
-  ],
+  ]
 })
 export class NavbarPublicv2Component {
   MoverScroll = false;
@@ -40,19 +40,20 @@ export class NavbarPublicv2Component {
   menuOpen = false;
   cartItemCount = 1;
 
- tiendaItems = [
-  'Camisas',
-  'Blusas',
-  'Faldas',
-  'Pantalón',
-  'Abrigos',
-  'Vestidos'
-];
-
+  tiendaItems = [
+    'Camisas',
+    'Blusas',
+    'Faldas',
+    'Pantalón',
+    'Abrigos',
+    'Vestidos'
+  ];
 
   @ViewChild('dropdownRef') dropdownRef!: ElementRef;
 
-  @HostListener('window:scroll', [])
+  constructor(private router: Router) {}
+
+  @HostListener('window:scroll')
   onWindowScroll() {
     this.MoverScroll = window.scrollY > 10;
   }
@@ -66,9 +67,7 @@ export class NavbarPublicv2Component {
 
   toggleMenu() {
     this.menuOpen = !this.menuOpen;
-    if (!this.menuOpen) {
-      this.dropdownOpen = false;
-    }
+    if (!this.menuOpen) this.dropdownOpen = false;
   }
 
   toggleDropdown() {
@@ -84,12 +83,16 @@ export class NavbarPublicv2Component {
     this.dropdownOpen = false;
   }
 
-  // Función para normalizar y preparar la categoría para queryParams
   normalizeCategory(item: string): string {
-    return item
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')  // quitar tildes
+    return item.normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
       .toLowerCase()
-      .replace(/\s+/g, '-');            // espacios por guiones
+      .replace(/\s+/g, '-');
+  }
+
+  goToCategory(item: string): void {
+    this.closeDropdown();
+    this.onMenuLinkClick();
+    this.router.navigate(['/tienda'], { queryParams: { categoria: this.normalizeCategory(item) } });
   }
 }

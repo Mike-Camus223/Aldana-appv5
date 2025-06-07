@@ -4,9 +4,10 @@ import { AccordionModule } from 'primeng/accordion';
 import { CheckboxModule } from 'primeng/checkbox';
 import { SliderModule } from 'primeng/slider';
 import { FormsModule } from '@angular/forms';
-import { RouterModule, ActivatedRoute } from '@angular/router';
+import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { SupabaseService } from '../../../core/services/data-access/supabase.service';
 import { Product, ProductImage, ProductVariant } from '../../utils/models/Products-supabase.interface';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
 @Component({
   selector: 'app-store-template',
@@ -17,7 +18,8 @@ import { Product, ProductImage, ProductVariant } from '../../utils/models/Produc
     CheckboxModule,
     SliderModule,
     FormsModule,
-    RouterModule
+    RouterModule,
+    ProgressSpinnerModule
   ],
   templateUrl: './store-template.component.html',
   styleUrls: ['./store-template.component.css']
@@ -28,6 +30,7 @@ export class StoreTemplateComponent implements OnInit {
   selectedColors: Record<string, string> = {};
   selectedCategory: string | null = null;
   private wishlistKey = 'wishlistProducts';
+  loading = true;
 
   sections = [
     { label: 'Camisas', value: 'camisas' },
@@ -40,31 +43,44 @@ export class StoreTemplateComponent implements OnInit {
 
   constructor(
     private supabaseService: SupabaseService,
-    private route: ActivatedRoute
-  ) {}
+    private route: ActivatedRoute,
+    private router: Router
+  ) { }
 
   ngOnInit(): void {
     this.route.queryParamMap.subscribe(async params => {
+      this.loading = true;
       const categoriaParam = params.get('categoria');
-      const { data } = await this.supabaseService.getProducts();
-
-      if (data?.length) {
+      const coloresParam = params.get('colores');
+      const { data, error } = await this.supabaseService.getProducts();
+      if (error) {
+        console.error('Error fetching products:', error.message);
+        this.loading = false;
+        return;
+      }
+      if (Array.isArray(data) && data.length > 0) {
         this.products = this.mapProducts(data);
         this.allProducts = [...this.products];
 
         this.products.forEach(p => {
-          if (p.colors.length) {
-            this.selectedColors[p.id] = p.colors[0];
-          }
+          this.selectedColors[p.id] = p.colors[0] || '';
         });
 
+        if (coloresParam) {
+          const colorPairs = coloresParam.split(',');
+          colorPairs.forEach(pair => {
+            const [id, color] = pair.split(':');
+            if (id && color) this.selectedColors[id] = color;
+          });
+        }
         this.loadWishlistFromStorage();
 
         if (categoriaParam) {
           this.selectedCategory = this.normalize(categoriaParam);
-          this.refreshProducts();
         }
+        this.refreshProducts();
       }
+      this.loading = false;
     });
   }
 
@@ -78,6 +94,7 @@ export class StoreTemplateComponent implements OnInit {
       return {
         id: p.id,
         name: p.name,
+        details: p.details || '',
         description: p.description,
         price: variants[0]?.price || 0,
         variants,
@@ -107,27 +124,64 @@ export class StoreTemplateComponent implements OnInit {
     try {
       const wishlistedIds: string[] = JSON.parse(stored);
       this.products.forEach(p => p.wishlisted = wishlistedIds.includes(p.id));
-    } catch {}
+    } catch { }
   }
 
   async selectColor(productId: string, color: string): Promise<void> {
     if (this.selectedColors[productId] === color) return;
-
     this.selectedColors[productId] = color;
+
     const product = this.products.find(p => p.id === productId);
     const variant = product?.variants.find(v => v.color === color);
     const img = variant?.product_images.find(i => i.is_main) || variant?.product_images[0];
     if (product && img) product.mainImageUrl = img.image_url;
+    this.updateQueryParamsWithoutReload();
+  }
 
-    this.refreshProducts();
+  private updateQueryParamsWithoutReload(): void {
+    const queryParams: any = {
+      categoria: this.selectedCategory || null
+    };
+
+    const colorFilters = Object.entries(this.selectedColors)
+      .filter(([_, color]) => !!color)
+      .map(([id, color]) => `${id}:${color}`);
+    if (colorFilters.length > 0) {
+      queryParams.colores = colorFilters.join(',');
+    }
+
+    const newUrl = this.router.createUrlTree([], {
+      relativeTo: this.route,
+      queryParams,
+      queryParamsHandling: 'merge'
+    }).toString();
+    window.history.replaceState({}, '', newUrl);
   }
 
   filterByCategory(section: string): void {
     const normalized = this.normalize(section);
     if (this.selectedCategory === normalized) return;
-
     this.selectedCategory = normalized;
+    this.updateQueryParams();
     this.refreshProducts();
+  }
+
+  private updateQueryParams(): void {
+    const queryParams: any = {
+      categoria: this.selectedCategory || null
+    };
+    const colorFilters = Object.entries(this.selectedColors)
+      .filter(([_, color]) => !!color)
+      .map(([id, color]) => `${id}:${color}`);
+
+    if (colorFilters.length > 0) {
+      queryParams.colores = colorFilters.join(',');
+    }
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams,
+      queryParamsHandling: 'merge'
+    });
   }
 
   private refreshProducts(): void {
