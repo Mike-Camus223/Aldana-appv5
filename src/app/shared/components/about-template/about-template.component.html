@@ -30,22 +30,21 @@
             <img src="https://picsum.photos/id/1025/600/800" alt="Diseñadora trabajando"
                 class="rounded-md w-full max-h-[500px] object-contain" />
         </div>
-        <div>
-            <h2 class="text-xl sm:text-3xl md:text-5xl xl:text-6xl titles font-bold text-aldy-primary-400 mb-4">Sobre
-                Aldana</h2>
-            <p class="text-sm sm:text-base md:text-lg lg:text-xl font-main text-gray-600 leading-relaxed">
-                Aldana es una reconocida diseñadora de modas argentina que lidera con pasión el desarrollo de denim
-                sostenible en América Latina.
-                Desde su estudio creativo en Buenos Aires, diseña piezas únicas que combinan arte textil, tecnología y
-                conciencia ambiental.
-            </p>
-            <p class="mt-4 text-sm sm:text-base md:text-lg lg:text-xl font-main text-gray-600 leading-relaxed">
-                Su enfoque de producción integral permite colaborar con marcas emergentes y consolidadas, ofreciendo
-                desde modelado 3D y
-                prototipado rápido hasta lavados innovadores con bajo impacto ambiental. Aldana ha implementado técnicas
-                como láser, ozono y
-                tintes en espuma para redefinir el futuro de la moda.
-            </p>
+        <div *ngIf="pageData">
+            <div *ngFor="let section of pageData.generic_data_sections">
+                <div *ngFor="let content of section.generic_data_contents">
+                    <ng-container [ngSwitch]="content.content_type">
+                        <h2 *ngSwitchCase="'title'"
+                            class="text-xl sm:text-3xl md:text-5xl xl:text-6xl font-bold text-aldy-primary-400 mb-4">
+                            {{ content.content_text }}
+                        </h2>
+                        <p *ngSwitchCase="'paragraph'"
+                            class="text-sm sm:text-base md:text-lg lg:text-xl font-main text-gray-600 leading-relaxed mb-4">
+                            {{ content.content_text }}
+                        </p>
+                    </ng-container>
+                </div>
+            </div>
         </div>
     </div>
 </section>
