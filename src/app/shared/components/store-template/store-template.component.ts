@@ -54,7 +54,6 @@ export class StoreTemplateComponent implements OnInit {
       const coloresParam = params.get('colores');
       const { data, error } = await this.supabaseService.getProducts();
       if (error) {
-        console.error('Error fetching products:', error.message);
         this.loading = false;
         return;
       }

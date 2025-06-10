@@ -13,7 +13,7 @@ import { Footerv2Component } from '../../components/footerv2/footerv2.component'
   templateUrl: './public-layout.component.html',
   styles: ``
 })
-export default class PublicLayoutComponent {
+export class PublicLayoutComponent {
 
   
 }

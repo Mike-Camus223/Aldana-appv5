@@ -1,0 +1,6 @@
+<form [formGroup]="form" (ngSubmit)="submit()">
+  <app-input label="Nombre" id="nombre" formControlName="nombre"></app-input>
+  <app-input label="Apellido" id="apellido" formControlName="apellido"></app-input>
+
+  <button pButton type="submit" label="Enviar" class="mt-4"></button>
+</form>

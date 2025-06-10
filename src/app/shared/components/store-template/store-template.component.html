@@ -30,7 +30,7 @@
                'text-gray-300': !product.wishlisted
              }"></i>
         </button>
-        <a [routerLink]="['/product', product.id]" class="group block">
+        <a [routerLink]="['/producto', product.id]" class="group block">
           <div class="relative shadow-sm rounded-t-sm h-72 flex items-center justify-center overflow-hidden">
             <img [src]="product.mainImageUrl" [alt]="product.name" loading="lazy" fetchpriority="low"
               class="transition-transform duration-300 group-hover:scale-110 h-full w-full object-cover" />

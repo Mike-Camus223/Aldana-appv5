@@ -35,7 +35,7 @@
                 <div *ngFor="let content of section.generic_data_contents">
                     <ng-container [ngSwitch]="content.content_type">
                         <h2 *ngSwitchCase="'title'"
-                            class="text-xl sm:text-3xl md:text-5xl xl:text-6xl font-bold text-aldy-primary-400 mb-4">
+                            class="text-xl sm:text-3xl md:text-3xl xl:text-4xl font-bold text-aldy-primary-400 mb-4">
                             {{ content.content_text }}
                         </h2>
                         <p *ngSwitchCase="'paragraph'"

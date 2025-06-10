@@ -45,15 +45,21 @@
         </div>
         <div class="flex items-center mt-4">
           <div class="relative">
-            <select class="appearance-none rounded-l-md border border-aldy-primary-400 py-3 pl-3 pr-8 text-sm focus:outline-none">
-              <option *ngFor="let qty of [1,2,3,4,5]">{{ qty }}</option>
-            </select>
-            <div class="pointer-events-none absolute right-2 top-1/2 transform -translate-y-1/2 text-aldy-primary-400 text-xs">
-              ▼
-            </div>
-          </div>
+  <select
+    [(ngModel)]="quantitySelected"
+    class="appearance-none rounded-l-md border border-aldy-primary-400 py-3 pl-3 pr-8 text-sm focus:outline-none"
+  >
+    <option *ngFor="let qty of [1, 2, 3, 4, 5]" [value]="qty">{{ qty }}</option>
+  </select>
+  <div
+    class="pointer-events-none absolute right-2 top-1/2 transform -translate-y-1/2 text-aldy-primary-400 text-xs"
+  >
+    ▼
+  </div>
+</div>
+
           <button
-            class="flex-1 cursor-pointer flex items-center justify-center gap-3 rounded-r-md bg-aldy-primary-400 border border-aldy-primary-400 text-white uppercase tracking-wide text-sm sm:text-md font-bold py-3 px-4 text-center transition-colors hover:bg-aldy-primary-500 hover:border-aldy-primary-500"
+            class="flex-1 cursor-pointer flex items-center justify-center gap-3 rounded-r-md bg-aldy-primary-400 border border-aldy-primary-400 text-white uppercase tracking-wide text-sm sm:text-md font-bold py-3 px-4 text-center transition-colors hover:bg-aldy-primary-500 hover:border-aldy-primary-500" (click)="addToCartItems()"
           >
             <span>Añadir al carrito</span>
             <i class="fa-solid fa-bag-shopping text-white text-lg"></i>

@@ -2,23 +2,24 @@
   class="hidden lg:block bg-white w-full fixed top-0 z-50 shadow-md transition-all duration-300 ease-in-out">
   <div class="w-[90%] mx-auto flex items-center justify-between h-20 relative">
     <div class="w-6"></div>
-    <a routerLink="/" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+    <a routerLink="/home" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
       <img src="../../../../assets/images/LogotypeD.png" alt="logo" class="h-14 object-cover" />
     </a>
     <div class="flex items-center space-x-6 text-xl">
-      <a routerLink="/busqueda" class="text-aldy-primary-400 flex items-center hover:text-aldy-primary-500 cursor-pointer">
-        <i class="fas fa-search"></i>
+      <a routerLink="/busqueda" class="text-aldy-primary-400  flex items-center hover:text-aldy-primary-500 cursor-pointer">
+        <i class="fas fa-search transition-transform duration-200 hover:scale-110"></i>
       </a>
-      <a routerLink="/perfil" class="text-aldy-primary-400 flex items-center hover:text-aldy-primary-500 cursor-pointer">
-        <i class="fas fa-user"></i>
+      <a routerLink="/perfil" class="text-aldy-primary-400  flex items-center hover:text-aldy-primary-500 cursor-pointer">
+        <i class="fas fa-user transition-transform duration-200 hover:scale-110"></i>
       </a>
-      <a routerLink="/favoritos" class="text-aldy-primary-400 flex items-center hover:text-aldy-primary-500 cursor-pointer">
-        <i class="fas fa-heart"></i>
+      <a routerLink="/favoritos" class="text-aldy-primary-400  flex items-center hover:text-aldy-primary-500 cursor-pointer">
+        <i class="fas fa-heart transition-transform duration-200 hover:scale-110"></i>
       </a>
-      <a routerLink="/carrito" class="text-aldy-primary-400 flex items-center hover:text-aldy-primary-500 cursor-pointer">
-        <i class="fas fa-shopping-bag"></i>
-        <span class="text-base text-gray-600 ms-1">{{ cartItemCount }}</span>
-      </a>
+      <a routerLink="/checkout/carrito" class="text-aldy-primary-400  flex items-center hover:text-aldy-primary-500 cursor-pointer">
+  <i class="fas fa-shopping-bag transition-transform duration-200 hover:scale-110"></i>
+  <span class="text-base text-gray-600 ms-1">{{ cartItemCount }}</span>
+</a>
+
     </div>
   </div>
 
@@ -55,21 +56,21 @@
   <div class="w-[90%] mx-auto flex items-center justify-between h-14 relative">
     <div class="flex items-center transition-all space-x-2 sm:space-x-4 text-lg sm:text-xl">
       <a routerLink="/busqueda" class="text-aldy-primary-400 flex items-center hover:text-aldy-primary-500 cursor-pointer">
-        <i class="fas fa-search"></i>
+        <i class="fas fa-search transition-transform duration-200 hover:scale-110"></i>
       </a>
       <a routerLink="/favoritos" class="text-aldy-primary-400 flex items-center hover:text-aldy-primary-500 cursor-pointer">
-        <i class="fas fa-heart"></i>
+        <i class="fas fa-heart transition-transform duration-200 hover:scale-110"></i>
       </a>
       <a routerLink="/perfil" class="text-aldy-primary-400 flex items-center hover:text-aldy-primary-500 cursor-pointer">
-        <i class="fas fa-user"></i>
+        <i class="fas fa-user transition-transform duration-200 hover:scale-110"></i>
       </a>
     </div>
-    <a routerLink="/" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+    <a routerLink="/home" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
       <img src="../../../../assets/images/LogotypeD.png" alt="logo" class="h-12 sm:h-16 transition-all object-cover" />
     </a>
     <div class="flex items-center transition-all space-x-4 sm:space-x-6 text-lg sm:text-xl">
-      <a routerLink="/carrito" class="text-aldy-primary-400 flex items-center hover:text-aldy-primary-500 cursor-pointer">
-        <i class="fas fa-shopping-bag"></i>
+      <a routerLink="/checkout/carrito" class="text-aldy-primary-400 flex items-center hover:text-aldy-primary-500 cursor-pointer">
+        <i class="fas fa-shopping-bag transition-transform duration-200 hover:scale-110"></i>
         <span class="text-base text-gray-600 ms-1">{{ cartItemCount }}</span>
       </a>
       <button (click)="toggleMenu()" class="text-aldy-primary-400 flex items-center hover:text-aldy-primary-500 cursor-pointer">

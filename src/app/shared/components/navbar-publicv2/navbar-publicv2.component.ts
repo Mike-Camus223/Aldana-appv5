@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, ViewChild, HostListener } from '@angular/core';
+import { Component, ElementRef, ViewChild, HostListener, OnInit } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import {
   trigger,
@@ -8,6 +8,8 @@ import {
   transition,
   animate
 } from '@angular/animations';
+import { CartService } from '../../../core/services/cart.service';
+import { CartItem } from '../../utils/models/cartItems-model';
 
 @Component({
   selector: 'app-navbar-publicv2',
@@ -34,11 +36,12 @@ import {
     ])
   ]
 })
-export class NavbarPublicv2Component {
+export class NavbarPublicv2Component implements OnInit {
   MoverScroll = false;
   dropdownOpen = false;
   menuOpen = false;
-  cartItemCount = 1;
+  cartItemCount = 0;
+  cartItems: CartItem[] = [];
 
   tiendaItems = [
     'Camisas',
@@ -51,7 +54,14 @@ export class NavbarPublicv2Component {
 
   @ViewChild('dropdownRef') dropdownRef!: ElementRef;
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private cartService: CartService) {}
+
+  ngOnInit(): void {
+    this.cartService.cartItems$.subscribe(items => {
+      this.cartItems = items;
+      this.cartItemCount = items.reduce((acc, item) => acc + item.quantity, 0); // <- total de productos
+    });
+  }
 
   @HostListener('window:scroll')
   onWindowScroll() {
