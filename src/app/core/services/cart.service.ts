@@ -76,4 +76,9 @@ export class CartService {
     this.cartItemsSubject.next([]);
     this.saveCart([]);
   }
+
+  getItems(): CartItem[] {
+  return this.cartItemsSubject.value;
+}
+
 }

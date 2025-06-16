@@ -1,13 +1,14 @@
-<p-floatlabel variant="on" [ngClass]="{'p-inputwrapper-filled': control?.value || control?.touched || control?.dirty}">
+<p-floatlabel variant="on">
   <input
     pInputText
     [id]="id"
-    [formControlName]="formControlName"
-    class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500"
+    [value]="value"
+    (input)="onInput($event)"
+    [disabled]="disabled"
+    (blur)="onTouched()"
+    [class.ng-invalid]="invalid"
+    [class.ng-dirty]="invalid"
+    class="w-full"
   />
-  <label [for]="id">{{ label }}</label>
+  <label [for]="id" [class.ng-invalid]="invalid" [class.ng-dirty]="invalid">{{ label }}</label>
 </p-floatlabel>
-
-<p *ngIf="control?.invalid && (control?.dirty || control?.touched)" class="text-sm text-red-600 mt-1">
-  <span *ngIf="control?.errors?.['required']">El campo es obligatorio</span>
-</p>

@@ -1,0 +1,55 @@
+::ng-deep .p-inputtext {
+  border: none !important;
+  border-bottom: 1px solid !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+::ng-deep .p-inputtext:enabled:focus {
+  border-bottom: 1px solid var(--color-aldy-primary-400) !important;
+}
+
+::ng-deep .p-floatlabel label {
+  font-weight: 300 !important;
+}
+
+::ng-deep .p-floatlabel:has(input:focus) label {
+  color: var(--color-aldy-primary-600) !important;
+ }
+
+::ng-deep .p-select {
+  border: none !important;
+  border-bottom: 1px solid !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+::ng-deep .p-select:enabled:focus {
+  border-bottom: 1px solid var(--color-aldy-primary-400) !important;
+}
+
+::ng-deep .p-select-option.p-select-option-selected {
+  color: var(--color-aldy-primary-600) !important;
+}
+
+::ng-deep .p-select-option.p-select-option-selected.p-focus {
+  background: var(--color-aldy-primary-100) !important;
+}
+
+::ng-deep .p-inputtext.ng-invalid.ng-dirty {
+  border-bottom: 1px solid #FF6467 !important;
+  color: #FF6467 !important;
+}
+
+::ng-deep .p-floatlabel input.ng-invalid.ng-dirty + label,
+::ng-deep .p-floatlabel input.ng-invalid.ng-dirty.p-filled + label,
+::ng-deep .p-floatlabel input.ng-invalid.ng-dirty:focus + label {
+  color: #FF6467 !important;
+}
+
+
+
+
+

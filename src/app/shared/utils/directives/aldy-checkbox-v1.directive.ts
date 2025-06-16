@@ -26,8 +26,8 @@ export class AldyCheckboxV1Directive {
     this.renderer.setStyle(checkbox, 'justify-content', 'center');
     this.renderer.setStyle(checkbox, 'position', 'relative');
     this.renderer.setStyle(checkbox, 'transition', 'box-shadow 0.2s ease-in-out, background-color 0.2s ease-in-out');
-    this.renderer.setStyle(checkbox, 'width', '20px');
-    this.renderer.setStyle(checkbox, 'height', '20px');
+    this.renderer.setStyle(checkbox, 'width', '12px');
+    this.renderer.setStyle(checkbox, 'height', '12px');
     this.renderer.setStyle(checkbox, 'font-size', '12px'); 
     this.renderer.setStyle(checkbox, 'color', '#ffffff');  
   }

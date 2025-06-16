@@ -1,22 +1,20 @@
-<section id="novias-video-section"
-  class="relative flex items-center justify-center w-full min-h-[60vh] sm:min-h-[50vh] md:min-h-[65vh] overflow-hidden text-white font-main bg-black">
-  <video #bgVideo loop playsinline class="absolute w-full h-full object-cover">
-    <source src="../../../../assets/videos/novias.mp4" type="video/mp4" />
-  </video>
-  <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent"></div>
-  <div class="absolute top-4 right-4 flex gap-2 z-20">
-    <button type="button"
-      class="bg-white/20 text-white p-2 rounded-full w-10 h-10 flex items-center justify-center backdrop-blur-sm"
-      (click)="togglePlay()">
-      <i [class]="isPlaying() ? 'fas fa-pause' : 'fas fa-play'" class="text-base"></i>
-    </button>
-    <button type="button"
-      class="bg-white/20 text-white p-2 rounded-full w-10 h-10 flex items-center justify-center backdrop-blur-sm"
-      (click)="toggleMute()">
-      <i [class]="isMutedIcon() ? 'fas fa-volume-mute' : 'fas fa-volume-up'" class="text-base"></i>
-    </button>
-  </div>
+<section
+  id="novias-video-section"
+  class="relative flex items-center justify-center w-full min-h-[60vh] sm:min-h-[50vh] md:min-h-[80vh] overflow-hidden text-white font-main bg-black"
+>
+  <app-video
+    src="https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/multimedia/novias%20compressed.mp4"
+    height="h-full"
+    width="w-full"
+    [autoplay]="true"
+    [muted]="true"
+    [showControls]="true"
+    [gradientOverlay]="true"
+    class="absolute inset-0 
+           object-contain sm:object-contain md:object-cover"
+  />
 </section>
+
 <div class="px-6 py-10 md:py-16">
   <div class="mb-8 w-full h-auto flex items-end justify-between flex-wrap gap-4">
     <div>
@@ -31,13 +29,15 @@
 
   <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-8">
     <ng-container *ngFor="let img of images">
-      <a [href]="img.url" data-fancybox="gallery"
-        class="group block overflow-hidden relative">
-        <img [src]="img.url" alt="Foto de novia"
-          class="w-full h-auto transition-transform duration-500 group-hover:scale-105 object-cover" />
+      <a [href]="img.url" data-fancybox="gallery" class="group block overflow-hidden relative">
+        <img
+          [src]="img.url"
+          [alt]="img.alt"
+          class="w-full h-auto transition-transform duration-500 group-hover:scale-105 object-cover"
+        />
         <div
-          class="absolute inset-0 bg-black/30 bg-opacity-10 opacity-0 group-hover:opacity-100 transition duration-300">
-        </div>
+          class="absolute inset-0 bg-black/30 bg-opacity-10 opacity-0 group-hover:opacity-100 transition duration-300"
+        ></div>
       </a>
     </ng-container>
   </div>

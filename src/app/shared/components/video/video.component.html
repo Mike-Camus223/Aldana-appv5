@@ -1,0 +1,31 @@
+<div class="relative overflow-hidden text-white flex items-center justify-center"
+     [ngClass]="[height, width]">
+    <video
+    #bgVideo
+    loop
+    playsinline
+    [muted]="muted"
+    [class]="['absolute w-full h-full', objectFit].join(' ')"
+  >
+    <source [src]="src" type="video/mp4" />
+  </video>
+
+  <div *ngIf="gradientOverlay" class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent"></div>
+
+  <div *ngIf="showControls" class="absolute top-4 right-4 flex gap-2 z-20">
+    <button
+      type="button"
+      class="bg-white/20 text-white p-2 rounded-full w-10 h-10 flex items-center justify-center backdrop-blur-sm"
+      (click)="togglePlay()"
+    >
+      <i [class]="isPlaying() ? 'fas fa-pause' : 'fas fa-play'" class="text-base"></i>
+    </button>
+    <button
+      type="button"
+      class="bg-white/20 text-white p-2 rounded-full w-10 h-10 flex items-center justify-center backdrop-blur-sm"
+      (click)="toggleMute()"
+    >
+      <i [class]="isMutedIcon() ? 'fas fa-volume-mute' : 'fas fa-volume-up'" class="text-base"></i>
+    </button>
+  </div>
+</div>

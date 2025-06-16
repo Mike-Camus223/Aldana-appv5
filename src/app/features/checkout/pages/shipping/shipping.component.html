@@ -1,6 +1,326 @@
-<form [formGroup]="form" (ngSubmit)="submit()">
-  <app-input label="Nombre" id="nombre" formControlName="nombre"></app-input>
-  <app-input label="Apellido" id="apellido" formControlName="apellido"></app-input>
+<div class="flex flex-col md:flex-row justify-center gap-6">
+  <div class="w-full md:w-2xl justify-center flex">
+    <div class="relative w-full p-4 md:p-8">
+      <div class="space-y-6">
+        <div [formGroup]="form" class="space-y-6">
+          <div>
+            <h2 class="text-lg font-semibold mb-2">Datos de contacto</h2>
+            <app-input label="Email" formControlName="email"></app-input>
+            <div *ngIf="form.get('email')?.invalid && form.get('email')?.touched" class="text-red-400 text-sm mt-1">
+              <div *ngIf="form.get('email')?.errors?.['required']">El email es obligatorio.</div>
+              <div *ngIf="form.get('email')?.errors?.['email']">Ingresá un email válido.</div>
+            </div>
+            <label class="flex items-center mt-2">
+              <input type="checkbox" class="mr-2" AldyCheckboxV1 formControlName="receiveOffers" />
+              Quiero recibir ofertas y novedades por e-mail
+            </label>
+          </div>
+          <div *ngIf="!showForm">
+            <h2 class="text-lg font-semibold mb-2">Entrega</h2>
+            <div class="relative">
+              <app-input label="Código postal" formControlName="zipCode"></app-input>
+              <a href="https://www.oca.com.ar/Busquedas/CodigosPostales" target="_blank"
+                class="absolute top-3 right-4 text-sm text-gray-500">
+                No sé mi CP
+              </a>
+            </div>
+            <div *ngIf="form.get('zipCode')?.touched && form.get('zipCode')?.invalid" class="text-red-400 text-sm mt-1">
+              <ng-container *ngIf="form.get('zipCode')?.errors?.['required']">
+                El código postal es obligatorio.
+              </ng-container>
+              <ng-container *ngIf="form.get('zipCode')?.errors?.['invalidPostalCode']">
+                Código postal inválido. Por favor, ingresá un código postal válido.
+              </ng-container>
+            </div>
+            <button appButtonPrimary class="mt-4 text-white px-6 py-2" (click)="continue()">Continuar</button>
+          </div>
+        </div>
+      </div>
+      <form *ngIf="showForm" [formGroup]="form" (ngSubmit)="submitForm()" class="space-y-6 mt-10">
+        <div>
+          <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-bold">Envío</h2>
+            <button type="button" class="text-gray-600 text-sm font-medium" (click)="changeZipCode()">Cambiar mi
+              ZIP</button>
+          </div>
+          <div *ngIf="showAllOptions" class="border-b pb-2 mb-4">
+            <h3 class="text-md font-semibold text-gray-700 uppercase tracking-wide">Envío a domicilio</h3>
+          </div>
+          <div class="space-y-4">
+            <ng-container *ngIf="!showAllOptions && selected">
+              <div class="flex justify-between p-4 rounded cursor-pointer" (click)="select(selected)">
+                <div class="flex items-start gap-3">
+                  <input type="checkbox" class="mt-1 accent-aldy-primary-400 w-[15px] h-[15px]" [checked]="true"
+                    readonly />
+                  <div>
+                    <p class="font-semibold">
+                      {{ selected === 'estandar' ? 'Correo Argentino - Envío estándar' :
+                      selected === 'expres' ? 'Correo Argentino - Envío exprés' : 'Punto de retiro' }}
+                    </p>
+                    <p class="text-sm text-gray-500">
+                      {{ selected === 'estandar' ? 'Llega en 5-6 días hábiles' :
+                      selected === 'expres' ? 'Llega en 1-2 días hábiles' : 'Retirás entre viernes y lunes' }}
+                    </p>
+                  </div>
+                </div>
+                <div class="flex flex-col items-end">
+                  <span class="font-semibold"
+                    [ngClass]="{ 'text-green-600': selected !== 'expres', 'text-slate-900': selected === 'expres' }">
+                    {{ selected === 'estandar' ? 'Gratis' : selected === 'expres' ? '$15' : 'Gratis' }}
+                  </span>
+                  <span class="text-sm text-gray-400 line-through mt-1">
+                    {{ selected === 'expres' ? '$20' : selected === 'estandar' ? '$10' : '$8' }}
+                  </span>
+                </div>
+              </div>
+            </ng-container>
+            <div *ngIf="showAllOptions" [@toggleOptions]>
+              <div class="flex justify-between items-center p-4 rounded cursor-pointer" (click)="select('estandar')">
+                <div class="flex items-center gap-3">
+                  <input type="checkbox" class="mt-1 accent-aldy-primary-400 w-[15px]"
+                    [checked]="selected === 'estandar'" readonly />
+                  <div>
+                    <p class="font-semibold">Correo Argentino - Envío estándar</p>
+                    <p class="text-sm text-gray-500">Llega en 5-6 días hábiles</p>
+                  </div>
+                </div>
+                <div class="flex flex-col items-end">
+                  <span class="text-green-600 font-semibold">Gratis</span>
+                  <span class="text-sm text-gray-400 line-through mt-1">$10</span>
+                </div>
+              </div>
+              <div class="flex justify-between items-center p-4 rounded cursor-pointer" (click)="select('expres')">
+                <div class="flex items-center gap-3">
+                  <input type="checkbox" class="mt-1 accent-aldy-primary-400 w-[15px]" [checked]="selected === 'expres'"
+                    readonly />
+                  <div>
+                    <p class="font-semibold">Correo Argentino - Envío exprés</p>
+                    <p class="text-sm text-gray-500">Llega en 1-2 días hábiles</p>
+                  </div>
+                </div>
+                <div class="flex flex-col items-end">
+                  <span class="text-slate-900 font-semibold">$15</span>
+                  <span class="text-sm text-gray-400 line-through mt-1">$20</span>
+                </div>
+              </div>
+              <div class="border-b pt-6 pb-2 mt-6 mb-4">
+                <h3 class="text-md font-semibold text-gray-700 uppercase tracking-wide">Retirar por</h3>
+              </div>
+              <div class="flex justify-between items-center p-4 rounded cursor-pointer" (click)="select('retiro')">
+                <div class="flex items-center gap-3">
+                  <input type="checkbox" class="mt-1 accent-aldy-primary-400 w-[15px]" [checked]="selected === 'retiro'"
+                    readonly />
+                  <div>
+                    <p class="font-semibold">Punto de retiro</p>
+                    <p class="text-sm text-gray-500">Retirás entre viernes y lunes</p>
+                  </div>
+                </div>
+                <div class="flex flex-col items-end">
+                  <span class="text-green-600 font-semibold">Gratis</span>
+                  <span class="text-sm text-gray-400 line-through mt-1">$8</span>
+                </div>
+              </div>
+            </div>
+            <div *ngIf="selected === 'retiro'" class="mt-4">
+              <app-selects formControlName="city" [options]="ciudades" optionLabel="name" label="Ciudad"
+                id="ciudad"></app-selects>
+              <p class="text-sm text-gray-500 mt-2">Lunes a viernes, de 11:00 a 18:00</p>
+            </div>
+            <div class="flex justify-center w-full h-auto">
+              <button type="button" class="mt-4 text-gray-600 font-medium" (click)="toggleAllOptions()">
+                {{ showAllOptions ? 'Ocultar opciones' : 'Ver todas las opciones' }}
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 gap-6">
+          <h2 class="text-xl font-semibold">Datos de facturación</h2>
+          <label class="flex items-center space-x-2">
+            <input type="checkbox" AldyCheckboxV1 formControlName="invoiceToCompany" />
+            <span>Necesito factura A</span>
+          </label>
+          <div *ngIf="!form.get('invoiceToCompany')?.value">
+            <app-input label="DNI o CUIT" formControlName="hasDniCuit" inputmode="numeric" [numericMax11]="true">
+            </app-input>
 
-  <button pButton type="submit" label="Enviar" class="mt-4"></button>
-</form>
+            <div *ngIf="form.get('hasDniCuit')?.touched && form.get('hasDniCuit')?.invalid"
+              class="text-red-400 text-sm mt-1">
+              <ng-container *ngIf="form.get('hasDniCuit')?.errors?.['required']">
+                El DNI o CUIT es obligatorio.
+              </ng-container>
+              <ng-container *ngIf="form.get('hasDniCuit')?.errors?.['invalidDni']">
+                El DNI no es válido. Debe tener entre 7 y 8 dígitos.
+              </ng-container>
+              <ng-container *ngIf="form.get('hasDniCuit')?.errors?.['invalidCuit']">
+                El CUIT no es válido. Verificá que sea correcto.
+              </ng-container>
+              <ng-container *ngIf="form.get('hasDniCuit')?.errors?.['invalidDniCuit']">
+                Debe ingresar un DNI (7-8 dígitos) o un CUIT (11 dígitos).
+              </ng-container>
+            </div>
+          </div>
+          <div *ngIf="form.get('invoiceToCompany')?.value" class="grid grid-cols-2 gap-4">
+            <div>
+              <app-input label="CUIT" formControlName="cuit" inputmode="numeric" [numericMax11]="true">
+              </app-input>
+              <div *ngIf="form.get('cuit')?.touched && form.get('cuit')?.invalid" class="text-red-400 text-sm mt-1">
+                <ng-container *ngIf="form.get('cuit')?.errors?.['required']">
+                  El CUIT es obligatorio.
+                </ng-container>
+                <ng-container
+                  *ngIf="form.get('cuit')?.errors?.['pattern'] || form.get('cuit')?.errors?.['invalidCuit']">
+                  El CUIT debe tener 11 dígitos válidos.
+                </ng-container>
+              </div>
+            </div>
+            <div>
+              <app-input label="Razón social" formControlName="socialReason">
+              </app-input>
+              <div *ngIf="form.get('socialReason')?.touched && form.get('socialReason')?.invalid"
+                class="text-red-400 text-sm mt-1">
+                La razón social es obligatoria.
+              </div>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <app-input label="Nombre" formControlName="name"></app-input>
+              <div *ngIf="form.get('name')?.invalid && form.get('name')?.touched" class="text-red-400 text-sm mt-1">
+                El nombre es obligatorio.
+              </div>
+            </div>
+            <div>
+              <app-input label="Apellido" formControlName="surname"></app-input>
+              <div *ngIf="form.get('surname')?.invalid && form.get('surname')?.touched"
+                class="text-red-400 text-sm mt-1">
+                El apellido es obligatorio.
+              </div>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <app-input label="Teléfono" formControlName="phone"></app-input>
+              <div *ngIf="form.get('phone')?.hasError('required') && form.get('phone')?.touched"
+                class="text-red-400 text-sm mt-1">
+                El teléfono es obligatorio.
+              </div>
+              <div *ngIf="form.get('phone')?.hasError('invalidPhone') && form.get('phone')?.touched"
+                class="text-red-400 text-sm mt-1">
+                Ingresá un teléfono válido de Argentina.
+              </div>
+            </div>
+            <app-input *ngIf="showForm" label="Código Postal ingresado" formControlName="zipCodeDisplay">
+            </app-input>
+          </div>
+          <div class="space-y-4">
+            <label class="flex items-center space-x-2">
+              <input type="checkbox" formControlName="otherPerson" AldyCheckboxV1/>
+              <span>Otra persona va a retirar el pedido</span>
+            </label>
+            <div *ngIf="isAnotherPerson" class="grid grid-cols-2 gap-4">
+              <div>
+                <app-input label="Nombre" formControlName="name"></app-input>
+                <div *ngIf="form.get('name')?.invalid && form.get('name')?.touched" class="text-red-400 text-sm mt-1">
+                  El nombre de la persona que retira es obligatorio.
+                </div>
+              </div>
+              <div>
+                <app-input label="Apellido" formControlName="surname"></app-input>
+                <div *ngIf="form.get('surname')?.invalid && form.get('surname')?.touched"
+                  class="text-red-400 text-sm mt-1">
+                  El apellido de la persona que retira es obligatorio.
+                </div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <app-input label="Calle" formControlName="street"></app-input>
+            <div *ngIf="form.get('street')?.invalid && form.get('street')?.touched" class="text-red-400 text-sm mt-1">
+              La calle es obligatoria.
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <app-input label="Número" formControlName="streetNumber"></app-input>
+              <div *ngIf="form.get('streetNumber')?.invalid && form.get('streetNumber')?.touched"
+                class="text-red-400 text-sm mt-1">
+                El número es obligatorio.
+              </div>
+            </div>
+            <app-input label="Departamento (opcional)" formControlName="apartment"></app-input>
+          </div>
+          <div>
+            <app-selects label="Provincia" formControlName="province" [options]="provinces" optionLabel="name"
+              id="Provincia">
+            </app-selects>
+            <div *ngIf="form.get('province')?.invalid && form.get('province')?.touched"
+              class="text-red-400 text-sm mt-1">
+              La provincia es obligatoria.
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <app-input label="Ciudad" formControlName="city"></app-input>
+              <div *ngIf="form.get('city')?.invalid && form.get('city')?.touched" class="text-red-400 text-sm mt-1">
+                La ciudad es obligatoria.
+              </div>
+            </div>
+            <app-input label="Barrio (opcional)" formControlName="neighborhood"></app-input>
+          </div>
+        </div>
+        <button type="submit" appButtonPrimary class="w-full text-white py-3">Continuar</button>
+      </form>
+    </div>
+  </div>
+  <div class="w-full md:w-1/4 p-3 py-5 rounded-md bg-white text-slate-900">
+    <div *ngFor="let item of cartItems" class="flex gap-3 sm:gap-4 w-full mb-4">
+      <img [src]="item.image" alt="Producto" class="w-20 min-w-[80px] max-w-[80px] h-full object-cover rounded-md" />
+      <div class="flex flex-col justify-between w-full">
+        <div>
+          <h3 class="text-xs sm:text-sm font-semibold uppercase text-slate-900">{{ item.name }} x{{ item.quantity }}
+          </h3>
+          <p *ngIf="item.color" class="text-[11px] text-slate-500 mt-1 flex items-center gap-2">
+            Color:
+            <span class="inline-block w-3 h-3 rounded-xs border" [ngStyle]="{ 'background-color': item.color }"></span>
+          </p>
+          <p *ngIf="item.size" class="text-[11px] text-slate-500 flex items-center gap-2 mt-1">
+            Talla:
+            <span class="bg-gray-100 px-2 py-0.5 text-[10px]">{{ item.size }}</span>
+          </p>
+        </div>
+        <div class="mt-2">
+          <h3 class="text-sm font-semibold text-slate-900">
+            {{ (item.price * item.quantity) | currency:'USD':'symbol':'1.2-2':'en-US' }}
+          </h3>
+        </div>
+      </div>
+    </div>
+    <div class="pt-4 mt-6 border-t border-slate-200 text-sm space-y-1">
+      <div class="flex justify-between">
+        <span class="font-semibold text-slate-700">Subtotal</span>
+        <span>{{ subtotal | currency:'USD':'symbol':'1.2-2':'en-US' }}</span>
+      </div>
+      <div class="flex justify-between">
+        <span class="font-semibold text-slate-700">Envío</span>
+        <span [ngClass]="{ 'text-green-600': shippingCost === 0, 'text-slate-900': shippingCost > 0 }">
+          {{ shippingCost === 0 ? 'Gratis' : (shippingCost | currency:'USD':'symbol':'1.2-2':'en-US') }}
+        </span>
+      </div>
+      <div class="flex justify-between font-bold text-base pt-2">
+        <span>Total</span>
+        <span>{{ total | currency:'USD':'symbol':'1.2-2':'en-US' }}</span>
+      </div>
+    </div>
+    <div [formGroup]="form" class="mt-6">
+      <label class="flex items-center gap-2 text-slate-500">
+        <input type="checkbox" formControlName="hasCupon" AldyCheckboxV1 />
+        ¿Tienes un cupón o crédito?
+      </label>
+      <div *ngIf="form.get('hasCupon')?.value" class="relative mt-4">
+        <input type="text" placeholder="Ingrese su código de descuento" formControlName="discountCode"
+          class="w-full border rounded px-4 py-2 pr-10" />
+        <span class="absolute right-3 top-3 text-gray-500 cursor-pointer" (click)="applyDiscountCode()">▶</span>
+      </div>
+    </div>
+  </div>
+</div>

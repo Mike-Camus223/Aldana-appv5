@@ -1,27 +1,18 @@
-<div class="relative w-full min-h-[80vh] sm:min-h-[70vh] md:min-h-screen overflow-hidden text-white flex items-center justify-center" id="location-section">
-  <video #bgVideo loop playsinline class="absolute w-full h-full object-cover">
-    <source src="../../../../assets/videos/Bsaaa.mp4" type="video/mp4" />
-  </video>
-
-  <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent"></div>
-
-  <div class="absolute top-4 right-4 flex gap-2 z-20">
-    <button
-      type="button"
-      class="bg-white/20 text-white p-2 rounded-full w-10 h-10 flex items-center justify-center backdrop-blur-sm"
-      (click)="togglePlay()"
-    >
-      <i [class]="isPlaying() ? 'fas fa-pause' : 'fas fa-play'" class="text-base"></i>
-    </button>
-    <button
-      type="button"
-      class="bg-white/20 text-white p-2 rounded-full w-10 h-10 flex items-center justify-center backdrop-blur-sm"
-      (click)="toggleMute()"
-    >
-      <i [class]="isMutedIcon() ? 'fas fa-volume-mute' : 'fas fa-volume-up'" class="text-base"></i>
-    </button>
-  </div>
-
+<div
+  class="relative w-full min-h-[80vh] sm:min-h-[70vh] md:min-h-screen overflow-hidden text-white flex items-center justify-center"
+  id="location-section"
+>
+  <app-video
+    src="assets/videos/Bsaaa.mp4"
+    height="h-full"
+    width="w-full"
+    objectFit="object-cover"
+    [autoplay]="true"
+    [muted]="true"
+    [showControls]="true"
+    [gradientOverlay]="true"
+    class="absolute inset-0 z-0"
+  />
   <div class="relative z-10 flex flex-col items-center justify-center text-center px-6">
     <p class="text-sm md:text-base tracking-widest uppercase text-white font-main">En ubicación</p>
     <h1 class="titles text-3xl md:text-5xl font-bold mb-4 text-white">Buenos Aires, Argentina</h1>

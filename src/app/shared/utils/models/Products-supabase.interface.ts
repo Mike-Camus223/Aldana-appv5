@@ -24,8 +24,8 @@ export interface Product {
   price: number;
   category: string;
   variants: ProductVariant[];
-  product_images: ProductImage[]; // general, no usada
-  mainImageUrl: string; // opcional
+  product_images: ProductImage[]; 
+  mainImageUrl: string; 
   colors: string[];
   wishlisted?: boolean;
 }

@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { CartItem } from '../../../../shared/utils/models/cartItems-model';
 import { CartService } from '../../../../core/services/cart.service';
 import { Router } from '@angular/router';
+import { CheckoutStepperProgressService } from '../../../../core/services/checkout-stepper-progress.service';
 
 @Component({
   selector: 'app-cartship',
@@ -14,7 +15,11 @@ import { Router } from '@angular/router';
 export class CarComponent implements OnInit {
   cartItems: CartItem[] = [];
 
-  constructor(private cartService: CartService, private router: Router) {}
+  constructor(
+    private cartService: CartService,
+    private router: Router,
+    private progress: CheckoutStepperProgressService
+  ) { }
 
   ngOnInit() {
     this.cartService.cartItems$.subscribe(items => {
@@ -54,8 +59,14 @@ export class CarComponent implements OnInit {
     return this.cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
   }
 
-  goToShipping() {
-  this.router.navigate(['/home']);
-}
+  goToReturn() {
+    this.router.navigate(['/home']);
+  }
 
+  goToShipping() {
+    if (this.cartItems.length > 0) {
+      this.progress.completeStep('carrito');
+      this.router.navigate(['/checkout/envio']);
+    }
+  }
 }

@@ -1,0 +1,12 @@
+<p-floatlabel variant="on">
+  <p-select
+    [id]="id"
+    [options]="options"
+    [ngModel]="value"
+    (ngModelChange)="onValueChange($event)"
+    (onBlur)="onTouched()"
+    [optionLabel]="optionLabel"
+    class="w-full"
+  ></p-select>
+  <label [for]="id">{{ label }}</label>
+</p-floatlabel>

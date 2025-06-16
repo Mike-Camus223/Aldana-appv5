@@ -51,14 +51,12 @@
         </div>
       </div>
     </ng-container>
-
     <div class="mt-5 flex items-center font-semibold justify-end gap-2 text-xs text-gray-400 cursor-pointer"
       (click)="clearCart()">
       <i class="fa-solid fa-trash text-xs"></i> Vaciar carrito
     </div>
   </div>
-
-  <div class="w-full lg:w-1/4 p-3 py-5 border border-gray-100 rounded-md bg-white">
+  <div class="w-full lg:w-1/4 p-3 py-5 rounded-md bg-white">
     <div class="flex py-4 border-b border-gray-200 justify-between text-sm text-gray-700">
       <span>Subtotal</span>
       <span>
@@ -73,10 +71,10 @@
       </span>
     </div>
 
-    <button class="w-full mb-3 py-3 bg-aldy-primary-400 text-white text-xs font-semibold rounded shadow">
+    <button (click)="goToShipping()" class="w-full mb-3 py-3 bg-aldy-primary-400 text-white text-xs font-semibold rounded shadow">
       Continuar al checkout
     </button>
-    <button (click)="goToShipping()" class="w-full py-3 border border-gray-300 text-gray-800 text-xs font-medium rounded">
+    <button (click)="goToReturn()" class="w-full py-3 border border-gray-300 text-gray-800 text-xs font-medium rounded">
       Continuar comprando
     </button>
   </div>
@@ -87,9 +85,11 @@
     <i class="fa-solid fa-cart-shopping text-4xl text-gray-300"></i>
     <p class="text-lg font-semibold text-gray-700">Tu carrito está vacío</p>
     <button
-      (click)="goToShipping()"
+      (click)="goToReturn()"
       class="px-6 py-3 bg-aldy-primary-400 text-white text-sm rounded shadow hover:bg-aldy-primary-500">
       Seguir comprando
     </button>
   </div>
 </ng-template>
+
+

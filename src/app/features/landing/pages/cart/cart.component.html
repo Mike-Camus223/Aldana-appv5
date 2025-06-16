@@ -1,6 +1,34 @@
 <div class="h-[64px] lg:h-[120px]"></div>
+
 <div class="px-4 sm:px-6 lg:px-12 xl:px-16 2xl:px-24 w-full">
-  <div class="max-w-screen-3xl mx-auto">
+  <div class="max-w-screen-lg mx-auto">
+    <div class="flex w-full h-10 items-center justify-center gap-2">
+      <a [routerLink]="canAccess('carrito') ? '/checkout/carrito' : null"
+        routerLinkActive="after:content-[''] after:block after:w-full after:h-[1px] after:bg-gray-400 after:mt-0.1"
+        [routerLinkActiveOptions]="{ exact: true }" class="relative" [class.pointer-events-none]="!canAccess('carrito')"
+        [class.text-gray-400]="!canAccess('carrito')">
+        Carrito
+      </a>
+      <div class="w-5 h-1 border-b-2 border-gray-400"></div>
+      <button (click)="goToEnvio()" [disabled]="!canAccess('envio')"
+        class="relative bg-transparent border-none p-0 font-inherit cursor-pointer"
+        [class.pointer-events-none]="!canAccess('envio')" [class.text-gray-400]="!canAccess('envio')">
+        Envío
+        <span *ngIf="router.url === '/checkout/envio'"
+          class="absolute left-0 -bottom-[1px] w-full h-[1px] bg-gray-400"></span>
+      </button>
+      <div class="w-5 h-1 border-b-2 border-gray-400"></div>
+      <a [routerLink]="canAccess('pago') ? '/checkout/pago' : null"
+        routerLinkActive="after:content-[''] after:block after:w-full after:h-[1px] after:bg-gray-400 after:mt-0.1"
+        [routerLinkActiveOptions]="{ exact: true }" class="relative" [class.pointer-events-none]="!canAccess('pago')"
+        [class.text-gray-400]="!canAccess('pago')">
+        Pago
+      </a>
+    </div>
+  </div>
+</div>
+<div class="px-4 sm:px-6 lg:px-12 xl:px-16 2xl:px-24 w-full">
+  <div class="max-w-screen-xl mx-auto">
     <section class="mb-6">
       <router-outlet></router-outlet>
     </section>
