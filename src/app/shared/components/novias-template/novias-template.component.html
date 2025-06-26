@@ -14,14 +14,14 @@
   />
 </section>
 
-<div class="px-6 py-10 md:py-16">
+<div class="py-10 md:py-16">
   <div class="mb-8 w-full h-auto flex items-end justify-between flex-wrap gap-4">
     <div>
-      <h1 class="text-xl sm:text-3xl titles md:text-4xl font-bold tracking-tight">
-        Galería de Novias
-        <span class="font-light text-gray-600 uppercase">– Estilo & Elegancia</span>
+      <h1 class="text-xl sm:text-3xl titles md:text-3xl font-bold tracking-tight">
+        NOVIAS -
+        <span class="font-light text-gray-600 uppercase">JARDÍN SECRETO</span>
       </h1>
-      <p class="text-sm sm:text-base font-main text-gray-500 uppercase mt-2 tracking-widest font-main">
+      <p class="text-sm  sm:text-base font-main text-gray-500 uppercase mt-2 tracking-widest font-main">
         COLECCIÓN 2025
       </p>
     </div>
@@ -29,6 +29,11 @@
 
   <app-gallery-gen-com
     [media]="images"
+    (mediaClicked)="onMediaClick($event)"
+  ></app-gallery-gen-com>
+
+  <app-gallery-gen-com
+    [media]="images2"
     (mediaClicked)="onMediaClick($event)"
   ></app-gallery-gen-com>
 </div>
