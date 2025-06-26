@@ -1,17 +1,17 @@
 <section
   id="novias-video-section"
-  class="relative flex items-center justify-center w-full min-h-[50vh] sm:min-h-[50vh] md:min-h-[80vh] overflow-hidden text-white font-main bg-black"
+  class="relative flex items-center justify-center w-full min-h-[50vh] sm:min-h-[50vh] md:min-h-[80vh] overflow-hidden text-white font-main "
 >
   <app-video
-    src="https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/multimedia/novias%20compressed.mp4"
+    src="https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/multimedia/video2.mp4"
     height="h-full"
     width="w-full"
     [autoplay]="true"
     [muted]="true"
     [showControls]="true"
-    [gradientOverlay]="true"
+    [gradientOverlay]="false"
     class="absolute inset-0 
-           object-contain sm:object-contain md:object-cover"
+           object-contain sm:object-contain md:object-contain"
   />
 </section>
 
@@ -36,7 +36,7 @@
           class="w-full h-auto transition-transform duration-500 group-hover:scale-105 object-cover"
         />
         <div
-          class="absolute inset-0 bg-black/30 bg-opacity-10 opacity-0 group-hover:opacity-100 transition duration-300"
+          class="absolute inset-0 opacity-0 group-hover:opacity-100 transition duration-300"
         ></div>
       </a>
     </ng-container>
