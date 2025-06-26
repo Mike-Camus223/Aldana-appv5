@@ -41,7 +41,38 @@ export class GalleryGenComComponent implements AfterViewInit, OnDestroy {
     Fancybox.destroy();
   }
 
-  handleClick(item: MediaItem) {
+  handleClick(item: MediaItem, event: Event) {
     this.mediaClicked.emit(item);
+
+    if (item.type === 'video') {
+      event.preventDefault(); // Evita navegación por href
+
+      Fancybox.show([
+        {
+          src: item.url,
+          type: 'html5video', // Tipo correcto para MP4
+          thumb: item.poster || undefined,
+          width: item.width || 1280,
+          height: item.height || 1920,
+        },
+      ], {
+        Thumbs: true,
+        Toolbar: {
+          display: {
+            left: [],
+            middle: [],
+            right: ['toggleZoom', 'slideshow', 'fullscreen', 'thumbs', 'close'],
+          },
+        },
+
+        // ⚠️ Fuerza compatibilidad para evitar error TS
+        ...( {
+          Video: {
+            autoplay: true,
+            muted: true,
+          },
+        } as any ),
+      });
+    }
   }
 }

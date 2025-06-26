@@ -1,0 +1,19 @@
+/* El contenedor del video en el modal */
+.fancybox__container .f-html5video,
+.fancybox__container .f-html5video video {
+  max-width: 1280px !important;
+  max-height: 720px !important;
+  width: 100% !important;
+  height: auto !important;
+}
+
+/* Ajustar la altura del slide para que crezca */
+.fancybox__container .f-carousel__slide {
+  --f-carousel-slide-height: 720px !important;
+}
+
+.fancybox__content {
+    height: 500px !important;
+}
+
+
