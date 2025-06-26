@@ -1,6 +1,6 @@
 <section
   id="novias-video-section"
-  class="relative flex items-center justify-center w-full min-h-[50vh] sm:min-h-[50vh] md:min-h-[80vh] overflow-hidden text-white font-main bg-black"
+  class="relative flex items-center justify-center w-full min-h-[50vh] sm:min-h-[50vh] md:min-h-[80vh] overflow-hidden text-white font-main"
 >
   <app-video
     src="https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/multimedia/novias%20compressed.mp4"
@@ -16,24 +16,35 @@
 
 <div class="py-10 md:py-16">
   <div class="mb-8 w-full h-auto flex items-end justify-between flex-wrap gap-4">
-    <div>
-      <h1 class="text-xl sm:text-3xl titles md:text-3xl font-bold tracking-tight">
-        NOVIAS -
+    <div class="flex gap-2 items-end">
+      <h1 class="flex gap-2 items-end text-xl sm:text-3xl titles md:text-3xl font-bold tracking-tight">
+        NOVIAS
+        <span class="text-lg sm:text-lg titles md:text-xl font-bold">-</span>
         <span class="font-light text-gray-600 uppercase">JARDÍN SECRETO</span>
       </h1>
-      <p class="text-sm  sm:text-base font-main text-gray-500 uppercase mt-2 tracking-widest font-main">
-        COLECCIÓN 2025
+      <p
+        class="text-sm mb-1 sm:mb-0 sm:text-lg font-main text-gray-500 uppercase mt-2 tracking-widest font-main"
+      >
+        - COLECCIÓN 2025
       </p>
     </div>
   </div>
-
-  <app-gallery-gen-com
-    [media]="images"
-    (mediaClicked)="onMediaClick($event)"
-  ></app-gallery-gen-com>
-
-  <app-gallery-gen-com
-    [media]="images2"
-    (mediaClicked)="onMediaClick($event)"
-  ></app-gallery-gen-com>
+  <div class="mb-10">
+    <h2 class="text-md titles sm:text-lg text-gray-800 mb-4 tracking-widest">
+      {{ titulos[0].title }}
+    </h2>
+    <app-gallery-gen-com
+      [media]="images"
+      (mediaClicked)="onMediaClick($event)"
+    ></app-gallery-gen-com>
+  </div>
+  <div class="mb-10">
+    <h2 class="text-md titles sm:text-lg text-gray-800 mb-4 tracking-widest">
+      {{ titulos[1].title }}
+    </h2>
+    <app-gallery-gen-com
+      [media]="images2"
+      (mediaClicked)="onMediaClick($event)"
+    ></app-gallery-gen-com>
+  </div>
 </div>
