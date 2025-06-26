@@ -22,7 +22,7 @@ export class VideoComponent implements AfterViewInit, OnDestroy {
   @Input() src!: string;
   @Input() height = 'min-h-[80vh]';
   @Input() width = 'w-full';       
-  @Input() objectFit = 'object-contain';
+  @Input() objectFit = 'object-cover';
   @Input() autoplay = true;
   @Input() muted = true;
   @Input() showControls = true;
