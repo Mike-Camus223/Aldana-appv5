@@ -1,47 +1,60 @@
-import {
-  Component,
-  AfterViewInit,
-  OnDestroy,
-} from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Fancybox } from '@fancyapps/ui';
-import '@fancyapps/ui/dist/fancybox/fancybox.css';
 import { VideoComponent } from '../video/video.component';
+import { MediaItem } from '../../utils/models/objectsGallery.model';
+import { GalleryGenComComponent } from '../gallery-gen-com/gallery-gen-com.component';
+
+
 @Component({
   selector: 'app-novias-template',
   standalone: true,
-  imports: [CommonModule, VideoComponent],
+  imports: [CommonModule, GalleryGenComComponent, VideoComponent],
   templateUrl: './novias-template.component.html',
   styleUrls: ['./novias-template.component.css'],
 })
-export class NoviasTemplateComponent implements AfterViewInit, OnDestroy {
-  images = [
-    { url: 'https://picsum.photos/id/229/600/600', alt: 'Image 1' },
-    { url: 'https://picsum.photos/id/429/600/600', alt: 'Image 2' },
-    { url: 'https://picsum.photos/id/629/600/600', alt: 'Image 3' },
-    { url: 'https://picsum.photos/id/329/600/600', alt: 'Image 4' },
-    { url: 'https://picsum.photos/id/459/600/600', alt: 'Image 5' },
-    { url: 'https://picsum.photos/id/149/600/600', alt: 'Image 6' },
-    { url: 'https://picsum.photos/id/159/600/600', alt: 'Image 7' },
-    { url: 'https://picsum.photos/id/267/600/600', alt: 'Image 8' },
+export class NoviasTemplateComponent {
+  images: MediaItem[] = [
+    {
+      url: 'https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/%20collections/Jardin%20secreto/Novias/1.jpg',
+      alt: 'CN1',
+      caption: 'Cande 1',
+      type: 'image',
+      fit: 'contain',
+    },
+    {
+      url: 'https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/%20collections/Jardin%20secreto/Novias/3.jpg',
+      alt: 'CN2',
+      caption: 'Cande 2',
+      type: 'image',
+      fit: 'contain',
+    },
+    {
+      url: 'https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/%20collections/Jardin%20secreto/Novias/cande2fixed.jpg',
+      alt: 'CN3',
+      caption: 'Cande 3',
+      type: 'image',
+      fit: 'contain',
+    },
+    {
+      url: 'https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/%20collections/Jardin%20secreto/Novias/4.jpg',
+      alt: 'CN2',
+      caption: 'Cande 4',
+      type: 'image',
+      fit: 'contain',
+    },
+    {
+      url: 'https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/%20collections/Jardin%20secreto/Novias/5.mp4',
+      poster: 'https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/%20collections/Jardin%20secreto/Novias/cande6fixed.jpg',
+      alt: 'Video desfile',
+      caption: 'Desfile de la colección',
+      type: 'video',
+      width: 1280,
+      height: 720,
+      fit: 'contain',
+    },
   ];
 
-  
-
-  ngAfterViewInit(): void {
-    Fancybox.bind("[data-fancybox='gallery']", {
-      Thumbs: true,
-      Toolbar: {
-        display: {
-          left: [],
-          middle: [],
-          right: ['toggleZoom', 'slideshow', 'fullscreen', 'thumbs', 'close'],
-        },
-      },
-    });
-  }
-
-  ngOnDestroy() {
-    Fancybox.destroy();
+  onMediaClick(item: MediaItem) {
+    console.log('Media clickeada:', item);
   }
 }

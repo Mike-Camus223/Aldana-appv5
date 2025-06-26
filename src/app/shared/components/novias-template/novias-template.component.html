@@ -1,17 +1,16 @@
 <section
   id="novias-video-section"
-  class="relative flex items-center justify-center w-full min-h-[50vh] sm:min-h-[50vh] md:min-h-[80vh] overflow-hidden text-white font-main "
+  class="relative flex items-center justify-center w-full min-h-[50vh] sm:min-h-[50vh] md:min-h-[80vh] overflow-hidden text-white font-main bg-black"
 >
   <app-video
-    src="https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/multimedia/video2.mp4"
+    src="https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/multimedia/novias%20compressed.mp4"
     height="h-full"
     width="w-full"
     [autoplay]="true"
     [muted]="true"
     [showControls]="true"
-    [gradientOverlay]="false"
-    class="absolute inset-0 
-           object-contain sm:object-contain md:object-contain"
+    [gradientOverlay]="true"
+    class="absolute inset-0 object-contain sm:object-contain md:object-cover"
   />
 </section>
 
@@ -19,7 +18,8 @@
   <div class="mb-8 w-full h-auto flex items-end justify-between flex-wrap gap-4">
     <div>
       <h1 class="text-xl sm:text-3xl titles md:text-4xl font-bold tracking-tight">
-        Galería de Novias <span class="font-light text-gray-600 uppercase">– Estilo & Elegancia</span>
+        Galería de Novias
+        <span class="font-light text-gray-600 uppercase">– Estilo & Elegancia</span>
       </h1>
       <p class="text-sm sm:text-base font-main text-gray-500 uppercase mt-2 tracking-widest font-main">
         COLECCIÓN 2025
@@ -27,18 +27,8 @@
     </div>
   </div>
 
-  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-    <ng-container *ngFor="let img of images">
-      <a [href]="img.url" data-fancybox="gallery" class="group block overflow-hidden relative">
-        <img
-          [src]="img.url"
-          [alt]="img.alt"
-          class="w-full h-auto transition-transform duration-500 group-hover:scale-105 object-cover"
-        />
-        <div
-          class="absolute inset-0 opacity-0 group-hover:opacity-100 transition duration-300"
-        ></div>
-      </a>
-    </ng-container>
-  </div>
+  <app-gallery-gen-com
+    [media]="images"
+    (mediaClicked)="onMediaClick($event)"
+  ></app-gallery-gen-com>
 </div>
