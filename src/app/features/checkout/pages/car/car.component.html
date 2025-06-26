@@ -1,62 +1,66 @@
-<div class="flex flex-col lg:flex-row justify-between gap-6" *ngIf="cartItems.length > 0; else emptyCart">
-  <div class="flex-1">
-    <ng-container *ngFor="let item of cartItems">
-      <div class="flex gap-0 bg-white px-2 py-5 border-y border-gray-200">
-        <div class="flex gap-3 sm:gap-4 w-full">
-          <img [src]="item.image" alt="Producto"
-            class="w-20 min-w-[80px] max-w-[80px] h-full object-cover rounded-md" />
-
-          <div class="flex flex-col justify-between w-full">
-            <div>
-              <h3 class="text-xs sm:text-sm font-normal font-main uppercase text-slate-900">
-                {{ item.name }}
-              </h3>
-
-              <p class="text-[11px] text-slate-500 mt-1 flex items-center gap-2">
-                Color: <span class="inline-block w-3 h-3 rounded-xs border"
-                  [ngStyle]="{'background-color': item.color}"></span>
-              </p>
-
-              <p class="text-[11px] text-slate-500 flex items-center gap-2 mt-1">
-                Talle: <span class="bg-gray-100 px-2 py-0.5 text-[10px]">{{ item.size }}</span>
-              </p>
-            </div>
-
-            <div class="mt-2">
-              <h3 class="text-sm font-semibold text-slate-900">
-                {{ item.price | currency:'ARS':'symbol-narrow':'1.2-2':'es-AR' }}
-              </h3>
+<div class="flex flex-col md:flex-row justify-center gap-6" *ngIf="cartItems.length > 0; else emptyCart">
+  <div class="w-full md:w-2xl justify-center flex">
+    <div class="relative w-full p-4 md:p-8">
+      <div class="space-y-6">
+        <ng-container *ngFor="let item of cartItems">
+          <div class="flex gap-0 bg-white px-2 py-5 border-y border-gray-200">
+            <div class="flex gap-3 sm:gap-4 w-full">
+              <img [src]="item.image" alt="Producto"
+                class="w-20 min-w-[80px] max-w-[80px] h-full object-cover rounded-md" />
+    
+              <div class="flex flex-col justify-between w-full">
+                <div>
+                  <h3 class="text-xs sm:text-sm font-normal font-main uppercase text-slate-900">
+                    {{ item.name }}
+                  </h3>
+    
+                  <p class="text-[11px] text-slate-500 mt-1 flex items-center gap-2">
+                    Color: <span class="inline-block w-3 h-3 rounded-xs border"
+                      [ngStyle]="{'background-color': item.color}"></span>
+                  </p>
+    
+                  <p class="text-[11px] text-slate-500 flex items-center gap-2 mt-1">
+                    Talle: <span class="bg-gray-100 px-2 py-0.5 text-[10px]">{{ item.size }}</span>
+                  </p>
+                </div>
+    
+                <div class="mt-2">
+                  <h3 class="text-sm font-semibold text-slate-900">
+                    {{ item.price | currency:'ARS':'symbol-narrow':'1.2-2':'es-AR' }}
+                  </h3>
+                </div>
+              </div>
+    
+              <div class="ml-auto flex flex-col items-end justify-between">
+                <button (click)="removeItem(item.id)" title="Eliminar" class="hover:text-red-600">
+                  <i class="fa-solid fa-trash text-gray-600"></i>
+                </button>
+    
+                <div class="flex items-center gap-2 mt-4">
+                  <button (click)="changeQuantity(item.id, -1)"
+                    class="w-7 h-7 bg-aldy-primary-400 text-white hover:bg-aldy-primary-500 flex items-center justify-center rounded">
+                    <i class="fa-solid fa-minus text-[10px]"></i>
+                  </button>
+    
+                  <span class="text-sm font-medium w-6 text-center">{{ item.quantity }}</span>
+    
+                  <button (click)="changeQuantity(item.id, 1)"
+                    class="w-7 h-7 bg-aldy-primary-400 text-white hover:bg-aldy-primary-500 flex items-center justify-center rounded">
+                    <i class="fa-solid fa-plus text-[10px]"></i>
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
-
-          <div class="ml-auto flex flex-col items-end justify-between">
-            <button (click)="removeItem(item.id)" title="Eliminar" class="hover:text-red-600">
-              <i class="fa-solid fa-trash text-gray-600"></i>
-            </button>
-
-            <div class="flex items-center gap-2 mt-4">
-              <button (click)="changeQuantity(item.id, -1)"
-                class="w-7 h-7 bg-aldy-primary-400 text-white hover:bg-aldy-primary-500 flex items-center justify-center rounded">
-                <i class="fa-solid fa-minus text-[10px]"></i>
-              </button>
-
-              <span class="text-sm font-medium w-6 text-center">{{ item.quantity }}</span>
-
-              <button (click)="changeQuantity(item.id, 1)"
-                class="w-7 h-7 bg-aldy-primary-400 text-white hover:bg-aldy-primary-500 flex items-center justify-center rounded">
-                <i class="fa-solid fa-plus text-[10px]"></i>
-              </button>
-            </div>
-          </div>
+        </ng-container>
+        <div class="mt-5 flex items-center font-semibold justify-end gap-2 text-xs text-gray-400 cursor-pointer"
+          (click)="clearCart()">
+          <i class="fa-solid fa-trash text-xs"></i> Vaciar carrito
         </div>
       </div>
-    </ng-container>
-    <div class="mt-5 flex items-center font-semibold justify-end gap-2 text-xs text-gray-400 cursor-pointer"
-      (click)="clearCart()">
-      <i class="fa-solid fa-trash text-xs"></i> Vaciar carrito
     </div>
   </div>
-  <div class="w-full lg:w-1/4 p-3 py-5 rounded-md bg-white">
+  <div class="w-full md:w-1/4 p-3 py-5 rounded-md bg-white text-slate-900">
     <div class="flex py-4 border-b border-gray-200 justify-between text-sm text-gray-700">
       <span>Subtotal</span>
       <span>

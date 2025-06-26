@@ -1,163 +1,188 @@
-<div class="flex flex-col lg:flex-row justify-between gap-6">
-  <div class="flex-1">
+<div class="flex flex-col md:flex-row justify-center gap-6">
+  <div class="w-full md:w-2xl justify-center flex">
+    <div class="relative w-full p-4 md:p-8">
+      <div class="space-y-6">
+        <section class="border-b py-4 flex justify-between items-start">
+          <div class="flex items-start gap-4">
+            <i class="fa-regular fa-envelope text-gray-500 mt-1"></i>
+            <div>
+              <p class="text-sm text-gray-800 font-medium">{{ shippingData?.email }}</p>
+            </div>
+          </div>
+        </section>
+        <section class="border-b py-4 flex justify-between items-start">
+          <div class="flex items-start gap-4">
+            <i class="fa-solid fa-box text-gray-500 mt-1"></i>
+            <div>
+              <p class="font-semibold text-gray-900">
+                Retiras en correo argentino -
+                <span class="text-green-600 font-semibold">Gratis</span>
+              </p>
+              <p class="text-gray-600 text-sm">Correo arg 123 Ciudad Autónoma de Buenos Aires.</p>
+            </div>
+          </div>
+          <button pButton label="Cambiar" text class="text-blue-600 text-xs hover:underline"
+            (click)="onChangePickupPoint()">
+            Cambiar
+          </button>
+        </section>
+        <section class="border-b py-4 flex justify-between items-start">
+          <div class="flex items-start gap-4">
+            <i class="fa-regular fa-user text-gray-500 mt-1"></i>
+            <div>
+              <p class="font-semibold text-gray-900">Datos de cobranza</p>
+              <p class="text-gray-700">{{ shippingData?.name }} {{ shippingData?.surname }}</p>
+              <p class="text-gray-700">{{ shippingData?.address }}</p>
+              <p class="text-gray-700">
+                CP {{ shippingData?.zipCode }}
+                <span *ngIf="shippingData?.neighborhood"> - {{ shippingData?.neighborhood }}</span>
+              </p>
+              <p class="text-gray-700">
+                {{ shippingData?.city }}, {{ shippingData?.province}} - {{ shippingData?.phone }}
+              </p>
+              <p class="mt-4 font-semibold text-gray-900">Persona que retirará el pedido</p>
+              <p class="text-gray-700">{{ shippingData?.name }} {{ shippingData?.surname }}</p>
+            </div>
+          </div>
+          <button pButton label="Cambiar" text class="text-blue-600 text-xs hover:underline"
+            (click)="onChangeBillingData()">
+            Cambiar
+          </button>
+        </section>
+        <section class="border-b py-4 flex justify-between items-center">
+          <div class="flex items-center gap-2 text-gray-500">
+            <i class="fa-regular fa-comment"></i>
+            <span>Notas de pedido</span>
+          </div>
+          <button appButtonPrimary class="text-blue-600 p-2 text-xs hover:underline">
+            Agregar
+          </button>
+        </section>
+        <section class="space-y-4 mt-6">
+          <h4 class="text-sm font-semibold text-gray-900 mb-2">Medio de pago</h4>
+          <div class="card flex justify-center">
+            <p-accordion [multiple]="true" class="w-full space-y-4">
+              <p-accordion-panel value="0">
+                <p-accordion-header>
+                  <div class="w-full flex px-4 justify-between items-center">
+                    <div class="flex items-center gap-2">
+                      <i class="fa-solid fa-credit-card"></i>
+                      <span>Tarjeta de crédito o débito</span>
+                    </div>
+                    <p-chip>
+                      <span class="font-medium text-white text-xs">Hasta 6 cuotas sin interés</span>
+                    </p-chip>
+                  </div>
+                </p-accordion-header>
+                <p-accordion-content>
+                  <form id="{{ formId }}" (ngSubmit)="pagar()" autocomplete="off" novalidate class="space-y-4">
 
-    <div class="border-b py-4 flex justify-between items-start">
-      <div class="flex items-start gap-4">
-        <i class="fa-regular fa-envelope text-gray-500 mt-1"></i><!-- icono de correo -->
-        <div>
-          <p>{{phoneNumber ? phoneNumber : 'eltunasneo@gmail.com'}}</p><!-- correo electrónico -->
-        </div>
+                    <input id="cardholderName" type="text" placeholder="Titular de tarjeta"
+                      class="w-full p-3 border rounded-md" />
+                    <input id="cardNumber" type="text" placeholder="Número de tarjeta"
+                      class="w-full p-3 border rounded-md" />
+                    <input id="expirationDate" type="text" placeholder="MM/AA" class="w-full p-3 border rounded-md" />
+                    <input id="securityCode" type="text" placeholder="CVV" class="w-full p-3 border rounded-md" />
+                    <input id="email" type="email" placeholder="Correo electrónico"
+                      class="w-full p-3 border rounded-md" />
+
+                    <select id="installments" class="w-full p-3 border rounded-md">
+                      <option>Cargando cuotas...</option>
+                    </select>
+
+                    <select id="identificationType" class="w-full p-3 border rounded-md">
+                      <option>Cargando tipos...</option>
+                    </select>
+
+                    <input id="identificationNumber" type="text" placeholder="Número de documento"
+                      class="w-full p-3 border rounded-md" />
+
+                    <select id="issuer" class="w-full p-3 border rounded-md">
+                      <option>Cargando bancos...</option>
+                    </select>
+
+                    <div class="pt-4">
+                      <button appButtonPrimary type="submit"
+                        class="w-full text-white py-3 px-4 rounded-md transition-colors font-medium">
+                        Pagar {{ total | currency:'USD':'symbol':'1.2-2':'en-US' }}
+                      </button>
+                    </div>
+                  </form>
+                </p-accordion-content>
+              </p-accordion-panel>
+              <p-accordion-panel value="1">
+                <p-accordion-header>
+                  <div class="w-full flex px-4 justify-between items-center">
+                    <div class="flex items-center gap-2">
+                      <i class="fa-solid fa-building-columns"></i>
+                      <span>Transferencia bancaria</span>
+                    </div>
+                    <p-chip>
+                      <span class="font-medium text-white text-xs">10% de descuento</span>
+                    </p-chip>
+                  </div>
+                </p-accordion-header>
+                <p-accordion-content>
+                  <p class="text-gray-700 text-sm">Obtén un 10% de descuento pagando por transferencia bancaria.</p>
+                </p-accordion-content>
+              </p-accordion-panel>
+              <p-accordion-panel value="2">
+                <p-accordion-header>
+                  <div class="w-full flex px-4 justify-between items-center">
+                    <div class="flex items-center gap-2">
+                      <i class="fa-brands fa-paypal"></i>
+                      <span>Mercado Pago</span>
+                    </div>
+                  </div>
+                </p-accordion-header>
+                <p-accordion-content>
+                  <p class="text-gray-700 text-sm">Puedes pagar con cualquier aplicación de pago compatible con Mercado
+                    Pago.</p>
+                </p-accordion-content>
+              </p-accordion-panel>
+
+            </p-accordion>
+          </div>
+        </section>
+        <section class="mt-6">
+
+        </section>
       </div>
-    </div>
-
-    <div class="border-b py-4 flex justify-between items-start">
-      <div class="flex items-start gap-4">
-        <i class="fa-solid fa-box text-gray-500 mt-1"></i><!-- icono de envío -->
-        <div>
-          <p class="font-semibold">
-            Punto de retiro · <span class="text-green-600 font-semibold">Gratis</span>
-          </p>
-          <p>Correo Argentino Expreso - ABASTO - AV CORRIENTES 3702, CIUDAD AUTONOMA BUENOS AIRES - CAPITAL FEDERAL</p>
-          <p>Retirás el lunes 16/06</p>
-        </div>
-      </div>
-      <button pButton label="Cambiar" text
-        class="p-button-text p-button-plain p-0 text-blue-600 text-xs hover:underline">
-      </button>
-    </div>
-
-    <div class="border-b py-4 flex justify-between items-start">
-      <div class="flex items-start gap-4">
-        <i class="fa-regular fa-user text-gray-500 mt-1"></i><!-- icono de usuario -->
-        <div>
-          <p class="font-semibold">Datos de cobranza</p>
-          <p>Mike Camps</p>
-          <p>maedres 1123, 7C</p>
-          <p>CP 1192 - Caballo</p>
-          <p>Capital Federal, Capital Federal - +541164368404</p>
-        </div>
-      </div>
-      <button pButton label="Cambiar" text
-        class="p-button-text p-button-plain p-0 text-blue-600 text-xs hover:underline">
-      </button>
-    </div>
-
-    <div class="border-b py-4 flex justify-between items-start">
-      <div class="flex items-center w-full justify-between">
-        <div class="gap-4 flex">
-          <i class="fa-regular fa-comment text-gray-500 mt-1 mr-1"></i>
-          <span class="text-gray-500">Agregar nota de pedido</span>
-        </div>
-        <button (click)="agregarNota()" appButtonPrimary class="text-white py-2 px-3">
-          añadir
-        </button>
-      </div>
-    </div>
-
-
-    <!-- Métodos de pago -->
-    <div class="space-y-4">
-      <h4 class="text-sm font-semibold text-slate-900">Medio de pago</h4>
-      <div class="card flex justify-center">
-        <p-accordion [multiple]="true" class="w-full space-y-4">
-          <!-- Tarjeta de crédito o débito -->
-          <p-accordion-panel value="0">
-            <p-accordion-header>
-              <div class="w-full flex px-4 justify-between">
-                <div class="flex items-center gap-2">
-                  <i class="fa-solid fa-credit-card"></i>
-                  <span>Tarjeta de crédito o débito</span>
-                </div>
-                <p-chip>
-                  <span class="font-medium text-white text-xs">
-                    Hasta 6 cuotas sin interés
-                  </span>
-                </p-chip>
-              </div>
-            </p-accordion-header>
-            <p-accordion-content>
-              <span>Hasta 6 cuotas sin interés</span>
-            </p-accordion-content>
-          </p-accordion-panel>
-          <p-accordion-panel value="1">
-            <p-accordion-header>
-              <div class="w-full flex px-4 justify-between">
-                <div class="flex items-center gap-2">
-                  <i class="fa-solid fa-building-columns"></i>
-                  <span>Transferencia bancaria</span>
-                </div>
-                <p-chip>
-                  <span class="font-medium text-white text-xs">
-                    10% de descuento
-                  </span>
-                </p-chip>
-              </div>
-            </p-accordion-header>
-            <p-accordion-content>
-              <span>10% de descuento en transferencias</span>
-            </p-accordion-content>
-          </p-accordion-panel>
-          <p-accordion-panel value="2">
-            <p-accordion-header>
-              <div class="w-full flex px-4 justify-between">
-                <div class="flex items-center gap-2">
-                  <i class="fa-brands fa-paypal"></i>
-                  <span>Mercado Pago</span>
-                </div>
-              </div>
-            </p-accordion-header>
-            <p-accordion-content>
-              <span>Puedes pagar con cualquier aplicación de pago</span>
-            </p-accordion-content>
-          </p-accordion-panel>
-        </p-accordion>
-
-
-      </div>
-
-    </div>
-
-
-    <!-- Guardar datos -->
-    <div class="flex items-center gap-2 mt-4">
-      <input type="checkbox" id="save-data" AldyCheckboxV1 [(ngModel)]="saveData" />
-      <label for="save-data" class="text-sm text-slate-800">
-        Guardar datos para <strong>comprar más rápido</strong>
-      </label>
-    </div>
-
-    <div class="mt-6">
-      <button appButtonPrimary (click)="realizarPedido()" class="w-full py-3">
-        Comprar ahora
-      </button>
     </div>
   </div>
-
-  <div class="w-full lg:w-1/4 p-3 py-5 rounded-md bg-white text-slate-900">
+  <div class="w-full md:w-1/4 p-3 py-5 rounded-md bg-white text-slate-900">
     <div *ngFor="let item of cartItems" class="flex gap-3 sm:gap-4 w-full mb-4">
       <img [src]="item.image" alt="Producto" class="w-20 min-w-[80px] max-w-[80px] h-full object-cover rounded-md" />
       <div class="flex flex-col justify-between w-full">
         <div>
-          <h3 class="text-xs sm:text-sm font-semibold font-main uppercase text-slate-900">
+          <h3 class="text-xs sm:text-sm font-semibold uppercase text-slate-900">
             {{ item.name }} x{{ item.quantity }}
           </h3>
-          <p class="text-[11px] text-slate-500 mt-1 flex items-center gap-2" *ngIf="item.color">
+          <p *ngIf="item.color" class="text-[11px] text-slate-500 mt-1 flex items-center gap-2">
             Color:
-            <span class="inline-block w-3 h-3 rounded-xs border" [ngStyle]="{ 'background-color': item.color }">
-            </span>
+            <span class="inline-block w-3 h-3 rounded-xs border" [ngStyle]="{ 'background-color': item.color }"></span>
           </p>
-          <p class="text-[11px] text-slate-500 flex items-center gap-2 mt-1" *ngIf="item.size">
-            Talle:
+          <p *ngIf="item.size" class="text-[11px] text-slate-500 flex items-center gap-2 mt-1">
+            Talla:
             <span class="bg-gray-100 px-2 py-0.5 text-[10px]">{{ item.size }}</span>
           </p>
         </div>
         <div class="mt-2">
-          <h3 class="text-sm font-semibold text-slate-900">
-            {{ (item.price * item.quantity) | currency:'USD':'symbol':'1.2-2':'en-US' }}
-          </h3>
+          <ng-container *ngIf="discountData; else regularPrice">
+            <span class="line-through text-slate-400 text-xs">
+              {{ (item.price * item.quantity) | currency:'USD':'symbol':'1.2-2':'en-US' }}
+            </span>
+            <span class="text-green-600 text-sm font-bold ml-2">
+              {{ getDiscountedPrice(item) | currency:'USD':'symbol':'1.2-2':'en-US' }}
+            </span>
+          </ng-container>
+          <ng-template #regularPrice>
+            <h3 class="text-sm font-semibold text-slate-900">
+              {{ (item.price * item.quantity) | currency:'USD':'symbol':'1.2-2':'en-US' }}
+            </h3>
+          </ng-template>
         </div>
       </div>
-
     </div>
 
     <div class="pt-4 mt-6 border-t border-slate-200 text-sm space-y-1">
@@ -165,20 +190,19 @@
         <span class="font-semibold text-slate-700">Subtotal</span>
         <span>{{ subtotal | currency:'USD':'symbol':'1.2-2':'en-US' }}</span>
       </div>
+
       <div class="flex justify-between">
         <span class="font-semibold text-slate-700">Envío</span>
         <span class="text-green-600">Gratis</span>
       </div>
+
       <div class="flex justify-between font-bold text-base pt-2">
         <span>Total</span>
-        <span>{{ subtotal | currency:'USD':'symbol':'1.2-2':'en-US' }}</span>
+        <span>{{ total | currency:'USD':'symbol':'1.2-2':'en-US' }}</span>
+      </div>
+      <div *ngIf="discountData" class="mt-2 text-sm text-green-700">
+        Código de descuento aplicado: <strong>{{ discountData.code }}</strong>
       </div>
     </div>
-
-    <div class="relative mt-6">
-      <input type="text" placeholder="¿Tenés un código de descuento?" class="w-full border rounded px-4 py-2 pr-10">
-      <span class="absolute right-3 top-3 text-gray-500">▶</span>
-    </div>
   </div>
-
 </div>

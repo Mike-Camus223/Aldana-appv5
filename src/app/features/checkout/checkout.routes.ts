@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { paymentsuccesguardGuard } from '../../core/guards/paymentsuccesguard.guard';
 
 export const checkoutRoutes: Routes = [
   {
@@ -11,7 +12,7 @@ export const checkoutRoutes: Routes = [
         redirectTo: 'carrito',
         pathMatch: 'full'
       },
-      
+
       {
         path: 'carrito',
         loadComponent: () =>
@@ -26,6 +27,12 @@ export const checkoutRoutes: Routes = [
         path: 'pago',
         loadComponent: () =>
           import('./pages/payment/payment.component').then(c => c.PaymentComponent),
+      },
+      {
+        path: 'success',
+        canActivate: [paymentsuccesguardGuard],
+        loadComponent: () =>
+          import('../../shared/components/success-pay/success-pay.component').then(c => c.SuccessPayComponent),
       }
     ]
   }

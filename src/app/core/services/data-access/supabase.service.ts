@@ -91,4 +91,39 @@ export class SupabaseService {
       Boolean(id)
     );
   }
+
+ async validateCoupon(code: string): Promise<{ valid: boolean; discountAmount?: number; discountType?: 'percent' | 'fixed'; error?: string }> {
+  const { data, error } = await this.supabase
+    .from('discount_codes')
+    .select('id, code, discount_type, amount, is_active, expires_at')
+    .eq('code', code)
+    .single();
+
+  if (error || !data) {
+    return { valid: false, error: 'Cupón no encontrado.' };
+  }
+
+  if (!data.is_active) {
+    return { valid: false, error: 'Cupón inactivo.' };
+  }
+
+  if (data.expires_at && new Date(data.expires_at) < new Date()) {
+    return { valid: false, error: 'Cupón expirado.' };
+  }
+
+  let discountAmount = 0;
+  let discountType: 'percent' | 'fixed' = 'fixed'; // Valor por defecto
+
+  if (data.discount_type === 'percent') {
+    discountAmount = data.amount;
+    discountType = 'percent';
+  } else if (data.discount_type === 'fixed') {
+    discountAmount = data.amount;
+    discountType = 'fixed';
+  }
+
+  return { valid: true, discountAmount, discountType };
+}
+
+
 }

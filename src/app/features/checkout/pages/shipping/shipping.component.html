@@ -214,19 +214,20 @@
           </div>
           <div class="space-y-4">
             <label class="flex items-center space-x-2">
-              <input type="checkbox" formControlName="otherPerson" AldyCheckboxV1/>
+              <input type="checkbox" formControlName="otherPerson" AldyCheckboxV1 />
               <span>Otra persona va a retirar el pedido</span>
             </label>
             <div *ngIf="isAnotherPerson" class="grid grid-cols-2 gap-4">
               <div>
-                <app-input label="Nombre" formControlName="name"></app-input>
-                <div *ngIf="form.get('name')?.invalid && form.get('name')?.touched" class="text-red-400 text-sm mt-1">
+                <app-input label="Nombre" formControlName="otherPersonName"></app-input>
+                <div *ngIf="form.get('otherPersonName')?.invalid && form.get('otherPersonName')?.touched"
+                  class="text-red-400 text-sm mt-1">
                   El nombre de la persona que retira es obligatorio.
                 </div>
               </div>
               <div>
-                <app-input label="Apellido" formControlName="surname"></app-input>
-                <div *ngIf="form.get('surname')?.invalid && form.get('surname')?.touched"
+                <app-input label="Apellido" formControlName="otherPersonSurname"></app-input>
+                <div *ngIf="form.get('otherPersonSurname')?.invalid && form.get('otherPersonSurname')?.touched"
                   class="text-red-400 text-sm mt-1">
                   El apellido de la persona que retira es obligatorio.
                 </div>
@@ -289,9 +290,22 @@
           </p>
         </div>
         <div class="mt-2">
-          <h3 class="text-sm font-semibold text-slate-900">
-            {{ (item.price * item.quantity) | currency:'USD':'symbol':'1.2-2':'en-US' }}
-          </h3>
+          <ng-container *ngIf="discountCodeApplied; else regularPrice">
+            <span class="line-through text-slate-400 text-xs">
+              {{ (item.price * item.quantity) | currency:'USD':'symbol':'1.2-2':'en-US' }}
+            </span>
+            <span class="text-green-600 text-sm font-bold ml-2">
+              {{
+              ((item.price * item.quantity) - ((item.price * item.quantity) * appliedDiscount / subtotal))
+              | currency:'USD':'symbol':'1.2-2':'en-US'
+              }}
+            </span>
+          </ng-container>
+          <ng-template #regularPrice>
+            <h3 class="text-sm font-semibold text-slate-900">
+              {{ (item.price * item.quantity) | currency:'USD':'symbol':'1.2-2':'en-US' }}
+            </h3>
+          </ng-template>
         </div>
       </div>
     </div>
@@ -300,6 +314,7 @@
         <span class="font-semibold text-slate-700">Subtotal</span>
         <span>{{ subtotal | currency:'USD':'symbol':'1.2-2':'en-US' }}</span>
       </div>
+
       <div class="flex justify-between">
         <span class="font-semibold text-slate-700">Envío</span>
         <span [ngClass]="{ 'text-green-600': shippingCost === 0, 'text-slate-900': shippingCost > 0 }">
@@ -308,18 +323,30 @@
       </div>
       <div class="flex justify-between font-bold text-base pt-2">
         <span>Total</span>
-        <span>{{ total | currency:'USD':'symbol':'1.2-2':'en-US' }}</span>
+        <span>
+          {{
+          (subtotal - appliedDiscount + shippingCost)
+          | currency:'USD':'symbol':'1.2-2':'en-US'
+          }}
+        </span>
+      </div>
+      <div *ngIf="discountCodeApplied" class="mt-2 text-sm text-green-700">
+        Código de descuento aplicado: <strong>{{ discountCodeApplied }}</strong>
       </div>
     </div>
-    <div [formGroup]="form" class="mt-6">
+    <div [formGroup]="form" class="mt-6" *ngIf="!discountCodeApplied">
       <label class="flex items-center gap-2 text-slate-500">
         <input type="checkbox" formControlName="hasCupon" AldyCheckboxV1 />
         ¿Tienes un cupón o crédito?
       </label>
+
       <div *ngIf="form.get('hasCupon')?.value" class="relative mt-4">
         <input type="text" placeholder="Ingrese su código de descuento" formControlName="discountCode"
           class="w-full border rounded px-4 py-2 pr-10" />
         <span class="absolute right-3 top-3 text-gray-500 cursor-pointer" (click)="applyDiscountCode()">▶</span>
+        <div *ngIf="discountError" class="mt-1 text-sm text-red-600">
+          {{ discountError }}
+        </div>
       </div>
     </div>
   </div>
