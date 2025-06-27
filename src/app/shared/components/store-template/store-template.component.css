@@ -22,3 +22,10 @@ font-family: "PT Sans Narrow", sans-serif;
   font-style: normal;
 }
 
+::ng-deep .p-accordionheader {
+    padding: 12px 8px !important;
+}
+
+::ng-deep .p-accordioncontent-content {
+    padding: 0px 18px !important;
+}

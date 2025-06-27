@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AccordionModule } from 'primeng/accordion';
 import { CheckboxModule } from 'primeng/checkbox';
 import { SliderModule } from 'primeng/slider';
 import { FormsModule } from '@angular/forms';
@@ -8,6 +7,8 @@ import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { SupabaseService } from '../../../core/services/data-access/supabase.service';
 import { Product, ProductImage, ProductVariant } from '../../utils/models/Products-supabase.interface';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { AccordionModule } from 'primeng/accordion';
+import { AldyCheckboxV1Directive } from '../../utils/directives/aldy-checkbox-v1.directive';
 
 @Component({
   selector: 'app-store-template',
@@ -19,7 +20,7 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
     SliderModule,
     FormsModule,
     RouterModule,
-    ProgressSpinnerModule
+    ProgressSpinnerModule,
   ],
   templateUrl: './store-template.component.html',
   styleUrls: ['./store-template.component.css']
@@ -31,15 +32,78 @@ export class StoreTemplateComponent implements OnInit {
   selectedCategory: string | null = null;
   private wishlistKey = 'wishlistProducts';
   loading = true;
+  activeAccordion: number = 0;
 
-  sections = [
-    { label: 'Camisas', value: 'camisas' },
-    { label: 'Blusas', value: 'blusas' },
-    { label: 'Faldas', value: 'faldas' },
-    { label: 'Pantalón', value: 'pantalon' },
-    { label: 'Abrigos', value: 'abrigos' },
-    { label: 'Vestidos', value: 'vestidos' }
+  selectedSubcategory: string | null = null;
+
+  categories = [
+    {
+      label: 'Camisas',
+      value: 'camisas',
+      subsections: [
+        { label: 'Camisas 1', value: 'camisas 1' },
+        { label: 'Camisas 2', value: 'camisas 2' },
+        { label: 'Camisas 3', value: 'camisas 3' }
+      ]
+    },
+    {
+      label: 'Blusas',
+      value: 'blusas',
+      subsections: [
+        { label: 'Blusas 1', value: 'blusas 1' },
+        { label: 'Blusas 2', value: 'blusas 2' },
+        { label: 'Blusas 3', value: 'blusas 3' }
+      ]
+    },
+    {
+      label: 'Faldas',
+      value: 'faldas',
+      subsections: [
+        { label: 'Faldas 1', value: 'faldas 1' },
+        { label: 'Faldas 2', value: 'faldas 2' },
+        { label: 'Faldas 3', value: 'faldas 3' }
+      ]
+    },
+    {
+      label: 'Pantalón',
+      value: 'pantalon',
+      subsections: [
+        { label: 'Pantalón 1', value: 'pantalon 1' },
+        { label: 'Pantalón 2', value: 'pantalon 2' },
+        { label: 'Pantalón 3', value: 'pantalon 3' }
+      ]
+    },
+    {
+      label: 'Abrigos',
+      value: 'abrigos',
+      subsections: [
+        { label: 'Campera', value: 'campera' },
+        { label: 'Buzos', value: 'buzos' },
+        { label: 'Chalecos', value: 'chalecos' },
+        { label: 'Blazers', value: 'blazers' },
+        { label: 'Tapados', value: 'tapados' }
+      ]
+    },
+    {
+      label: 'Vestidos',
+      value: 'vestidos',
+      subsections: [
+        { label: 'Vestidos 1', value: 'vestidos 1' },
+        { label: 'Vestidos 2', value: 'vestidos 2' },
+        { label: 'Vestidos 3', value: 'vestidos 3' }
+      ]
+    },
+    {
+      label: 'Remeras',
+      value: 'remeras',
+      subsections: [
+        { label: 'Remeras 1', value: 'remeras 1' },
+        { label: 'Remeras 2', value: 'remeras 2' },
+        { label: 'Remeras 3', value: 'remeras 3' }
+      ]
+    }
   ];
+
 
   constructor(
     private supabaseService: SupabaseService,
@@ -51,7 +115,9 @@ export class StoreTemplateComponent implements OnInit {
     this.route.queryParamMap.subscribe(async params => {
       this.loading = true;
       const categoriaParam = params.get('categoria');
+      const subcategoriaParam = params.get('subcategoria');
       const coloresParam = params.get('colores');
+
       const { data, error } = await this.supabaseService.getProducts();
       if (error) {
         this.loading = false;
@@ -77,6 +143,11 @@ export class StoreTemplateComponent implements OnInit {
         if (categoriaParam) {
           this.selectedCategory = this.normalize(categoriaParam);
         }
+
+        if (subcategoriaParam) {
+          this.selectedSubcategory = this.normalize(subcategoriaParam);
+        }
+
         this.refreshProducts();
       }
       this.loading = false;
@@ -101,7 +172,8 @@ export class StoreTemplateComponent implements OnInit {
         mainImageUrl: mainImage.image_url,
         colors,
         wishlisted: false,
-        category: p.category?.toLowerCase() || ''
+        category: p.categories?.name?.toLowerCase() || '',
+        subcategory: p.subcategories?.name?.toLowerCase() || ''
       };
     });
   }
@@ -122,7 +194,7 @@ export class StoreTemplateComponent implements OnInit {
 
     try {
       const wishlistedIds: string[] = JSON.parse(stored);
-      this.products.forEach(p => p.wishlisted = wishlistedIds.includes(p.id));
+      this.products.forEach(p => (p.wishlisted = wishlistedIds.includes(p.id)));
     } catch { }
   }
 
@@ -139,7 +211,8 @@ export class StoreTemplateComponent implements OnInit {
 
   private updateQueryParamsWithoutReload(): void {
     const queryParams: any = {
-      categoria: this.selectedCategory || null
+      categoria: this.selectedCategory || null,
+      subcategoria: this.selectedSubcategory || null
     };
 
     const colorFilters = Object.entries(this.selectedColors)
@@ -157,17 +230,19 @@ export class StoreTemplateComponent implements OnInit {
     window.history.replaceState({}, '', newUrl);
   }
 
-  filterByCategory(section: string): void {
-    const normalized = this.normalize(section);
+  filterByMainCategory(categoryValue: string): void {
+    const normalized = this.normalize(categoryValue);
     if (this.selectedCategory === normalized) return;
     this.selectedCategory = normalized;
+    this.selectedSubcategory = null;
     this.updateQueryParams();
     this.refreshProducts();
   }
 
-  private updateQueryParams(): void {
+  public updateQueryParams(): void {
     const queryParams: any = {
-      categoria: this.selectedCategory || null
+      categoria: this.selectedCategory || null,
+      subcategoria: this.selectedSubcategory || null
     };
     const colorFilters = Object.entries(this.selectedColors)
       .filter(([_, color]) => !!color)
@@ -183,11 +258,18 @@ export class StoreTemplateComponent implements OnInit {
     });
   }
 
-  private refreshProducts(): void {
-    this.products = this.allProducts.filter(p =>
-      (!this.selectedCategory || this.normalize(p.category) === this.selectedCategory) &&
-      (!this.selectedColors[p.id] || p.variants.some(v => v.color === this.selectedColors[p.id]))
-    );
+  public refreshProducts(): void {
+    this.products = this.allProducts.filter(p => {
+      const productCategory = this.normalize(p.category);
+      const productSubcategory = this.normalize(p.subcategory || '');
+
+      const categoryMatch = !this.selectedCategory || productCategory === this.selectedCategory;
+      const subcategoryMatch = !this.selectedSubcategory || productSubcategory === this.selectedSubcategory;
+
+      const colorMatch = !this.selectedColors[p.id] || p.variants.some(v => v.color === this.selectedColors[p.id]);
+
+      return categoryMatch && subcategoryMatch && colorMatch;
+    });
   }
 
   private normalize(text: string): string {

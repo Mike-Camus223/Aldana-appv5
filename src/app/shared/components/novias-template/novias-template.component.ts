@@ -38,7 +38,6 @@ export class NoviasTemplateComponent {
       alt: 'CN1',
       type: 'image',
       fit: 'contain',
-      caption: 'CORSET JARDÍN Y PANTALÓN TUTOR'
     },
     {
       url: 'https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/%20collections/Jardin%20secreto/Novias/Cande/cande3.jpg',

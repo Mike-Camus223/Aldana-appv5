@@ -4,6 +4,8 @@ import {
   AfterViewInit,
   OnDestroy,
   HostListener,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AccordionModule } from 'primeng/accordion';
@@ -33,6 +35,7 @@ import { MercadoPagoService } from '../../../../core/services/mercado-pago.servi
   ],
   templateUrl: './payment.component.html',
   styleUrls: ['./payment.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush // ✅ Evita errores de change detection
 })
 export class PaymentComponent implements OnInit, AfterViewInit, OnDestroy {
   shippingData: ShippingData | null = null;
@@ -41,13 +44,15 @@ export class PaymentComponent implements OnInit, AfterViewInit, OnDestroy {
   cardForm: any = null;
   cardFormMounted = false;
   formId = 'paymentForm-' + Math.random().toString(36).substring(2, 10);
+  isProcessing = false; // ✅ Prevenir múltiples envíos
 
   constructor(
     private cartService: CartService,
     private progress: CheckoutStepperProgressService,
     private shippingService: ShippingService,
     private router: Router,
-    private mpService: MercadoPagoService
+    private mpService: MercadoPagoService,
+    private cdr: ChangeDetectorRef // ✅ Para manejar change detection manual
   ) {}
 
   @HostListener('window:beforeunload')
@@ -64,15 +69,18 @@ export class PaymentComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.cartService.cartItems$.subscribe((items) => {
       this.cartItems = items;
+      this.cdr.detectChanges(); // ✅ Actualizar vista manualmente
     });
 
     this.shippingService.discountData$.subscribe((data) => {
       this.discountData = data;
+      this.cdr.detectChanges(); // ✅ Actualizar vista manualmente
     });
   }
 
   ngAfterViewInit(): void {
-    setTimeout(() => this.initializeCardForm(), 100);
+    // ✅ Dar más tiempo para que el DOM esté listo
+    setTimeout(() => this.initializeCardForm(), 300);
   }
 
   ngOnDestroy(): void {
@@ -81,8 +89,12 @@ export class PaymentComponent implements OnInit, AfterViewInit, OnDestroy {
 
   destroyCardForm() {
     if (this.cardForm?.destroy) {
-      this.cardForm.destroy();
-      console.log(' cardForm destruido correctamente');
+      try {
+        this.cardForm.destroy();
+        console.log('✅ CardForm destruido correctamente');
+      } catch (error) {
+        console.warn('⚠️ Error al destruir cardForm:', error);
+      }
     }
     this.cardForm = null;
     this.cardFormMounted = false;
@@ -90,7 +102,7 @@ export class PaymentComponent implements OnInit, AfterViewInit, OnDestroy {
 
   async initializeCardForm() {
     if (this.cardFormMounted) {
-      console.warn(' cardForm ya está montado.');
+      console.warn('⚠️ CardForm ya está montado.');
       return;
     }
 
@@ -127,14 +139,17 @@ export class PaymentComponent implements OnInit, AfterViewInit, OnDestroy {
             this.cardFormMounted = true;
             console.log('✅ MercadoPago cardForm montado correctamente');
             
-            this.fillSavedData();
+            // ✅ Usar setTimeout para evitar problemas de timing
+            setTimeout(() => {
+              this.fillSavedData();
+            }, 100);
           },
           onSubmit: (event: any) => {
             event.preventDefault();
             this.pagar();
           },
           onError: (error: any) => {
-            console.error('❌ Error en cardForm', error);
+            console.error('❌ Error en cardForm:', error);
           },
         },
       });
@@ -144,52 +159,74 @@ export class PaymentComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   fillSavedData() {
-    if (this.shippingData) {
-      const emailInput = document.getElementById('email') as HTMLInputElement;
-      if (emailInput && this.shippingData.email) {
-        emailInput.value = this.shippingData.email;
+    try {
+      // ✅ Llenar email del shipping
+      if (this.shippingData?.email) {
+        const emailInput = document.getElementById('email') as HTMLInputElement;
+        if (emailInput) {
+          emailInput.value = this.shippingData.email;
+          // ✅ Disparar evento para que MercadoPago detecte el cambio
+          emailInput.dispatchEvent(new Event('input', { bubbles: true }));
+        }
       }
-    }
 
-    const savedData = localStorage.getItem('paymentData');
-    if (savedData) {
-      try {
+      // ✅ Llenar datos guardados del localStorage
+      const savedData = localStorage.getItem('paymentData');
+      if (savedData) {
         const data = JSON.parse(savedData);
         
         Object.keys(data).forEach(key => {
-          const input = document.getElementById(key) as HTMLInputElement;
+          const input = document.getElementById(key) as HTMLInputElement | HTMLSelectElement;
           if (input && data[key]) {
             input.value = data[key];
+            // ✅ Disparar evento para que MercadoPago detecte el cambio
+            input.dispatchEvent(new Event('change', { bubbles: true }));
           }
         });
-      } catch (e) {
-        console.warn('Error parsing paymentData', e);
       }
+    } catch (error) {
+      console.warn('⚠️ Error llenando datos guardados:', error);
     }
   }
 
   async pagar() {
-    if (
-      !this.cardForm ||
-      !this.cardFormMounted ||
-      typeof this.cardForm.getCardFormData !== 'function'
-    ) {
+    // ✅ Prevenir múltiples envíos
+    if (this.isProcessing) {
+      console.warn('⚠️ Pago ya en proceso...');
+      return;
+    }
+
+    if (!this.cardForm || !this.cardFormMounted || typeof this.cardForm.getCardFormData !== 'function') {
       alert('El formulario no está listo. Esperá unos segundos e intentá de nuevo.');
       console.error('❌ cardForm no está montado todavía');
       return;
     }
 
+    this.isProcessing = true;
+
     try {
       const formData = this.cardForm.getCardFormData();
+      
+      console.log('📋 FormData de MercadoPago:', formData);
 
       if (!formData.token) {
-        alert('Completa correctamente todos los campos del formulario.');
+        alert('Error generando el token de la tarjeta. Verificá los datos ingresados.');
         console.error('❌ Token no generado. FormData:', formData);
         return;
       }
 
+      if (!formData.cardholderEmail) {
+        alert('El correo electrónico es obligatorio.');
+        return;
+      }
+
+      if (!formData.identificationType || !formData.identificationNumber) {
+        alert('Los datos de identificación son obligatorios.');
+        return;
+      }
+      
+
       const dataToSave = {
-        email: formData.cardholderEmail,
         identificationType: formData.identificationType,
         identificationNumber: formData.identificationNumber,
       };
@@ -201,7 +238,7 @@ export class PaymentComponent implements OnInit, AfterViewInit, OnDestroy {
         description: 'Compra desde ecommerce',
         installments: formData.installments,
         payment_method_id: formData.paymentMethodId,
-        issuer_id: formData.issuerId,
+        issuer_id: formData.issuerId, 
         payer: {
           email: formData.cardholderEmail,
           identification: {
@@ -210,6 +247,8 @@ export class PaymentComponent implements OnInit, AfterViewInit, OnDestroy {
           },
         },
       };
+
+      console.log('📤 Payload enviado a Supabase:', JSON.stringify(payload, null, 2));
 
       const response = await fetch(
         'https://cddrmboopihkiuyomxle.supabase.co/functions/v1/quick-action',
@@ -222,18 +261,69 @@ export class PaymentComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       );
 
+      console.log('📥 Status de respuesta:', response.status);
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('❌ Error response:', errorText);
+        
+        let errorMessage = `Error del servidor (${response.status})`;
+        try {
+          const errorData = JSON.parse(errorText);
+          if (errorData.message) {
+            errorMessage = errorData.message;
+          } else if (errorData.error) {
+            errorMessage = errorData.error;
+          }
+        } catch (e) {
+          errorMessage = errorText || errorMessage;
+        }
+        
+        alert(`Error en el pago: ${errorMessage}`);
+        return;
+      }
+
       const data = await response.json();
+      console.log('📥 Respuesta completa de MercadoPago:', data);
 
       if (data.status === 'approved') {
+        alert('¡Pago aprobado exitosamente!');
         this.progress.completeStep('pago');
         this.router.navigate(['/checkout/success']);
+      } else if (data.status === 'pending') {
+        alert('Pago pendiente de aprobación. Te notificaremos cuando se procese.');
+      } else if (data.status === 'rejected') {
+        const statusDetail = data.status_detail || 'Error desconocido';
+        alert(`Pago rechazado: ${this.getStatusDetailMessage(statusDetail)}`);
       } else {
-        alert('Error en el pago: ' + data.status_detail);
+        const statusDetail = data.status_detail || data.message || 'Error desconocido';
+        alert(`Error en el pago: ${statusDetail}`);
       }
+
     } catch (err) {
       console.error('❌ Error al procesar el pago:', err);
-      alert('Ocurrió un error al procesar el pago. Reintentá más tarde.');
+      alert('Ocurrió un error al procesar el pago. Por favor, intentá de nuevo.');
+    } finally {
+      this.isProcessing = false;
     }
+  }
+
+  private getStatusDetailMessage(statusDetail: string): string {
+    const messages: { [key: string]: string } = {
+      'cc_rejected_insufficient_amount': 'Fondos insuficientes',
+      'cc_rejected_bad_filled_security_code': 'Código de seguridad inválido',
+      'cc_rejected_bad_filled_date': 'Fecha de vencimiento inválida',
+      'cc_rejected_bad_filled_card_number': 'Número de tarjeta inválido',
+      'cc_rejected_blacklist': 'Tarjeta bloqueada',
+      'cc_rejected_call_for_authorize': 'Debes autorizar el pago con tu banco',
+      'cc_rejected_card_disabled': 'Tarjeta deshabilitada',
+      'cc_rejected_duplicated_payment': 'Pago duplicado',
+      'cc_rejected_high_risk': 'Pago rechazado por alto riesgo',
+      'cc_rejected_invalid_installments': 'Cuotas inválidas',
+      'cc_rejected_max_attempts': 'Máximo de intentos alcanzado',
+    };
+    
+    return messages[statusDetail] || statusDetail;
   }
 
   get subtotal(): number {
@@ -270,9 +360,11 @@ export class PaymentComponent implements OnInit, AfterViewInit, OnDestroy {
 
   onChangePickupPoint() {
     console.log('Cambiar punto de retiro');
+    this.router.navigate(['/checkout/shipping']);
   }
 
   onChangeBillingData() {
     console.log('Cambiar datos de cobranza');
+    this.router.navigate(['/checkout/shipping']);
   }
 }
