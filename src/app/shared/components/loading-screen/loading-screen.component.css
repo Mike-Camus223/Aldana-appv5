@@ -1,0 +1,16 @@
+#screen {
+  position: fixed;
+  inset: 0; /* top:0; bottom:0; left:0; right:0; */
+  background-color: white; /* o negro en animación */
+  z-index: 9999; /* muy alto para que quede arriba */
+  overflow: hidden; /* para que nada dentro del loading haga scroll */
+  pointer-events: all; /* para que el overlay capture todos los eventos */
+}
+
+
+.select-none {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}

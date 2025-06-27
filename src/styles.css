@@ -45,45 +45,67 @@
 }
 
 ::-webkit-scrollbar {
-  width: 6px; 
-  height: 6px; 
-  background: #fff; 
+  width: 6px;
+  height: 6px;
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--color-aldy-primary-400); 
-  border-radius: 6px;
+  background: var(--color-aldy-primary-400);
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-aldy-primary-500); 
+  background: var(--color-aldy-primary-500);
 }
 
 ::-webkit-scrollbar-corner {
   background: transparent;
 }
 
+.body-scroll-lock {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow-y: scroll;
+  pointer-events: none;
+  user-select: none;
+  scrollbar-width: thin;
+}
+
+.body-scroll-lock::-webkit-scrollbar {
+  width: 6px;
+  background: #fff;
+}
+
+.body-scroll-lock::-webkit-scrollbar-thumb {
+  background: var(--color-aldy-primary-400);
+  border-radius: 6px;
+}
+
+body.reserve-scrollbar-space {
+  overflow-y: scroll;
+}
+
 .font-main {
   font-family: "PT Sans Narrow", sans-serif;
-  font-style: normal;
 }
 
 .font-number {
   font-family: "PT Sans Narrow", sans-serif;
   font-weight: 400;
-  font-style: normal;
 }
 
 .font-number-bold {
   font-family: "PT Sans Narrow", sans-serif;
   font-weight: 700;
-  font-style: normal;
 }
 
 .titles {
-font-family: "PT Sans Narrow", sans-serif;
+  font-family: "PT Sans Narrow", sans-serif;
   font-weight: 500;
-  font-style: normal;
 }
 
 .navbarColorBG {
@@ -92,4 +114,15 @@ font-family: "PT Sans Narrow", sans-serif;
 
 .tolol {
   background-color: #ffffffe7;
+}
+
+@font-face {
+  font-family: 'aldyfont';
+  src: url('../src/assets/fonts/Futura\ Lt\ BT\ Light.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+.aldyFont {
+  font-family: 'aldyfont', sans-serif;
 }
