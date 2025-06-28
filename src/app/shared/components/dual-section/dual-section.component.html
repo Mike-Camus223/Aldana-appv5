@@ -1,21 +1,21 @@
-<!-- dual-section.component.html -->
 <div class="w-screen overflow-hidden">
-  <div class="grid grid-cols-2 w-full">
+  <div class="grid grid-cols-2 w-full flex-wrap">
 
     <!-- Columna 1 -->
-    <div class="relative group w-full aspect-[3/4] sm:aspect-[4/4] md:h-screen overflow-hidden">
+    <div class="relative group w-full h-[400px] sm:h-[500px] md:h-screen overflow-hidden">
       <img
         src="../../../../assets/images/Novias.jpeg"
         alt="section1"
-        class="absolute inset-0 w-full h-full 
-               object-cover scale-120 md:object-contain 
-               md:scale-185 md:translate-y-40
+        class="absolute inset-0 w-full h-full
+               object-cover md:object-contain
+               scale-125 sm:scale-140 md:scale-185
+               translate-y-0 md:translate-y-40
                transition-all duration-500 ease-in-out 
                grayscale group-hover:grayscale-0 pointer-events-none"
       />
       <div
         class="absolute inset-0 flex items-center justify-center
-               md:translate-x-60 md:translate-y-40 
+               md:translate-x-60 md:translate-y-40
                translate-x-0 translate-y-0
                px-4 text-center"
       >
@@ -28,19 +28,20 @@
     </div>
 
     <!-- Columna 2 -->
-    <div class="relative group w-full aspect-[3/4] sm:aspect-[3/4] md:h-screen overflow-hidden">
+    <div class="relative group w-full h-[400px] sm:h-[500px] md:h-screen overflow-hidden">
       <img
         src="../../../../assets/images/Chlotes.jpg"
         alt="section2"
         class="absolute inset-0 w-full h-full 
-               object-cover scale-100  lg:scale-170 sm:scale-180 md:object-contain 
-               md:scale-170 md:translate-y-10
+               object-cover md:object-contain
+               scale-110 sm:scale-130 lg:scale-170 md:scale-170
+               translate-y-0 md:translate-y-10
                transition-all duration-500 ease-in-out 
                grayscale group-hover:grayscale-0 pointer-events-none"
       />
       <div
         class="absolute inset-0 flex items-center justify-center
-               md:translate-x-60 md:translate-y-40 
+               md:translate-x-60 md:translate-y-40
                translate-x-0 translate-y-0
                px-4 text-center"
       >
