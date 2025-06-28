@@ -1,1 +1,29 @@
-<p>dual-section works!</p>
+<div class="w-screen h-auto md:h-screen">
+    <div class="grid grid-cols-2 md:grid-cols-2 w-full h-auto md:h-full">
+
+        <div class="relative group w-full h-[500px] md:h-full overflow-hidden">
+            <img class="absolute top-0 left-0 w-full h-full object-contain scale-180 translate-y-20 transition-all duration-300 ease-in-out grayscale-100 group-hover:grayscale-0"
+                src="../../../../assets/images/Novias.jpeg" alt="section1" />
+            <div class="absolute inset-0 flex items-center translate-x-60 translate-y-40 justify-center">
+                <a href="/novias">
+                    <h1 class="text-[37px] text-white aldyFont font-extralight">NOVIAS</h1>
+
+                </a>
+
+            </div>
+        </div>
+        <div class="relative group w-full h-[500px] md:h-full overflow-hidden">
+            
+            <img class="absolute top-0 left-0 w-full h-full object-contain scale-130 translate-y-20 transition-all duration-300 ease-in-out grayscale-100 group-hover:grayscale-0"
+                src="../../../../assets/images/Chlotes.jpg" alt="section1" />
+            <div class="absolute inset-0 flex items-center translate-x-60 translate-y-40 justify-center">
+                <a href="/tienda">
+                    <h1 class="text-[37px] text-white aldyFont font-extralight">{{ 'Prêt-à-porter' | uppercase }}</h1>
+
+                </a>
+
+            </div>
+        </div>
+
+    </div>
+</div>

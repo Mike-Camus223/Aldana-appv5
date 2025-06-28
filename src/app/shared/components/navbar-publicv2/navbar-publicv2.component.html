@@ -1,9 +1,12 @@
-<nav [ngClass]="{ 'py-0': MoverScroll, 'py-1': !MoverScroll }"
-  class="hidden lg:block bg-white w-full fixed top-0 z-50 shadow-md transition-all duration-300 ease-in-out">
+<!-- <nav [ngClass]="{ 'py-0 bg-white': MoverScroll, 'py-1': !MoverScroll }"
+  class="hidden lg:block bg-transparent w-full fixed top-0 z-50 shadow-md transition-all duration-300 ease-in-out">
   <div class="w-[90%] mx-auto flex items-center justify-between h-20 relative">
     <div class="w-6"></div>
-    <a routerLink="/home" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-      <img src="../../../../assets/images/LogotypeD.png" alt="logo" class="h-14 object-cover" />
+    <a href="/home" class="flex justify-center">
+      <div class="relative w-[60px] h-[50px] sm:w-[80px] sm:h-[50px]">   
+          <div #letterA class="absolute left-0 sm:left-0 -top-1 aldyFont text-aldy-primary-400 text-6xl sm:text-6xl font-light">A</div>
+          <div #letterV class="absolute left-[25px] sm:left-[30px] -top-1 aldyFont text-aldy-primary-400 text-6xl sm:text-6xl font-light">V</div>
+        </div>
     </a>
     <div class="flex items-center space-x-6 text-xl">
       <a routerLink="/busqueda"
@@ -21,22 +24,20 @@
       <a routerLink="/checkout/carrito"
         class="text-aldy-primary-400  flex items-center hover:text-aldy-primary-500 cursor-pointer">
         <i class="fas fa-shopping-bag transition-transform duration-200 hover:scale-110"></i>
-        <span class="text-base text-gray-600 ms-1">{{ cartItemCount }}</span>
+        <span class="text-base text-white ms-1">{{ cartItemCount }}</span>
       </a>
     </div>
   </div>
   <div class="w-full">
     <div class="w-[90%] mx-auto flex items-center justify-center py-1">
       <ul class="flex space-x-10 font-semibold uppercase">
-        <li><a routerLink="/acerca-de"
-            class="transition-colors text-md sm:text-md text-gray-600 titles hover:text-gray-700 tracking-widest">Acerca
-            de mí</a></li>
+        
         <li><a routerLink="/novias"
-            class="transition-colors text-md sm:text-md text-gray-600 titles hover:text-gray-700 tracking-widest">Novias</a>
+            class="transition-colors text-md sm:text-md text-white titles hover:text-gray-700 tracking-widest">Novias</a>
         </li>
         <li class="relative">
           <button (click)="toggleDropdown()"
-            class="transition-colors text-md sm:text-md text-gray-600 titles hover:text-gray-700 cursor-pointer">TIENDA</button>
+            class="transition-colors text-md sm:text-md text-white titles hover:text-gray-700 cursor-pointer">TIENDA</button>
           <div *ngIf="dropdownOpen" #dropdownRef @dropdownAnimation
             class="absolute left-1/2 -translate-x-1/2 top-full mt-1 w-64 bg-white shadow-lg py-6 z-50 flex justify-center rounded-b-lg transition-transform duration-200 ease-in-out">
             <div>
@@ -44,7 +45,7 @@
               <ul class="space-y-2 text-center text-md font-medium">
                 <li *ngFor="let item of tiendaItems">
                   <a (click)="goToCategory(item)"
-                    class="transition-colors cursor-pointer text-gray-600 text-sm titles hover:text-gray-700">
+                    class="transition-colors cursor-pointer text-white text-sm titles hover:text-gray-700">
                     {{ item }}
                   </a>
                 </li>
@@ -53,15 +54,24 @@
           </div>
         </li>
         <li><a routerLink="/galeria"
-            class="transition-colors text-md sm:text-md titles text-gray-600 tracking-widest hover:text-gray-700">Colecciones</a>
+            class="transition-colors text-md sm:text-md titles text-white tracking-widest hover:text-gray-700">Colecciones</a>
         </li>
         <li><a routerLink="/contacto"
-            class="transition-colors text-md sm:text-md titles text-gray-600 tracking-widest hover:text-gray-700">CONTACTO</a>
+            class="transition-colors text-md sm:text-md titles text-white tracking-widest hover:text-gray-700">CONTACTO</a>
         </li>
       </ul>
     </div>
   </div>
-</nav>
+</nav>  -->
+
+ <nav [ngClass]="{ 'py-0 bg-white': MoverScroll, 'py-1': !MoverScroll }" class="hidden lg:block bg-transparent w-full fixed top-0 z-50 shadow-md transition-all duration-300 ease-in-out">
+<div class="w-[90%] mx-auto flex items-center justify-between h-20 relative">
+  <span class="text-white font-medium text-3xl">1 item</span>
+  <span class="text-white font-medium text-3xl">2 item</span>
+  <span class="text-white font-medium text-3xl">3 item</span>
+</div>
+</nav> 
+
 
 <nav [ngClass]="{ 'py-0': MoverScroll, 'py-1': !MoverScroll }"
   class="block lg:hidden w-full fixed top-0 z-50 bg-white shadow-md font-titles transition-all duration-300 ease-in-out">

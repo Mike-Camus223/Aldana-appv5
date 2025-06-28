@@ -4,11 +4,12 @@ import { RecomendationSecComponent } from '../../../../shared/components/recomen
 import { GridoptionsComponent } from "../../../../shared/components/gridoptions/gridoptions.component";
 import { LocationComponent } from '../../../../shared/components/location/location.component';
 import { RouterModule } from '@angular/router';
+import { DualSectionComponent } from "../../../../shared/components/dual-section/dual-section.component";
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CarouselPublicComponent, RecomendationSecComponent, GridoptionsComponent, LocationComponent, RouterModule],
+  imports: [ LocationComponent, RouterModule, DualSectionComponent],
   templateUrl: './home.component.html',
   styles: ``
 })

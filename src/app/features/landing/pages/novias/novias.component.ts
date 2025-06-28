@@ -12,8 +12,8 @@ import { AppMenuItem } from '../../../../shared/utils/models/app-menu-item.model
 })
 export class NoviasComponent {
   breadcrumbItemsNovias: AppMenuItem[] = [
-    { icon: 'pi pi-home', route: '/home' },
-    { label: 'Novias', route: '/novias' }
+    { label: 'INICIO', route: '/home' },
+    { label: 'NOVIAS', route: '/novias' }
   ];
 
 

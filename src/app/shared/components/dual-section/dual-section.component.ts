@@ -1,8 +1,9 @@
+import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-dual-section',
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './dual-section.component.html',
   styleUrl: './dual-section.component.css'
 })
