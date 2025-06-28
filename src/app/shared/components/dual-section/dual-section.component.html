@@ -1,29 +1,56 @@
-<div class="w-screen h-auto md:h-screen">
-    <div class="grid grid-cols-2 md:grid-cols-2 w-full h-auto md:h-full">
+<!-- dual-section.component.html -->
+<div class="w-screen overflow-hidden">
+  <div class="grid grid-cols-2 w-full">
 
-        <div class="relative group w-full h-[500px] md:h-full overflow-hidden">
-            <img class="absolute top-0 left-0 w-full h-full object-contain scale-180 translate-y-20 transition-all duration-300 ease-in-out grayscale-100 group-hover:grayscale-0"
-                src="../../../../assets/images/Novias.jpeg" alt="section1" />
-            <div class="absolute inset-0 flex items-center translate-x-60 translate-y-40 justify-center">
-                <a href="/novias">
-                    <h1 class="text-[37px] text-white aldyFont font-extralight">NOVIAS</h1>
-
-                </a>
-
-            </div>
-        </div>
-        <div class="relative group w-full h-[500px] md:h-full overflow-hidden">
-            
-            <img class="absolute top-0 left-0 w-full h-full object-contain scale-130 translate-y-20 transition-all duration-300 ease-in-out grayscale-100 group-hover:grayscale-0"
-                src="../../../../assets/images/Chlotes.jpg" alt="section1" />
-            <div class="absolute inset-0 flex items-center translate-x-60 translate-y-40 justify-center">
-                <a href="/tienda">
-                    <h1 class="text-[37px] text-white aldyFont font-extralight">{{ 'Prêt-à-porter' | uppercase }}</h1>
-
-                </a>
-
-            </div>
-        </div>
-
+    <!-- Columna 1 -->
+    <div class="relative group w-full aspect-[3/4] sm:aspect-[4/4] md:h-screen overflow-hidden">
+      <img
+        src="../../../../assets/images/Novias.jpeg"
+        alt="section1"
+        class="absolute inset-0 w-full h-full 
+               object-cover scale-120 md:object-contain 
+               md:scale-185 md:translate-y-40
+               transition-all duration-500 ease-in-out 
+               grayscale group-hover:grayscale-0 pointer-events-none"
+      />
+      <div
+        class="absolute inset-0 flex items-center justify-center
+               md:translate-x-60 md:translate-y-40 
+               translate-x-0 translate-y-0
+               px-4 text-center"
+      >
+        <a routerLink="/novias">
+          <h1 class="text-[28px] sm:text-[32px] md:text-[37px] text-white aldyFont font-extralight">
+            NOVIAS
+          </h1>
+        </a>
+      </div>
     </div>
+
+    <!-- Columna 2 -->
+    <div class="relative group w-full aspect-[3/4] sm:aspect-[3/4] md:h-screen overflow-hidden">
+      <img
+        src="../../../../assets/images/Chlotes.jpg"
+        alt="section2"
+        class="absolute inset-0 w-full h-full 
+               object-cover scale-100  lg:scale-170 sm:scale-180 md:object-contain 
+               md:scale-170 md:translate-y-10
+               transition-all duration-500 ease-in-out 
+               grayscale group-hover:grayscale-0 pointer-events-none"
+      />
+      <div
+        class="absolute inset-0 flex items-center justify-center
+               md:translate-x-60 md:translate-y-40 
+               translate-x-0 translate-y-0
+               px-4 text-center"
+      >
+        <a routerLink="/tienda">
+          <h1 class="text-[28px] sm:text-[32px] md:text-[37px] text-white aldyFont font-extralight uppercase">
+            Prêt-à-porter
+          </h1>
+        </a>
+      </div>
+    </div>
+
+  </div>
 </div>

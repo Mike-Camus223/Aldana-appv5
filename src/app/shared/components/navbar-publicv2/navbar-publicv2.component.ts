@@ -11,6 +11,11 @@ import {
 import { CartService } from '../../../core/services/cart.service';
 import { CartItem } from '../../utils/models/cartItems-model';
 
+interface RouterlinkNavbar {
+  label: string,
+  link: string
+}
+
 @Component({
   selector: 'app-navbar-publicv2',
   standalone: true,
@@ -52,6 +57,21 @@ export class NavbarPublicv2Component implements OnInit {
     'Vestidos'
   ];
 
+  routerLinkNavbar: RouterlinkNavbar[] = [
+    {
+      label: 'NOVIAS',
+      link: '/novias',
+    },
+    {
+      label: 'COLECCIONES',
+      link: '/galeria',
+    },
+    {
+      label: 'CONTACTO',
+      link: '/contacto',
+    }
+  ]
+
   @ViewChild('dropdownRef') dropdownRef!: ElementRef;
 
   constructor(private router: Router, private cartService: CartService) {}
@@ -59,7 +79,7 @@ export class NavbarPublicv2Component implements OnInit {
   ngOnInit(): void {
     this.cartService.cartItems$.subscribe(items => {
       this.cartItems = items;
-      this.cartItemCount = items.reduce((acc, item) => acc + item.quantity, 0); // <- total de productos
+      this.cartItemCount = items.reduce((acc, item) => acc + item.quantity, 0);
     });
   }
 
@@ -105,4 +125,6 @@ export class NavbarPublicv2Component implements OnInit {
     this.onMenuLinkClick();
     this.router.navigate(['/tienda'], { queryParams: { categoria: this.normalizeCategory(item) } });
   }
+
+
 }

@@ -1,76 +1,83 @@
-<!-- <nav [ngClass]="{ 'py-0 bg-white': MoverScroll, 'py-1': !MoverScroll }"
-  class="hidden lg:block bg-transparent w-full fixed top-0 z-50 shadow-md transition-all duration-300 ease-in-out">
-  <div class="w-[90%] mx-auto flex items-center justify-between h-20 relative">
-    <div class="w-6"></div>
-    <a href="/home" class="flex justify-center">
-      <div class="relative w-[60px] h-[50px] sm:w-[80px] sm:h-[50px]">   
+<nav [ngClass]="{ 'py-0 bg-white': MoverScroll, 'py-1 bg-black/10': !MoverScroll }"
+  class="hidden lg:block backdrop-blur-sm shadow-lg w-full fixed top-0 z-50 transition-all duration-300 ease-in-out">
+    <div class="absolute inset-0 backdrop-blur-sm bg-white/10 pointer-events-none"></div>
+
+  <div class="relative z-10 w-[90%] mx-auto flex items-center justify-between h-20">
+        <div class="w-6">
+      <a href="/home" class="flex justify-center">
+        <div class="relative w-[60px] h-[50px] sm:w-[80px] sm:h-[50px]">
           <div #letterA class="absolute left-0 sm:left-0 -top-1 aldyFont text-aldy-primary-400 text-6xl sm:text-6xl font-light">A</div>
           <div #letterV class="absolute left-[25px] sm:left-[30px] -top-1 aldyFont text-aldy-primary-400 text-6xl sm:text-6xl font-light">V</div>
         </div>
-    </a>
-    <div class="flex items-center space-x-6 text-xl">
-      <a routerLink="/busqueda"
-        class="text-aldy-primary-400  flex items-center hover:text-aldy-primary-500 cursor-pointer">
-        <i class="fas fa-search transition-transform duration-200 hover:scale-110"></i>
-      </a>
-      <a routerLink="/login"
-        class="text-aldy-primary-400  flex items-center hover:text-aldy-primary-500 cursor-pointer">
-        <i class="fas fa-user transition-transform duration-200 hover:scale-110"></i>
-      </a>
-      <a routerLink="/favoritos"
-        class="text-aldy-primary-400  flex items-center hover:text-aldy-primary-500 cursor-pointer">
-        <i class="fas fa-heart transition-transform duration-200 hover:scale-110"></i>
-      </a>
-      <a routerLink="/checkout/carrito"
-        class="text-aldy-primary-400  flex items-center hover:text-aldy-primary-500 cursor-pointer">
-        <i class="fas fa-shopping-bag transition-transform duration-200 hover:scale-110"></i>
-        <span class="text-base text-white ms-1">{{ cartItemCount }}</span>
       </a>
     </div>
-  </div>
-  <div class="w-full">
     <div class="w-[90%] mx-auto flex items-center justify-center py-1">
       <ul class="flex space-x-10 font-semibold uppercase">
-        
-        <li><a routerLink="/novias"
-            class="transition-colors text-md sm:text-md text-white titles hover:text-gray-700 tracking-widest">Novias</a>
+        <li *ngFor="let links of routerLinkNavbar">
+          <a [routerLink]="links.link"
+             [ngClass]="{
+               'text-white hover:text-gray-700 border-white': !MoverScroll,
+               'text-gray-700 hover:text-gray-500 border-gray-700': MoverScroll
+             }"
+             class="transition-colors titles text-md sm:text-md tracking-widest border-transparent pb-1">
+            {{ links.label }}
+          </a>
         </li>
         <li class="relative">
-          <button (click)="toggleDropdown()"
-            class="transition-colors text-md sm:text-md text-white titles hover:text-gray-700 cursor-pointer">TIENDA</button>
-          <div *ngIf="dropdownOpen" #dropdownRef @dropdownAnimation
-            class="absolute left-1/2 -translate-x-1/2 top-full mt-1 w-64 bg-white shadow-lg py-6 z-50 flex justify-center rounded-b-lg transition-transform duration-200 ease-in-out">
-            <div>
-              <h3 class="font-bold border-b-2 text-md sm:text-md border-black pb-2 mb-4 titles text-center">TIENDA</h3>
-              <ul class="space-y-2 text-center text-md font-medium">
-                <li *ngFor="let item of tiendaItems">
-                  <a (click)="goToCategory(item)"
-                    class="transition-colors cursor-pointer text-white text-sm titles hover:text-gray-700">
-                    {{ item }}
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </li>
-        <li><a routerLink="/galeria"
-            class="transition-colors text-md sm:text-md titles text-white tracking-widest hover:text-gray-700">Colecciones</a>
-        </li>
-        <li><a routerLink="/contacto"
-            class="transition-colors text-md sm:text-md titles text-white tracking-widest hover:text-gray-700">CONTACTO</a>
+  <button (click)="toggleDropdown()"
+    class="transition-colors text-md sm:text-md titles cursor-pointer pb-1"
+    [ngClass]="{
+      'text-white border-white hover:text-gray-700': !MoverScroll && dropdownOpen,
+      'text-gray-700 border-gray-700 hover:text-gray-500': MoverScroll && dropdownOpen,
+      'text-white border-transparent hover:text-gray-700': !MoverScroll && !dropdownOpen,
+      'text-gray-700 border-transparent hover:text-gray-500': MoverScroll && !dropdownOpen
+    }">
+    TIENDA
+  </button>
+  <div *ngIf="dropdownOpen" #dropdownRef @dropdownAnimation
+    class="absolute left-1/2 -translate-x-1/2 top-full mt-1 w-64 bg-white shadow-lg py-6 z-50 flex justify-center rounded-b-lg transition-transform duration-200 ease-in-out">
+    <div>
+      <h3 class="font-bold border-b-2 text-md sm:text-md border-black pb-2 mb-4 titles text-center">TIENDA</h3>
+      <ul class="space-y-2 text-center text-md font-medium">
+        <li *ngFor="let item of tiendaItems">
+          <a (click)="goToCategory(item)"
+            class="transition-colors cursor-pointer text-sm titles text-gray-700 hover:text-gray-500">
+            {{ item }}
+          </a>
         </li>
       </ul>
     </div>
   </div>
-</nav>  -->
+</li>
 
- <nav [ngClass]="{ 'py-0 bg-white': MoverScroll, 'py-1': !MoverScroll }" class="hidden lg:block bg-transparent w-full fixed top-0 z-50 shadow-md transition-all duration-300 ease-in-out">
-<div class="w-[90%] mx-auto flex items-center justify-between h-20 relative">
-  <span class="text-white font-medium text-3xl">1 item</span>
-  <span class="text-white font-medium text-3xl">2 item</span>
-  <span class="text-white font-medium text-3xl">3 item</span>
-</div>
-</nav> 
+        
+      </ul>
+    </div>
+
+    <!-- Íconos laterales -->
+    <div>
+      <div class="flex items-center space-x-6 text-xl">
+        <a routerLink="/busqueda" class="text-aldy-primary-400 flex items-center hover:text-aldy-primary-500 cursor-pointer">
+          <i class="fas fa-search transition-transform duration-200 hover:scale-110"></i>
+        </a>
+        <a routerLink="/login" class="text-aldy-primary-400 flex items-center hover:text-aldy-primary-500 cursor-pointer">
+          <i class="fas fa-user transition-transform duration-200 hover:scale-110"></i>
+        </a>
+        <a routerLink="/favoritos" class="text-aldy-primary-400 flex items-center hover:text-aldy-primary-500 cursor-pointer">
+          <i class="fas fa-heart transition-transform duration-200 hover:scale-110"></i>
+        </a>
+        <a routerLink="/checkout/carrito"  class="text-aldy-primary-400 flex items-center gap-1 hover:text-aldy-primary-500 cursor-pointer">
+          <i class="fas fa-shopping-bag transition-transform duration-200 hover:scale-110"></i>
+          <span class="text-base"
+          [ngClass]="{
+               'text-white hover:text-gray-700 border-white': !MoverScroll,
+               'text-gray-700 hover:text-gray-500 border-gray-700': MoverScroll
+             }" >{{  cartItemCount }}</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
 
 
 <nav [ngClass]="{ 'py-0': MoverScroll, 'py-1': !MoverScroll }"
@@ -85,8 +92,7 @@
         class="text-aldy-primary-400 flex items-center hover:text-aldy-primary-500 cursor-pointer">
         <i class="fas fa-heart transition-transform duration-200 hover:scale-110"></i>
       </a>
-      <a routerLink="/login"
-        class="text-aldy-primary-400 flex items-center hover:text-aldy-primary-500 cursor-pointer">
+      <a routerLink="/login" class="text-aldy-primary-400 flex items-center hover:text-aldy-primary-500 cursor-pointer">
         <i class="fas fa-user transition-transform duration-200 hover:scale-110"></i>
       </a>
     </div>

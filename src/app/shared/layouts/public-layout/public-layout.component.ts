@@ -24,4 +24,6 @@ export class PublicLayoutComponent {
   onLoadingFinished(): void {
     this.loading = false;
   }
+
+  
 }
