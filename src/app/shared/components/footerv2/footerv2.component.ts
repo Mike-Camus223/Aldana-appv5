@@ -1,12 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { InputComponent } from '../input/input.component';
 
 @Component({
   selector: 'app-footerv2',
   standalone: true,
-  imports: [CommonModule, RouterModule, ReactiveFormsModule],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule,InputComponent,FormsModule],
   templateUrl: './footerv2.component.html',
   styleUrl: './footerv2.component.css'
 })
@@ -19,6 +20,7 @@ export class Footerv2Component {
     'Abrigos',
     'Vestidos'
   ];
+  
 
   readonly form: FormGroup;
   submitted = false;
@@ -26,7 +28,7 @@ export class Footerv2Component {
 
   constructor(private readonly fb: FormBuilder) {
     this.form = this.fb.group({
-      email: ['', [Validators.required, Validators.email]]
+      email: ['', [Validators.email]]
     });
   }
 

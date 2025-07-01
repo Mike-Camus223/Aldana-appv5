@@ -1,0 +1,15 @@
+<section class="w-full max-w-screen-xl mx-auto py-8 overflow-hidden">
+  <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-2 auto-rows-[200px]">
+    <div
+      *ngFor="let img of images; let i = index"
+      [attr.data-aos]="getAosAnimation(i)"
+      data-aos-offset="300"
+      data-aos-once="true"
+      data-aos-easing="ease-in-sine"
+      [ngClass]="getGridClass(i)"
+      class="overflow-hidden rounded-sm"
+    >
+      <img [src]="img" alt="Gallery image" class="w-full h-full object-cover">
+    </div>
+  </div>
+</section>

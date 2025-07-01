@@ -3,12 +3,8 @@ import { Router, NavigationEnd, RouterOutlet } from '@angular/router';
 import { ViewportScroller } from '@angular/common';
 import { filter } from 'rxjs/operators';
 import { ToastModule } from 'primeng/toast';
+import * as AOS from 'aos'
 
-declare global {
-  interface Window {
-    Flowbite: any;
-  }
-}
 
 @Component({
   selector: 'app-root',
@@ -32,8 +28,7 @@ export class AppComponent implements OnInit {
         this.viewportScroller.scrollToPosition([0, 0]);
       });
 
-    if (window.Flowbite && typeof window.Flowbite.init === 'function') {
-      window.Flowbite.init();
-    }
+    AOS.init()
+    window.addEventListener('load', AOS.refresh)
   }
 }

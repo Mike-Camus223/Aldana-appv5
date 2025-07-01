@@ -61,9 +61,9 @@ export class SupabaseService {
   async getProducts(id?: string) {
     const selectProducts = `
       id,
-      name,
+     
+      details, name,
       description,
-      details,
       price,
       category_id,
       subcategory_id,
