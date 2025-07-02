@@ -115,7 +115,7 @@ body.reserve-scrollbar-space {
 .tolol {
   background-color: #ffffffe7;
 }
-
+/* 
 @font-face {
   font-family: 'aldyfont';
   src: url('assets/fonts/Futura Lt BT Light.ttf') format('truetype');
@@ -125,6 +125,6 @@ body.reserve-scrollbar-space {
 
 .aldyFont {
   font-family: 'aldyfont', sans-serif;
-}
+} */
 
 

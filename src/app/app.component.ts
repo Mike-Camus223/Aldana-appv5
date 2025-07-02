@@ -3,7 +3,6 @@ import { Router, NavigationEnd, RouterOutlet } from '@angular/router';
 import { ViewportScroller } from '@angular/common';
 import { filter } from 'rxjs/operators';
 import { ToastModule } from 'primeng/toast';
-import * as AOS from 'aos'
 
 
 @Component({
