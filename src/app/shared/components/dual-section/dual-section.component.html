@@ -41,7 +41,8 @@
                translate-x-0 translate-y-0
                px-4 text-center"
       >
-        <a appLinkHoverUnderline  [underlineHeight]="'3px'" underlineColor="#fff"  routerLink="/tienda/id">
+        <a appLinkHoverUnderline  [underlineHeight]="'3px'" underlineColor="#fff"  [routerLink]="['/tienda']"
+  [queryParams]="{ categoria: 'camisas' }">
           <h1 class="text-[28px] sm:text-[32px] md:text-[37px] text-white aldyFont font-extralight uppercase">
             Prêt-à-porter
           </h1>

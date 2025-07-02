@@ -65,7 +65,8 @@ export class NavbarPublicv2Component implements OnInit {
     'Faldas',
     'Pantalón',
     'Abrigos',
-    'Vestidos'
+    'Vestidos',
+    'Remeras'
   ];
 
   routerLinkNavbar: RouterlinkNavbar[] = [
