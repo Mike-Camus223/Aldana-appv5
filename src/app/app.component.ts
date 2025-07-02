@@ -3,6 +3,7 @@ import { Router, NavigationEnd, RouterOutlet } from '@angular/router';
 import { ViewportScroller } from '@angular/common';
 import { filter } from 'rxjs/operators';
 import { ToastModule } from 'primeng/toast';
+import * as AOS from 'aos'
 
 
 @Component({
@@ -27,7 +28,7 @@ export class AppComponent implements OnInit {
         this.viewportScroller.scrollToPosition([0, 0]);
       });
 
-    // AOS.init()
-    // window.addEventListener('load', AOS.refresh)
+    AOS.init()
+    window.addEventListener('load', AOS.refresh)
   }
 }

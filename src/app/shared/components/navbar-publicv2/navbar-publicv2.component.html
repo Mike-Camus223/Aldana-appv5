@@ -74,19 +74,19 @@
 
     <div class="flex items-center space-x-6 text-xl">
       <a routerLink="/busqueda" class="cursor-pointer" (mouseenter)="onInteractiveEnter()">
-        <span class="material-icons-outlined text-[24px]" [ngClass]="iconColorClass">search</span>
+        <span translate="no" class="material-icons-outlined text-[24px]" [ngClass]="iconColorClass">search</span>
       </a>
       <a routerLink="/login" class="cursor-pointer" (mouseenter)="onInteractiveEnter()">
-        <span class="material-icons-outlined text-[24px]" [ngClass]="iconColorClass">person</span>
+        <span translate="no" class="material-icons-outlined text-[24px]" [ngClass]="iconColorClass">person</span>
       </a>
       <a routerLink="/favoritos" class="cursor-pointer" (mouseenter)="onInteractiveEnter()">
-        <span class="material-icons-outlined text-[24px]" [ngClass]="iconColorClass">favorite</span>
+        <span translate="no" class="material-icons-outlined text-[24px]" [ngClass]="iconColorClass">favorite</span>
       </a>
       <div class="flex gap-1 items-center">
         <a routerLink="/checkout/carrito" class="cursor-pointer" (mouseenter)="onInteractiveEnter()">
-          <span class="material-icons-outlined text-[24px]" [ngClass]="iconColorClass">shopping_bag</span>
+          <span translate="no" class="material-icons-outlined text-[24px]" [ngClass]="iconColorClass">shopping_bag</span>
         </a>
-        <span class="text-base" [ngClass]="{
+        <span translate="no" class="text-base" [ngClass]="{
           'text-white border-white': isHomePage && !MoverScroll && !hoverNavbar,
           'text-gray-700 hover:text-gray-500 border-gray-700': !isHomePage || MoverScroll || hoverNavbar
         }">
