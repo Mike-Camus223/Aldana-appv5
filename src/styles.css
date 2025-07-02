@@ -118,9 +118,10 @@ body.reserve-scrollbar-space {
 
 @font-face {
   font-family: 'aldyfont';
-  src: url('../src/assets/fonts/Futura\ Lt\ BT\ Light.ttf') format('truetype');
+  src: url('assets/fonts/Futura Lt BT Light.ttf') format('truetype');
   font-style: normal;
 }
+
 
 .aldyFont {
   font-family: 'aldyfont', sans-serif;
