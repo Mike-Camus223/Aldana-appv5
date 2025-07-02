@@ -1,5 +1,8 @@
 {
   "projects": {
-    "default": "aldyapp"
-  }
+    "default": "aldyapp",
+    "aldyappv2": "aldyappv2"
+  },
+  "targets": {},
+  "etags": {}
 }
