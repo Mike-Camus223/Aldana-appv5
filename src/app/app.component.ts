@@ -28,7 +28,7 @@ export class AppComponent implements OnInit {
         this.viewportScroller.scrollToPosition([0, 0]);
       });
 
-    AOS.init()
-    window.addEventListener('load', AOS.refresh)
+    // AOS.init()
+    // window.addEventListener('load', AOS.refresh)
   }
 }
