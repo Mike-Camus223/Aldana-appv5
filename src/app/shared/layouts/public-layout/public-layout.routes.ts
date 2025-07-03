@@ -50,6 +50,10 @@ export const routes: Routes = [
         path: 'checkout',
         loadChildren: () =>
           import('../../../features/checkout/checkout.routes').then(m => m.checkoutRoutes),
+      },
+      {
+        path: 'busqueda',
+        loadComponent: () => import('../../../features/landing/pages/search-page/search-page.component').then(c => c.SearchPageComponent),
       }
     ]
   }

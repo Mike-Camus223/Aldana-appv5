@@ -3,11 +3,26 @@ import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { InputComponent } from '../input/input.component';
+import {
+LUCIDE_ICONS,
+  LucideAngularModule,
+  LucideIconProvider,
+  ChevronRight
+} from 'lucide-angular';
 
 @Component({
   selector: 'app-footerv2',
   standalone: true,
-  imports: [CommonModule, RouterModule, ReactiveFormsModule,InputComponent,FormsModule],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule, InputComponent, FormsModule, LucideAngularModule],
+   providers: [
+  {
+    provide: LUCIDE_ICONS,
+    multi: true,
+    useValue: new LucideIconProvider({
+      ChevronRight
+    })
+  }
+],
   templateUrl: './footerv2.component.html',
   styleUrl: './footerv2.component.css'
 })

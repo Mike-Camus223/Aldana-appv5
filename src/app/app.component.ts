@@ -5,7 +5,6 @@ import { filter } from 'rxjs/operators';
 import { ToastModule } from 'primeng/toast';
 import * as AOS from 'aos'
 
-
 @Component({
   selector: 'app-root',
   standalone: true,

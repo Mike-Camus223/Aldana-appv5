@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { LocationComponent } from '../../../../shared/components/location/location.component';
 import { RouterModule } from '@angular/router';
 import { DualSectionComponent } from "../../../../shared/components/dual-section/dual-section.component";
-import { AboutSecHomeComponent } from '../../../../shared/about-sec-home/about-sec-home.component';
+import { AboutSecHomeComponent } from '../../../../shared/components/about-sec-home/about-sec-home.component';
 import { CollageGalleryComponent } from "../../../../shared/components/collage-gallery/collage-gallery.component";
 
 @Component({

@@ -18,7 +18,16 @@ import { CartService } from '../../../core/services/cart.service';
 import { CartItem } from '../../utils/models/cartItems-model';
 import { LinkHoverUnderlineDirective } from '../../utils/directives/link-hover-underline.directive';
 import { filter } from 'rxjs/operators';
-
+import {
+  Search,
+  User,
+  Heart,
+  ShoppingBag,
+  Menu,
+  LUCIDE_ICONS,
+  LucideAngularModule,
+  LucideIconProvider
+} from 'lucide-angular';
 
 interface RouterlinkNavbar {
   label: string;
@@ -28,8 +37,23 @@ interface RouterlinkNavbar {
 @Component({
   selector: 'app-navbar-publicv2',
   standalone: true,
-  imports: [CommonModule, RouterModule, LinkHoverUnderlineDirective],
+  imports: [CommonModule, RouterModule, LinkHoverUnderlineDirective,
+    LucideAngularModule
+  ],
   templateUrl: './navbar-publicv2.component.html',
+  providers: [
+  {
+    provide: LUCIDE_ICONS,
+    multi: true,
+    useValue: new LucideIconProvider({
+      Search,
+      User,
+      Heart,
+      ShoppingBag,
+      Menu
+    })
+  }
+],
   styleUrls: ['./navbar-publicv2.component.css'],
   animations: [
     trigger('dropdownAnimation', [
@@ -51,6 +75,10 @@ interface RouterlinkNavbar {
   ]
 })
 export class NavbarPublicv2Component implements OnInit {
+
+  readonly search = Search;
+
+
   isHomePage = false;
   MoverScroll = false;
   dropdownOpen = false;
