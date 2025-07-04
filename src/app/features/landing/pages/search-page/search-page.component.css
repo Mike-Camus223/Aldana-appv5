@@ -1,0 +1,111 @@
+.fake-input {
+  pointer-events: none;
+  background-color: white;
+  position: relative;
+  text-align: center;
+  margin: 0 auto;
+  overflow: hidden;
+  white-space: nowrap;
+  transition: width 0.2s ease-in-out;
+  width: fit-content;
+}
+
+.fake-input.activated {
+  text-align: left;
+}
+
+.timesroman {
+  font-family: 'Times New Roman', Times, serif;
+}
+
+.ghost-input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  z-index: 10;
+  caret-color: transparent;
+  background: transparent;
+  border: none;
+  color: transparent;
+  font-size: inherit;
+}
+
+.scroll-text {
+  display: inline-block;
+}
+
+.hide-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.placeholder-animate {
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+  animation: writer 0.3s steps(8, end);
+}
+
+.blinking-cursor {
+  display: inline-block;
+  animation: blink 1s steps(1) infinite;
+  line-height: 1;
+  font-weight: 400;
+  font-size: inherit;
+  vertical-align: baseline;
+}
+
+@keyframes writer {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+@keyframes blink {
+  0%, 100% { 
+    opacity: 1; 
+  }
+  50% { 
+    opacity: 0; 
+  }
+}
+
+@media (max-width: 320px) {
+  .fake-input {
+    max-width: 18rem !important;
+    font-size: 1.5rem !important;
+  }
+  
+  .scroll-text {
+    max-width: 18rem !important;
+  }
+  
+  .animated-text {
+    padding: 0.75rem !important;
+  }
+  
+  .content-wrapper {
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+  }
+}
+
+@media (max-width: 375px) {
+  .fake-input {
+    max-width: 20rem !important;
+    font-size: 1.75rem !important;
+  }
+  
+  .scroll-text {
+    max-width: 20rem !important;
+  }
+}

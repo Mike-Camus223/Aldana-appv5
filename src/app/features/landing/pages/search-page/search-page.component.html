@@ -1,1 +1,74 @@
-<p>search-page works!</p>
+<div class="h-[64px] lg:h-[120px]"></div>
+
+<div class="min-h-auto w-full flex flex-col items-center justify-start bg-white pb-16">
+    <div class="relative w-full max-w-6xl px-2 xs:px-4 mt-8 content-wrapper">
+        <input type="text" class="ghost-input max-w-[18rem] xs:max-w-sm sm:max-w-xl md:max-w-2xl" (input)="onInput($event)" autofocus #inputElement />
+
+        <div #fakeInput
+            class="fake-input max-w-[18rem] xs:max-w-sm sm:max-w-xl md:max-w-2xl border-b border-gray-400 text-2xl xs:text-3xl sm:text-6xl md:text-7xl lg:text-8xl text-gray-700 font-medium tracking-wide transition-all duration-300"
+            [ngClass]="{ activated: chars.length > 0 }" [style.width.px]="inputWidth">
+            <div #scrollContainer class="scroll-text max-w-[18rem] xs:max-w-sm sm:max-w-xl md:max-w-2xl relative overflow-x-auto hide-scrollbar whitespace-nowrap"
+                [ngClass]="{
+                    'text-center': chars.length === 0,
+                    'text-left': chars.length > 0
+                }">
+                <div #animatedText class="animated-text inline-flex gap-[1px] relative leading-none p-3 xs:p-4 sm:p-5 md:p-6">
+                    <ng-container *ngIf="chars.length === 0">
+                        <span class="flex items-center gap-1 text-gray-400 select-none placeholder-animate timesroman">
+                            <span class="leading-none">Buscador</span>
+                            <span class="blinking-cursor placeholder-cursor text-gray-400 leading-none">|</span>
+                        </span>
+                    </ng-container>
+
+                    <ng-container *ngIf="chars.length > 0">
+                        <span *ngFor="let char of chars" class="inline-block whitespace-pre leading-none">{{ char }}</span>
+                        <span class="blinking-cursor text-gray-700 leading-none">|</span>
+                    </ng-container>
+                </div>
+            </div>
+        </div>
+
+        <div *ngIf="loading" class="flex justify-center my-10">
+            <p-progressSpinner></p-progressSpinner>
+        </div>
+
+        <div *ngIf="!loading && noResults && chars.length > 0"
+            class="text-center text-gray-500 mt-12 px-2 xs:px-4 text-sm xs:text-base sm:text-lg">
+            No se encontraron resultados.
+        </div>
+
+        <div *ngIf="!loading && !noResults && chars.length > 0" class="w-full max-w-6xl px-2 xs:px-4 mt-12">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 justify-items-center">
+                <div *ngFor="let product of products; trackBy: trackByProductId"
+                    class="rounded-sm border border-gray-200 shadow-md transition relative overflow-hidden flex flex-col w-full max-w-sm">
+                    <a [routerLink]="['/producto', product.id]" class="group block">
+                        <div class="relative shadow-sm rounded-t-sm h-72 flex items-center justify-center overflow-hidden">
+                            <img [src]="product.mainImageUrl" [alt]="product.name" loading="lazy" fetchpriority="low"
+                                class="transition-transform duration-300 group-hover:scale-110 h-full w-full object-cover" />
+                            <div class="absolute inset-0 bg-white/20 bg-opacity-10 opacity-0 group-hover:opacity-100 transition duration-300"></div>
+                        </div>
+
+                        <div class="px-4 pb-4">
+                            <h3 class="text-sm sm:text-lg mt-3">{{ product.name }}</h3>
+                            <p class="text-sm sm:text-base text-gray-600 mt-1">
+                                {{ product.description }}
+                            </p>
+                            <p class="text-sm sm:text-base font-medium mt-1">
+                                {{ product.price | currency:'ARS':'symbol-narrow':'1.2-2':'es-AR' }}
+                            </p>
+                        </div>
+                    </a>
+
+                    <div class="mt-1 pb-4 px-4 flex flex-wrap gap-2">
+                        <button *ngFor="let color of product.colors" (click)="selectColor(product.id, color)"
+                            [ngStyle]="{ backgroundColor: color }" class="w-5 h-5 rounded-sm transition-all border"
+                            [ngClass]="{
+                                'border-white border-2 ring-2 ring-gray-800 cursor-default': selectedColors[product.id] === color,
+                                'border-transparent cursor-pointer': selectedColors[product.id] !== color
+                            }" [title]="color" aria-label="Elegir color"></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
