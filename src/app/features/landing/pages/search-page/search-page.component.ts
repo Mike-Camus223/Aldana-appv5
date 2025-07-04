@@ -117,6 +117,9 @@ export class SearchPageComponent implements AfterViewInit, OnDestroy {
     this.noResults = false;
     this.products = [];
 
+    // Mantener el scroll arriba mientras se busca
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
     const { data, error } = await this.supabase.getProducts();
     if (error) {
       console.error('Error al obtener productos', error);
@@ -135,6 +138,11 @@ export class SearchPageComponent implements AfterViewInit, OnDestroy {
     this.products = this.mapProducts(filtered);
     this.noResults = this.products.length === 0;
     this.loading = false;
+
+    // Asegurar que permanezca arriba después de mostrar resultados
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 100);
   }
 
   private mapProducts(data: any[]): Product[] {
@@ -161,7 +169,25 @@ export class SearchPageComponent implements AfterViewInit, OnDestroy {
     });
   }
 
-  async selectColor(productId: string, color: string): Promise<void> {
+  // Método para navegar al producto con mejor compatibilidad móvil
+  navigateToProduct(productId: string, event?: Event): void {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    
+    // Usar setTimeout para asegurar que la navegación ocurra después del evento
+    setTimeout(() => {
+      this.router.navigate(['/producto', productId]);
+    }, 0);
+  }
+
+  async selectColor(productId: string, color: string, event?: Event): Promise<void> {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    
     if (this.selectedColors[productId] === color) return;
     this.selectedColors[productId] = color;
 
