@@ -116,6 +116,10 @@ body.reserve-scrollbar-space {
   background-color: #ffffffe7;
 }
 
+.timesRoman {
+  font-family: 'Times New Roman', Times, serif;
+}
+
 @font-face {
   font-family: 'aldyfont';
   src: url('assets/fonts/Futura Lt BT Light.ttf') format('truetype');

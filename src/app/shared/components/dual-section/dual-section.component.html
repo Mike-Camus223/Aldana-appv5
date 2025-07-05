@@ -1,41 +1,47 @@
-<div class="w-screen overflow-hidden">
-  <div class="grid grid-cols-2 w-full flex-wrap">
-    <div class="relative group w-full h-auto sm:h-[500px] md:h-screen overflow-hidden">
-      <img src="../../../../assets/images/Novias.jpeg" alt="section1" class="absolute inset-0 w-full h-full
-               object-cover md:object-contain
-               scale-125 sm:scale-140 md:scale-185
-               translate-y-0 md:translate-y-40
-               transition-all duration-500 ease-in-out 
-               grayscale group-hover:grayscale-0 pointer-events-none" />
-      <div class="absolute inset-0 flex items-center justify-center
-               md:translate-x-60 md:translate-y-40
-               translate-x-0 translate-y-0
-               px-4 text-center">
-        <a appLinkHoverUnderline [underlineHeight]="'3px'" underlineColor="#fff" routerLink="/novias">
-          <h1 class="text-xl sm:text-xl md:text-4xl text-white aldyFont font-extralight">
-            NOVIAS
-          </h1>
-        </a>
-      </div>
+<div class="grid grid-cols-2 w-full">
+  <div class="relative group w-full aspect-[2/2]  sm:aspect-[3/3] lg:aspect-[9/9] overflow-hidden">
+    <img
+      src="../../../../assets/images/Novias.jpeg"
+      alt="section1"
+      class="absolute inset-0 w-full h-full object-cover object-[center_20%]
+             transition-all duration-500 ease-in-out
+             grayscale group-hover:grayscale-0 pointer-events-none"
+    />
+    <div class="absolute inset-0 flex items-center justify-center lg:items-end lg:justify-end px-4 text-center mb-0 mr-0 lg:mb-50 lg:mr-40">
+      <a
+        appLinkHoverUnderline
+        [underlineHeight]="'3px'"
+        underlineColor="#fff"
+        routerLink="/novias"
+        class="absolute inset-0 flex items-center justify-center"
+      >
+        <h1 class="xs:text-lg text-xl sm:text-3xl md:text-4xl text-white aldyFont font-extralight uppercase">
+          NOVIAS
+        </h1>
+      </a>
     </div>
-    <div class="relative group w-full h-[400px] sm:h-[500px] md:h-screen overflow-hidden">
-      <img src="../../../../assets/images/Chlotes.jpg" alt="section2" class="absolute inset-0 w-full h-full 
-               object-cover md:object-contain
-               scale-110 sm:scale-130 lg:scale-145 md:scale-170
-               translate-y-0 md:translate-y-50
-               transition-all duration-500 ease-in-out 
-               grayscale group-hover:grayscale-0 pointer-events-none" />
-      <div class="absolute inset-0 flex items-center justify-center
-               md:translate-x-60 md:translate-y-40
-               translate-x-0 translate-y-0
-               px-4 text-center">
-        <a appLinkHoverUnderline [underlineHeight]="'3px'" underlineColor="#fff" [routerLink]="['/tienda']"
-          [queryParams]="{ categoria: 'camisas' }">
-          <h1 class="text-xl sm:text-2xl md:text-4xl text-white aldyFont font-extralight uppercase">
-            Prêt-à-porter
-          </h1>
-        </a>
-      </div>
+  </div>
+  <div class="relative group w-full aspect-[2/2]  sm:aspect-[3/3] lg:aspect-[9/9] overflow-hidden">
+    <img
+      src="../../../../assets/images/Chlotes.jpg"
+      alt="section2"
+      class="absolute inset-0 w-full h-full object-cover object-[center_4%]
+             transition-all duration-500 ease-in-out
+             grayscale group-hover:grayscale-0 pointer-events-none"
+    />
+    <div class="absolute inset-0 flex items-center justify-center lg:items-end lg:justify-end px-4 text-center mb-0 mr-0 lg:mb-50 lg:mr-40">
+      <a
+        appLinkHoverUnderline
+        [underlineHeight]="'3px'"
+        underlineColor="#fff"
+        [routerLink]="['/tienda']"
+        [queryParams]="{ categoria: 'camisas' }"
+        class="absolute inset-0 flex items-center justify-center"
+      >
+        <h1 class="text-xl sm:text-3xl md:text-4xl text-white aldyFont font-extralight uppercase">
+          Prêt-à-porter
+        </h1>
+      </a>
     </div>
   </div>
 </div>

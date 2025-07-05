@@ -10,6 +10,5 @@ import { RouterModule } from '@angular/router';
   styleUrl: './dual-section.component.css'
 })
 export class DualSectionComponent {
-  @Input() hoverNavbar = false;
 
 }
