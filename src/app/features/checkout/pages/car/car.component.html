@@ -32,20 +32,20 @@
               </div>
     
               <div class="ml-auto flex flex-col items-end justify-between">
-                <button (click)="removeItem(item.id)" title="Eliminar" class="hover:text-red-600">
+                <button (click)="removeItem(item.id)" title="Eliminar" class="hover:text-red-600 cursor-pointer">
                   <i class="fa-solid fa-trash text-gray-600"></i>
                 </button>
     
                 <div class="flex items-center gap-2 mt-4">
                   <button (click)="changeQuantity(item.id, -1)"
-                    class="w-7 h-7 bg-aldy-primary-400 text-white hover:bg-aldy-primary-500 flex items-center justify-center rounded">
+                    class="w-7 h-7 bg-aldy-primary-400 text-white cursor-pointer hover:bg-aldy-primary-500 flex items-center justify-center rounded">
                     <i class="fa-solid fa-minus text-[10px]"></i>
                   </button>
     
                   <span class="text-sm font-medium w-6 text-center">{{ item.quantity }}</span>
     
                   <button (click)="changeQuantity(item.id, 1)"
-                    class="w-7 h-7 bg-aldy-primary-400 text-white hover:bg-aldy-primary-500 flex items-center justify-center rounded">
+                    class="w-7 h-7 bg-aldy-primary-400 text-white cursor-pointer hover:bg-aldy-primary-500 flex items-center justify-center rounded">
                     <i class="fa-solid fa-plus text-[10px]"></i>
                   </button>
                 </div>
@@ -75,10 +75,10 @@
       </span>
     </div>
 
-    <button (click)="goToShipping()" class="w-full mb-3 py-3 bg-aldy-primary-400 text-white text-xs font-semibold rounded shadow">
+    <button (click)="goToShipping()" class="w-full cursor-pointer mb-3 py-3 bg-aldy-primary-400 text-white text-xs font-semibold rounded shadow">
       Continuar al checkout
     </button>
-    <button (click)="goToReturn()" class="w-full py-3 border border-gray-300 text-gray-800 text-xs font-medium rounded">
+    <button (click)="goToReturn()" class="w-full cursor-pointer py-3 border border-gray-300 text-gray-800 text-xs font-medium rounded">
       Continuar comprando
     </button>
   </div>

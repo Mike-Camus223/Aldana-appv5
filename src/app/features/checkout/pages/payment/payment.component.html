@@ -2,7 +2,6 @@
   <div class="w-full md:w-2xl justify-center flex">
     <div class="relative w-full p-4 md:p-8">
       <div class="space-y-6">
-        <!-- Datos de envío y facturación -->
         <section class="border-b py-4 flex justify-between items-start">
           <div class="flex items-start gap-4">
             <i class="fa-regular fa-envelope text-gray-500 mt-1"></i>
@@ -19,13 +18,13 @@
                 Retiras en correo argentino -
                 <span class="text-green-600 font-semibold">Gratis</span>
               </p>
-              <p class="text-gray-600 text-sm">Correo arg 123 Ciudad Autónoma de Buenos Aires.</p>
+              <p class="text-gray-600 text-sm">Correo argentino surcursal 112 Ciudad Autónoma de Buenos Aires.</p>
             </div>
           </div>
-          <button pButton label="Cambiar" text class="text-blue-600 text-xs hover:underline"
+          <!-- <button pButton label="Cambiar" text class="text-blue-600 text-xs hover:underline"
             (click)="onChangePickupPoint()">
             Cambiar
-          </button>
+          </button> -->
         </section>
         <section class="border-b py-4 flex justify-between items-start">
           <div class="flex items-start gap-4">
@@ -45,31 +44,24 @@
               <p class="text-gray-700">{{ shippingData?.name }} {{ shippingData?.surname }}</p>
             </div>
           </div>
-          <button pButton label="Cambiar" text class="text-blue-600 text-xs hover:underline"
+          <!-- <button pButton label="Cambiar" text class="text-blue-600 text-xs hover:underline"
             (click)="onChangeBillingData()">
             Cambiar
-          </button>
+          </button> -->
         </section>
         <section class="border-b py-4 flex justify-between items-center">
           <div class="flex items-center gap-2 text-gray-500">
             <i class="fa-regular fa-comment"></i>
             <span>Notas de pedido</span>
           </div>
-          <button appButtonPrimary class="text-blue-600 p-2 text-xs hover:underline">
+          <!-- <button appButtonPrimary class="text-blue-600 p-2 text-xs hover:underline">
             Agregar
-          </button>
+          </button> -->
         </section>
-
-        <!-- Medio de pago: acordeón -->
         <section class="space-y-4 mt-6">
           <h4 class="text-sm font-semibold text-gray-900 mb-2">Medio de pago</h4>
           <div class="card flex justify-center">
-            <p-accordion
-              [multiple]="true"
-              [(activeIndex)]="activeAccordionPanels"
-              class="w-full space-y-4"
-            >
-              <!-- Tarjeta de crédito o débito -->
+            <p-accordion [multiple]="true" [(activeIndex)]="activeAccordionPanels" class="w-full space-y-4">
               <p-accordion-panel [value]="0">
                 <p-accordion-header>
                   <div class="w-full flex px-4 justify-between items-center">
@@ -83,31 +75,13 @@
                   </div>
                 </p-accordion-header>
                 <p-accordion-content>
-                 <div class="w-full flex px-4 justify-between items-center">
-      <div class="flex items-center gap-2">
-        <i class="fa-solid fa-credit-card"></i>
-        <span>Tarjeta de crédito o débito</span>
-      </div>
-      <p-chip>
-        <span class="font-medium text-white text-xs">Hasta 6 cuotas sin interés</span>
-      </p-chip>
-    </div>
-    <p class="text-gray-700 text-sm mb-4">
-      Serás redirigido a Mercado Pago para completar el pago de forma segura.
-    </p>
-    <button
-      appButtonPrimary
-      type="button"
-      (click)="pagar()"
-      class="w-full text-white py-3 px-4 rounded-md transition-colors font-medium"
-    >
-      Ir a pagar {{ total | currency:'USD':'symbol':'1.2-2':'en-US' }}
-    </button>
+                  <button appButtonPrimary type="button" (click)="pagar()"
+                    class="w-full text-white py-3 px-4 rounded-md transition-colors font-medium">
+                    Ir a pagar {{ total | currency:'USD':'symbol':'1.2-2':'en-US' }}
+                  </button>
                 </p-accordion-content>
               </p-accordion-panel>
-
-              <!-- Transferencia bancaria -->
-              <p-accordion-panel [value]="1">
+              <!-- <p-accordion-panel [value]="1">
                 <p-accordion-header>
                   <div class="w-full flex px-4 justify-between items-center">
                     <div class="flex items-center gap-2">
@@ -124,10 +98,8 @@
                     Obtén un 10% de descuento pagando por transferencia bancaria.
                   </p>
                 </p-accordion-content>
-              </p-accordion-panel>
-
-              <!-- Mercado Pago -->
-              <p-accordion-panel [value]="2">
+              </p-accordion-panel> -->
+              <!-- <p-accordion-panel [value]="2">
                 <p-accordion-header>
                   <div class="w-full flex px-4 justify-between items-center">
                     <div class="flex items-center gap-2">
@@ -141,7 +113,7 @@
                     Puedes pagar con cualquier aplicación de pago compatible con Mercado Pago.
                   </p>
                 </p-accordion-content>
-              </p-accordion-panel>
+              </p-accordion-panel> -->
             </p-accordion>
           </div>
         </section>
@@ -150,15 +122,9 @@
       </div>
     </div>
   </div>
-
-  <!-- Resumen carrito -->
   <div class="w-full md:w-1/4 p-3 py-5 rounded-md bg-white text-slate-900">
     <div *ngFor="let item of cartItems" class="flex gap-3 sm:gap-4 w-full mb-4">
-      <img
-        [src]="item.image"
-        alt="Producto"
-        class="w-20 min-w-[80px] max-w-[80px] h-full object-cover rounded-md"
-      />
+      <img [src]="item.image" alt="Producto" class="w-20 min-w-[80px] max-w-[80px] h-full object-cover rounded-md" />
       <div class="flex flex-col justify-between w-full">
         <div>
           <h3 class="text-xs sm:text-sm font-semibold uppercase text-slate-900">
@@ -166,10 +132,7 @@
           </h3>
           <p *ngIf="item.color" class="text-[11px] text-slate-500 mt-1 flex items-center gap-2">
             Color:
-            <span
-              class="inline-block w-3 h-3 rounded-xs border"
-              [ngStyle]="{ 'background-color': item.color }"
-            ></span>
+            <span class="inline-block w-3 h-3 rounded-xs border" [ngStyle]="{ 'background-color': item.color }"></span>
           </p>
           <p *ngIf="item.size" class="text-[11px] text-slate-500 flex items-center gap-2 mt-1">
             Talla:

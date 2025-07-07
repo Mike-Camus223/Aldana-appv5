@@ -108,16 +108,10 @@ export class PaymentComponent implements OnInit, AfterViewInit, OnDestroy {
         }),
       });
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText);
+      if (response.ok) {
+        const { init_point } = await response.json();
+        window.location.href = init_point;
       }
-
-      const { init_point } = await response.json();
-      window.location.href = init_point;
-    } catch (err) {
-      console.error('❌ Error al iniciar Checkout Pro:', err);
-      alert('Ocurrió un error al redirigir al portal de pago. Intentá de nuevo.');
     } finally {
       this.isProcessing = false;
     }
