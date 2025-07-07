@@ -29,6 +29,7 @@
     "aos": "^2.3.4",
     "font-awesome": "^4.7.0",
     "gsap": "^3.13.0",
+    "keen-slider": "^6.8.6",
     "lucide-angular": "^0.525.0",
     "postcss": "^8.5.4",
     "primeicons": "^7.0.0",

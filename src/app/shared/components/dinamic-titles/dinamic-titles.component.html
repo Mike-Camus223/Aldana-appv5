@@ -1,0 +1,21 @@
+<ng-container *ngIf="!isParagraph; else paragraphTemplate">
+  <div [ngClass]="[containerMaxWidth, containerResponsiveClasses, 'mx-auto']">
+    <ng-container [ngSwitch]="level">
+      <h1 *ngSwitchCase="1" [ngClass]="classes" [innerHTML]="parsedText"></h1>
+      <h2 *ngSwitchCase="2" [ngClass]="classes" [innerHTML]="parsedText"></h2>
+      <h3 *ngSwitchCase="3" [ngClass]="classes" [innerHTML]="parsedText"></h3>
+      <h4 *ngSwitchCase="4" [ngClass]="classes" [innerHTML]="parsedText"></h4>
+      <h5 *ngSwitchCase="5" [ngClass]="classes" [innerHTML]="parsedText"></h5>
+      <h6 *ngSwitchCase="6" [ngClass]="classes" [innerHTML]="parsedText"></h6>
+    </ng-container>
+  </div>
+</ng-container>
+<ng-template #paragraphTemplate>
+  <p [ngClass]="[backgroundColor, backgroundMarginX, 'whitespace-pre-wrap p-4 rounded']">
+    <span
+      [ngClass]="[classes, containerMaxWidth, containerResponsiveClasses, 'block mx-auto']"
+      [innerHTML]="parsedText"
+    ></span>
+  </p>
+</ng-template>
+<p *ngIf="subtitle" [ngClass]="subtitleClasses">{{ subtitle }}</p>

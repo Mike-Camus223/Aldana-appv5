@@ -1,0 +1,7 @@
+::ng-deep .p-dialog-header {
+    padding: 10px !important;
+}
+
+::ng-deep  .p-dialog {
+    border-radius: 5px !important;
+}

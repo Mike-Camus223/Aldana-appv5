@@ -1,0 +1,23 @@
+<div class="keen-slider w-full" #sliderRef>
+  <div
+    *ngFor="let img of images"
+    class="keen-slider__slide relative cursor-pointer overflow-hidden"
+    (click)="imageClick.emit(img)"
+  >
+    <div class="relative w-full h-0" [style.paddingBottom]="getPaddingBottom()">
+      <img
+        [src]="img.image_url || img"
+        alt="carousel"
+        class="absolute inset-0 w-full h-full  scale-145 object-cover object-center"
+        draggable="false"
+      />
+
+      <div
+        *ngIf="hoverOverlay"
+        class="absolute inset-0 bg-black/70 opacity-0 hover:opacity-100 transition-opacity duration-300 ease-in-out flex items-center justify-center rounded-md"
+      >
+        <i [class]="hoverIconClass + ' text-white text-4xl'"></i>
+      </div>
+    </div>
+  </div>
+</div>

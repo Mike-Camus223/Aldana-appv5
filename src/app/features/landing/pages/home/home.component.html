@@ -1,11 +1,34 @@
 <section>
   <app-dual-section></app-dual-section>
 </section>
+<section class="my-7">
+  <app-dinamic-titles 
+    [text]="'Aldana Vilcabana nace del impulso libre y sin límites, creando vestidos nupciales y de alta costura que reinventan el lujo a través del tiempo, fusionando elegancia y autenticidad en cada detalle.'"
+    [isParagraph]="true"
+    [size]="'base'"
+    [weight]="'normal'"
+    [align]="'center'"
+    [textColor]="'text-gray-700'"
+    [backgroundColor]="'bg-aldy-primary-100'"
+    [backgroundMarginX]="'mx-4 sm:mx-6 lg:mx-10'"
+    [highlightWords]="[
+      { word: 'Aldana Vilcabana', classes: 'italic sm:text-xl lowercase' },
+      { word: 'creando', classes: 'italic sm:text-xl lowercase' },
+      { word: ' el lujo', classes: 'italic sm:text-xl lowercase' },
+      { word: 'de alta costura', classes: 'italic sm:text-xl lowercase' },
+      { word: 'elegancia y autenticidad', classes: 'italic sm:text-xl lowercase' },
+    ]"
+    [containerMaxWidth]="'max-w-sm'"
+    [containerResponsiveClasses]="'sm:max-w-sm lg:max-w-sm sm:text-xl timesRoman uppercase'"
+  />
+</section>
+
 <section class="max-w-screen-3xl mx-auto">
   <div class="mt-7">
     <app-about-sec-home [AboutData]="bloquesSobreMi"></app-about-sec-home>
-  </div>
-</section>
+  </div>  
+</section>  
+
 <section class="max-w-screen-3xl mx-auto">
   <div class="mt-7">
 <app-bettercustom-dual
@@ -47,10 +70,23 @@
   [mobileHeight]="'auto'"
   [CommentsTestimonial]="true"
 />
-
-
-
-
-
   </div>
 </section>
+<section class="py-6">
+  <app-dinamic-titles
+    [text]="'Siguenos en @Aldana Vilcabana'"
+    [level]="2"
+    [size]="'2xl'"                     
+    [weight]="'medium'"
+    [italic]="false"
+    [align]="'center'"
+    [textColor]="'text-gray-700'"
+    [responsiveClasses]="'text-xl sm:text-xl md:text-2xl lg:text-2xl timesRoman'">
+  </app-dinamic-titles>
+</section>
+
+<section class="max-w-screen-3xl mx-auto">
+  <div>
+    <app-reels-section></app-reels-section>
+  </div>
+ </section>

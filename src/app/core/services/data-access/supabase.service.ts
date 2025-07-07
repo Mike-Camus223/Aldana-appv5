@@ -99,6 +99,20 @@ export class SupabaseService {
     );
   }
 
+  async getTempReels() {
+    const selectReels = `
+    id,
+    image_url,
+    caption,
+    hashtags,
+    link
+  `;
+    return this.getData<any>(
+      'reels',
+      selectReels
+    );
+  }
+
   async validateCoupon(code: string): Promise<{ valid: boolean; discountAmount?: number; discountType?: 'percent' | 'fixed'; error?: string }> {
     const { data, error } = await this.supabase
       .from('discount_codes')

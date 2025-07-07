@@ -1,1 +1,45 @@
-<p>modal works!</p>
+<p-dialog
+  #dialog
+  [(visible)]="visible"
+  [modal]="true"
+  [closable]="false"
+  [maximizable]="false"
+  [dismissableMask]="true"
+  [showHeader]="true"
+  [blockScroll]="true"
+  [closeOnEscape]="true"
+  (onHide)="onHide()"
+  [breakpoints]="breakpoints"
+  [style]="dialogStyle"
+  [contentStyle]="{
+    padding: contentPadding,
+    height: '100%',
+    overflow: 'auto'
+  }"
+>
+  <ng-template pTemplate="header">
+    <div class="flex justify-between items-center w-full">
+      <span class="text-lg font-semibold">{{ header }}</span>
+      <div class="flex gap-2">
+        <button
+          *ngIf="maximizable && isMobileScreen"
+          pButton
+          type="button"
+          [icon]="maximizeState ? 'pi pi-window-minimize' : 'pi pi-window-maximize'"
+          (click)="toggleMaximize()"
+          class="p-button-text p-button-rounded p-button-plain"
+        ></button>
+
+        <button
+          pButton
+          type="button"
+          icon="pi pi-times"
+          (click)="closeModal()"
+          class="p-button-text p-button-rounded p-button-plain"
+        ></button>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-container *ngTemplateOutlet="modalContent"></ng-container>
+</p-dialog>

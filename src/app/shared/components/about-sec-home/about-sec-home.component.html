@@ -1,43 +1,29 @@
-<section
-  *ngFor="let item of AboutData; let i = index"
-  class="w-full max-w-screen-xl mx-auto mt-6 md:mt-0 bg-gray-50"
->
-  <div class="grid grid-cols-1 md:grid-cols-2 items-stretch w-full min-h-[600px]">
-    <div
-    data-aos="zoom-in"
-    data-aos-once="true"
-
-     class="w-full h-[400px] sm:h-[600px] md:h-full overflow-hidden relative"
-      [ngClass]="item.imageOrderMobile + ' ' + item.imageOrderDesktop"
-    >
-      <img
-        #parallaxImg
-        [src]="item.image"
-        alt="About image"
-        class="w-full h-full object-cover parallax-image"
-      />
-    </div>
-    <div
-      class="flex items-center w-full px-7 md:px-12 py-4 md:py-0"
-      [ngClass]="item.textOrderMobile + ' ' + item.textOrderDesktop"
-    >
-      <div class="flex flex-col text-center w-full">
+<section *ngFor="let item of AboutData" class="w-full px-4 max-w-screen-2xl mx-auto mt-6 md:mt-0 bg-white">
+  <div class="grid grid-cols-1 lg:grid-cols-5 items-stretch w-full min-h-[700px] relative">
+    <div class="flex items-center w-full lg:ps-5 xl:ps-20 pe-0 lg:pe-5 py-4 md:py-0 z-10 lg:col-span-2"
+      [ngClass]="item.textOrderMobile + ' ' + item.textOrderDesktop">
+      <div class="flex flex-col text-center lg:text-left w-full relative">
         <h2
-          #animatedTitle
-          class="text-3xl md:text-6xl aldyFont font-bold text-gray-800 cursor-pointer"
-        >
+          class="text-4xl  sm:text-5xl w-full lg:text-[76px] xl:text-[80px] leading-tight font-serif font-medium text-gray-900 inline-block"
+          [ngClass]="[item.maxWidthTittle, item.titleOffsetClass]">
           {{ item.title }}
         </h2>
 
-        <p
-          data-aos="fade-up"
-          data-aos-easing="in-ease-out"
-          data-aos-duration="700"
-          class="text-gray-600 text-base md:text-lg leading-relaxed italic mt-5"
-        >
+        <p class="text-gray-600 italic w-full text-base md:text-lg leading-relaxed mt-6">
           {{ item.text }}
         </p>
+
+        <ng-container *ngIf="item.buttonText && item.buttonUrl">
+          <a [href]="item.buttonUrl"
+            class="mt-8 inline-block border border-black px-6 py-3 text-sm tracking-widest font-medium uppercase transition hover:bg-black hover:text-white">
+            {{ item.buttonText }}
+          </a>
+        </ng-container>
       </div>
+    </div>
+    <div class="relative w-full lg:ms-8 xl:ms-10 aspect-[5/4] md:aspect-[4/3] lg:aspect-[4/2] lg:col-span-3 overflow-hidden"
+      [ngClass]="item.imageOrderMobile + ' ' + item.imageOrderDesktop">
+      <img [src]="item.image" alt="About image" class="w-full h-full object-contain" />
     </div>
   </div>
 </section>

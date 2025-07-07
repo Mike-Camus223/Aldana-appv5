@@ -1,0 +1,37 @@
+<div class="w-full max-w-screen-xl px-4 sm:px-4 lg:px-4 mx-auto py-1 select-none">
+  <app-carousel-images-genericv2 *ngIf="reels && reels.length > 0" [images]="reels" [slidesPerView]="slidesPerView"
+    [spacing]="spacing" [breakpoints]="breakpoints" [aspectRatio]="'4 / 5'" [hoverOverlay]="true"
+    [hoverIconClass]="'fab fa-instagram'" (imageClick)="openModal($event)">
+  </app-carousel-images-genericv2>
+
+  <div *ngIf="!reels || reels.length === 0" class="text-center py-8">
+    <p class="text-gray-500">No hay reels disponibles</p>
+  </div>
+</div>
+
+<app-modal [(visible)]="showModal" [width]="'850px'" [maxWidth]="'90vw'" [height]="'auto'" [maxHeight]="'90vh'"
+  [breakpoints]="{ '400px': '100vw' }" [contentPadding]="'5px'" [maximizable]="true" [forceMaximize]="isMobile">
+
+  >
+  <ng-template #modalContent>
+    <ng-container *ngIf="selectedReel">
+      <div class="flex flex-col lg:flex-row items-center justify-center w-full min-h-[inherit] gap-4 p-4">
+        <div class="w-full lg:w-2/2 aspect-[5/5] lg:aspect-auto h-auto lg:h-full overflow-hidden rounded-sm relative">
+          <img [src]="selectedReel.image_url" alt="post" class="w-full h-full object-cover object-center" />
+        </div>
+        <div
+          class="w-full lg:w-1/2 h-full flex flex-col items-start justify-center text-left space-y-4 text-sm overflow-y-auto p-2">
+          <p class="text-gray-800">{{ selectedReel.caption }}</p>
+          <p class="text-xs text-gray-500 leading-relaxed">
+            {{ selectedReel.hashtags }}
+          </p>
+
+          <a [href]="selectedReel.link" target="_blank" rel="noopener noreferrer"
+            class="text-3xl text-gray-600 hover:text-black transition-colors">
+            <i class="fab fa-instagram"></i>
+          </a>
+        </div>
+      </div>
+    </ng-container>
+  </ng-template>
+</app-modal>
