@@ -3,6 +3,7 @@
 @import '@fancyapps/ui/dist/carousel/carousel.css';
 @import '@fancyapps/ui/dist/carousel/carousel.thumbs.css';
 
+
 @theme {
   --color-aldy-primary-50: #f1fafa;
   --color-aldy-primary-100: #d7f1ef;

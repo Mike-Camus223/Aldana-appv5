@@ -10,11 +10,12 @@ import {
   EventEmitter
 } from '@angular/core';
 import KeenSlider, { KeenSliderInstance } from 'keen-slider';
+import { FadeupallDirective } from '../../utils/directives/fadeupall.directive';
 
 @Component({
   selector: 'app-carousel-images-genericv2',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FadeupallDirective],
   templateUrl: './carousel-images-genericv2.component.html',
   styleUrls: ['./carousel-images-genericv2.component.css']
 })

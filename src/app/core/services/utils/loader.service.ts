@@ -8,7 +8,6 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 export class LoaderService {
   private loadingSubject = new BehaviorSubject<boolean>(true);
   public isLoading$ = this.loadingSubject.asObservable();
-
   private animationsEnabledSubject = new BehaviorSubject<boolean>(false);
   public animationsEnabled$ = this.animationsEnabledSubject.asObservable();
 
@@ -18,6 +17,11 @@ export class LoaderService {
 
   finish() {
     this.loadingSubject.next(false);
+    if (!this.animationsEnabledSubject.value) {
+      this.enableAnimations();
+    }
+  }
+  enableAnimationsEarly() {
     this.enableAnimations();
   }
 
@@ -26,7 +30,6 @@ export class LoaderService {
     ScrollTrigger.refresh();
     this.animationsEnabledSubject.next(true);
   }
-
   reset() {
     ScrollTrigger.disable();
     this.loadingSubject.next(true);

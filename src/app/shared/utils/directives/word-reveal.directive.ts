@@ -66,7 +66,7 @@ export class WordRevealDirective implements AfterViewInit, OnDestroy {
       delay: 0.05,
       scrollTrigger: {
         trigger: nativeElement,
-        start: 'top 80%',
+        start: 'top 90%',
         toggleActions: 'play none none none',
         onEnter: () => {
           this.renderer.setStyle(nativeElement, 'visibility', 'visible');

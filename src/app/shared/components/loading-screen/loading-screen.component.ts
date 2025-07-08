@@ -22,7 +22,7 @@ export class LoadingScreenComponent implements AfterViewInit {
 
   @Output() loadingFinished = new EventEmitter<void>();
 
-constructor(
+  constructor(
     private renderer: Renderer2,
     private loaderService: LoaderService
   ) { }
@@ -51,7 +51,6 @@ constructor(
 
     const tl = gsap.timeline({
       onComplete: () => {
-        this.loaderService.finish();
         this.loadingFinished.emit();
       }
     });
@@ -60,34 +59,30 @@ constructor(
     gsap.set(this.box2.nativeElement, { scale: 1 });
     gsap.set(this.box3.nativeElement, { scale: 1 });
     gsap.set(this.box4.nativeElement, { scale: 1 });
-
     tl.from(this.box1.nativeElement, { y: '-40vh', scale: 0, duration: 1.5, ease: 'back.out(1.7)' }, 0);
     tl.from(this.box2.nativeElement, { y: '40vh', scale: 0, duration: 1.5, ease: 'back.out(1.7)' }, 0.2);
     tl.from(this.box3.nativeElement, { x: '-40vw', scale: 0, duration: 1.5, ease: 'back.out(1.7)' }, 0.4);
     tl.from(this.box4.nativeElement, { x: '40vw', scale: 0, duration: 1.5, ease: 'back.out(1.7)' }, 0.6);
-
     gsap.set(this.letterA.nativeElement, { x: -90, opacity: 0 });
     gsap.set(this.letterV.nativeElement, { x: 90, opacity: 0 });
-
     tl.to(this.letterA.nativeElement, { x: 0, opacity: 1, duration: 0.6, ease: 'power2.out' }, '+=0.3');
     tl.to(this.letterV.nativeElement, { x: 0, opacity: 1, duration: 0.6, ease: 'power2.out' }, '<');
     tl.fromTo(this.name.nativeElement, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out' }, '+=0.3');
+    
     [this.box1, this.box2, this.box3, this.box4].forEach(box => {
       const img = box.nativeElement.querySelector('img');
-
+      
       gsap.set(img, {
         filter: 'grayscale(100%)',
       });
-
+      
       tl.to(img, {
         filter: 'grayscale(0%)',
         duration: 1,
         ease: 'power2.out',
       }, '-=0.5');
     });
-
     tl.addLabel('fadeOutStart');
-
     tl.call(() => {
       this.renderer.removeClass(document.body, 'body-scroll-lock');
     }, undefined, 'fadeOutStart');
@@ -95,6 +90,10 @@ constructor(
     tl.to(this.circleGroup.nativeElement, { opacity: 0, duration: 0.3, ease: 'power2.out' }, 'fadeOutStart');
     tl.to(this.screen.nativeElement, { backgroundColor: '#000', duration: 1, ease: 'power2.out' }, 'fadeOutStart');
     tl.to(this.name.nativeElement, { color: '#ffffff', duration: 1, ease: 'power2.out' }, 'fadeOutStart');
+        tl.call(() => {
+      this.loaderService.enableAnimationsEarly();
+    }, undefined, 'fadeOutStart+=1.125'); 
+    
     tl.to(this.screen.nativeElement, { y: '-100%', duration: 0.5, ease: 'power2.inOut' }, 'fadeOutStart+=1');
   }
 }

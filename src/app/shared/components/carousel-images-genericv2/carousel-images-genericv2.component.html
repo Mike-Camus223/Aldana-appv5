@@ -1,6 +1,7 @@
 <div class="keen-slider w-full" #sliderRef>
   <div
     *ngFor="let img of images"
+    appFadeupall
     class="keen-slider__slide relative cursor-pointer overflow-hidden"
     (click)="imageClick.emit(img)"
   >

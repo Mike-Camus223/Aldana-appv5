@@ -38,7 +38,7 @@ export class FadeUpLetterDirective implements AfterViewInit, OnDestroy {
       delay: 0.1,
       scrollTrigger: {
         trigger: this.el.nativeElement,
-        start: 'top 95%',
+        start: 'top 100%',
         toggleActions: 'play none none none',
       },
     });
