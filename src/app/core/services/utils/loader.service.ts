@@ -18,10 +18,7 @@ export class LoaderService {
 
   finish() {
     this.loadingSubject.next(false);
-    
-    setTimeout(() => {
-      this.enableAnimations();
-    }, 50);
+    this.enableAnimations();
   }
 
   private enableAnimations() {

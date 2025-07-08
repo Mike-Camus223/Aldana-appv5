@@ -1,8 +1,12 @@
+
+
 <div class="flex flex-col md:flex-row w-full max-w-7xl mx-auto px-4 py-4">
-  <div class="overflow-hidden shadow-md flex-shrink-0 w-full" [ngClass]="getImageOrderClasses()"
+   <div  #parallaxContainer class="overflow-hidden flex-shrink-0 w-full" [ngClass]="getImageOrderClasses()"
     [ngStyle]="getCombinedStyle(getImageStyle())">
-    <img [draggable]="false" [src]="imageUrl" alt="image" class="w-full h-full object-cover object-center" />
+    <img #parallaxImage [src]="imageUrl" alt="image" class="w-full h-full object-cover object-center" />
   </div>
+
+
   <div class="w-full flex flex-col justify-center items-center text-center md:text-left"
     [ngClass]="[textContainerClass, getTextOrderClasses()]" [ngStyle]="getCombinedStyle(getTextStyle())">
     <div class="px-2 pb-10 md:pb-0 md:px-10 lg:px-20 w-full">
