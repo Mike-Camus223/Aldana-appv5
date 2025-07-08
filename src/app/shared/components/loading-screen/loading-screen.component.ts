@@ -1,5 +1,6 @@
 import { Component, ElementRef, ViewChild, AfterViewInit, Output, EventEmitter, HostListener, Renderer2 } from '@angular/core';
 import { gsap } from 'gsap';
+import { LoaderService } from '../../../core/services/utils/loader.service';
 
 @Component({
   standalone: true,
@@ -21,7 +22,10 @@ export class LoadingScreenComponent implements AfterViewInit {
 
   @Output() loadingFinished = new EventEmitter<void>();
 
-  constructor(private renderer: Renderer2) { }
+constructor(
+    private renderer: Renderer2,
+    private loaderService: LoaderService
+  ) { }
 
   @HostListener('wheel', ['$event'])
   onWheel(event: WheelEvent) {
@@ -47,6 +51,7 @@ export class LoadingScreenComponent implements AfterViewInit {
 
     const tl = gsap.timeline({
       onComplete: () => {
+        this.loaderService.finish();
         this.loadingFinished.emit();
       }
     });

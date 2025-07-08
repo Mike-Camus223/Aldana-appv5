@@ -1,10 +1,12 @@
 import { Component, Input, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { WordRevealDirective } from '../../utils/directives/word-reveal.directive';
+import { FadeUpLetterDirective } from '../../utils/directives/fadeupletter.directive';
 
 @Component({
   selector: 'app-bettercustom-dual',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule,WordRevealDirective,FadeUpLetterDirective],
   templateUrl: './bettercustom-dual.component.html',
 })
 export class BettercustomDualComponent {

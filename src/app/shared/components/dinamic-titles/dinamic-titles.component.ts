@@ -1,10 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
+import { FadeUpLetterDirective } from '../../utils/directives/fadeupletter.directive';
 
 @Component({
   selector: 'app-dinamic-titles',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FadeUpLetterDirective],
   templateUrl: './dinamic-titles.component.html',
   styleUrls: ['./dinamic-titles.component.css']
 })
