@@ -1,14 +1,13 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { VideoComponent } from '../video/video.component';
 import { MediaItem } from '../../utils/models/objectsGallery.model';
 import { GalleryGenComComponent } from '../gallery-gen-com/gallery-gen-com.component';
-import { Title } from '@angular/platform-browser';
+import { BettercustomDualComponent } from '../bettercustom-dual/bettercustom-dual.component';
 
 @Component({
   selector: 'app-novias-template',
   standalone: true,
-  imports: [CommonModule, GalleryGenComComponent, VideoComponent],
+  imports: [CommonModule, GalleryGenComComponent, BettercustomDualComponent],
   templateUrl: './novias-template.component.html',
   styleUrls: ['./novias-template.component.css'],
 })

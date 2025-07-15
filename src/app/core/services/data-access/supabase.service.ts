@@ -145,4 +145,68 @@ export class SupabaseService {
 
     return { valid: true, discountAmount, discountType };
   }
+
+
+async getAllCollections() {
+  const selectFields = `
+    id,
+    uuid,
+    name,
+    cover_image_url,
+    season,
+    release_date,
+    created_at,
+    banner,
+    description,
+    slug
+  `;
+
+  const result = await this.getData<any[]>(
+    'collections',
+    selectFields
+  );
+
+  if (result.error) throw result.error;
+  return result.data;
+}
+
+async getCollectionById(slug: string) {
+  const selectFields = `
+    id,
+    uuid,
+    name,
+    cover_image_url,
+    season,
+    release_date,
+    created_at,
+    banner,
+    description,
+    slug,
+    collection_media (
+      id,
+      collection_id,
+      section_name,
+      media_url,
+      alt,
+      type,
+      order,
+      created_at,
+      poster_url
+    )
+  `;
+
+  const result = await this.getData<any>(
+    'collections',
+    selectFields,
+    'slug',
+    slug,
+    true
+  );
+
+  if (result.error) throw result.error;
+  return result.data;
+}
+
+
+
 }

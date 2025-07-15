@@ -17,9 +17,14 @@ export const routes: Routes = [
           import('../../../features/landing/pages/home/home.component').then(c => c.HomeComponent),
       },
       {
-        path: 'galeria',
+        path: 'colecciones',
         loadComponent: () =>
           import('../../../features/landing/pages/gallery/gallery.component').then(c => c.GalleryComponent),
+      },
+      {
+        path: 'colecciones/:slug',
+        loadComponent: () =>
+          import('../../../shared/components/generic-collection/generic-collection.component').then(c => c.GenericCollectionComponent),
       },
       {
         path: 'tienda',

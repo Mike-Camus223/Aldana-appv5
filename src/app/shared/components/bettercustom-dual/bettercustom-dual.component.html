@@ -1,34 +1,53 @@
-
-
-<div class="flex flex-col md:flex-row w-full max-w-7xl mx-auto px-4 py-4">
-   <div  #parallaxContainer class="overflow-hidden flex-shrink-0 w-full" [ngClass]="getImageOrderClasses()"
-    [ngStyle]="getCombinedStyle(getImageStyle())">
-    <img #parallaxImage [src]="imageUrl" alt="image" class="w-full h-full object-cover object-center" />
+<div class="flex flex-col md:flex-row w-full mx-auto"  [ngClass]="[maxwidthandpadding, height]">
+  <div #parallaxContainer
+       class="overflow-hidden flex-shrink-0 w-full relative"
+       [ngClass]="getImageOrderClasses()"
+       [ngStyle]="getCombinedStyle(getImageStyle())">
+        <img *ngIf="mediaType === 'image'"
+         #parallaxImage
+         [src]="imageUrl"
+         alt="image"
+         class="w-full h-full object-cover object-center" />
+        <div *ngIf="mediaType === 'video'" class="w-full h-full">
+      <app-video
+        [src]="videoSrc"
+        [muted]="videoMuted"
+        [autoplay]="videoAutoplay"
+        [showControls]="videoShowControls"
+        [gradientOverlay]="videoGradientOverlay"
+        [objectFit]="videoObjectFit"
+        [height]="'h-full'"
+        [width]="'w-full'"
+      />
+    </div>
   </div>
-
-
   <div class="w-full flex flex-col justify-center items-center text-center md:text-left"
-    [ngClass]="[textContainerClass, getTextOrderClasses()]" [ngStyle]="getCombinedStyle(getTextStyle())">
-    <div class="px-2 pb-10 md:pb-0 md:px-10 lg:px-20 w-full">
-      <div class="flex flex-col items-start text-left">
-        <h2 appWordReveal *ngIf="CommentsTestimonial" class="text-4xl font-bold text-aldy-primary-400">❛❛</h2>
-        <h2 appWordReveal class="text-3xl font-bold text-gray-700 timesRoman">{{ title }}</h2>
-        <div class="border-t-1 border-aldy-primary-400 my-3 w-16"></div>
+       [ngClass]="[textContainerClass, getTextOrderClasses()]"
+       [ngStyle]="getCombinedStyle(getTextStyle())">
+    
+    <div class="px-2 py-10 md:py-0 md:px-10 lg:px-20 w-full">
+      <div [ngClass]="[titleAndContentClass]" class="flex w-full flex-col items-start">
+        <h2 appWordReveal *ngIf="CommentsTestimonial"
+            class="text-4xl font-bold text-aldy-primary-400">❛❛</h2>
+        <h2 appWordReveal class="text-3xl font-bold w-full text-gray-700 timesRoman">{{ title }}</h2>
+        <div *ngIf="divider" class="border-t-1 border-aldy-primary-400 my-3 w-16"></div>
       </div>
-
+      
       <ng-container *ngFor="let sub of subtitles">
         <h3 class="text-xl font-semibold text-gray-700">{{ sub }}</h3>
       </ng-container>
-      <p
-        appFadeUpLetter class="text-gray-600 leading-relaxed italic whitespace-pre-wrap break-words text-left md:text-justify max-w-2xl">
-        <ng-container  *ngIf="CommentsTestimonial; else plainText">
-          “{{ contentTestimonial }}”
+      
+      <p appFadeUpLetter [ngClass]="[textcontetclass]"
+         class="text-gray-600 leading-relaxed italic whitespace-pre-wrap break-words max-w-2xl">
+        <ng-container *ngIf="CommentsTestimonial; else plainText">
+          "{{ contentTestimonial }}"
         </ng-container>
         <ng-template #plainText>{{ contentTestimonial }}</ng-template>
       </p>
-
+      
       <p class="text-gray-600 leading-relaxed italic">{{ content }}</p>
-      <p *ngIf="extraContent" class="text-sm text-gray-500 text-left mt-4">
+      
+      <p *ngIf="extraContent" [ngClass]="[textextracontetclass]" class="text-sm text-gray-500 mt-4">
         {{ extraContent }}
       </p>
     </div>

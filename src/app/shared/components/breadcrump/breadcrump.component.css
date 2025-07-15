@@ -1,8 +1,17 @@
-::ng-deep .p-breadcrumb-item-link.active-breadcrumb {
-  font-weight: 600 !important;
+::ng-deep .p-breadcrumb-item-link:hover {
+  color: var(--color-aldy-primary-400);
 }
-
 
 ::ng-deep .p-breadcrumb {
     padding: 16px 0 !important;
+}
+
+::ng-deep .p-iconwrapper  {
+  height: 10px !important;
+  width: 10px !important;
+}
+
+::ng-deep .truncate {
+font-weight: 400 !important;
+font-size: 13px !important;
 }

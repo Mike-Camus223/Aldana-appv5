@@ -99,7 +99,7 @@ export class NavbarPublicv2Component implements OnInit {
 
   routerLinkNavbar: RouterlinkNavbar[] = [
     { label: 'NOVIAS', link: '/novias' },
-    { label: 'COLECCIONES', link: '/galeria' },
+    { label: 'COLECCIONES', link: '/colecciones' },
     { label: 'CONTACTO', link: '/contacto' }
   ];
 

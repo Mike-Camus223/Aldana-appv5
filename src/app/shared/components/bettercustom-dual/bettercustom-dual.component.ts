@@ -10,6 +10,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { WordRevealDirective } from '../../utils/directives/word-reveal.directive';
 import { FadeUpLetterDirective } from '../../utils/directives/fadeupletter.directive';
+import { VideoComponent } from '../video/video.component';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { LoaderService } from '../../../core/services/utils/loader.service';
@@ -20,11 +21,18 @@ gsap.registerPlugin(ScrollTrigger);
 @Component({
   selector: 'app-bettercustom-dual',
   standalone: true,
-  imports: [CommonModule, WordRevealDirective, FadeUpLetterDirective],
+  imports: [CommonModule, WordRevealDirective, FadeUpLetterDirective, VideoComponent],
   templateUrl: './bettercustom-dual.component.html',
 })
 export class BettercustomDualComponent implements AfterViewInit, OnDestroy {
+  @Input() mediaType: 'image' | 'video' = 'image';
   @Input() imageUrl = '';
+  @Input() videoSrc = '';
+  @Input() videoAutoplay = true;
+  @Input() videoMuted = true;
+  @Input() videoShowControls = true;
+  @Input() videoGradientOverlay = true;
+  @Input() videoObjectFit = 'object-cover';
   @Input() CommentsTestimonial = false;
   @Input() title = '';
   @Input() subtitles: string[] = [];
@@ -36,16 +44,22 @@ export class BettercustomDualComponent implements AfterViewInit, OnDestroy {
   @Input() textContainerClass = '';
   @Input() mobileOrder: 'image-first' | 'text-first' = 'image-first';
   @Input() desktopOrder: 'image-first' | 'text-first' = 'image-first';
-  @Input() height: string = '420px';
+  @Input() height: string = '200px';
   @Input() mobileHeight: string = '';
-
+  @Input() maxwidthandpadding: string = '';
+  @Input() divider: boolean = false;
+  @Input() textcontetclass: string = '';
+  @Input() textextracontetclass: string = '';
+  @Input() titleAndContentClass: string = '';
+ 
+  
   @ViewChild('parallaxImage', { static: false }) parallaxImage!: ElementRef<HTMLImageElement>;
   @ViewChild('parallaxContainer', { static: false }) parallaxContainer!: ElementRef<HTMLDivElement>;
 
   screenWidth = window.innerWidth;
   private animSub?: Subscription;
 
-  constructor(private el: ElementRef, private loaderService: LoaderService) { }
+  constructor(private el: ElementRef, private loaderService: LoaderService) {}
 
   @HostListener('window:resize')
   onResize() {
@@ -53,8 +67,12 @@ export class BettercustomDualComponent implements AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit() {
+    if (this.mediaType === 'video' && !this.videoSrc) {
+      console.warn('BettercustomDualComponent: mediaType is set to "video" but videoSrc is missing.');
+    }
+
     this.animSub = this.loaderService.animationsEnabled$.subscribe((enabled) => {
-      if (enabled) {
+      if (enabled && this.mediaType === 'image') {
         this.initParallax();
       }
     });
@@ -68,7 +86,6 @@ export class BettercustomDualComponent implements AfterViewInit, OnDestroy {
   private initParallax() {
     const imageEl = this.parallaxImage?.nativeElement;
     const containerEl = this.parallaxContainer?.nativeElement;
-
     if (!imageEl || !containerEl) return;
 
     const isDesktop = this.screenWidth >= 768;

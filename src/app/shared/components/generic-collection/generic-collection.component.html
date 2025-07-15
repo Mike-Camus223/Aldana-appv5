@@ -1,0 +1,51 @@
+<div class="h-[0px] lg:h-[88px]"></div>
+<section>
+    <app-breadcrumb [items]="breadcrumbItems"></app-breadcrumb>
+</section>
+<app-bettercustom-dual 
+  *ngIf="collectionBanner"
+  [mediaType]="'video'" 
+  [title]="collectionTitle"
+  [contentTestimonial]="collectionDescription" 
+  [videoSrc]="collectionBanner"
+  [videoAutoplay]="true" 
+  [videoMuted]="true" 
+  [videoShowControls]="true" 
+  [videoGradientOverlay]="false"
+  [videoObjectFit]="'object-cover'" 
+  [imageWidth]="'64%'" 
+  [textWidth]="'36%'" 
+  [mobileOrder]="'image-first'"
+  [desktopOrder]="'text-first'" 
+  [height]="'h-auto md:h-[450px]'" 
+  [mobileHeight]="'auto'" 
+  [maxwidthandpadding]="'py-0'"
+  [textextracontetclass]="'text-center'"
+  [textcontetclass]="'text-center md:text-center'"
+  [titleAndContentClass]="'text-center uppercase'"
+></app-bettercustom-dual>
+<div class="px-4 sm:px-6 lg:px-12 xl:px-16 2xl:px-24 w-full">
+  <div class="max-w-screen-3xl mx-auto">
+    <div class="py-10 md:py-16">
+      <div class="mb-8 w-full h-auto flex items-end justify-between flex-wrap gap-4">
+        <div class="flex gap-2 items-end">
+          <h1 class="flex gap-2 items-end text-xl sm:text-3xl titles md:text-3xl font-bold tracking-tight">
+            NOVIAS
+            <span class="text-lg sm:text-lg titles md:text-xl font-bold">-</span>
+            <span class="font-light text-gray-600 uppercase">{{ collectionTitle }}</span>
+          </h1>
+          <p class="text-sm mb-1 sm:mb-0 sm:text-lg font-main text-gray-500 uppercase mt-2 tracking-widest">
+            {{ collectionSubtitle }}
+          </p>
+        </div>
+      </div>
+
+      <div class="mb-10" *ngFor="let section of sections">
+        <h2 class="text-md titles sm:text-lg text-gray-800 mb-4 tracking-widest">
+          {{ section.title }}
+        </h2>
+        <app-gallery-gen-com [media]="section.media" (mediaClicked)="onMediaClick($event)"></app-gallery-gen-com>
+      </div>
+    </div>
+  </div>
+</div>

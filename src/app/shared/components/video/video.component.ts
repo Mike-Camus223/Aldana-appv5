@@ -7,6 +7,8 @@ import {
   AfterViewInit,
   OnDestroy,
   signal,
+  OnChanges,
+  SimpleChanges,
 } from '@angular/core';
 
 @Component({
@@ -16,13 +18,13 @@ import {
   templateUrl: './video.component.html',
   styleUrl: './video.component.css',
 })
-export class VideoComponent implements AfterViewInit, OnDestroy {
+export class VideoComponent implements AfterViewInit, OnDestroy, OnChanges {
   @ViewChild('bgVideo') bgVideoRef!: ElementRef<HTMLVideoElement>;
 
   @Input() src!: string;
   @Input() height = 'min-h-[80vh]';
-  @Input() width = 'w-full';       
-  @Input() objectFit = 'object-contain';
+  @Input() width = 'w-full';
+  @Input() objectFit = 'object-cover';
   @Input() autoplay = true;
   @Input() muted = true;
   @Input() showControls = true;
@@ -32,24 +34,40 @@ export class VideoComponent implements AfterViewInit, OnDestroy {
   isMuted = signal(true);
   isVideoPlaying = signal(false);
   videoVisible = signal(false);
+  videoLoaded = signal(false);
 
   private observer!: IntersectionObserver;
 
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['muted']) {
+      this.isMuted.set(this.muted);
+    }
+  }
+
   ngAfterViewInit() {
     const video = this.bgVideoRef.nativeElement;
-    video.muted = this.muted;
+        video.muted = this.muted;
+    this.isMuted.set(this.muted);
+    video.addEventListener('loadedmetadata', () => {
+      this.videoLoaded.set(true);
+      console.log('Video metadata loaded');
+    });
+    video.addEventListener('play', () => {
+      this.isVideoPlaying.set(true);
+    });
 
+    video.addEventListener('pause', () => {
+      this.isVideoPlaying.set(false);
+    });
     this.observer = new IntersectionObserver(
       ([entry]) => {
         this.videoVisible.set(entry.isIntersecting);
 
-        if (!this.hasUserInteracted && this.autoplay) {
+        if (!this.hasUserInteracted && this.autoplay && this.videoLoaded()) {
           if (entry.isIntersecting) {
-            video.play();
-            this.isVideoPlaying.set(true);
+            this.playVideo();
           } else {
-            video.pause();
-            this.isVideoPlaying.set(false);
+            this.pauseVideo();
           }
         }
       },
@@ -60,18 +78,36 @@ export class VideoComponent implements AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.observer.disconnect();
+    if (this.observer) {
+      this.observer.disconnect();
+    }
   }
 
-  togglePlay() {
+  private async playVideo() {
+    const video = this.bgVideoRef.nativeElement;
+    try {
+      await video.play();
+      this.isVideoPlaying.set(true);
+    } catch (error) {
+      console.warn('Error playing video:', error);
+      this.isVideoPlaying.set(false);
+    }
+  }
+
+  private pauseVideo() {
+    const video = this.bgVideoRef.nativeElement;
+    video.pause();
+    this.isVideoPlaying.set(false);
+  }
+
+  async togglePlay() {
     this.hasUserInteracted = true;
     const video = this.bgVideoRef.nativeElement;
+    
     if (video.paused) {
-      video.play();
-      this.isVideoPlaying.set(true);
+      await this.playVideo();
     } else {
-      video.pause();
-      this.isVideoPlaying.set(false);
+      this.pauseVideo();
     }
   }
 

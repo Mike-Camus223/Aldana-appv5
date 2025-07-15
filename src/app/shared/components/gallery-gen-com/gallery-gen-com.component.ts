@@ -45,12 +45,11 @@ export class GalleryGenComComponent implements AfterViewInit, OnDestroy {
     this.mediaClicked.emit(item);
 
     if (item.type === 'video') {
-      event.preventDefault(); // Evita navegación por href
-
+      event.preventDefault(); 
       Fancybox.show([
         {
           src: item.url,
-          type: 'html5video', // Tipo correcto para MP4
+          type: 'html5video', 
           thumb: item.poster || undefined,
           width: item.width || 1280,
           height: item.height || 1920,
@@ -64,8 +63,6 @@ export class GalleryGenComComponent implements AfterViewInit, OnDestroy {
             right: ['toggleZoom', 'slideshow', 'fullscreen', 'thumbs', 'close'],
           },
         },
-
-        // ⚠️ Fuerza compatibilidad para evitar error TS
         ...( {
           Video: {
             autoplay: true,

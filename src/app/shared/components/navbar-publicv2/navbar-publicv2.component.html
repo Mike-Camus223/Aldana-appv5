@@ -1,10 +1,11 @@
 <nav #navbarRef (mouseleave)="onNavbarLeave()" [ngClass]="{
   'bg-white': !isHomePage || MoverScroll || hoverNavbar,
-  'bg-black/10': isHomePage && !MoverScroll && !hoverNavbar,
+  'bg-[linear-gradient(180deg,_rgba(37,37,37,0.90),_rgba(37,37,37,0))]': isHomePage && !MoverScroll && !hoverNavbar,
   'py-0': MoverScroll,
   'py-1': !MoverScroll
-}" class="hidden lg:block backdrop-blur-sm shadow-lg w-full fixed top-0 z-50 transition-all duration-300 ease-in-out">
-  <div class="relative z-10  lg:max-w-4xl xl:max-w-6xl mx-auto flex items-center justify-between h-20">
+}" class="hidden lg:block
+ w-full fixed top-0 z-50 transition-all duration-300 ease-in-out">
+  <div class="relative z-10 lg:max-w-4xl xl:max-w-6xl mx-auto flex items-center justify-between h-20">
     <div class="w-6">
       <a href="/home" class="flex justify-center">
         <div class="relative w-[60px] h-[50px] sm:w-[80px] sm:h-[50px]">
@@ -160,7 +161,7 @@
         </ng-container>
       </div>
     </div>
-    <a routerLink="/galeria" (click)="onMenuLinkClick()"
+    <a routerLink="/colecciones" (click)="onMenuLinkClick()"
       class="block hover:text-gray-700 tracking-widest uppercase titles">
       Colecciones
     </a>
