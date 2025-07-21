@@ -6,52 +6,39 @@
     <lucide-icon [name]="showFilters ? 'ChevronUp' : 'ChevronDown'" class="h-4 w-4"></lucide-icon>
   </button>
   <div class="w-40 h-auto justify-end flex gap-2">
-    <button type="button" class="group py-[7px] px-2 hover:bg-black hover:text-white transition-all duration-300 ease-in-out cursor-pointer border border-black">
+    <button type="button" (click)="setProductColumns(2)" [ngClass]="productColumns === 2 ? 'bg-black' : ''"
+      class="group py-[7px] px-2 hover:bg-black transition-all duration-300 ease-in-out cursor-pointer border border-black">
       <div class="grid grid-cols-2 gap-[2px] grid-rows-2">
-        <span class="h-[12px] w-[12px] bg-gray-900 group-hover:bg-white"></span>
-        <span class="h-[12px] w-[12px] bg-gray-900 group-hover:bg-white"></span>
-        <span class="h-[12px] w-[12px] bg-gray-900 group-hover:bg-white"></span>
-        <span class="h-[12px] w-[12px] bg-gray-900 group-hover:bg-white"></span>
+        <span *ngFor="let n of [1,2,3,4]" class="h-[12px] w-[12px] transition-all duration-300 ease-in-out"
+          [ngClass]="productColumns === 2 ? 'bg-white' : 'bg-gray-900 group-hover:bg-white'">
+        </span>
       </div>
     </button>
-    <button type="button"class="group py-[7px] px-2 hover:bg-black hover:text-white transition-all duration-300 ease-in-out cursor-pointer border border-black">
+    <button type="button" (click)="setProductColumns(3)" [ngClass]="productColumns === 3 ? 'bg-black' : ''"
+      class="group py-[7px] px-2 hover:bg-black transition-all duration-300 ease-in-out cursor-pointer border border-black">
+
       <div class="grid grid-cols-3 gap-[2px] grid-rows-3">
-        <span class="h-[8px] w-[8px] bg-gray-900 group-hover:bg-white"></span>
-        <span class="h-[8px] w-[8px] bg-gray-900 group-hover:bg-white"></span>
-        <span class="h-[8px] w-[8px] bg-gray-900 group-hover:bg-white"></span>
-        <span class="h-[8px] w-[8px] bg-gray-900 group-hover:bg-white"></span>
-        <span class="h-[8px] w-[8px] bg-gray-900 group-hover:bg-white"></span>
-        <span class="h-[8px] w-[8px] bg-gray-900 group-hover:bg-white"></span>
-        <span class="h-[8px] w-[8px] bg-gray-900 group-hover:bg-white"></span>
-        <span class="h-[8px] w-[8px] bg-gray-900 group-hover:bg-white"></span>
-        <span class="h-[8px] w-[8px] bg-gray-900 group-hover:bg-white"></span>
+        <span *ngFor="let n of [1,2,3,4,5,6,7,8,9]" class="h-[8px] w-[8px] transition-all duration-300 ease-in-out"
+          [ngClass]="productColumns === 3 ? 'bg-white' : 'bg-gray-900 group-hover:bg-white'">
+        </span>
       </div>
     </button>
-    <button type="button" class="group py-[7px] px-2 hover:bg-black hover:text-white transition-all duration-300 ease-in-out cursor-pointer border border-black">
+    <button type="button" (click)="setProductColumns(4)" [ngClass]="productColumns === 4 ? 'bg-black' : ''"
+      class="group py-[7px] px-2 hover:bg-black transition-all duration-300 ease-in-out cursor-pointer border border-black">
+
       <div class="grid grid-cols-4 gap-[2px] grid-rows-4">
-        <span class="h-[5px] w-[5px] bg-gray-900 group-hover:bg-white"></span>
-        <span class="h-[5px] w-[5px] bg-gray-900 group-hover:bg-white"></span>
-        <span class="h-[5px] w-[5px] bg-gray-900 group-hover:bg-white"></span>
-        <span class="h-[5px] w-[5px] bg-gray-900 group-hover:bg-white"></span>
-        <span class="h-[5px] w-[5px] bg-gray-900 group-hover:bg-white"></span>
-        <span class="h-[5px] w-[5px] bg-gray-900 group-hover:bg-white"></span>
-        <span class="h-[5px] w-[5px] bg-gray-900 group-hover:bg-white"></span>
-        <span class="h-[5px] w-[5px] bg-gray-900 group-hover:bg-white"></span>
-        <span class="h-[5px] w-[5px] bg-gray-900 group-hover:bg-white"></span>
-        <span class="h-[5px] w-[5px] bg-gray-900 group-hover:bg-white"></span>
-        <span class="h-[5px] w-[5px] bg-gray-900 group-hover:bg-white"></span>
-        <span class="h-[5px] w-[5px] bg-gray-900 group-hover:bg-white"></span>
-        <span class="h-[5px] w-[5px] bg-gray-900 group-hover:bg-white"></span>
-        <span class="h-[5px] w-[5px] bg-gray-900 group-hover:bg-white"></span>
-        <span class="h-[5px] w-[5px] bg-gray-900 group-hover:bg-white"></span>
-        <span class="h-[5px] w-[5px] bg-gray-900 group-hover:bg-white"></span>
+        <span *ngFor="let n of [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]"
+          class="h-[5px] w-[5px] transition-all duration-300 ease-in-out"
+          [ngClass]="productColumns === 4 ? 'bg-white' : 'bg-gray-900 group-hover:bg-white'">
+        </span>
       </div>
     </button>
   </div>
 </div>
 <div class="px-4 sm:px-6 lg:px-12 xl:px-16 2xl:px-24 py-2 w-full">
   <div class="max-w-screen-3xl mx-auto">
-    <div class="flex flex-col lg:flex-row transition-all duration-500 ease-in-out" [ngClass]="{ 'gap-4': showFilters, 'gap-0': !showFilters }">
+    <div class="flex flex-col lg:flex-row transition-all duration-500 ease-in-out"
+      [ngClass]="{ 'gap-4': showFilters, 'gap-0': !showFilters }">
       <aside class="transition-all duration-500 ease-in-out overflow-hidden" [ngStyle]="{
           flexBasis: showFilters ? '16.666667%' : '0%',
           maxWidth: showFilters ? '16.666667%' : '0%',
@@ -99,11 +86,18 @@
           <p class="text-gray-500 text-lg font-medium">No se encuentran productos.</p>
         </div>
 
-        <div *ngIf="!loading && products.length > 0"
-          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+        <div *ngIf="!loading && products.length > 0" [@gridAnimation]="productColumns"
+          class="grid gap-5 transition-all duration-500 ease-in-out" [ngClass]="[
+    productColumns === 2 ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-2 mx-0 xl:mx-60' : '',
+    productColumns === 3 ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 mx-0' : '',
+    productColumns === 4 ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 mx-0' : ''
+  ]">
           <app-cardproduct *ngFor="let product of products; trackBy: trackByProductId" [product]="product"
-            [selectedColor]="selectedColors[product.id]" [displayImage]="product.main_image" [mobileMode]="'ismobile'"
-            [desktopMode]="'isdesktop'" (colorSelected)="selectColor($event)"
+            [selectedColor]="selectedColors[product.id]"
+            [displayImage]="product.main_image" 
+            [mobileMode]="'ismobile'"
+            [desktopMode]="'isdesktop'" 
+            (colorSelected)="selectColor($event)"
             (wishlistToggled)="toggleWishlist($event)">
           </app-cardproduct>
         </div>

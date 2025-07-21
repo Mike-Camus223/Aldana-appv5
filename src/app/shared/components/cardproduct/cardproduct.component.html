@@ -35,7 +35,6 @@
 </ng-container>
 <ng-template #desktopView>
   <div class="relative shadow-md overflow-hidden group bg-white aspect-[3/4] sm:aspect-[3/4] md:aspect-[3/5] lg:aspect-[3/5] xl:aspect-[3/5]">
-
     <button type="button" [routerLink]="['/producto', product.slug]" class="absolute inset-0 z-0">
       <img *ngIf="displayImage || product.main_image" 
         [src]="displayImage || product.main_image" 
@@ -43,7 +42,6 @@
         loading="lazy" 
         class="w-full h-full cursor-pointer object-cover object-top transition-transform group-hover:scale-105 duration-300" />
     </button>
-
     <div class="absolute inset-0 flex items-end opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 pointer-events-none">
       <div class="w-full bg-white p-4 shadow-xl m-3 pointer-events-auto">
         

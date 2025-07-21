@@ -11,6 +11,7 @@ import { AccordionModule } from 'primeng/accordion';
 import { ProductUtils } from '../../utils/dataEx/products-utils';
 import { CardproductComponent } from '../cardproduct/cardproduct.component';
 import { Funnel, LUCIDE_ICONS, LucideIconProvider, LucideAngularModule, ChevronDown, ChevronUp } from 'lucide-angular';
+import { trigger, transition, style, animate } from '@angular/animations';
 
 @Component({
   selector: 'app-store-template',
@@ -25,19 +26,27 @@ import { Funnel, LUCIDE_ICONS, LucideIconProvider, LucideAngularModule, ChevronD
     ProgressSpinnerModule,
     CardproductComponent,
     LucideAngularModule
-],
+  ],
   templateUrl: './store-template.component.html',
   styleUrls: ['./store-template.component.css'],
+  animations: [
+    trigger('gridAnimation', [
+      transition('* => *', [
+        style({ transform: 'scale(0.98)' }),
+        animate('300ms ease-in-out', style({ transform: 'scale(1)' })),
+      ]),
+    ]),
+  ],
   providers: [
     {
       provide: LUCIDE_ICONS,
       multi: true,
       useValue: new LucideIconProvider({
         Funnel,
-         ChevronDown,
+        ChevronDown,
         ChevronUp
       })
-    } 
+    }
   ],
 })
 export class StoreTemplateComponent implements OnInit {
@@ -50,8 +59,8 @@ export class StoreTemplateComponent implements OnInit {
   loading = true;
   activeAccordion: number = 0;
   showFilters = false;
+  productColumns: number = 4;
 
-  
   categories = [
     { label: 'Camisas', value: 'camisas', subsections: [{ label: 'Camisas 1', value: 'camisas 1' }, { label: 'Camisas 2', value: 'camisas 2' }, { label: 'Camisas 3', value: 'camisas 3' }] },
     { label: 'Blusas', value: 'blusas', subsections: [{ label: 'Blusas 1', value: 'blusas 1' }, { label: 'Blusas 2', value: 'blusas 2' }, { label: 'Blusas 3', value: 'blusas 3' }] },
@@ -84,21 +93,20 @@ export class StoreTemplateComponent implements OnInit {
       if (Array.isArray(data)) {
         this.products = ProductUtils.mapProducts(data);
         this.allProducts = [...this.products];
-
         this.products.forEach(p => {
           this.selectedColors[p.id] = p.variants[0]?.color_name || '';
         });
-
         this.loadWishlistFromStorage();
-
         this.selectedCategory = categoriaParam ? ProductUtils.normalize(categoriaParam) : null;
         this.selectedSubcategory = subcategoriaParam ? ProductUtils.normalize(subcategoriaParam) : null;
-
         this.refreshProducts();
       }
-
       this.loading = false;
     });
+  }
+
+  setProductColumns(cols: number): void {
+    this.productColumns = cols;
   }
 
   toggleWishlist(productId: string): void {
