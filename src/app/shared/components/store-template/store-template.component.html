@@ -1,77 +1,111 @@
-<div class="flex flex-col lg:flex-row gap-4">
-  <aside class="w-full lg:w-1/6 lg:me-2">
-    <p-accordion [(activeIndex)]="activeAccordion" [expandIcon]="'pi'" [collapseIcon]="'pi'"
-      [styleClass]="'border-none shadow-none divide-y divide-gray-200 border-t border-gray-200'">
-      <p-accordionTab *ngFor="let category of categories">
-        <ng-template pTemplate="header">
-          <div
-            class="flex justify-between items-center w-full cursor-pointer hover:text-aldy-primary-400 transition-colors"
-            [ngClass]="{
-            'text-aldy-primary-600 font-semibold': selectedCategory === category.value,
-            'text-gray-600': selectedCategory !== category.value
-          }" (click)="filterByMainCategory(category.value)">
-            <span class="text-sm sm:text-lg font-main">{{ category.label }}</span>
-            <i class="pi" [ngClass]="{
-            'pi-angle-up': activeAccordion === categories.indexOf(category),
-            'pi-angle-down': activeAccordion !== categories.indexOf(category)
-          }"></i>
-          </div>
-        </ng-template>
-        <div *ngFor="let sub of category.subsections" class="transition-colors">
-          <label class="flex items-center gap-2 py-2 px-3 text-sm sm:text-md font-main cursor-pointer w-full">
-            <input type="radio" name="subcategory" [value]="sub.value" [(ngModel)]="selectedSubcategory"
-              (change)="refreshProducts(); updateQueryParams()" class="form-radio scale-90" />
-            <span class="text-gray-600" [ngClass]="{
-                    'text-aldy-primary-600 font-semibold': selectedSubcategory === sub.value,
-                    'text-gray-600': selectedSubcategory !== sub.value
-                  }">{{ sub.label }}</span>
-          </label>
-        </div>
-      </p-accordionTab>
-    </p-accordion>
-  </aside>
-  <div class="w-full lg:w-5/6 min-h-[300px]">
-    <div *ngIf="loading" class="flex justify-center items-center h-full py-20">
-      <p-progress-spinner strokeWidth="8" fill="transparent" animationDuration=".5s"
-        [style]="{ width: '50px', height: '50px' }" />
-    </div>
-    <div *ngIf="!loading && products.length === 0" class="flex justify-center items-center h-full py-20">
-      <p class="text-gray-500 text-lg font-medium">No se encuentran productos.</p>
-    </div>
-    <div *ngIf="!loading && products.length > 0"
-      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-      <div *ngFor="let product of products; trackBy: trackByProductId"
-        class="rounded-sm border border-gray-200 shadow-md transition relative overflow-hidden flex flex-col">
-        <button type="button" aria-label="Añadir a favoritos" (click)="toggleWishlist(product)"
-          class="absolute top-3 right-3 text-xl cursor-pointer leading-none transition-colors focus:outline-none z-10">
-          <i class="fa-solid fa-heart" [ngClass]="{
-               'text-aldy-primary-600': product.wishlisted,
-               'text-gray-300': !product.wishlisted
-             }"></i>
-        </button>
-        <a [routerLink]="['/producto', product.id]" class="group block">
-          <div class="relative shadow-sm rounded-t-sm h-72 flex items-center justify-center overflow-hidden">
-            <img [src]="product.mainImageUrl" [alt]="product.name" loading="lazy" fetchpriority="low"
-              class="transition-transform duration-300 group-hover:scale-110 h-full w-full object-cover" />
-            <div
-              class="absolute inset-0 bg-white/20 bg-opacity-10 opacity-0 group-hover:opacity-100 transition duration-300">
+<div class="px-4 pt-2 sm:px-6 lg:px-12 xl:px-16 2xl:px-24 inline-flex justify-between items-center w-full">
+  <button type="button" (click)="toggleFilters()"
+    class="inline-flex text-xs aldyFont gap-2 items-center border cursor-pointer border-black px-6 py-3 tracking-widest font-medium uppercase transition-all duration-300 ease-in-out hover:bg-black hover:text-white">
+    <lucide-icon name="Funnel" class="h-4 w-4"></lucide-icon>
+    <span>{{ showFilters ? 'Ocultar filtros' : 'Mostrar filtros' }}</span>
+    <lucide-icon [name]="showFilters ? 'ChevronUp' : 'ChevronDown'" class="h-4 w-4"></lucide-icon>
+  </button>
+  <div class="w-40 h-auto justify-end flex gap-2">
+    <button type="button" class="group py-[7px] px-2 hover:bg-black hover:text-white transition-all duration-300 ease-in-out cursor-pointer border border-black">
+      <div class="grid grid-cols-2 gap-[2px] grid-rows-2">
+        <span class="h-[12px] w-[12px] bg-gray-900 group-hover:bg-white"></span>
+        <span class="h-[12px] w-[12px] bg-gray-900 group-hover:bg-white"></span>
+        <span class="h-[12px] w-[12px] bg-gray-900 group-hover:bg-white"></span>
+        <span class="h-[12px] w-[12px] bg-gray-900 group-hover:bg-white"></span>
+      </div>
+    </button>
+    <button type="button"class="group py-[7px] px-2 hover:bg-black hover:text-white transition-all duration-300 ease-in-out cursor-pointer border border-black">
+      <div class="grid grid-cols-3 gap-[2px] grid-rows-3">
+        <span class="h-[8px] w-[8px] bg-gray-900 group-hover:bg-white"></span>
+        <span class="h-[8px] w-[8px] bg-gray-900 group-hover:bg-white"></span>
+        <span class="h-[8px] w-[8px] bg-gray-900 group-hover:bg-white"></span>
+        <span class="h-[8px] w-[8px] bg-gray-900 group-hover:bg-white"></span>
+        <span class="h-[8px] w-[8px] bg-gray-900 group-hover:bg-white"></span>
+        <span class="h-[8px] w-[8px] bg-gray-900 group-hover:bg-white"></span>
+        <span class="h-[8px] w-[8px] bg-gray-900 group-hover:bg-white"></span>
+        <span class="h-[8px] w-[8px] bg-gray-900 group-hover:bg-white"></span>
+        <span class="h-[8px] w-[8px] bg-gray-900 group-hover:bg-white"></span>
+      </div>
+    </button>
+    <button type="button" class="group py-[7px] px-2 hover:bg-black hover:text-white transition-all duration-300 ease-in-out cursor-pointer border border-black">
+      <div class="grid grid-cols-4 gap-[2px] grid-rows-4">
+        <span class="h-[5px] w-[5px] bg-gray-900 group-hover:bg-white"></span>
+        <span class="h-[5px] w-[5px] bg-gray-900 group-hover:bg-white"></span>
+        <span class="h-[5px] w-[5px] bg-gray-900 group-hover:bg-white"></span>
+        <span class="h-[5px] w-[5px] bg-gray-900 group-hover:bg-white"></span>
+        <span class="h-[5px] w-[5px] bg-gray-900 group-hover:bg-white"></span>
+        <span class="h-[5px] w-[5px] bg-gray-900 group-hover:bg-white"></span>
+        <span class="h-[5px] w-[5px] bg-gray-900 group-hover:bg-white"></span>
+        <span class="h-[5px] w-[5px] bg-gray-900 group-hover:bg-white"></span>
+        <span class="h-[5px] w-[5px] bg-gray-900 group-hover:bg-white"></span>
+        <span class="h-[5px] w-[5px] bg-gray-900 group-hover:bg-white"></span>
+        <span class="h-[5px] w-[5px] bg-gray-900 group-hover:bg-white"></span>
+        <span class="h-[5px] w-[5px] bg-gray-900 group-hover:bg-white"></span>
+        <span class="h-[5px] w-[5px] bg-gray-900 group-hover:bg-white"></span>
+        <span class="h-[5px] w-[5px] bg-gray-900 group-hover:bg-white"></span>
+        <span class="h-[5px] w-[5px] bg-gray-900 group-hover:bg-white"></span>
+        <span class="h-[5px] w-[5px] bg-gray-900 group-hover:bg-white"></span>
+      </div>
+    </button>
+  </div>
+</div>
+<div class="px-4 sm:px-6 lg:px-12 xl:px-16 2xl:px-24 py-2 w-full">
+  <div class="max-w-screen-3xl mx-auto">
+    <div class="flex flex-col lg:flex-row transition-all duration-500 ease-in-out" [ngClass]="{ 'gap-4': showFilters, 'gap-0': !showFilters }">
+      <aside class="transition-all duration-500 ease-in-out overflow-hidden" [ngStyle]="{
+          flexBasis: showFilters ? '16.666667%' : '0%',
+          maxWidth: showFilters ? '16.666667%' : '0%',
+          minWidth: showFilters ? '200px' : '0px',
+          opacity: showFilters ? '1' : '0',
+          pointerEvents: showFilters ? 'auto' : 'none'
+        }">
+        <p-accordion [(activeIndex)]="activeAccordion"
+          [styleClass]="'border-none shadow-none divide-y divide-gray-200 border-t border-gray-200'">
+          <p-accordionTab *ngFor="let category of categories">
+            <ng-template pTemplate="header">
+              <div
+                class="flex justify-between items-center w-full cursor-pointer hover:text-aldy-primary-400 transition-colors"
+                [ngClass]="{
+                  'text-aldy-primary-600 font-semibold': selectedCategory === normalize(category.value),
+                  'text-gray-600': selectedCategory !== normalize(category.value)
+                }" (click)="filterByMainCategory(category.value)">
+                <span class="text-sm sm:text-lg font-main">{{ category.label }}</span>
+                <i class="pi" [ngClass]="{
+                  'pi-angle-up': activeAccordion === categories.indexOf(category),
+                  'pi-angle-down': activeAccordion !== categories.indexOf(category)
+                }"></i>
+              </div>
+            </ng-template>
+            <div *ngFor="let sub of category.subsections" class="transition-colors">
+              <label class="flex items-center gap-2 py-2 px-3 text-sm sm:text-md font-main cursor-pointer w-full">
+                <input type="radio" name="subcategory" [checked]="normalize(sub.value) === selectedSubcategory"
+                  (change)="navigateToSubcategory(category.value, sub.value)" class="form-radio scale-90" />
+                <span [ngClass]="{
+                  'text-aldy-primary-600 font-semibold': selectedSubcategory === normalize(sub.value),
+                  'text-gray-600': selectedSubcategory !== normalize(sub.value)
+                }">{{ sub.label }}</span>
+              </label>
             </div>
-          </div>
-          <div class="px-4">
-            <h3 class="text-sm sm:text-lg mt-3">{{ product.name }}</h3>
-            <p class="text-sm sm:text-lg font-main font-normal text-gray-600 mt-1">{{ product.description }}</p>
-            <p class="text-sm sm:text-lg font-normal mt-1">
-              {{ product.price | currency:'ARS':'symbol-narrow':'1.2-2':'es-AR' }}
-            </p>
-          </div>
-        </a>
-        <div class="mt-3 pb-4 px-4 flex gap-2">
-          <button *ngFor="let color of product.colors" (click)="selectColor(product.id, color)"
-            [ngStyle]="{ backgroundColor: color }" class="w-5 h-5 rounded-sm transition-all border" [ngClass]="{
-                    'border-white border-2 ring-2 ring-gray-800 cursor-default': selectedColors[product.id] === color,
-                    'border-transparent cursor-pointer': selectedColors[product.id] !== color
-                  }" [title]="color" aria-label="Elegir color">
-          </button>
+          </p-accordionTab>
+        </p-accordion>
+      </aside>
+      <div class="transition-all duration-500 ease-in-out flex-1 min-h-[300px]">
+        <div *ngIf="loading" class="flex justify-center items-center h-full py-20">
+          <p-progress-spinner strokeWidth="8" fill="transparent" animationDuration=".5s"
+            [style]="{ width: '50px', height: '50px' }" />
+        </div>
+
+        <div *ngIf="!loading && products.length === 0" class="flex justify-center items-center h-full py-20">
+          <p class="text-gray-500 text-lg font-medium">No se encuentran productos.</p>
+        </div>
+
+        <div *ngIf="!loading && products.length > 0"
+          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+          <app-cardproduct *ngFor="let product of products; trackBy: trackByProductId" [product]="product"
+            [selectedColor]="selectedColors[product.id]" [displayImage]="product.main_image" [mobileMode]="'ismobile'"
+            [desktopMode]="'isdesktop'" (colorSelected)="selectColor($event)"
+            (wishlistToggled)="toggleWishlist($event)">
+          </app-cardproduct>
         </div>
       </div>
     </div>

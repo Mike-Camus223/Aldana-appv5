@@ -31,6 +31,56 @@ export class SupabaseService {
     };
   }
 
+  async getProducts(slug?: string) {
+    const selectProducts = `
+      id,
+      name,
+      description,
+      details,
+      price,
+      category_id,
+      subcategory_id,
+      main_image,
+      additional_images,
+      sizes,
+      slug,
+      avid,
+      color_id,        
+    color_name,       
+    color_hex,        
+      categories:categories!products_category_id_fkey (
+        id,
+        name
+      ),
+      subcategories:subcategories!products_subcategory_id_fkey (
+        id,
+        name
+      ),
+      product_variants (
+  id,
+  color_id,
+  color_name,
+  color_hex,
+  avid,
+  main_image,
+  additional_images,
+  colors:colors!product_variants_color_id_fkey (
+    code,
+    name,
+    hex
+  )
+)
+    `;
+
+    return this.getData<any>(
+      'products',
+      selectProducts,
+      slug ? 'slug' : undefined,
+      slug,
+      Boolean(slug)
+    );
+  }
+
   async getContentForPages<T>(slug: string): Promise<T | null> {
     const result = await this.getData<T>(
       'generic_data_pages',
@@ -58,62 +108,23 @@ export class SupabaseService {
     return result.data;
   }
 
-  async getProducts(id?: string) {
-    const selectProducts = `
-      id,
-     
-      details, name,
-      description,
-      price,
-      category_id,
-      subcategory_id,
-      categories!products_category_id_fkey (
-        id,
-        name
-      ),
-      subcategories!products_subcategory_id_fkey (
-        id,
-        name
-      ),
-      product_variants (
-        id,
-        color,
-        product_images!product_images_variant_id_fkey (
-          id,
-          image_url,
-          is_main
-        ),
-        product_sizes!product_sizes_variant_id_fkey (
-          id,
-          size
-        )
-      )
-    `;
-
-    return this.getData<any>(
-      'products',
-      selectProducts,
-      id ? 'id' : undefined,
-      id,
-      Boolean(id)
-    );
-  }
-
   async getTempReels() {
     const selectReels = `
-    id,
-    image_url,
-    caption,
-    hashtags,
-    link
-  `;
-    return this.getData<any>(
-      'reels',
-      selectReels
-    );
+      id,
+      image_url,
+      caption,
+      hashtags,
+      link
+    `;
+    return this.getData<any>('reels', selectReels);
   }
 
-  async validateCoupon(code: string): Promise<{ valid: boolean; discountAmount?: number; discountType?: 'percent' | 'fixed'; error?: string }> {
+  async validateCoupon(code: string): Promise<{
+    valid: boolean;
+    discountAmount?: number;
+    discountType?: 'percent' | 'fixed';
+    error?: string;
+  }> {
     const { data, error } = await this.supabase
       .from('discount_codes')
       .select('id, code, discount_type, amount, is_active, expires_at')
@@ -132,81 +143,70 @@ export class SupabaseService {
       return { valid: false, error: 'Cupón expirado.' };
     }
 
-    let discountAmount = 0;
-    let discountType: 'percent' | 'fixed' = 'fixed';
-
-    if (data.discount_type === 'percent') {
-      discountAmount = data.amount;
-      discountType = 'percent';
-    } else if (data.discount_type === 'fixed') {
-      discountAmount = data.amount;
-      discountType = 'fixed';
-    }
-
-    return { valid: true, discountAmount, discountType };
+    return {
+      valid: true,
+      discountAmount: data.amount,
+      discountType: data.discount_type
+    };
   }
 
-
-async getAllCollections() {
-  const selectFields = `
-    id,
-    uuid,
-    name,
-    cover_image_url,
-    season,
-    release_date,
-    created_at,
-    banner,
-    description,
-    slug
-  `;
-
-  const result = await this.getData<any[]>(
-    'collections',
-    selectFields
-  );
-
-  if (result.error) throw result.error;
-  return result.data;
-}
-
-async getCollectionById(slug: string) {
-  const selectFields = `
-    id,
-    uuid,
-    name,
-    cover_image_url,
-    season,
-    release_date,
-    created_at,
-    banner,
-    description,
-    slug,
-    collection_media (
+  async getAllCollections() {
+    const selectFields = `
       id,
-      collection_id,
-      section_name,
-      media_url,
-      alt,
-      type,
-      order,
+      uuid,
+      name,
+      cover_image_url,
+      season,
+      release_date,
       created_at,
-      poster_url
-    )
-  `;
+      banner,
+      description,
+      slug
+    `;
 
-  const result = await this.getData<any>(
-    'collections',
-    selectFields,
-    'slug',
-    slug,
-    true
-  );
+    const result = await this.getData<any[]>(
+      'collections',
+      selectFields
+    );
 
-  if (result.error) throw result.error;
-  return result.data;
-}
+    if (result.error) throw result.error;
+    return result.data;
+  }
 
+  async getCollectionById(slug: string) {
+    const selectFields = `
+      id,
+      uuid,
+      name,
+      cover_image_url,
+      season,
+      release_date,
+      created_at,
+      banner,
+      description,
+      slug,
+      collection_media (
+        id,
+        collection_id,
+        section_name,
+        media_url,
+        alt,
+        type,
+        order,
+        created_at,
+        poster_url
+      )
+    `;
 
+    const result = await this.getData<any>(
+      'collections',
+      selectFields,
+      'slug',
+      slug,
+      true
+    );
 
+    if (result.error) throw result.error;
+    return result.data;
+  }
 }

@@ -18,8 +18,7 @@ import {
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import {
   Product,
-  ProductVariant,
-  ProductImage
+  ProductVariant
 } from '../../../../shared/utils/models/Products-supabase.interface';
 
 @Component({
@@ -117,10 +116,10 @@ export class SearchPageComponent implements AfterViewInit, OnDestroy {
     this.noResults = false;
     this.products = [];
 
-    // Mantener el scroll arriba mientras se busca
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
     const { data, error } = await this.supabase.getProducts();
+
     if (error) {
       console.error('Error al obtener productos', error);
       this.loading = false;
@@ -129,72 +128,62 @@ export class SearchPageComponent implements AfterViewInit, OnDestroy {
 
     const search = this.searchTerm.toLowerCase();
 
-    const filtered = (data as any[]).filter(product =>
-      product.name?.toLowerCase().includes(search) ||
-      product.categories?.name?.toLowerCase().includes(search) ||
-      product.subcategories?.name?.toLowerCase().includes(search)
+    const filtered = (data as any[]).filter(p =>
+      p.name?.toLowerCase().includes(search) ||
+      p.categories?.name?.toLowerCase().includes(search) ||
+      p.subcategories?.name?.toLowerCase().includes(search)
     );
 
-    this.products = this.mapProducts(filtered);
+    this.products = filtered.map(p => ({
+      id: p.id,
+      name: p.name,
+      description: p.description,
+      details: p.details || '',
+      price: p.price || 0,
+      variants: p.product_variants || [],
+      main_image: p.main_image || '',
+      additional_images: p.additional_images || [],
+      sizes: p.sizes || [],
+      slug: p.slug || '',
+      category: p.categories,
+      subcategory: p.subcategories,
+      wishlisted: false
+    }));
+
     this.noResults = this.products.length === 0;
     this.loading = false;
 
-    // Asegurar que permanezca arriba después de mostrar resultados
     setTimeout(() => {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }, 100);
   }
 
-  private mapProducts(data: any[]): Product[] {
-    return data.map(p => {
-      const variants: ProductVariant[] = p.product_variants || [];
-      const colors = [...new Set(variants.map(v => v.color))];
-      const allImages: ProductImage[] = variants.flatMap(v => v.product_images || []);
-      const mainImage = allImages.find(img => img.is_main) || allImages[0] || { image_url: '' };
-
-      return {
-        id: p.id,
-        name: p.name,
-        details: p.details || '',
-        description: p.description,
-        price: p.price || 0,
-        variants,
-        product_images: allImages,
-        mainImageUrl: mainImage.image_url,
-        colors,
-        wishlisted: false,
-        category: p.categories?.name?.toLowerCase() || '',
-        subcategory: p.subcategories?.name?.toLowerCase() || ''
-      };
-    });
+  navigateToProduct(productSlug: string, event?: Event): void {
+  if (event) {
+    event.preventDefault();
+    event.stopPropagation();
   }
 
-  // Método para navegar al producto con mejor compatibilidad móvil
-  navigateToProduct(productId: string, event?: Event): void {
+  setTimeout(() => {
+    this.router.navigate(['/producto', productSlug]);
+  }, 0);
+}
+
+  selectColor(productId: string, colorName: string, event?: Event): void {
     if (event) {
       event.preventDefault();
       event.stopPropagation();
     }
-    
-    // Usar setTimeout para asegurar que la navegación ocurra después del evento
-    setTimeout(() => {
-      this.router.navigate(['/producto', productId]);
-    }, 0);
-  }
 
-  async selectColor(productId: string, color: string, event?: Event): Promise<void> {
-    if (event) {
-      event.preventDefault();
-      event.stopPropagation();
-    }
-    
-    if (this.selectedColors[productId] === color) return;
-    this.selectedColors[productId] = color;
+    if (this.selectedColors[productId] === colorName) return;
+    this.selectedColors[productId] = colorName;
 
     const product = this.products.find(p => p.id === productId);
-    const variant = product?.variants.find(v => v.color === color);
-    const img = variant?.product_images.find(i => i.is_main) || variant?.product_images[0];
-    if (product && img) product.mainImageUrl = img.image_url;
+    const variant = product?.variants.find(v => v.color_name === colorName);
+
+    if (product && variant) {
+      product.main_image = product.main_image; 
+    }
 
     this.updateQueryParamsWithoutReload();
   }
@@ -231,6 +220,6 @@ export class SearchPageComponent implements AfterViewInit, OnDestroy {
   }
 
   trackByProductId(index: number, product: Product): string {
-    return product.id;
+    return product.slug;
   }
 }

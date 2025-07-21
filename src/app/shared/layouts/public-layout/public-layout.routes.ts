@@ -27,15 +27,24 @@ export const routes: Routes = [
           import('../../../shared/components/generic-collection/generic-collection.component').then(c => c.GenericCollectionComponent),
       },
       {
-        path: 'tienda',
-        loadComponent: () =>
-          import('../../../features/landing/pages/shop/shop.component').then(c => c.ShopComponent),
+        path: 'tienda/categoria/:categoria',
+        loadComponent: () => import('../../../features/landing/pages/shop/shop.component').then(c => c.ShopComponent),
       },
       {
-        path: 'producto/:id',
+        path: 'tienda/categoria/:categoria/subcategoria/:subcategoria',
+        loadComponent: () => import('../../../features/landing/pages/shop/shop.component').then(c => c.ShopComponent),
+      },
+      {
+        path: 'tienda',
+        loadComponent: () => import('../../../features/landing/pages/shop/shop.component').then(c => c.ShopComponent),
+      },
+
+      {
+        path: 'producto/:slug',
         loadComponent: () =>
           import('../../../shared/components/items-purchase/items-purchase.component').then(m => m.ItemsPurchaseComponent),
-      },
+      }
+      ,
       {
         path: 'contacto',
         loadComponent: () =>

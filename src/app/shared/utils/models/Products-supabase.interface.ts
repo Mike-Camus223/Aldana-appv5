@@ -11,9 +11,23 @@ export interface ProductSize {
 
 export interface ProductVariant {
   id: string;
-  color: string;
-  product_images: ProductImage[];
-  product_sizes: ProductSize[];
+  color_name: string;
+  color_hex: string;
+  avid: string;
+  main_image?: string;
+  additional_images?: string[]; 
+  isBase?: boolean; 
+
+}
+
+export interface Category {
+  id: number;
+  name: string;
+}
+
+export interface Subcategory {
+  id: number;
+  name: string;
 }
 
 export interface Product {
@@ -22,11 +36,13 @@ export interface Product {
   description: string;
   details: string;
   price: number;
-  category: string;
-  subcategory?: string;  
   variants: ProductVariant[];
-  product_images: ProductImage[]; 
-  mainImageUrl: string; 
-  colors: string[];
+  main_image: string;
+  additional_images: string[];
+  sizes: string[];
+  slug: string;
+  category: Category;
+  subcategory?: Subcategory;
   wishlisted?: boolean;
 }
+

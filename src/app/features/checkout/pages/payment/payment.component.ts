@@ -57,22 +57,26 @@ export class PaymentComponent implements OnInit, AfterViewInit, OnDestroy {
   clearOnUnload() {}
 
   ngOnInit(): void {
-    this.shippingData = this.shippingService.getShippingData();
-    if (!this.shippingData) {
-      this.router.navigate(['/checkout/shipping']);
-      return;
-    }
-
-    this.cartService.cartItems$.subscribe((items) => {
-      this.cartItems = items;
-      this.cdr.detectChanges();
-    });
-
-    this.shippingService.discountData$.subscribe((data) => {
-      this.discountData = data;
-      this.cdr.detectChanges();
-    });
+  this.shippingData = this.shippingService.getShippingData();
+  if (!this.shippingData) {
+    this.router.navigate(['/checkout/shipping']);
+    return;
   }
+
+  this.cartService.cartItems$.subscribe((items) => {
+    this.cartItems = items.map(item => ({
+      ...item,
+      variantMainImage: item.variantMainImage?.trim() || undefined
+    }));
+    this.cdr.detectChanges();
+  });
+
+  this.shippingService.discountData$.subscribe((data) => {
+    this.discountData = data;
+    this.cdr.detectChanges();
+  });
+}
+
 
   ngAfterViewInit(): void {}
 

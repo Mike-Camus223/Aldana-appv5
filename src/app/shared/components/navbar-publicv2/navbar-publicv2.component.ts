@@ -178,9 +178,8 @@ export class NavbarPublicv2Component implements OnInit {
   goToCategory(item: string): void {
     this.closeDropdown();
     this.onMenuLinkClick();
-    this.router.navigate(['/tienda'], {
-      queryParams: { categoria: this.normalizeCategory(item) }
-    });
+   this.router.navigate(['/tienda/categoria', this.normalizeCategory(item)]);
+
   }
 
   get iconColorClass(): Record<string, boolean> {

@@ -22,13 +22,15 @@ export class CarComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.cartService.cartItems$.subscribe(items => {
-      this.cartItems = items.map(item => ({
-        ...item,
-        quantity: isNaN(Number(item.quantity)) ? 1 : Number(item.quantity)
-      }));
-    });
-  }
+  this.cartService.cartItems$.subscribe(items => {
+    this.cartItems = items.map(item => ({
+      ...item,
+      quantity: isNaN(Number(item.quantity)) ? 1 : Number(item.quantity),
+      variantMainImage: item.variantMainImage && item.variantMainImage.trim() !== '' ? item.variantMainImage.trim() : undefined
+    }));
+  });
+}
+
 
   clearCart() {
     this.cartService.clearCart();

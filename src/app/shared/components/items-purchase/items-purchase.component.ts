@@ -4,12 +4,13 @@ import { CommonModule } from '@angular/common';
 import { AccordionModule } from 'primeng/accordion';
 import { ToastModule } from 'primeng/toast';
 import { FancyCarouselComponent } from '../fancy-carousel/fancy-carousel.component';
-import { Product, ProductVariant, ProductImage } from '../../utils/models/Products-supabase.interface';
+import { Product, ProductVariant } from '../../utils/models/Products-supabase.interface';
 import { CartItem } from '../../utils/models/cartItems-model';
 import { SupabaseService } from '../../../core/services/data-access/supabase.service';
 import { CartService } from '../../../core/services/cart.service';
 import { NotificationService } from '../../../core/services/notification.service';
 import { FormsModule } from '@angular/forms';
+import { ProductUtils } from '../../utils/dataEx/products-utils';
 
 @Component({
   selector: 'app-items-purchase',
@@ -32,7 +33,6 @@ export class ItemsPurchaseComponent implements OnInit {
   carouselImages: { src: string; thumb: string }[] = [];
   quantitySelected: number = 1;
 
-
   constructor(
     private route: ActivatedRoute,
     private supabaseService: SupabaseService,
@@ -42,48 +42,57 @@ export class ItemsPurchaseComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    const id = this.route.snapshot.paramMap.get('id');
+    const id = this.route.snapshot.paramMap.get('slug');
     if (id) this.loadProduct(id);
   }
 
-  async loadProduct(id: string) {
-    const { data, error } = await this.supabaseService.getProducts(id);
-    if (!error && data) {
-      const productData = Array.isArray(data) ? data[0] : data;
-      if (!productData) return;
+  async loadProduct(slug: string) {
+  const { data, error } = await this.supabaseService.getProducts(slug);
+  if (!error && data) {
+    const productArray = Array.isArray(data) ? data : [data];
+    const products = ProductUtils.mapProducts(productArray);
+    this.product = products[0];
+    
+    if (!this.product) return;
 
-      this.product = {
-        id: productData.id,
-        name: productData.name,
-        description: productData.description,
-        details: productData.details,
-        price: productData.price,
-        category: productData.category,
-        variants: productData.product_variants || [],
-        product_images: [],
-        mainImageUrl: '',
-        colors: (productData.product_variants || []).map((v: any) => v.color)
-      };
+    this.carouselImages = [
+      { src: this.product.main_image, thumb: this.product.main_image },
+      ...this.product.additional_images.map(img => ({ src: img, thumb: img }))
+    ];
 
-      const firstColor = this.product.colors[0];
-      if (firstColor) this.selectColor(firstColor);
+    if (this.product.variants.length > 0) {
+      this.selectColor(this.product.variants[0].color_name);
     }
   }
+}
 
-  selectColor(color: string) {
-    if (!this.product || this.selectedVariant?.color === color) return;
+selectColor(color: string) {
+  if (!this.product || this.selectedVariant?.color_name === color) return;
 
-    const newVariant = this.product.variants.find(v => v.color === color);
-    if (!newVariant) return;
+  const newVariant = this.product.variants.find(v => v.color_name === color);
+  if (!newVariant) return;
 
-    this.selectedVariant = newVariant;
-    this.selectedSize = null;
+  this.selectedVariant = newVariant;
+  this.selectedSize = null;
 
-    this.carouselImages = newVariant.product_images.map((img: ProductImage) => ({
-      src: img.image_url,
-      thumb: img.image_url
-    }));
+  const cleanMainImage = newVariant.main_image?.trim() || null;
+  const hasAdditionalImages = newVariant.additional_images && newVariant.additional_images.length > 0;
+  if (!cleanMainImage && !hasAdditionalImages) {
+    this.carouselImages = [];
+    return;
   }
+  this.carouselImages = [];
+
+  if (cleanMainImage) {
+    this.carouselImages.push({ src: cleanMainImage, thumb: cleanMainImage });
+  }
+
+  if (hasAdditionalImages) {
+    this.carouselImages.push(...(newVariant.additional_images ?? []).map(img => ({ src: img, thumb: img })));
+  }
+}
+
+
 
   addToCartItems() {
   if (!this.product || !this.selectedVariant || !this.selectedSize) {
@@ -94,25 +103,27 @@ export class ItemsPurchaseComponent implements OnInit {
     return;
   }
 
-  const image = this.selectedVariant.product_images.find(img => img.is_main)?.image_url
-    || this.selectedVariant.product_images[0]?.image_url
-    || '';
+  const cleanVariantImage = this.selectedVariant.main_image?.trim();
+  const variantImage = cleanVariantImage && cleanVariantImage !== '' ? cleanVariantImage : null;
 
   const cartItem: CartItem = {
-    id: `${this.product.id}-${this.selectedVariant.color}-${this.selectedSize}`,
+    id: `${this.product.id}-${this.selectedVariant.color_name}-${this.selectedSize}`,
     name: this.product.name,
     price: this.product.price,
-    image: image,
-    color: this.selectedVariant.color,
+    image: this.product.main_image, 
+    variantMainImage: variantImage ?? undefined,
+    color: this.selectedVariant.color_name,
     size: this.selectedSize,
     quantity: this.quantitySelected
   };
 
   this.cartService.addToCart(cartItem);
+
   this.notificationService.showSuccess(
     'Producto añadido',
     `Se añadieron ${this.quantitySelected} unidad(es) al carrito.`
   );
+
   this.router.navigate(['/checkout/carrito']);
 }
 
@@ -122,6 +133,6 @@ export class ItemsPurchaseComponent implements OnInit {
   }
 
   isColorSelected(color: string): boolean {
-    return this.selectedVariant?.color === color;
+    return this.selectedVariant?.color_name === color;
   }
 }

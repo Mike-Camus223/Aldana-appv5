@@ -1,18 +1,21 @@
 <div class="h-[64px] lg:h-[120px]"></div>
 
 <div class="min-h-auto w-full flex flex-col items-center justify-start bg-white pb-16">
-    <div class="relative w-full max-w-6xl px-2 xs:px-4 mt-8 content-wrapper">
-        <input type="text" class="ghost-input max-w-[18rem] xs:max-w-sm sm:max-w-xl md:max-w-2xl" (input)="onInput($event)" autofocus #inputElement />
+    <div class="relative w-full max-w-screen px-2 xs:px-4 mt-8 content-wrapper">
+        <input type="text" class="ghost-input mx-auto max-w-[18rem] xs:max-w-sm sm:max-w-xl md:max-w-2xl"
+            (input)="onInput($event)" autofocus #inputElement />
 
         <div #fakeInput
             class="fake-input max-w-[18rem] xs:max-w-sm sm:max-w-xl md:max-w-2xl border-b border-gray-400 text-2xl xs:text-3xl sm:text-6xl md:text-7xl lg:text-8xl text-gray-700 font-medium tracking-wide transition-all duration-300"
             [ngClass]="{ activated: chars.length > 0 }" [style.width.px]="inputWidth">
-            <div #scrollContainer class="scroll-text max-w-[18rem] xs:max-w-sm sm:max-w-xl md:max-w-2xl relative overflow-x-auto hide-scrollbar whitespace-nowrap"
+            <div #scrollContainer
+                class="scroll-text max-w-[18rem] xs:max-w-sm sm:max-w-xl md:max-w-2xl relative overflow-x-auto hide-scrollbar whitespace-nowrap"
                 [ngClass]="{
                     'text-center': chars.length === 0,
                     'text-left': chars.length > 0
                 }">
-                <div #animatedText class="animated-text inline-flex gap-[1px] relative leading-none p-3 xs:p-4 sm:p-5 md:p-6">
+                <div #animatedText
+                    class="animated-text inline-flex gap-[1px] relative leading-none p-3 xs:p-4 sm:p-5 md:p-6">
                     <ng-container *ngIf="chars.length === 0">
                         <span class="flex items-center gap-1 text-gray-400 select-none placeholder-animate timesroman">
                             <span class="leading-none">Buscador</span>
@@ -21,7 +24,8 @@
                     </ng-container>
 
                     <ng-container *ngIf="chars.length > 0">
-                        <span *ngFor="let char of chars" class="inline-block whitespace-pre leading-none">{{ char }}</span>
+                        <span *ngFor="let char of chars" class="inline-block whitespace-pre leading-none">{{ char
+                            }}</span>
                         <span class="blinking-cursor text-gray-700 leading-none">|</span>
                     </ng-container>
                 </div>
@@ -37,18 +41,22 @@
             No se encontraron resultados.
         </div>
 
-        <div *ngIf="!loading && !noResults && chars.length > 0" class="w-full max-w-6xl px-2 xs:px-4 mt-12">
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 justify-items-center">
+        <div *ngIf="!loading && !noResults && chars.length > 0" class="w-full max-w-8xl mx-auto px-2 xs:px-4 mt-12">
+            <div
+                class="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 justify-items-center">
                 <div *ngFor="let product of products; trackBy: trackByProductId"
                     class="product-card rounded-sm border border-gray-200 shadow-md transition relative overflow-hidden flex flex-col w-full max-w-sm"
-                    (click)="navigateToProduct(product.id, $event)"
-                    (touchstart)="navigateToProduct(product.id, $event)">
-                    
+                    (click)="navigateToProduct(product.slug, $event)"
+                    (touchstart)="navigateToProduct(product.slug, $event)">
+
                     <div class="product-link group block cursor-pointer">
-                        <div class="relative shadow-sm rounded-t-sm h-72 flex items-center justify-center overflow-hidden">
-                            <img [src]="product.mainImageUrl" [alt]="product.name" loading="lazy" fetchpriority="low"
+                        <div
+                            class="relative shadow-sm rounded-t-sm h-72 flex items-center justify-center overflow-hidden">
+                            <img [src]="product.main_image" [alt]="product.name" loading="lazy" fetchpriority="low"
                                 class="transition-transform duration-300 group-hover:scale-110 h-full w-full object-cover" />
-                            <div class="absolute inset-0 bg-white/20 bg-opacity-10 opacity-0 group-hover:opacity-100 transition duration-300"></div>
+                            <div
+                                class="absolute inset-0 bg-white/20 bg-opacity-10 opacity-0 group-hover:opacity-100 transition duration-300">
+                            </div>
                         </div>
 
                         <div class="px-4 pb-4">
@@ -63,17 +71,14 @@
                     </div>
 
                     <div class="color-selector mt-1 pb-4 px-4 flex flex-wrap gap-2" (click)="$event.stopPropagation()">
-                        <button *ngFor="let color of product.colors" 
-                            (click)="selectColor(product.id, color, $event)"
-                            (touchstart)="selectColor(product.id, color, $event)"
-                            [ngStyle]="{ backgroundColor: color }" 
-                            class="w-5 h-5 rounded-sm transition-all border touch-manipulation"
-                            [ngClass]="{
-                                'border-white border-2 ring-2 ring-gray-800 cursor-default': selectedColors[product.id] === color,
-                                'border-transparent cursor-pointer': selectedColors[product.id] !== color
-                            }" 
-                            [title]="color" 
-                            aria-label="Elegir color">
+                        <button *ngFor="let variant of product.variants"
+                            (click)="selectColor(product.id, variant.color_name, $event)"
+                            (touchstart)="selectColor(product.id, variant.color_name, $event)"
+                            [ngStyle]="{ backgroundColor: variant.color_hex }"
+                            class="w-5 h-5 rounded-sm transition-all border touch-manipulation" [ngClass]="{
+                                'border-white border-2 ring-2 ring-gray-800 cursor-default': selectedColors[product.id] === variant.color_name,
+                                'border-transparent cursor-pointer': selectedColors[product.id] !== variant.color_name
+                            }" [title]="variant.color_name" aria-label="Elegir color">
                         </button>
                     </div>
                 </div>

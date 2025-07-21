@@ -13,8 +13,8 @@ import { StoreTemplateComponent } from '../../../../shared/components/store-temp
 export class ShopComponent {
 
   breadcrumbItemsShop: AppMenuItem[] = [
-    {icon: 'pi pi-home', route: '/home'},
-    {label: 'Tienda', route: '/store'}
+    {label: 'INICIO', route: '/home'},
+    {label: 'TIENDA', route: '/store'}
   ];
 
 }
