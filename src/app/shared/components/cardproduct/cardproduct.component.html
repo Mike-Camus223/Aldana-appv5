@@ -1,40 +1,48 @@
 <ng-container *ngIf="isMobileView; else desktopView">
-  <div class="rounded-sm border border-gray-200 shadow-md transition relative overflow-hidden flex flex-col">
-    <button type="button" aria-label="Añadir a favoritos" (click)="toggleWishlist()"
-      class="cursor-pointer leading-none transition-colors focus:outline-none z-10">
-      <lucide-icon [name]="product.wishlisted ? 'heart' : 'heart-plus'"
-        [ngClass]="product.wishlisted ? 'text-aldy-primary-600' : 'text-gray-300'">
-      </lucide-icon>
-    </button>
-    <a [routerLink]="['/producto', product.slug]" class="group block">
-      <div class="relative shadow-sm rounded-t-sm h-72 flex items-center justify-center overflow-hidden">
-        <img *ngIf="displayImage || product.main_image" [src]="displayImage || product.main_image" [alt]="product.name"
-          loading="lazy" class="h-full w-full object-cover" />
-        <div
-          class="absolute inset-0 bg-white/20 bg-opacity-10 opacity-0 group-hover:opacity-100 transition duration-300">
-        </div>
+  <div class="transition relative overflow-hidden flex flex-col">
+    <a [routerLink]="['/producto', product.slug]" class="group block relative">
+      <div class="relative w-full aspect-[4/5] overflow-hidden bg-white">
+        <img *ngIf="displayImage || product.main_image" 
+             [src]="displayImage || product.main_image" 
+             [alt]="product.name"
+             loading="lazy" 
+             class="w-full h-full object-cover object-top transition-transform group-hover:scale-105 duration-300" />
+
+        <button type="button" 
+                aria-label="Añadir a favoritos" 
+                (click)="toggleWishlist()"
+                class="absolute top-2 right-2 z-10 cursor-pointer leading-none transition-colors focus:outline-none">
+          <lucide-icon [name]="product.wishlisted ? 'heart' : 'heart-plus'"
+                       [ngClass]="product.wishlisted ? 'text-aldy-primary-600' : 'text-gray-300'">
+          </lucide-icon>
+        </button>
       </div>
-      <div class="px-4">
-        <h3 class="text-sm sm:text-lg mt-3">{{ product.name }}</h3>
-        <p class="text-sm sm:text-lg font-main font-normal text-gray-600 mt-1">{{ product.description }}</p>
-        <p class="text-sm sm:text-lg font-normal mt-1">
+      <div class="px-4 pt-3 pb-4">
+        <h3 class="text-base font-semibold">{{ product.name }}</h3>
+        <p class="text-sm font-main text-gray-600 mt-1">{{ product.description }}</p>
+        <p class="text-sm mt-2">
           {{ product.price | currency:'ARS':'symbol-narrow':'1.2-2':'es-AR' }}
         </p>
       </div>
     </a>
-    <div class="mt-3 pb-4 px-4 flex gap-2">
-      <button *ngFor="let color of product.variants" (click)="selectColor(color.color_name)"
-        [ngStyle]="{ backgroundColor: color.color_hex }" [attr.aria-pressed]="selectedColor === color.color_name"
-        class="w-5 h-5 rounded-sm transition-all border" [ngClass]="{
-          'border-white border-2 ring-2 ring-gray-800 cursor-default': selectedColor === color.color_name,
-          'border-transparent cursor-pointer': selectedColor !== color.color_name
-        }" [title]="color.isBase ? (color.color_name + ' (base)') : color.color_name" aria-label="Elegir color">
+    <div class="pb-4 px-4 flex gap-2 flex-wrap mt-auto">
+      <button *ngFor="let color of product.variants" 
+              (click)="selectColor(color.color_name)"
+              [ngStyle]="{ backgroundColor: color.color_hex }" 
+              [attr.aria-pressed]="selectedColor === color.color_name"
+              class="w-5 h-5 transition-all border"
+              [ngClass]="{
+                'border-white border-2 ring-2 ring-gray-800 rounded-sm cursor-default': selectedColor === color.color_name,
+                'border-transparent cursor-pointer': selectedColor !== color.color_name
+              }" 
+              [title]="color.isBase ? (color.color_name + ' (base)') : color.color_name" 
+              aria-label="Elegir color">
       </button>
     </div>
   </div>
 </ng-container>
 <ng-template #desktopView>
-  <div class="relative shadow-md overflow-hidden group bg-white aspect-[3/4] sm:aspect-[3/4] md:aspect-[3/5] lg:aspect-[3/5] xl:aspect-[3/5]">
+  <div class="relative overflow-hidden group bg-white aspect-[3/4] sm:aspect-[3/4] md:aspect-[3/5] lg:aspect-[3/5] xl:aspect-[3/5]">
     <button type="button" [routerLink]="['/producto', product.slug]" class="absolute inset-0 z-0">
       <img *ngIf="displayImage || product.main_image" 
         [src]="displayImage || product.main_image" 
@@ -43,7 +51,7 @@
         class="w-full h-full cursor-pointer object-cover object-top transition-transform group-hover:scale-105 duration-300" />
     </button>
     <div class="absolute inset-0 flex items-end opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 pointer-events-none">
-      <div class="w-full bg-white p-4 shadow-xl m-3 pointer-events-auto">
+      <div class="w-full bg-white p-4 m-3 pointer-events-auto">
         
         <div class="w-full flex justify-between items-center">
           <h3 class="text-lg font-semibold text-gray-800">{{ product.name }}</h3>
@@ -66,9 +74,9 @@
           <button *ngFor="let color of product.variants" (click)="selectColor(color.color_name)"
             [ngStyle]="{ backgroundColor: color.color_hex }" 
             [attr.aria-pressed]="selectedColor === color.color_name"
-            class="w-6 h-6 rounded-sm transition-all border"
+            class="w-6 h-6 transition-all border"
             [ngClass]="{
-              'border-white border-2 ring-2 ring-gray-800 cursor-default': selectedColor === color.color_name,
+              'border-white border-2 ring-2 ring-gray-800 rounded-sm cursor-default': selectedColor === color.color_name,
               'border-transparent cursor-pointer': selectedColor !== color.color_name
             }" 
             [title]="color.isBase ? (color.color_name + ' (base)') : color.color_name" 

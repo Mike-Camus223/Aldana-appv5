@@ -15,7 +15,6 @@ import { LoadingScreenGenericComponent } from '../../components/loading-screen-g
     NavbarPublicv2Component,
     Footerv2Component,
     LoadingScreenComponent,
-    LoadingScreenGenericComponent
   ],
   templateUrl: './public-layout.component.html',
   styles: ``

@@ -1,107 +1,163 @@
-<div class="px-4 pt-2 sm:px-6 lg:px-12 xl:px-16 2xl:px-24 inline-flex justify-between items-center w-full">
+<div class="px-4 py-2 sm:px-6 lg:px-12 xl:px-16 2xl:px-24 inline-flex justify-between items-center w-full">
   <button type="button" (click)="toggleFilters()"
     class="inline-flex text-xs aldyFont gap-2 items-center border cursor-pointer border-black px-6 py-3 tracking-widest font-medium uppercase transition-all duration-300 ease-in-out hover:bg-black hover:text-white">
     <lucide-icon name="Funnel" class="h-4 w-4"></lucide-icon>
     <span>{{ showFilters ? 'Ocultar filtros' : 'Mostrar filtros' }}</span>
     <lucide-icon [name]="showFilters ? 'ChevronUp' : 'ChevronDown'" class="h-4 w-4"></lucide-icon>
   </button>
-  <div class="w-40 h-auto justify-end flex gap-2">
+
+  <div class="w-40 h-auto justify-end gap-2 hidden lg:flex">
     <button type="button" (click)="setProductColumns(2)" [ngClass]="productColumns === 2 ? 'bg-black' : ''"
       class="group py-[7px] px-2 hover:bg-black transition-all duration-300 ease-in-out cursor-pointer border border-black">
       <div class="grid grid-cols-2 gap-[2px] grid-rows-2">
         <span *ngFor="let n of [1,2,3,4]" class="h-[12px] w-[12px] transition-all duration-300 ease-in-out"
-          [ngClass]="productColumns === 2 ? 'bg-white' : 'bg-gray-900 group-hover:bg-white'">
-        </span>
+          [ngClass]="productColumns === 2 ? 'bg-white' : 'bg-gray-900 group-hover:bg-white'"></span>
       </div>
     </button>
+
     <button type="button" (click)="setProductColumns(3)" [ngClass]="productColumns === 3 ? 'bg-black' : ''"
       class="group py-[7px] px-2 hover:bg-black transition-all duration-300 ease-in-out cursor-pointer border border-black">
-
       <div class="grid grid-cols-3 gap-[2px] grid-rows-3">
         <span *ngFor="let n of [1,2,3,4,5,6,7,8,9]" class="h-[8px] w-[8px] transition-all duration-300 ease-in-out"
-          [ngClass]="productColumns === 3 ? 'bg-white' : 'bg-gray-900 group-hover:bg-white'">
-        </span>
+          [ngClass]="productColumns === 3 ? 'bg-white' : 'bg-gray-900 group-hover:bg-white'"></span>
       </div>
     </button>
+
     <button type="button" (click)="setProductColumns(4)" [ngClass]="productColumns === 4 ? 'bg-black' : ''"
       class="group py-[7px] px-2 hover:bg-black transition-all duration-300 ease-in-out cursor-pointer border border-black">
-
       <div class="grid grid-cols-4 gap-[2px] grid-rows-4">
         <span *ngFor="let n of [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]"
           class="h-[5px] w-[5px] transition-all duration-300 ease-in-out"
-          [ngClass]="productColumns === 4 ? 'bg-white' : 'bg-gray-900 group-hover:bg-white'">
-        </span>
+          [ngClass]="productColumns === 4 ? 'bg-white' : 'bg-gray-900 group-hover:bg-white'"></span>
       </div>
     </button>
   </div>
 </div>
+<div class="w-full border-b border-gray-200 mb-2 relative">
+  <app-loadingbar [loading]="loading"></app-loadingbar>
+</div>
 <div class="px-4 sm:px-6 lg:px-12 xl:px-16 2xl:px-24 py-2 w-full">
   <div class="max-w-screen-3xl mx-auto">
+
     <div class="flex flex-col lg:flex-row transition-all duration-500 ease-in-out"
-      [ngClass]="{ 'gap-4': showFilters, 'gap-0': !showFilters }">
-      <aside class="transition-all duration-500 ease-in-out overflow-hidden" [ngStyle]="{
+      [ngClass]="{ 'gap-4': showFilters && !isMobileView, 'gap-0': !showFilters || isMobileView }">
+
+      <aside *ngIf="!isMobileView" class="transition-all duration-500 ease-in-out overflow-hidden" [ngStyle]="{
           flexBasis: showFilters ? '16.666667%' : '0%',
           maxWidth: showFilters ? '16.666667%' : '0%',
           minWidth: showFilters ? '200px' : '0px',
           opacity: showFilters ? '1' : '0',
           pointerEvents: showFilters ? 'auto' : 'none'
         }">
-        <p-accordion [(activeIndex)]="activeAccordion"
-          [styleClass]="'border-none shadow-none divide-y divide-gray-200 border-t border-gray-200'">
-          <p-accordionTab *ngFor="let category of categories">
-            <ng-template pTemplate="header">
-              <div
-                class="flex justify-between items-center w-full cursor-pointer hover:text-aldy-primary-400 transition-colors"
-                [ngClass]="{
-                  'text-aldy-primary-600 font-semibold': selectedCategory === normalize(category.value),
-                  'text-gray-600': selectedCategory !== normalize(category.value)
-                }" (click)="filterByMainCategory(category.value)">
-                <span class="text-sm sm:text-lg font-main">{{ category.label }}</span>
-                <i class="pi" [ngClass]="{
-                  'pi-angle-up': activeAccordion === categories.indexOf(category),
-                  'pi-angle-down': activeAccordion !== categories.indexOf(category)
-                }"></i>
+        <div class="sticky top-4">
+          <app-acordiongeneric *ngFor="let category of categories" [title]="category.label" [value]="category.value"
+            [selected]="selectedAccordion" (toggled)="onAccordionToggled($event)">
+            <div class="space-y-1">
+              <div *ngFor="let sub of category.subsections">
+                <label
+                  class="flex items-center gap-2 py-2 px-3 text-sm font-main cursor-pointer w-full hover:bg-gray-50 rounded-md">
+                  <input type="radio" name="subcategory" [checked]="normalize(sub.value) === selectedSubcategory"
+                    (change)="navigateToSubcategory(category.value, sub.value)"
+                    class="form-radio scale-90 text-aldy-primary-600 focus:ring-aldy-primary-500" />
+                  <span [ngClass]="{
+                      'text-aldy-primary-600 font-semibold': selectedSubcategory === normalize(sub.value),
+                      'text-gray-600': selectedSubcategory !== normalize(sub.value)
+                    }">
+                    {{ sub.label }}
+                  </span>
+                </label>
               </div>
-            </ng-template>
-            <div *ngFor="let sub of category.subsections" class="transition-colors">
-              <label class="flex items-center gap-2 py-2 px-3 text-sm sm:text-md font-main cursor-pointer w-full">
-                <input type="radio" name="subcategory" [checked]="normalize(sub.value) === selectedSubcategory"
-                  (change)="navigateToSubcategory(category.value, sub.value)" class="form-radio scale-90" />
-                <span [ngClass]="{
-                  'text-aldy-primary-600 font-semibold': selectedSubcategory === normalize(sub.value),
-                  'text-gray-600': selectedSubcategory !== normalize(sub.value)
-                }">{{ sub.label }}</span>
-              </label>
             </div>
-          </p-accordionTab>
-        </p-accordion>
+          </app-acordiongeneric>
+        </div>
       </aside>
+
       <div class="transition-all duration-500 ease-in-out flex-1 min-h-[300px]">
-        <div *ngIf="loading" class="flex justify-center items-center h-full py-20">
-          <p-progress-spinner strokeWidth="8" fill="transparent" animationDuration=".5s"
-            [style]="{ width: '50px', height: '50px' }" />
-        </div>
 
-        <div *ngIf="!loading && products.length === 0" class="flex justify-center items-center h-full py-20">
-          <p class="text-gray-500 text-lg font-medium">No se encuentran productos.</p>
-        </div>
+        <p *ngIf="!loading && filteredProducts.length === 0"
+          class="text-center font-main text-xl py-12 text-gray-700 flex justify-center items-center h-full">
+          No hay productos para mostrar.
+        </p>
 
-        <div *ngIf="!loading && products.length > 0" [@gridAnimation]="productColumns"
+        <div *ngIf="!loading && filteredProducts.length > 0" [@gridAnimation]="productColumns"
           class="grid gap-5 transition-all duration-500 ease-in-out" [ngClass]="[
-    productColumns === 2 ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-2 mx-0 xl:mx-60' : '',
-    productColumns === 3 ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 mx-0' : '',
-    productColumns === 4 ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 mx-0' : ''
-  ]">
-          <app-cardproduct *ngFor="let product of products; trackBy: trackByProductId" [product]="product"
-            [selectedColor]="selectedColors[product.id]"
-            [displayImage]="product.main_image" 
-            [mobileMode]="'ismobile'"
-            [desktopMode]="'isdesktop'" 
-            (colorSelected)="selectColor($event)"
+            productColumns === 2
+              ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-2 mx-0 xl:mx-60'
+              : '',
+            productColumns === 3 ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 mx-0' : '',
+            productColumns === 4 ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 mx-0' : ''
+          ]">
+          <app-cardproduct *ngFor="let product of filteredProducts; trackBy: trackByProductId" [product]="product"
+            [selectedColor]="selectedColors[product.id]" [displayImage]="product.main_image" [mobileMode]="'ismobile'"
+            [desktopMode]="'isdesktop'" (colorSelected)="selectColor($event)"
             (wishlistToggled)="toggleWishlist($event)">
           </app-cardproduct>
         </div>
       </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="isMobileView" class="fixed inset-0 z-50 flex" [ngClass]="{
+       'opacity-100 pointer-events-auto': showFilters,
+       'opacity-0 pointer-events-none': !showFilters
+     }" [style.transition]="'opacity 300ms ease-in-out'">
+
+  <div class="absolute inset-0 bg-white/10 backdrop-blur-sm transition-all duration-300 ease-in-out"
+    [ngClass]="showFilters ? 'pointer-events-auto' : 'pointer-events-none'" (click)="onOverlayClick($event)">
+  </div>
+
+  <div
+    class="relative w-80 max-w-[85vw] bg-white h-full shadow-2xl overflow-auto transform transition-transform duration-300 ease-in-out"
+    [ngClass]="showFilters ? 'translate-x-0' : '-translate-x-full'" (click)="$event.stopPropagation()">
+
+    <div class="sticky top-0 bg-white border-b border-gray-200 p-4 z-10">
+      <div class="flex items-center justify-between">
+        <h3 class="text-lg font-semibold text-gray-900">Filtros</h3>
+        <button class="p-2 hover:bg-gray-100 rounded-full transition-colors" (click)="toggleFilters()">
+          <lucide-icon name="ChevronUp" class="h-5 w-5 text-gray-500 rotate-45"></lucide-icon>
+        </button>
+      </div>
+    </div>
+
+    <div class="p-4">
+      <div class="flex flex-wrap gap-2 mb-4" *ngIf="selectedCategory || selectedSubcategory">
+        <div *ngIf="selectedCategory"
+          class="bg-black text-white px-3 py-1 rounded-full text-xs uppercase tracking-wide">
+          {{ selectedCategory }}
+        </div>
+        <div *ngIf="selectedSubcategory"
+          class="bg-black text-white px-3 py-1 rounded-full text-xs uppercase tracking-wide">
+          {{ selectedSubcategory }}
+        </div>
+      </div>
+
+      <app-acordiongeneric *ngFor="let category of categories" [title]="category.label" [value]="category.value"
+        [selected]="selectedAccordion" (toggled)="onAccordionToggled($event)">
+        <div class="space-y-1">
+          <div *ngFor="let sub of category.subsections">
+            <label
+              class="flex items-center gap-2 py-2 px-3 text-sm font-main cursor-pointer w-full hover:bg-gray-50 rounded-md">
+              <input type="radio" name="subcategory" [checked]="normalize(sub.value) === selectedSubcategory"
+                (change)="onSubcategorySelected(category.value, sub.value)"
+                class="form-radio scale-90 text-aldy-primary-600 focus:ring-aldy-primary-500" />
+              <span [ngClass]="{
+                      'text-aldy-primary-600 font-semibold': selectedSubcategory === normalize(sub.value),
+                      'text-gray-600': selectedSubcategory !== normalize(sub.value)
+                    }">
+                {{ sub.label }}
+              </span>
+            </label>
+          </div>
+        </div>
+      </app-acordiongeneric>
+    </div>
+
+    <div class="sticky bottom-0 bg-white border-t border-gray-200 p-4">
+      <button (click)="applyFiltersMobile()"
+        class="w-full bg-black text-white py-3 px-4 rounded-lg font-medium hover:bg-gray-800 transition-colors">
+        Aplicar filtros
+      </button>
     </div>
   </div>
 </div>
