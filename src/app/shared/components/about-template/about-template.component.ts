@@ -185,7 +185,7 @@ export class AboutTemplateComponent implements AfterViewInit {
         });
 
         tl.to(this.greenCard.nativeElement, {
-          y: -10,
+          y: 40,
           x: 0,
           opacity: 1,
           scale: 1,
@@ -195,7 +195,7 @@ export class AboutTemplateComponent implements AfterViewInit {
         }, 0);
 
         tl.to(this.blueCard.nativeElement, {
-          y: -10,
+          y: 40,
           x: 0,
           opacity: 1,
           scale: 1,
@@ -205,7 +205,7 @@ export class AboutTemplateComponent implements AfterViewInit {
         }, 0.8);
 
         tl.to(this.redCard.nativeElement, {
-          y: -10,
+          y: 40,
           x: 0,
           opacity: 1,
           scale: 1,
