@@ -25,7 +25,7 @@ bloquesSobreMi = [
     textOrderMobile: 'order-1',
     textOrderDesktop: 'md:order-1',
     buttonText: 'DESCUBRIR LA HISTORIA',
-    buttonUrl: '/about/story',
+    buttonUrl: '/acerca-de-mi',
     maxWidthTittle: 'lg:min-w-xl xl:min-w-2xl min-w-full',
     titleOffsetClass: 'transition-all duration-500 ease-in-out'
   }
