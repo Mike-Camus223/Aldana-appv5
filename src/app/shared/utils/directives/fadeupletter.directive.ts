@@ -22,7 +22,7 @@ export class FadeUpLetterDirective implements AfterViewInit, OnDestroy {
   ngAfterViewInit(): void {
     this.loaderService.animationsEnabled$
       .pipe(takeUntil(this.destroy$))
-      .subscribe(enabled => {
+      .subscribe((enabled: boolean) => {
         if (enabled) {
           this.startAnimation();
         }

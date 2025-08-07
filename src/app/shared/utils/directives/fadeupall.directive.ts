@@ -21,7 +21,7 @@ export class FadeupallDirective implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.detectCarouselContext();
     this.setupInitialState();
-    this.animationSubscription = this.loaderService.animationsEnabled$.subscribe(enabled => {
+    this.animationSubscription = this.loaderService.animationsEnabled$.subscribe((enabled: boolean) => {
       if (enabled) {
         this.createScrollTriggerAnimation();
       }

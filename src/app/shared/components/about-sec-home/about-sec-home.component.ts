@@ -47,13 +47,17 @@ export class AboutSecHomeComponent implements AfterViewInit, OnDestroy {
   constructor(private loaderService: LoaderService) {}
 
   ngAfterViewInit(): void {
-    this.loaderService.animationsEnabled$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(enabled => {
-        if (enabled) {
-          this.setupImageAnimations();
-        }
-      });
+    if ((this.loaderService as any).animationsEnabled$) {
+      (this.loaderService as any).animationsEnabled$
+        .pipe(takeUntil(this.destroy$))
+        .subscribe((enabled: boolean) => {
+          if (enabled) {
+            this.setupImageAnimations();
+          }
+        });
+    } else {
+      this.setupImageAnimations();
+    }
   }
 
   private setupImageAnimations(): void {

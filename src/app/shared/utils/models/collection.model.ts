@@ -33,3 +33,17 @@ export interface CollectionWithMedia {
   slug?: string;
   collection_media: CollectionMedia[];
 }
+
+export interface CollectionBridesWithMedia {
+  id: string;
+  uuid?: string;
+  name: string;
+  cover_image_url: string;
+  season: string;
+  release_date: string;
+  created_at?: string;
+  banner?: string;
+  description?: string;
+  slug?: string;
+  collection_media_brides: CollectionMedia[];
+}

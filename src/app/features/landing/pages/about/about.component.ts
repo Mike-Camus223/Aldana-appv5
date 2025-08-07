@@ -1,3 +1,4 @@
+import { RevealDirection } from './../../../../shared/utils/directives/card-init-animation.directive';
 import { AppMenuItem } from './../../../../shared/utils/models/app-menu-item.model';
 import { Component } from '@angular/core';
 import { BreadcrumbComponent } from "../../../../shared/components/breadcrump/breadcrump.component";
@@ -13,8 +14,8 @@ import { RouterModule } from '@angular/router';
 export class AboutComponent {
 
   breadcrumbItemsAbout: AppMenuItem[] = [
-    { icon: 'pi pi-home', route: '/home' },
-    { label: 'Acerca de mí', route: '/acerca-de' }
+    { label: 'INICIO', route: '/home' },
+    { label: 'ACERCA DE MÍ', route: '/acerca-de-mi' }
   ];
 
 

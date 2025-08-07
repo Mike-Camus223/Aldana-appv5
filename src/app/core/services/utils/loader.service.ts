@@ -6,33 +6,69 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
   providedIn: 'root'
 })
 export class LoaderService {
-  private loadingSubject = new BehaviorSubject<boolean>(true);
-  public isLoading$ = this.loadingSubject.asObservable();
+  private isFirstLoad = true;
+  private isMainLoaderComplete = false;
+  
+  private currentLoaderSubject = new BehaviorSubject<'main' | 'generic' | null>(null);
+  public currentLoader$ = this.currentLoaderSubject.asObservable();
+
   private animationsEnabledSubject = new BehaviorSubject<boolean>(false);
   public animationsEnabled$ = this.animationsEnabledSubject.asObservable();
 
   constructor() {
-    ScrollTrigger.disable();
+    console.log('LoaderService initialized - ScrollTrigger left enabled');
   }
 
-  finish() {
-    this.loadingSubject.next(false);
-    if (!this.animationsEnabledSubject.value) {
-      this.enableAnimations();
+  showLoaderOnNavigation() {
+    if (this.isFirstLoad) {
+      this.currentLoaderSubject.next('main');
+      this.isFirstLoad = false;
+    } else {
+      this.currentLoaderSubject.next('generic');
     }
   }
-  enableAnimationsEarly() {
-    this.enableAnimations();
+
+  finish(loaderType?: 'main' | 'generic') {
+    this.currentLoaderSubject.next(null);
+
+    if (loaderType === 'main') {
+      this.isMainLoaderComplete = true;
+      console.log('PRINCIPAL finished - ScrollTrigger should work normally');
+    }
+    
+    if (loaderType === 'generic') {
+      console.log('GENERIC finished - ScrollTrigger should work normally');
+    }
+
+    this.animationsEnabledSubject.next(true);
+    console.log('Animations enabled after loader finish');
+
+    ScrollTrigger.refresh();
+    console.log('ScrollTrigger refresh after loader finish');
   }
 
-  private enableAnimations() {
-    ScrollTrigger.enable();
+  refreshScrollTrigger() {
     ScrollTrigger.refresh();
-    this.animationsEnabledSubject.next(true);
+    console.log('ScrollTrigger refreshed manually');
   }
+
+  clearAllAnimations(): void {
+    ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+    console.log('All ScrollTrigger animations cleared');
+  }
+
   reset() {
-    ScrollTrigger.disable();
-    this.loadingSubject.next(true);
+    this.currentLoaderSubject.next(null);
+    this.isFirstLoad = true;
+    this.isMainLoaderComplete = false;
     this.animationsEnabledSubject.next(false);
+  }
+
+  canShowGenericLoader(): boolean {
+    return this.isMainLoaderComplete;
+  }
+
+  setAnimationsEnabled(enabled: boolean): void {
+    this.animationsEnabledSubject.next(enabled);
   }
 }

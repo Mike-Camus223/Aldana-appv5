@@ -6,14 +6,15 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { SupabaseService } from '../../../core/services/data-access/supabase.service';
 import { Product } from '../../utils/models/Products-supabase.interface';
-import { ProgressSpinnerModule } from 'primeng/progressspinner';
-import { AccordionModule } from 'primeng/accordion';
 import { ProductUtils } from '../../utils/dataEx/products-utils';
 import { CardproductComponent } from '../cardproduct/cardproduct.component';
 import { Funnel, LUCIDE_ICONS, LucideIconProvider, LucideAngularModule, ChevronDown, ChevronUp } from 'lucide-angular';
 import { trigger, transition, style, animate, state } from '@angular/animations';
 import { AcordiongenericComponent } from '../acordiongeneric/acordiongeneric.component';
 import { LoadingbarComponent } from '../loadingbar/loadingbar.component';
+import { AldyRadioDirective } from '../../utils/directives/aldy-radio.directive';
+import { Location } from '@angular/common';
+
 
 @Component({
   selector: 'app-store-template',
@@ -27,7 +28,8 @@ import { LoadingbarComponent } from '../loadingbar/loadingbar.component';
     CardproductComponent,
     LucideAngularModule,
     AcordiongenericComponent,
-    LoadingbarComponent
+    LoadingbarComponent,
+    AldyRadioDirective,
   ],
   templateUrl: './store-template.component.html',
   styleUrls: ['./store-template.component.css'],
@@ -131,7 +133,8 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
   constructor(
     private supabaseService: SupabaseService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private location: Location
   ) { }
 
   ngOnInit(): void {
@@ -307,8 +310,6 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
     return route;
   }
 
-
-
   onOverlayClick(event: MouseEvent): void {
     this.toggleFilters();
   }
@@ -354,17 +355,17 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
   }
 
   onAccordionToggled(value: string): void {
-    if (this.selectedAccordion === value) {
-      this.selectedAccordion = null;
+    const normalizedCategory = ProductUtils.normalize(value);
 
+    if (this.selectedAccordion === normalizedCategory) {
+      this.selectedAccordion = null;
     } else {
-      this.selectedAccordion = value;
-      this.selectedCategory = value;
+      this.selectedAccordion = normalizedCategory;
+      this.selectedCategory = normalizedCategory;
       this.selectedSubcategory = null;
       this.applyFiltersSync();
       this.applyFilters();
+      this.location.replaceState(`/tienda/categoria/${normalizedCategory}`);
     }
   }
-
-
 }

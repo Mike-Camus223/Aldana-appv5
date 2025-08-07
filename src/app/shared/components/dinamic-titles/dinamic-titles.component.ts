@@ -1,11 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { FadeUpLetterDirective } from '../../utils/directives/fadeupletter.directive';
+import { WordRevealDirective } from '../../utils/directives/word-reveal.directive';
 
 @Component({
   selector: 'app-dinamic-titles',
   standalone: true,
-  imports: [CommonModule, FadeUpLetterDirective],
+  imports: [CommonModule, FadeUpLetterDirective,WordRevealDirective],
   templateUrl: './dinamic-titles.component.html',
   styleUrls: ['./dinamic-titles.component.css']
 })
@@ -15,10 +16,8 @@ export class DinamicTitlesComponent {
   @Input() level: 1 | 2 | 3 | 4 | 5 | 6 = 1;
   @Input() isParagraph: boolean = false;
   @Input() backgroundColor: string = '';
-  @Input() size: 'sm' | 'base' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl' | '5xl' = '2xl';
   @Input() weight: 'normal' | 'bold' | 'semibold' | 'medium' | 'light' = 'bold';
   @Input() italic: boolean = false;
-  @Input() align: 'start' | 'center' | 'end' = 'start';
   @Input() textColor: string = 'text-gray-900';
   @Input() responsiveClasses: string = '';
   @Input() containerMaxWidth: string = ''; 
@@ -28,6 +27,8 @@ export class DinamicTitlesComponent {
   @Input() subtitleResponsiveClasses: string = '';
   @Input() highlightWords: { word: string, classes: string }[] = [];
   @Input() backgroundMarginX: string = ''; 
+  @Input() stylestext: string = '';
+  @Input() stylesTitle: string = '';
 
 
   get classes(): string {
@@ -57,11 +58,10 @@ export class DinamicTitlesComponent {
     };
 
     return [
-      sizeMap[this.size],
       weightMap[this.weight],
-      alignMap[this.align],
       this.italic ? 'italic' : '',
       this.textColor,
+      this.stylesTitle,
       this.responsiveClasses
     ].join(' ');
   }
@@ -81,7 +81,6 @@ export class DinamicTitlesComponent {
 
     return [
       sizeMap[this.subtitleSize],
-      alignMap[this.align],
       this.subtitleColor,
       this.subtitleResponsiveClasses
     ].join(' ');
@@ -97,5 +96,9 @@ export class DinamicTitlesComponent {
     });
 
     return result;
+  }
+
+  get textForWordReveal(): string {
+    return this.text;
   }
 }

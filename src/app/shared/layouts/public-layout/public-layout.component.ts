@@ -1,10 +1,13 @@
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Router, NavigationStart } from '@angular/router';
 import { NavbarPublicv2Component } from "../../components/navbar-publicv2/navbar-publicv2.component";
 import { Footerv2Component } from '../../components/footerv2/footerv2.component';
 import { LoadingScreenComponent } from "../../components/loading-screen/loading-screen.component";
 import { LoadingScreenGenericComponent } from '../../components/loading-screen-generic/loading-screen-generic.component';
+import { RouterOutlet } from '@angular/router';
+import { LoaderService } from '../../../core/services/utils/loader.service';
+import { Subscription, filter } from 'rxjs';
 
 @Component({
   selector: 'app-public-layout',
@@ -15,14 +18,42 @@ import { LoadingScreenGenericComponent } from '../../components/loading-screen-g
     NavbarPublicv2Component,
     Footerv2Component,
     LoadingScreenComponent,
+    LoadingScreenGenericComponent
   ],
   templateUrl: './public-layout.component.html',
   styles: ``
 })
-export class PublicLayoutComponent {
-  loading = true;
+export class PublicLayoutComponent implements OnInit, OnDestroy {
+  showMainLoader = true;
+  private routerSubscription?: Subscription;
 
-  onLoadingFinished(): void {
-    this.loading = false;
-  }  
+  constructor(private loaderService: LoaderService, private router: Router) {}
+
+  ngOnInit(): void {
+    console.log('PublicLayoutComponent initialized');
+    
+    this.loaderService.showLoaderOnNavigation();
+    
+    this.routerSubscription = this.router.events.pipe(
+      filter(event => event instanceof NavigationStart)
+    ).subscribe((event: NavigationStart) => {
+      console.log('Navigation to:', event.url);
+      
+      if (!this.showMainLoader) {
+        console.log('Showing GENERIC loader');
+        this.loaderService.showLoaderOnNavigation();
+      }
+    });
+  }
+
+  onMainLoadingFinished(): void {
+    console.log('PRINCIPAL loading finished');
+    this.showMainLoader = false;
+  }
+
+  ngOnDestroy(): void {
+    if (this.routerSubscription) {
+      this.routerSubscription.unsubscribe();
+    }
+  }
 }

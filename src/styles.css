@@ -125,7 +125,9 @@ body.reserve-scrollbar-space {
   font-family: 'aldyfont';
   src: url('assets/fonts/Futura Lt BT Light.ttf') format('truetype');
   font-style: normal;
+  font-display: block;
 }
+
 
 
 .aldyFont {

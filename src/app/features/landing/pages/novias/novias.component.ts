@@ -13,7 +13,7 @@ import { AppMenuItem } from '../../../../shared/utils/models/app-menu-item.model
 export class NoviasComponent {
   breadcrumbItemsNovias: AppMenuItem[] = [
     { label: 'INICIO', route: '/home' },
-    { label: 'NOVIAS', route: '/novias' }
+    { label: 'NOVIAS COLECCIONES', route: '/novias-colecciones' }
   ];
 
 

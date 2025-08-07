@@ -57,14 +57,14 @@ export class SupabaseService {
         name
       ),
       product_variants (
-  id,
-  color_id,
-  color_name,
-  color_hex,
-  avid,
-  main_image,
-  additional_images,
-  colors:colors!product_variants_color_id_fkey (
+    id,
+    color_id,
+    color_name,
+    color_hex,
+    avid,
+    main_image,
+    additional_images,
+    colors:colors!product_variants_color_id_fkey (
     code,
     name,
     hex

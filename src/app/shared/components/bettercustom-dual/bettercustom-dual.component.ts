@@ -35,6 +35,9 @@ export class BettercustomDualComponent implements AfterViewInit, OnDestroy {
   @Input() videoObjectFit = 'object-cover';
   @Input() CommentsTestimonial = false;
   @Input() title = '';
+  @Input() SeparationTitle: string = '';
+  @Input() StylesText: string = '';
+  @Input() StylesTitle: string = '';
   @Input() subtitles: string[] = [];
   @Input() contentTestimonial = '';
   @Input() content = '';
@@ -51,6 +54,9 @@ export class BettercustomDualComponent implements AfterViewInit, OnDestroy {
   @Input() textcontetclass: string = '';
   @Input() textextracontetclass: string = '';
   @Input() titleAndContentClass: string = '';
+  @Input() aspectRatio: string = '3 / 2';
+  @Input() useAspectRatio: boolean = false;
+  @Input() imageStyles: string = '';
  
   
   @ViewChild('parallaxImage', { static: false }) parallaxImage!: ElementRef<HTMLImageElement>;
@@ -71,7 +77,7 @@ export class BettercustomDualComponent implements AfterViewInit, OnDestroy {
       console.warn('BettercustomDualComponent: mediaType is set to "video" but videoSrc is missing.');
     }
 
-    this.animSub = this.loaderService.animationsEnabled$.subscribe((enabled) => {
+    this.animSub = this.loaderService.animationsEnabled$.subscribe((enabled: boolean) => {
       if (enabled && this.mediaType === 'image') {
         this.initParallax();
       }
@@ -171,11 +177,14 @@ export class BettercustomDualComponent implements AfterViewInit, OnDestroy {
   }
 
   getCombinedStyle(base: { [key: string]: any }) {
-    return {
-      ...base,
-      ...this.getBlockHeight(),
-    };
+    return this.useAspectRatio
+      ? base
+      : {
+          ...base,
+          ...this.getBlockHeight(),
+        };
   }
+  
 
   getImageOrderClasses() {
     const mobile = this.mobileOrder === 'image-first' ? 'order-1' : 'order-2';

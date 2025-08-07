@@ -1,35 +1,233 @@
+.product-container {
+  --product-view-height: 820px;
+}
+
+@media (min-width: 768px) {
+  .product-container .f-thumbs.is-classic.is-vertical {
+    height: var(--product-view-height, 100%);
+  }
+}
+
+.thumbnail-indicator {
+  position: absolute;
+  left: -4px;
+  width: 2px;
+  display: flex;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 20;
+}
+
+.thumbnail-indicator.active {
+  opacity: 1;
+}
+
+.indicator-line {
+  width: 2px;
+  height: 45px;
+  background-color: var(--color-aldy-primary-400, #3b82f6);
+  border-radius: 2px 0 0 2px;
+  transition: all 0.3s ease;
+}
+
+@media (min-width: 768px) {
+  .thumbnail-indicators-container {
+    position: absolute;
+    left: -4px;
+    top: 0;
+    width: 4px;
+    height: 100%;
+    pointer-events: none;
+    z-index: 10;
+  }
+}
+
 .f-carousel {
   position: relative;
   background-color: #fff;
+  --f-carousel-spacing: 0;
+  --f-button-width: 48px;
+  --f-button-height: 48px;
+  --f-button-border-radius: 0;
+  --f-button-color: #374151;
+  --f-button-hover-color: var(--color-aldy-primary-400);
+  --f-button-bg: rgba(255, 255, 255, 0.9);
+  --f-button-hover-bg: rgba(255, 255, 255, 1);
+  --f-button-active-bg: rgba(255, 255, 255, 1);
+  --f-button-svg-width: 28px;
+  --f-button-svg-height: 28px;
+  --f-button-svg-stroke-width: 1;
+  --f-button-svg-filter: none;
 }
 
-.f-button.is-prev,
+@media (min-width: 768px) {
+  .f-carousel {
+    height: var(--product-view-height);
+  }
+}
+
+@media (max-width: 767px) {
+  .f-carousel__slide .image-container {
+    aspect-ratio: var(--aspect-ratio, 3/4);
+  }
+}
+
+.f-carousel__slide {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.f-carousel__slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.f-carousel .f-carousel__nav {
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+@media (hover: hover) {
+  .f-carousel:hover .f-carousel__nav {
+    opacity: 1;
+  }
+}
+
+.f-button.is-prev, 
 .f-button.is-next {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
   z-index: 30;
-  width: 20px;
-  height: 20px;
-  background-color: rgba(255, 255, 255, 0.6);
-  border-radius: 9999px;
+  width: 48px;
+  height: 48px;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 0;
   backdrop-filter: blur(6px);
-  box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
-  padding: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  border: none;
+  cursor: pointer;
 }
+
+.f-button.is-prev:hover,
+.f-button.is-next:hover {
+  background-color: rgba(255, 255, 255, 1);
+  transform: translateY(-50%);
+}
+
 .f-button.is-prev {
-  left: -1.75rem; 
+  left: 10px;
 }
+
 .f-button.is-next {
-  right: -1.75rem;
+  right: 10px;
 }
 
+.f-button.is-prev svg,
+.f-button.is-next svg {
+  width: 28px;
+  height: 28px;
+  color: #374151;
+}
 
-@media (max-width: 1023px) {
+.f-button.is-prev:hover svg,
+.f-button.is-next:hover svg {
+  color: var(--color-aldy-primary-400);
+}
+
+@media (max-width: 767px) {
   .f-button.is-prev,
   .f-button.is-next {
     display: none;
   }
 }
 
+.f-thumbs.is-classic {
+  --f-thumb-width: 75px;
+  --f-thumb-height: 75px;
+  --f-thumb-gap: 0.5rem;
+  --f-thumb-opacity: 1;
+  --f-button-color: #374151;
+  --f-button-hover-color: var(--color-aldy-primary-400);
+  --f-button-bg: #fff;
+  --f-button-hover-bg: #fff;
+  --f-button-active-bg: #fff;
+}
 
+.f-thumbs.is-classic .f-thumbs__slide__img {
+  object-fit: cover;
+  object-position: center;
+}
+
+.f-thumbs.is-classic .f-carousel__nav .f-button[disabled] {
+  display: none;
+}
+
+.f-thumbs.is-modern {
+  margin-top: 16px;
+  --f-thumb-width: 75px;
+  --f-thumb-height: 75px;
+  --f-thumb-gap: 0.5rem;
+  --f-thumb-opacity: 0.6;
+  --f-thumb-selected-opacity: 1;
+}
+
+.f-thumbs.is-modern .f-carousel__slide {
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.f-thumbs.is-modern .f-carousel__slide:hover {
+  transform: scale(1.05);
+}
+
+.f-thumbs.is-modern .f-carousel__slide.is-selected {
+  border: 2px solid var(--color-aldy-primary-400);
+  transform: scale(1.1);
+}
+
+.f-thumbs.is-modern {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.f-thumbs.is-modern .f-carousel__track {
+  display: flex;
+  justify-content: center;
+}
+
+.fancybox__container {
+  --fancybox-color: #0d0c22;
+  --fancybox-bg: #fff;
+  --f-spinner-color-1: rgba(0, 0, 0, 0.1);
+  --f-spinner-color-2: rgba(17, 24, 28, 0.8);
+}
+
+.fancybox__toolbar,
+.fancybox__nav {
+  --f-button-width: 60px;
+  --f-button-height: 60px;
+  --f-button-color: #0d0c22;
+  --f-button-hover-color: var(--color-aldy-primary-400);
+  --f-button-bg: #fff;
+  --f-button-hover-bg: #fff;
+  --f-button-active-bg: #fff;
+  --f-button-svg-width: 32px;
+  --f-button-svg-height: 32px;
+  --f-button-svg-stroke-width: 1;
+  --f-button-svg-filter: none;
+}
+
+.fancybox__nav {
+  --f-button-next-pos: 0;
+  --f-button-prev-pos: 0;
+}

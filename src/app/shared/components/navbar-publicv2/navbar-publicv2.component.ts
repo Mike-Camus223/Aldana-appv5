@@ -98,9 +98,10 @@ export class NavbarPublicv2Component implements OnInit {
   ];
 
   routerLinkNavbar: RouterlinkNavbar[] = [
-    { label: 'NOVIAS', link: '/novias' },
+    { label: 'NOVIAS', link: '/novias-colecciones' },
     { label: 'COLECCIONES', link: '/colecciones' },
-    { label: 'CONTACTO', link: '/contacto' }
+    { label: 'CONTACTO', link: '/contacto' },
+    { label: 'ACERCA DE MÍ', link: '/acerca-de-mi'}
   ];
 
   @ViewChild('dropdownRef') dropdownRef!: ElementRef;

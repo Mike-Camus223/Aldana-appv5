@@ -27,6 +27,15 @@ export const routes: Routes = [
           import('../../../shared/components/generic-collection/generic-collection.component').then(c => c.GenericCollectionComponent),
       },
       {
+        path: 'novias-colecciones',
+        loadComponent: () =>  import('../../../features/landing/pages/novias/novias.component').then(c => c.NoviasComponent),
+      },
+      {
+        path: 'novias-colecciones/:slug',
+        loadComponent: () => 
+          import('../../../shared/components/generic-collection-brides/generic-collection-brides.component').then(c => c.GenericCollectionBridesComponent),
+      },
+      {
         path: 'tienda/categoria/:categoria',
         loadComponent: () => import('../../../features/landing/pages/shop/shop.component').then(c => c.ShopComponent),
       },
@@ -38,7 +47,6 @@ export const routes: Routes = [
         path: 'tienda',
         loadComponent: () => import('../../../features/landing/pages/shop/shop.component').then(c => c.ShopComponent),
       },
-
       {
         path: 'producto/:slug',
         loadComponent: () =>
@@ -51,12 +59,7 @@ export const routes: Routes = [
           import('../../../features/landing/pages/contact/contact.component').then(c => c.ContactComponent),
       },
       {
-        path: 'novias',
-        loadComponent: () =>
-          import('../../../features/landing/pages/novias/novias.component').then(c => c.NoviasComponent),
-      },
-      {
-        path: 'acerca-de',
+        path: 'acerca-de-mi',
         loadComponent: () =>
           import('../../../features/landing/pages/about/about.component').then(c => c.AboutComponent),
       },

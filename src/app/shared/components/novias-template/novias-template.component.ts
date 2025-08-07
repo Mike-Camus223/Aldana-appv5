@@ -1,220 +1,84 @@
-import { Component } from '@angular/core';
+import {
+  Component,
+  AfterViewInit,
+  Inject,
+  PLATFORM_ID
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MediaItem } from '../../utils/models/objectsGallery.model';
-import { GalleryGenComComponent } from '../gallery-gen-com/gallery-gen-com.component';
-import { BettercustomDualComponent } from '../bettercustom-dual/bettercustom-dual.component';
+import { Collection } from '../../utils/models/collection.model';
+import { RouterModule, Router } from '@angular/router';
+import { isPlatformBrowser } from '@angular/common';
+import { CollectionBridesService } from '../../../core/services/data-access/collection-brides/collection_brides.service';
+import { trigger, transition, style, animate, state } from '@angular/animations';
+
 
 @Component({
   selector: 'app-novias-template',
   standalone: true,
-  imports: [CommonModule, GalleryGenComComponent, BettercustomDualComponent],
+  imports: [CommonModule, RouterModule],
+  animations: [
+    trigger('gridAnimation', [
+      transition('* => *', [
+        style({ transform: 'scale(0.98)', opacity: 0.8 }),
+        animate('400ms ease-out', style({ transform: 'scale(1)', opacity: 1 })),
+      ]),
+    ]),
+    trigger('slideIn', [
+      state('true', style({ transform: 'translateX(0)' })),
+      state('false', style({ transform: 'translateX(-100%)' })),
+      transition('false => true', [
+        style({ transform: 'translateX(-100%)' }),
+        animate('300ms cubic-bezier(0.4, 0.0, 0.2, 1)', style({ transform: 'translateX(0)' }))
+      ]),
+      transition('true => false', [
+        animate('300ms cubic-bezier(0.4, 0.0, 0.2, 1)', style({ transform: 'translateX(-100%)' }))
+      ])
+    ])
+  ],
   templateUrl: './novias-template.component.html',
   styleUrls: ['./novias-template.component.css'],
 })
-export class NoviasTemplateComponent {
+export class NoviasTemplateComponent implements AfterViewInit {
+  CollectionBrides: Collection[] = [];
+  productColumns: number = 3;
 
- titulos = [
-  {
-    title:'CORSET JARDÍN Y PANTALÓN TUTOR'
-  },
-  {
-    title: 'VESTIDO PÉTALOS'
-  },
-  {
-    title: 'VESTIDO LLUVIA'
-  },
-  {
-    title: 'VESTIDO CALA'
-  },
-  {
-    title: 'CORSET ORQUÍDEA Y FALDA GERANIO'
+
+  constructor(
+    @Inject(PLATFORM_ID) private platformId: Object,
+    private CollectionService: CollectionBridesService,
+    private router: Router
+  ) {}
+  
+  async ngAfterViewInit() {
+    try {
+      const result = await this.CollectionService.getCollectionBrides();
+      this.CollectionBrides = result ?? [];
+    } catch (error) {
+      console.error('Error al obtener colecciones:', error);
+    }
+
+    if (isPlatformBrowser(this.platformId)) {
+      const { Fancybox } = await import('@fancyapps/ui');
+      Fancybox.bind("[data-fancybox='gallery']", {
+        Thumbs: true,
+        Toolbar: {
+          display: {
+            left: [],
+            middle: [],
+            right: ['toggleZoom', 'slideshow', 'fullscreen', 'thumbs', 'close']
+          }
+        }
+      });
+    }
   }
- ]
 
-  images: MediaItem[] = [
-    {
-      url: 'https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/%20collections/Jardin%20secreto/Novias/Cande/cande1.jpg',
-      alt: 'CN1',
-      type: 'image',
-      fit: 'contain',
-    },
-    {
-      url: 'https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/%20collections/Jardin%20secreto/Novias/Cande/cande3.jpg',
-      alt: 'CN2',
-      type: 'image',
-      fit: 'contain',
-    },
-    {
-      url: 'https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/%20collections/Jardin%20secreto/Novias/Cande/cande2.jpg',
-      alt: 'CN3',
-      type: 'image',
-      fit: 'contain',
-    },
-    {
-      url: 'https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/%20collections/Jardin%20secreto/Novias/Cande/cande4.jpg',
-      alt: 'CN2',
-      type: 'image',
-      fit: 'contain',
-    },
-    {
-      url: 'https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/%20collections/Jardin%20secreto/Novias/Cande/cande5.mp4',
-      poster: 'https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/%20collections/Jardin%20secreto/Novias/Cande/cande6.jpg',
-      alt: 'Video desfile',
-      type: 'video',
-      width: 1280,
-      height: 720,
-      fit: 'contain',
-    },
-  ];
+  setProductColumns(cols: number): void {
+    if (cols >= 2 && cols <= 4) {
+      this.productColumns = cols;
+    }
+  }
 
-  images2: MediaItem[] = [
-    {
-      url: 'https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/%20collections/Jardin%20secreto/Novias/Delfi/delfi1.jpeg',
-      alt: 'CN1',
-      type: 'image',
-      fit: 'contain',
-    },
-    {
-      url: 'https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/%20collections/Jardin%20secreto/Novias/Delfi/deilfi11.jpg',
-      alt: 'CN2',
-      type: 'image',
-      fit: 'contain',
-    },
-    {
-      url: 'https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/%20collections/Jardin%20secreto/Novias/Delfi/delfi3.jpg',
-      alt: 'CN3',
-      type: 'image',
-      fit: 'contain',
-    },
-    {
-      url: 'https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/%20collections/Jardin%20secreto/Novias/Delfi/delfi7.jpg',
-      alt: 'CN2',
-      type: 'image',
-      fit: 'contain',
-    },
-    {
-      url: 'https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/%20collections/Jardin%20secreto/Novias/Delfi/delfi6.mp4',
-      poster: 'https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/%20collections/Jardin%20secreto/Novias/Delfi/delfi12.jpg',
-      alt: 'Video desfile',
-      type: 'video',
-      width: 1280,
-      height: 720,
-      fit: 'contain',
-    },
-  ];
-
-  images3:MediaItem[] = [
-    {
-      url: 'https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/%20collections/Jardin%20secreto/Novias/Vicky/vicky1.jpg',
-      alt: 'CN2',
-      type: 'image',
-      fit: 'contain',
-    },
-    {
-      url: 'https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/%20collections/Jardin%20secreto/Novias/Vicky/vicky4.jpg',
-      alt: 'CN2',
-      type: 'image',
-      fit: 'contain',
-    },
-    {
-      url: 'https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/%20collections/Jardin%20secreto/Novias/Vicky/vicky3.jpg',
-      alt: 'CN2',
-      type: 'image',
-      fit: 'contain',
-    },
-    {
-      url: 'https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/%20collections/Jardin%20secreto/Novias/Vicky/vicky5.jpg',
-      alt: 'CN2',
-      type: 'image',
-      fit: 'contain',
-    },
-    {
-      url: 'https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/%20collections/Jardin%20secreto/Novias/Vicky/vicky6.mp4',
-      poster: 'https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/%20collections/Jardin%20secreto/Novias/Vicky/vicky2.jpg',
-      alt: 'Video desfile',
-      type: 'video',
-      width: 1280,
-      height: 720,
-      fit: 'contain',
-    },
-  ]
-
-  images4: MediaItem[] = [
-     {
-      url: 'https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/%20collections/Jardin%20secreto/Novias/Cande%20Cala/candecala1.jpg',
-      alt: 'CN2',
-      type: 'image',
-      fit: 'contain',
-    },
-     {
-      url: 'https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/%20collections/Jardin%20secreto/Novias/Cande%20Cala/candecala5.jpg',
-      alt: 'CN2',
-      type: 'image',
-      fit: 'contain',
-    },
-     {
-      url: 'https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/%20collections/Jardin%20secreto/Novias/Cande%20Cala/candecala3.jpg',
-      alt: 'CN2',
-      type: 'image',
-      fit: 'contain',
-    },
-    {
-      url: 'https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/%20collections/Jardin%20secreto/Novias/Cande%20Cala/candecala2.jpg',
-      alt: 'CN2',
-      type: 'image',
-      fit: 'contain',
-    },
-    {
-      url: 'https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/%20collections/Jardin%20secreto/Novias/Cande%20Cala/candecala4.mp4',
-      poster: 'https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/%20collections/Jardin%20secreto/Novias/Cande%20Cala/candecala6.jpg',
-      alt: 'Video desfile',
-      type: 'video',
-      width: 1280,
-      height: 720,
-      fit: 'contain',
-    },
-  ]
-
-  images5: MediaItem[] = [
-     {
-      url: 'https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/%20collections/Jardin%20secreto/Novias/Delfi%20Corset%20Orquidea/delficorse3.jpg',
-      alt: 'CN2',
-      type: 'image',
-      fit: 'contain',
-    }, 
-    {
-      url: 'https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/%20collections/Jardin%20secreto/Novias/Delfi%20Corset%20Orquidea/delficorse1.jpg',
-      alt: 'CN2',
-      type: 'image',
-      fit: 'contain',
-    },
-    {
-      url: 'https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/%20collections/Jardin%20secreto/Novias/Delfi%20Corset%20Orquidea/delficorse5.jpg',
-      alt: 'CN2',
-      type: 'image',
-      fit: 'contain',
-    },
-    {
-      url: 'https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/%20collections/Jardin%20secreto/Novias/Delfi%20Corset%20Orquidea/delficorse6.mp4',
-      poster: 'https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/%20collections/Jardin%20secreto/Novias/Delfi%20Corset%20Orquidea/delficorse4.jpg',
-      alt: 'Video desfile',
-      type: 'video',
-      width: 1280,
-      height: 720,
-      fit: 'contain',
-    },
-    {
-      url: 'https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/%20collections/Jardin%20secreto/Novias/Delfi%20Corset%20Orquidea/delficorse7.mp4',
-      poster: 'https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/%20collections/Jardin%20secreto/Novias/Delfi%20Corset%20Orquidea/delficorse2.jpg',
-      alt: 'Video desfile',
-      type: 'video',
-      width: 1280,
-      height: 720,
-      fit: 'contain',
-    },
-  ]
-
-  onMediaClick(item: MediaItem) {
-    console.log('Media clickeada:', item);
+  goToCollection(slug: string) {
+    this.router.navigate(['/novias-colecciones', slug]);
   }
 }

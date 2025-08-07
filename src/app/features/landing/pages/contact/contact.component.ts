@@ -14,7 +14,7 @@ import { AppMenuItem } from '../../../../shared/utils/models/app-menu-item.model
 export class ContactComponent {
 
    breadcrumbItems: AppMenuItem[] = [
-    { icon: 'pi pi-home', route: '/home' },
-    { label: 'Contacto', route: '/contact' }
+    { label: 'INICIO', route: '/home' },
+    { label: 'CONTACTO', route: '/contact' }
   ];
 }

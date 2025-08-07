@@ -56,7 +56,7 @@
               <div *ngFor="let sub of category.subsections">
                 <label
                   class="flex items-center gap-2 py-2 px-3 text-sm font-main cursor-pointer w-full hover:bg-gray-50 rounded-md">
-                  <input type="radio" name="subcategory" [checked]="normalize(sub.value) === selectedSubcategory"
+                  <input appAldyRadio type="radio" name="subcategory" [checked]="normalize(sub.value) === selectedSubcategory"
                     (change)="navigateToSubcategory(category.value, sub.value)"
                     class="form-radio scale-90 text-aldy-primary-600 focus:ring-aldy-primary-500" />
                   <span [ngClass]="{
@@ -138,9 +138,9 @@
           <div *ngFor="let sub of category.subsections">
             <label
               class="flex items-center gap-2 py-2 px-3 text-sm font-main cursor-pointer w-full hover:bg-gray-50 rounded-md">
-              <input type="radio" name="subcategory" [checked]="normalize(sub.value) === selectedSubcategory"
+              <input appAldyRadio type="radio" name="subcategory" [checked]="normalize(sub.value) === selectedSubcategory"
                 (change)="onSubcategorySelected(category.value, sub.value)"
-                class="form-radio scale-90 text-aldy-primary-600 focus:ring-aldy-primary-500" />
+                />
               <span [ngClass]="{
                       'text-aldy-primary-600 font-semibold': selectedSubcategory === normalize(sub.value),
                       'text-gray-600': selectedSubcategory !== normalize(sub.value)

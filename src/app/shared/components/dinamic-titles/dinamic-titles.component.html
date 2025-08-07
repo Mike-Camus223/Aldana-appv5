@@ -1,19 +1,19 @@
 <ng-container *ngIf="!isParagraph; else paragraphTemplate">
   <div [ngClass]="[containerMaxWidth, containerResponsiveClasses, 'mx-auto']">
     <ng-container [ngSwitch]="level">
-      <h1 appFadeUpLetter *ngSwitchCase="1" [ngClass]="classes" [innerHTML]="parsedText"></h1>
-      <h2 appFadeUpLetter *ngSwitchCase="2" [ngClass]="classes" [innerHTML]="parsedText"></h2>
-      <h3 appFadeUpLetter *ngSwitchCase="3" [ngClass]="classes" [innerHTML]="parsedText"></h3>
-      <h4 appFadeUpLetter *ngSwitchCase="4" [ngClass]="classes" [innerHTML]="parsedText"></h4>
-      <h5 appFadeUpLetter *ngSwitchCase="5" [ngClass]="classes" [innerHTML]="parsedText"></h5>
-      <h6 appFadeUpLetter *ngSwitchCase="6" [ngClass]="classes" [innerHTML]="parsedText"></h6>
+      <h1 appWordReveal *ngSwitchCase="1" [ngClass]="[classes]">{{ textForWordReveal }}</h1>
+      <h2 appWordReveal *ngSwitchCase="2" [ngClass]="[classes]">{{ textForWordReveal }}</h2>
+      <h3 appWordReveal *ngSwitchCase="3" [ngClass]="[classes]">{{ textForWordReveal }}</h3>
+      <h4 appWordReveal *ngSwitchCase="4" [ngClass]="[classes]">{{ textForWordReveal }}</h4>
+      <h5 appWordReveal *ngSwitchCase="5" [ngClass]="[classes]">{{ textForWordReveal }}</h5>
+      <h6 appWordReveal *ngSwitchCase="6" [ngClass]="[classes]">{{ textForWordReveal }}</h6>
     </ng-container>
   </div>
 </ng-container>
 <ng-template #paragraphTemplate>
-  <p appFadeUpLetter [ngClass]="[backgroundColor, backgroundMarginX, 'whitespace-pre-wrap p-4 rounded']">
+  <p appFadeUpLetter [ngClass]="[backgroundColor, backgroundMarginX, 'whitespace-pre-wrap']">
     <span
-      [ngClass]="[classes, containerMaxWidth, containerResponsiveClasses, 'block mx-auto']"
+      [ngClass]="[classes, containerMaxWidth, stylestext , containerResponsiveClasses, 'block mx-auto']"
       [innerHTML]="parsedText"
     ></span>
   </p>

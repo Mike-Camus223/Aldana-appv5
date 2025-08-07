@@ -1,13 +1,17 @@
 <div class="flex flex-col md:flex-row w-full mx-auto"  [ngClass]="[maxwidthandpadding, height]">
   <div #parallaxContainer
-       class="overflow-hidden flex-shrink-0 w-full relative"
-       [ngClass]="getImageOrderClasses()"
-       [ngStyle]="getCombinedStyle(getImageStyle())">
-        <img *ngIf="mediaType === 'image'"
+  class="overflow-hidden flex-shrink-0 w-full relative"
+  [ngClass]="getImageOrderClasses()"
+  [ngStyle]="getCombinedStyle(getImageStyle())"
+  [style.aspect-ratio]="useAspectRatio ? aspectRatio : null">
+        <img 
+        appZoomout
+        [ngClass]="[imageStyles]"
+        *ngIf="mediaType === 'image'"
          #parallaxImage
          [src]="imageUrl"
          alt="image"
-         class="w-full h-full object-cover object-center" />
+         class="w-full h-full"/>
         <div *ngIf="mediaType === 'video'" class="w-full h-full">
       <app-video
         [src]="videoSrc"
@@ -27,9 +31,9 @@
     
     <div class="px-2 py-10 md:py-0 md:px-10 lg:px-20 w-full">
       <div [ngClass]="[titleAndContentClass]" class="flex w-full flex-col items-start">
-        <h2 appWordReveal *ngIf="CommentsTestimonial"
+        <h2 appWordReveal  *ngIf="CommentsTestimonial"
             class="text-4xl font-bold text-aldy-primary-400">❛❛</h2>
-        <h2 appWordReveal class="text-3xl font-bold w-full text-gray-700 timesRoman">{{ title }}</h2>
+        <h2 appWordReveal [ngClass]="[SeparationTitle,StylesTitle]"  class="text-3xl font-bold w-full text-gray-700">{{ title }}</h2>
         <div *ngIf="divider" class="border-t-1 border-aldy-primary-400 my-3 w-16"></div>
       </div>
       
@@ -37,15 +41,15 @@
         <h3 class="text-xl font-semibold text-gray-700">{{ sub }}</h3>
       </ng-container>
       
-      <p appFadeUpLetter [ngClass]="[textcontetclass]"
-         class="text-gray-600 leading-relaxed italic whitespace-pre-wrap break-words max-w-2xl">
+      <p appFadeUpLetter [ngClass]="[textcontetclass,StylesText]"
+         class="text-gray-600 leading-relaxed whitespace-pre-wrap break-words max-w-2xl">
         <ng-container *ngIf="CommentsTestimonial; else plainText">
           "{{ contentTestimonial }}"
         </ng-container>
         <ng-template #plainText>{{ contentTestimonial }}</ng-template>
       </p>
       
-      <p class="text-gray-600 leading-relaxed italic">{{ content }}</p>
+      <p [ngClass]="[StylesText]" class="text-gray-600 leading-relaxed">{{ content }}</p>
       
       <p *ngIf="extraContent" [ngClass]="[textextracontetclass]" class="text-sm text-gray-500 mt-4">
         {{ extraContent }}
