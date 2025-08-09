@@ -1,1 +1,162 @@
-<p>register-page works!</p>
+
+<div class="absolute p-4 w-full h-auto z-2 overflow-x-hidden">
+  <a routerLink="/login">
+    <button type="button" class="w-auto sm:w-auto px-5 py-2.5 text-sm font-medium rounded-lg text-center transition duration-150 ease-in-out focus:outline-none focus:ring-4 focus:ring-aldy-primary-200 bg-aldy-primary-600 hover:bg-aldy-primary-700 text-aldy-bg cursor-pointer">Login</button>
+  </a>
+</div>
+<div class="flex items-center justify-center w-full h-screen bg-aldy-bg overflow-x-hidden">
+    <div class="w-full flex items-center justify-center flex-col px-4">
+        <div class="mb-20 text-center max-w-180">
+            <h1 class="text-aldy-primary-600 font-bold text-4xl">
+                {{ 'Aldana App – Registration Page test'.toUpperCase() }}
+            </h1>
+        </div>
+        <div class="max-w-lg w-full">
+            <form class="w-full" [formGroup]="form">
+                <div class="mb-6">
+                    <label for="email" [ngClass]="{
+                  'text-red-700': form.get('email')?.invalid && form.get('email')?.touched,
+                 'text-aldy-primary-800': !(form.get('email')?.invalid && form.get('email')?.touched)
+                    }" class="block mb-2 text-sm font-medium">
+                        Correo electrónico
+                    </label>
+                    <input type="email" id="email" placeholder="nombre@ejemplo.com" formControlName="email" [ngClass]="{
+                'bg-red-50  border-1 border-red-500 text-red-900 placeholder-red-700 focus:border-red-500 focus:ring-red-500 focus:outline-red-500 outline-offset-0':
+                 form.get('email')?.invalid && form.get('email')?.touched,
+                'border border-aldy-primary-600 text-aldy-text-soft focus:border-aldy-primary-600 focus:outline-aldy-primary-600  outline-offset-0':
+                !(form.get('email')?.invalid && form.get('email')?.touched)
+                }" class="text-sm rounded-lg block w-full p-2.5" />
+                    @if (form.get('email')?.touched && form.get('email')?.invalid) {
+                    <p class="text-sm text-red-600 pt-1">
+                        <span class="font-medium">Oops!</span>
+                        @if (form.get('email')?.errors?.['required']) {
+                        El correo es obligatorio.
+                        } @else if (form.get('email')?.errors?.['email']) {
+                        Ingrese un formato de correo válido.
+                        }
+                    </p>
+                    }
+                </div>
+                <div class="mb-6 relative">
+                    <label for="password" [ngClass]="{
+           'text-red-700': form.get('password')?.invalid && form.get('password')?.touched,
+           'text-aldy-primary-800': !(form.get('password')?.invalid && form.get('password')?.touched)
+         }" class="block mb-2 text-sm font-medium">
+                        Contraseña
+                    </label>
+
+                    <input [type]="visibility.password ? 'text' : 'password'" id="password" formControlName="password"
+                        (focus)="showPasswordPopover = true" (blur)="showPasswordPopover = false"
+                        placeholder="Agrega una contraseña" class="text-sm rounded-lg block w-full p-2.5 pr-10"
+                        [ngClass]="{
+                 'bg-red-50 border-1 border-red-500 text-red-900 placeholder-red-700 focus:border-red-500 focus:ring-red-500 focus:outline-red-500 outline-offset-0':
+                  form.get('password')?.invalid && form.get('password')?.touched,
+                 'border border-aldy-primary-600 text-aldy-text-soft focus:border-aldy-primary-600 focus:outline-aldy-primary-600 outline-offset-0':
+                !(form.get('password')?.invalid && form.get('password')?.touched)
+                 }" />
+
+                    <button type="button" (click)="toggleVisibility('password')" class="absolute right-4 top-[38px]">
+                        <i class="fa-solid text-[1.2rem]" [ngClass]="[
+                 visibility.password ? 'fa-eye' : 'fa-eye-slash',
+                 form.get('password')?.invalid && form.get('password')?.touched ? 'text-red-500' : 'text-aldy-primary-600'
+                ]">
+                        </i>
+                    </button>
+                    <p *ngIf="form.get('password')?.invalid && form.get('password')?.touched"
+                        class="text-red-600 pt-1 text-sm">
+                        <span class="font-medium">Oops!</span>
+                        {{ passwordErrorMessage }}
+                    </p>
+                    <div *ngIf="showPasswordPopover"
+                        class="absolute z-10 text-sm text-gray-500 bg-white border border-gray-200 rounded-lg shadow-xs w-72 p-3 mt-1">
+                        <h3 class="font-semibold text-aldy-primary-800">Debe tener al menos 6 caracteres</h3>
+                        <div class="grid grid-cols-4 gap-2 my-2">
+                            <div class="h-1" [ngClass]="barColorClass(1)"></div>
+                            <div class="h-1" [ngClass]="barColorClass(2)"></div>
+                            <div class="h-1" [ngClass]="barColorClass(3)"></div>
+                            <div class="h-1" [ngClass]="barColorClass(4)"></div>
+                        </div>
+                        <p>Es mejor si contiene:</p>
+                        <ul>
+                            <li class="flex items-center mb-1">
+                                <svg class="w-3.5 h-3.5 me-2"
+                                    [ngClass]="{ 'text-green-400': hasMixedCase, 'text-gray-300': !hasMixedCase }"
+                                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 12">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                        stroke-width="2" d="M1 5.917 5.724 10.5 15 1.5" />
+                                </svg>
+                                Letras mayúsculas y minúsculas
+                            </li>
+                            <li class="flex items-center mb-1">
+                                <svg class="w-3 h-3 me-2.5"
+                                    [ngClass]="{ 'text-green-400': hasSymbol, 'text-gray-300': !hasSymbol }"
+                                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 12">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                        stroke-width="2" d="M1 5.917 5.724 10.5 15 1.5" />
+                                </svg>
+                                Un símbolo (#$&)
+                            </li>
+                            <li class="flex items-center">
+                                <svg class="w-3 h-3 me-2.5"
+                                    [ngClass]="{ 'text-green-400': passwordLength >= 6, 'text-gray-300': passwordLength < 6 }"
+                                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 12">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                        stroke-width="2" d="M1 5.917 5.724 10.5 15 1.5" />
+                                </svg>
+                                Una contraseña más larga (mín. 6 caracteres)
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="mb-6 relative">
+                    <label for="repeat-password" [ngClass]="{
+      'text-red-700': repeatPasswordInvalid,
+      'text-aldy-primary-800': !repeatPasswordInvalid
+    }" class="block mb-2 text-sm font-medium">
+                        Repetir contraseña
+                    </label>
+                    <input [type]="visibility.repeatPassword ? 'text' : 'password'" id="repeat-password"
+                        placeholder="Repite tu contraseña" formControlName="repeatpassword" [ngClass]="{
+      'bg-red-50 border-red-500 border-1 text-red-900 placeholder-red-700 focus:border-red-500 focus:ring-red-500 focus:outline-red-500 outline-offset-0': repeatPasswordInvalid,
+      'border border-aldy-primary-600 text-aldy-text-soft focus:border-aldy-primary-600 focus:outline-aldy-primary-600 outline-offset-0': !repeatPasswordInvalid
+    }" class="text-sm rounded-lg block w-full p-2.5 pr-10" />
+
+                    <button type="button" (click)="toggleVisibility('repeatPassword')"
+                        class="absolute right-4 top-[38px]">
+                        <i class="fa-solid text-[1.2rem]" [ngClass]="[
+        visibility.repeatPassword ? 'fa-eye' : 'fa-eye-slash',
+        repeatPasswordInvalid ? 'text-red-500' : 'text-aldy-primary-600'
+      ]"></i>
+                    </button>
+                    @if (form.get('repeatpassword')?.touched && form.get('repeatpassword')?.errors?.['required']) {
+                    <p class="p-1 text-sm text-red-600">
+                        <span class="font-medium">Oops!</span> Debes repetir la contraseña.
+                    </p>
+                    }
+
+                    @if (form.errors?.['passwordNotMatch'] && form.get('repeatpassword')?.touched) {
+                    <p class="p-1 text-sm text-red-600">
+                        <span class="font-medium">Oops!</span> Las contraseñas no coinciden.
+                    </p>
+                    }
+                </div>
+                <div class="flex items-start mb-6">
+                    <div class="flex items-center h-5">
+                        <input id="terms" type="checkbox" formControlName="termsAccepted"
+                            class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500" />
+                    </div>
+                    <label for="terms" class="ms-2 text-sm font-medium text-aldy-primary-800">
+                        Acepto los términos y condiciones
+                    </label>
+                </div>
+                <button type="submit" [disabled]="form.invalid || isSubmitting" [ngClass]="{
+                'bg-aldy-primary-600 hover:bg-aldy-primary-700 text-aldy-bg cursor-pointer': !(form.invalid || isSubmitting),
+                'bg-gray-200 text-gray-400 cursor-not-allowed': (form.invalid || isSubmitting)
+                }" class="w-full sm:w-auto px-5 py-2.5 text-sm font-medium rounded-lg text-center transition duration-150 ease-in-out focus:outline-none focus:ring-4 focus:ring-aldy-primary-200">
+                    {{ isSubmitting ? 'Registrando...' : 'Enviar' }}
+                </button>
+            </form>
+            <p *ngIf="submitError" class="text-red-600 pt-3 text-sm">{{ submitError }}</p>
+        </div>
+    </div>
+</div>

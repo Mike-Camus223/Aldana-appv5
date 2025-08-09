@@ -1,1 +1,71 @@
-<p>login-page works!</p>
+<div class="absolute p-4 w-full flex gap-4 h-auto z-2 overflow-x-hidden">
+  <a routerLink="/pre-login">
+    <button type="button"
+      class="w-auto sm:w-auto px-5 py-2.5 text-sm font-medium rounded-lg text-center transition duration-150 ease-in-out focus:outline-none focus:ring-4 focus:ring-aldy-primary-200 bg-aldy-primary-600 hover:bg-aldy-primary-700 text-aldy-bg cursor-pointer">Volver</button>
+  </a>
+  <a routerLink="/register">
+    <button type="button"
+      class="w-auto sm:w-auto px-5 py-2.5 text-sm font-medium rounded-lg text-center transition duration-150 ease-in-out focus:outline-none focus:ring-4 focus:ring-aldy-primary-200 bg-aldy-primary-600 hover:bg-aldy-primary-700 text-aldy-bg cursor-pointer">Register</button>
+  </a>
+  <a href="/home">
+    <button type="button"
+      class="w-auto sm:w-auto px-5 py-2.5 text-sm font-medium rounded-lg text-center transition duration-150 ease-in-out focus:outline-none focus:ring-4 focus:ring-aldy-primary-200 bg-aldy-primary-600 hover:bg-aldy-primary-700 text-aldy-bg cursor-pointer">Ir
+      a inicio</button>
+  </a>
+</div>
+<div class="flex items-center justify-center w-full h-screen bg-aldy-bg flex-col px-4 overflow-x-hidden">
+  <div class="mb-20 text-center max-w-180">
+    <h1 class="text-aldy-primary-600 font-bold text-4xl">
+      {{'Aldana App - Login Page test'.toUpperCase()}}
+    </h1>
+  </div>
+  <div class="max-w-lg w-full">
+    <form class="w-full" [formGroup]="formLogin">
+      <div class="mb-5">
+        <label for="email" class="block mb-2 text-sm font-medium text-gray-900">Ingresa tu correo</label>
+        <div class="relative">
+          <div class="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none">
+            <i class="fa-solid fa-user w-4 h-4 text-aldy-primary-600"></i>
+          </div>
+          <input type="email" id="email-address-icon" formControlName="email"
+            class="border-aldy-primary-600 text-aldy-text-soft focus:border-aldy-primary-600 focus:outline-aldy-primary-600  outline-offset-0 border text-sm rounded-lg block w-full ps-10 p-2.5"
+            placeholder="Correo@email.com" />
+        </div>
+      </div>
+
+      <div class="mb-5">
+        <label for="password" class="block mb-2 text-sm font-medium text-gray-900">Ingresa tu contraseña</label>
+        <div class="relative">
+          <div class="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none">
+            <i class="fa-solid fa-lock w-4 h-4 text-aldy-primary-600"></i>
+          </div>
+          <input [type]="visibilityPass.password ? 'text' : 'password'" id="password" formControlName="password"
+            class="border-aldy-primary-600 text-aldy-text-soft focus:border-aldy-primary-600 focus:outline-aldy-primary-600 outline-offset-0 border text-sm rounded-lg block w-full ps-10 p-2.5" />
+          <button type="button" class="absolute right-4 top-[10px]" (click)="togglePasswordIcon()">
+            <i class="fa-solid text-aldy-primary-600 text-[1.2rem]"
+              [ngClass]="visibilityPass.password ? 'fa-eye' : 'fa-eye-slash'"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="flex items-start mb-5">
+        <div class="flex items-center h-5">
+          <input id="remember" type="checkbox"
+            class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500" />
+        </div>
+        <label for="remember" class="ms-2 text-sm font-medium text-gray-900">Recuérdame</label>
+      </div>
+
+      <button type="submit" [disabled]="isSubmitting || formLogin.invalid"
+        [ngClass]="{
+          'bg-aldy-primary-600 hover:bg-aldy-primary-700 text-aldy-bg cursor-pointer': !(isSubmitting || formLogin.invalid),
+          'bg-gray-200 text-gray-400 cursor-not-allowed': (isSubmitting || formLogin.invalid)
+        }"
+        class="w-full sm:w-auto px-5 py-2.5 text-sm font-medium rounded-lg text-center transition duration-150 ease-in-out focus:outline-none focus:ring-4 focus:ring-aldy-primary-200">
+        {{ isSubmitting ? 'Ingresando...' : 'Continuar' }}
+      </button>
+    </form>
+    <p *ngIf="authError" class="text-red-600 pt-3 text-sm">{{ authError }}</p>
+
+  </div>
+</div>

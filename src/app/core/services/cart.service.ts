@@ -10,6 +10,10 @@ export class CartService {
   private cartItemsSubject = new BehaviorSubject<CartItem[]>(this.loadCart());
   cartItems$ = this.cartItemsSubject.asObservable();
 
+  getCart(): CartItem[] {
+    return this.cartItemsSubject.value;
+  }
+
   private loadCart(): CartItem[] {
     const data = localStorage.getItem(this.STORAGE_KEY);
     try {

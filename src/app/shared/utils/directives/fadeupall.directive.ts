@@ -1,4 +1,4 @@
-import { Directive, ElementRef, OnInit, OnDestroy, Inject } from '@angular/core';
+import { Directive, ElementRef, OnInit, OnDestroy, Inject, Input } from '@angular/core';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { LoaderService } from '../../../core/services/utils/loader.service';
@@ -8,6 +8,9 @@ import { Subscription } from 'rxjs';
   selector: '[appFadeupall]'
 })
 export class FadeupallDirective implements OnInit, OnDestroy {
+  @Input() animationIndex: number = 0;
+  @Input() animationDelay: number = 0.15;
+
   private animationSubscription?: Subscription;
   private scrollTriggerInstance?: ScrollTrigger;
   private isInCarousel: boolean = false;
@@ -34,12 +37,25 @@ export class FadeupallDirective implements OnInit, OnDestroy {
 
     this.isInCarousel = !!(keenSliderParent || keenSliderSlideParent ||
       this.elementRef.nativeElement.classList.contains('keen-slider__slide'));
+    
+    if (this.isInCarousel && this.animationIndex === 0) {
+      this.calculateAnimationIndex();
+    }
+  }
+
+  private calculateAnimationIndex(): void {
+    const parent = this.elementRef.nativeElement.closest('.keen-slider');
+    if (parent) {
+      const slides = Array.from(parent.querySelectorAll('.keen-slider__slide'));
+      this.animationIndex = slides.indexOf(this.elementRef.nativeElement);
+    }
   }
 
   private setupInitialState(): void {
     if (this.isInCarousel) {
       gsap.set(this.elementRef.nativeElement, {
-        opacity: 0
+        opacity: 0,
+        filter: 'blur(2px)', 
       });
     } else {
       gsap.set(this.elementRef.nativeElement, {
@@ -60,9 +76,12 @@ export class FadeupallDirective implements OnInit, OnDestroy {
         onEnter: () => {
           if (!this.hasAnimated) {
             this.hasAnimated = true;
+            const delay = this.animationIndex * this.animationDelay;            
             gsap.to(this.elementRef.nativeElement, {
               opacity: 1,
+              filter: 'blur(0px)',
               duration: 1,
+              delay: delay,
               ease: 'power2.out'
             });
           }
