@@ -76,14 +76,14 @@
       <a routerLink="/busqueda" class="cursor-pointer" (mouseenter)="onInteractiveEnter()">
         <lucide-icon name="search" class="w-6 h-6" [ngClass]="iconColorClass"></lucide-icon>
       </a>
-      <a routerLink="/login" class="cursor-pointer" (mouseenter)="onInteractiveEnter()">
-        <lucide-icon name="user" class="w-6 h-6" [ngClass]="iconColorClass"></lucide-icon>
-      </a>
       <a routerLink="/favoritos" class="cursor-pointer" (mouseenter)="onInteractiveEnter()">
         <lucide-icon name="heart" class="w-6 h-6" [ngClass]="iconColorClass"></lucide-icon>
       </a>
-      <div class="flex gap-1 items-center">
-        <a routerLink="/checkout/carrito" class="cursor-pointer" (mouseenter)="onInteractiveEnter()">
+      <button (click)="onUserButtonClick()" class="cursor-pointer" (mouseenter)="onInteractiveEnter()">
+        <lucide-icon name="user" class="w-6 h-6" [ngClass]="iconColorClass"></lucide-icon>
+      </button>
+      <div class="flex items-center cursor-pointer" (mouseenter)="onInteractiveEnter()">
+        <a routerLink="/checkout/carrito" class="cursor-pointer">
           <lucide-icon name="shopping-bag" class="w-6 h-6" [ngClass]="iconColorClass"></lucide-icon>
         </a>
         <span translate="no" class="text-base" [ngClass]="{
@@ -111,9 +111,9 @@
       <a routerLink="/favoritos" class="text-aldy-primary-400 hover:text-aldy-primary-500 cursor-pointer">
         <lucide-icon name="heart" class="w-6 h-6 text-aldy-primary-400 hover:text-aldy-primary-500"></lucide-icon>
       </a>
-      <a routerLink="/login" class="text-aldy-primary-400 hover:text-aldy-primary-500 cursor-pointer">
+      <button (click)="onUserButtonClick()" class="text-aldy-primary-400 hover:text-aldy-primary-500 cursor-pointer">
         <lucide-icon name="user" class="w-6 h-6 text-aldy-primary-400 hover:text-aldy-primary-500"></lucide-icon>
-      </a>
+      </button>
     </div>
 
     <div class="flex items-center justify-center">

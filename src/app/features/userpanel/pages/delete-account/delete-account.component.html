@@ -1,0 +1,120 @@
+<div class="p-6">
+  <!-- Header -->
+  <div class="mb-6">
+    <h1 class="text-2xl font-bold text-red-600">Eliminar Cuenta</h1>
+    <p class="text-gray-600 mt-1">Esta acción no se puede deshacer</p>
+  </div>
+
+  <!-- Warning Section -->
+  <div *ngIf="!showConfirmation" class="bg-red-50 border border-red-200 rounded-lg p-6 mb-6">
+    <div class="flex items-start">
+      <div class="flex-shrink-0">
+        <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+        </svg>
+      </div>
+      <div class="ml-4">
+        <h3 class="text-lg font-semibold text-red-800 mb-2">¡Atención! Esta acción es irreversible</h3>
+        <div class="text-red-700 space-y-2">
+          <p><strong>Al eliminar tu cuenta se perderá permanentemente:</strong></p>
+          <ul class="list-disc list-inside space-y-1 ml-4">
+            <li>Toda tu información personal</li>
+            <li>Historial de compras y órdenes</li>
+            <li>Preferencias y configuraciones</li>
+            <li>Acceso a tu cuenta de usuario</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Initial Warning -->
+  <div *ngIf="!showConfirmation" class="bg-white rounded-lg shadow-sm p-6">
+    <div class="text-center">
+      <svg class="w-16 h-16 text-red-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+      </svg>
+      <h2 class="text-xl font-semibold text-gray-900 mb-4">¿Estás seguro de que quieres eliminar tu cuenta?</h2>
+      <p class="text-gray-600 mb-6">Esta decisión no se puede revertir. Todos tus datos serán eliminados permanentemente.</p>
+      
+      <div class="flex justify-center space-x-4">
+        <button 
+          (click)="goBackToPanel()"
+          class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-2 rounded-md transition-colors duration-200">
+          Cancelar
+        </button>
+        <button 
+          (click)="showConfirmationForm()"
+          class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-md transition-colors duration-200">
+          Continuar con la eliminación
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirmation Form -->
+  <div *ngIf="showConfirmation" class="bg-white rounded-lg shadow-sm p-6">
+    <div class="mb-6">
+      <h2 class="text-xl font-semibold text-red-600 mb-2">Confirmación Final</h2>
+      <p class="text-gray-600">Para confirmar la eliminación de tu cuenta, completa los siguientes campos:</p>
+    </div>
+
+    <form [formGroup]="confirmationForm" (ngSubmit)="onDeleteAccount()">
+      <div class="space-y-4">
+        <div>
+          <label for="confirmText" class="block text-sm font-medium text-gray-700 mb-2">
+            Escribe <strong class="text-red-600">"ELIMINAR"</strong> para confirmar:
+          </label>
+          <input 
+            type="text" 
+            id="confirmText"
+            formControlName="confirmText"
+            placeholder="ELIMINAR"
+            class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500">
+        </div>
+
+        <div>
+          <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
+            Confirma tu contraseña:
+          </label>
+          <input 
+            type="password" 
+            id="password"
+            formControlName="password"
+            placeholder="Tu contraseña actual"
+            class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500">
+        </div>
+      </div>
+
+      <!-- Error Message -->
+      <div *ngIf="errorMessage" class="mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-md">
+        {{ errorMessage }}
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="mt-6 flex justify-end space-x-4">
+        <button 
+          type="button"
+          (click)="cancelDeletion()"
+          [disabled]="isDeleting"
+          class="bg-gray-600 hover:bg-gray-700 disabled:bg-gray-400 text-white px-6 py-2 rounded-md transition-colors duration-200">
+          Cancelar
+        </button>
+        <button 
+          type="submit"
+          [disabled]="confirmationForm.invalid || isDeleting"
+          class="bg-red-600 hover:bg-red-700 disabled:bg-red-400 text-white px-6 py-2 rounded-md transition-colors duration-200">
+          <span *ngIf="!isDeleting">Eliminar Cuenta Permanentemente</span>
+          <span *ngIf="isDeleting">Eliminando...</span>
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Account Info -->
+  <div *ngIf="currentUser && showConfirmation" class="bg-gray-100 rounded-lg p-4 mt-6">
+    <h3 class="text-sm font-medium text-gray-700 mb-2">Cuenta a eliminar:</h3>
+    <p class="text-sm text-gray-900">{{ currentUser.email }}</p>
+    <p class="text-xs text-gray-500 mt-1">Registrada el {{ currentUser.created_at | date:'dd/MM/yyyy' }}</p>
+  </div>
+</div>

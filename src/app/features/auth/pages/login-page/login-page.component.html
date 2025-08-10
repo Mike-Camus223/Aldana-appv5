@@ -20,7 +20,7 @@
     </h1>
   </div>
   <div class="max-w-lg w-full">
-    <form class="w-full" [formGroup]="formLogin">
+    <form class="w-full" [formGroup]="formLogin" (ngSubmit)="onSubmit()">
       <div class="mb-5">
         <label for="email" class="block mb-2 text-sm font-medium text-gray-900">Ingresa tu correo</label>
         <div class="relative">

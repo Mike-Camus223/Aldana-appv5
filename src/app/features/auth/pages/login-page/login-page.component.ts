@@ -38,5 +38,34 @@ export default class LoginPageComponent {
   isSubmitting = false;
   authError: string | null = null;
 
+  /**
+   * Maneja el envío del formulario de login
+   */
+  async onSubmit(): Promise<void> {
+    if (this.formLogin.invalid || this.isSubmitting) return;
 
+    this.isSubmitting = true;
+    this.authError = null;
+
+    const { email, password } = this.formLogin.value;
+
+    if (!email || !password) {
+      this.authError = 'Por favor completa todos los campos';
+      this.isSubmitting = false;
+      return;
+    }
+
+    try {
+      const result = await this._authService.signIn(email, password);
+      
+      if (!result.success) {
+        this.authError = result.error || 'Error al iniciar sesión';
+      }
+      // Si es exitoso, el AuthService ya redirige al panel
+    } catch (error) {
+      this.authError = 'Error de conexión. Intenta nuevamente.';
+    } finally {
+      this.isSubmitting = false;
+    }
+  }
 }

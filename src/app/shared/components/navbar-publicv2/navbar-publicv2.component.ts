@@ -15,6 +15,7 @@ import {
   animate
 } from '@angular/animations';
 import { CartService } from '../../../core/services/cart.service';
+import { AuthService } from '../../../core/services/auth/auth.service';
 import { CartItem } from '../../utils/models/cartItems-model';
 import { LinkHoverUnderlineDirective } from '../../utils/directives/link-hover-underline.directive';
 import { filter } from 'rxjs/operators';
@@ -107,7 +108,7 @@ export class NavbarPublicv2Component implements OnInit {
   @ViewChild('dropdownRef') dropdownRef!: ElementRef;
   @ViewChild('navbarRef') navbarRef!: ElementRef;
 
-  constructor(private router: Router, private cartService: CartService) {
+  constructor(private router: Router, private cartService: CartService, private authService: AuthService) {
     this.router.events
       .pipe(filter(e => e instanceof NavigationEnd))
       .subscribe(() => {
@@ -198,5 +199,16 @@ export class NavbarPublicv2Component implements OnInit {
 
   onDropdownMouseLeave() {
     this.dropdownOpen = false;
+  }
+
+  /**
+   * Navega al login o al panel de usuario según el estado de autenticación
+   */
+  onUserButtonClick(): void {
+    if (this.authService.isAuthenticated()) {
+      this.router.navigate(['/user-panel']);
+    } else {
+      this.router.navigate(['/login']);
+    }
   }
 }

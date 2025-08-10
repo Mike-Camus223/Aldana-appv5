@@ -1,0 +1,35 @@
+/* Estilos para la gestión de cuenta */
+.form-section {
+  transition: all 0.2s ease-in-out;
+}
+
+.form-section:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilos para inputs */
+input:focus {
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+input[readonly] {
+  background-color: #f9fafb;
+  cursor: not-allowed;
+}
+
+/* Animaciones para mensajes */
+.message-fade {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

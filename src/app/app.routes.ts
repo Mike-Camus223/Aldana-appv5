@@ -10,6 +10,10 @@ export const routes: Routes = [
     },
     {
         path: '',
+        loadChildren: () => import('./features/userpanel/userpanel.routes'),
+    },
+    {
+        path: '',
         loadChildren: () => import('./shared/layouts/dashboard-layout/dashboard-layout.routes'),
     },
     {
