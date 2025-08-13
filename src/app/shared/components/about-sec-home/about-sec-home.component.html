@@ -13,6 +13,13 @@
           {{ item.text }}
         </p>
 
+        <ng-container *ngIf="item.useAnotherText">
+          <p appFadeUpLetter class="text-gray-600 italic w-full text-base md:text-lg leading-relaxed mt-6">
+            {{ item.anotherText }}
+          </p>
+
+        </ng-container>
+
         <ng-container *ngIf="item.buttonText && item.buttonUrl">
           <a [href]="item.buttonUrl"
             class="mt-8 inline-block border border-black px-6 py-3 text-sm tracking-widest font-medium uppercase transition hover:bg-black hover:text-white">

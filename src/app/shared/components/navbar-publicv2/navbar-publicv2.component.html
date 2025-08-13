@@ -76,7 +76,7 @@
       <a routerLink="/busqueda" class="cursor-pointer" (mouseenter)="onInteractiveEnter()">
         <lucide-icon name="search" class="w-6 h-6" [ngClass]="iconColorClass"></lucide-icon>
       </a>
-      <a routerLink="/favoritos" class="cursor-pointer" (mouseenter)="onInteractiveEnter()">
+      <a *ngIf="isAuthenticated" routerLink="/favoritos" class="cursor-pointer" (mouseenter)="onInteractiveEnter()">
         <lucide-icon name="heart" class="w-6 h-6" [ngClass]="iconColorClass"></lucide-icon>
       </a>
       <button (click)="onUserButtonClick()" class="cursor-pointer" (mouseenter)="onInteractiveEnter()">
@@ -108,7 +108,7 @@
       <a routerLink="/busqueda" class="text-aldy-primary-400 hover:text-aldy-primary-500 cursor-pointer">
         <lucide-icon name="search" class="w-6 h-6 text-aldy-primary-400 hover:text-aldy-primary-500"></lucide-icon>
       </a>
-      <a routerLink="/favoritos" class="text-aldy-primary-400 hover:text-aldy-primary-500 cursor-pointer">
+      <a *ngIf="isAuthenticated" routerLink="/favoritos" class="text-aldy-primary-400 hover:text-aldy-primary-500 cursor-pointer">
         <lucide-icon name="heart" class="w-6 h-6 text-aldy-primary-400 hover:text-aldy-primary-500"></lucide-icon>
       </a>
       <button (click)="onUserButtonClick()" class="text-aldy-primary-400 hover:text-aldy-primary-500 cursor-pointer">

@@ -4,7 +4,8 @@ import {
   ElementRef,
   ViewChild,
   HostListener,
-  OnInit
+  OnInit,
+  OnDestroy
 } from '@angular/core';
 import { Router, RouterModule, NavigationEnd } from '@angular/router';
 import {
@@ -19,6 +20,7 @@ import { AuthService } from '../../../core/services/auth/auth.service';
 import { CartItem } from '../../utils/models/cartItems-model';
 import { LinkHoverUnderlineDirective } from '../../utils/directives/link-hover-underline.directive';
 import { filter } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
 import {
   Search,
   User,
@@ -75,7 +77,7 @@ interface RouterlinkNavbar {
     ])
   ]
 })
-export class NavbarPublicv2Component implements OnInit {
+export class NavbarPublicv2Component implements OnInit, OnDestroy {
 
   readonly search = Search;
 
@@ -87,6 +89,8 @@ export class NavbarPublicv2Component implements OnInit {
   cartItemCount = 0;
   cartItems: CartItem[] = [];
   hoverNavbar = false;
+  isAuthenticated = false;
+  private authSubscription: Subscription = new Subscription();
 
   tiendaItems = [
     'Camisas',
@@ -122,6 +126,16 @@ export class NavbarPublicv2Component implements OnInit {
       this.cartItems = items;
       this.cartItemCount = items.reduce((acc, item) => acc + item.quantity, 0);
     });
+
+    this.authSubscription.add(
+      this.authService.currentUser$.subscribe(user => {
+        this.isAuthenticated = !!user;
+      })
+    );
+  }
+
+  ngOnDestroy(): void {
+    this.authSubscription.unsubscribe();
   }
 
   @HostListener('window:scroll')
@@ -201,9 +215,6 @@ export class NavbarPublicv2Component implements OnInit {
     this.dropdownOpen = false;
   }
 
-  /**
-   * Navega al login o al panel de usuario según el estado de autenticación
-   */
   onUserButtonClick(): void {
     if (this.authService.isAuthenticated()) {
       this.router.navigate(['/user-panel']);

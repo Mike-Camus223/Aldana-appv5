@@ -29,6 +29,8 @@ export class AboutSecHomeComponent implements AfterViewInit, OnDestroy {
     maxWidthTittle: string;
     title: string;
     text: string;
+    useAnotherText: boolean;
+    anotherText: string;
     image: string;
     imageOrderMobile: string;
     imageOrderDesktop: string;

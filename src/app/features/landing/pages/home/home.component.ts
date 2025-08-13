@@ -17,8 +17,10 @@ export  class HomeComponent {
 
 bloquesSobreMi = [
   {
-    title: 'Moda de autor & diseño exclusivo para novias',
-    text: 'Aldana Vilcabana presenta su nueva propuesta en moda de diseño, con una colección de piezas únicas pensadas para mujeres auténticas. Esta es su primera incursión en el mundo digital, apostando por una experiencia elegante y personalizada.',
+    title: 'Del Juego a la Pasión.',
+    text: 'EL UNICO MODO DE HACER UN GRAN TRABAJO, ES AMAR LO QUE HACES.',
+    useAnotherText: true,
+    anotherText: '- Steve Jobs',
     image: 'assets/images/loadingIMG/loading1.jpg',
     imageOrderMobile: 'order-2',
     imageOrderDesktop: 'md:order-2',
