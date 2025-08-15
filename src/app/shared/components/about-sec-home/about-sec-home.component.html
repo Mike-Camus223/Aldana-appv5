@@ -8,18 +8,14 @@
           [ngClass]="[item.maxWidthTittle, item.titleOffsetClass]">
           {{ item.title }}
         </h2>
-
         <p appFadeUpLetter class="text-gray-600 italic w-full text-base md:text-lg leading-relaxed mt-6">
           {{ item.text }}
         </p>
-
         <ng-container *ngIf="item.useAnotherText">
           <p appFadeUpLetter class="text-gray-600 italic w-full text-base md:text-lg leading-relaxed mt-6">
             {{ item.anotherText }}
           </p>
-
         </ng-container>
-
         <ng-container *ngIf="item.buttonText && item.buttonUrl">
           <a [href]="item.buttonUrl"
             class="mt-8 inline-block border border-black px-6 py-3 text-sm tracking-widest font-medium uppercase transition hover:bg-black hover:text-white">
@@ -31,7 +27,6 @@
     <div class="relative w-full lg:ms-8 xl:ms-10 aspect-[5/4] md:aspect-[4/3] lg:aspect-[4/2] lg:col-span-3"
       [ngClass]="item.imageOrderMobile + ' ' + item.imageOrderDesktop">
       <img  #aboutImage [draggable]="false" [src]="item.image" alt="About image" class="w-full h-full object-contain" />
-
     </div>
   </div>
 </section>
