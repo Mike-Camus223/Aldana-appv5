@@ -15,10 +15,7 @@ export class LoaderService {
   private animationsEnabledSubject = new BehaviorSubject<boolean>(false);
   public animationsEnabled$ = this.animationsEnabledSubject.asObservable();
 
-  constructor() {
-    console.log('LoaderService initialized - ScrollTrigger left enabled');
-  }
-
+ 
   showLoaderOnNavigation() {
     if (this.isFirstLoad) {
       this.currentLoaderSubject.next('main');
@@ -33,28 +30,21 @@ export class LoaderService {
 
     if (loaderType === 'main') {
       this.isMainLoaderComplete = true;
-      console.log('PRINCIPAL finished - ScrollTrigger should work normally');
     }
     
     if (loaderType === 'generic') {
-      console.log('GENERIC finished - ScrollTrigger should work normally');
     }
 
     this.animationsEnabledSubject.next(true);
-    console.log('Animations enabled after loader finish');
-
     ScrollTrigger.refresh();
-    console.log('ScrollTrigger refresh after loader finish');
   }
 
   refreshScrollTrigger() {
     ScrollTrigger.refresh();
-    console.log('ScrollTrigger refreshed manually');
   }
 
   clearAllAnimations(): void {
     ScrollTrigger.getAll().forEach(trigger => trigger.kill());
-    console.log('All ScrollTrigger animations cleared');
   }
 
   reset() {

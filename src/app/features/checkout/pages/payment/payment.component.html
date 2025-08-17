@@ -62,7 +62,34 @@
           <h4 class="text-sm font-semibold text-gray-900 mb-2">Medio de pago</h4>
           <div class="card flex justify-center">
             <p-accordion [multiple]="true" [(activeIndex)]="activeAccordionPanels" class="w-full space-y-4">
+              <!-- WHATSAPP PAYMENT OPTION -->
               <p-accordion-panel [value]="0">
+                <p-accordion-header>
+                  <div class="w-full flex px-4 justify-between items-center">
+                    <div class="flex items-center gap-2">
+                      <i class="fa-brands fa-whatsapp text-green-500"></i>
+                      <span>Comprar por WhatsApp</span>
+                    </div>
+                    <p-chip>
+                      <span class="font-medium text-white text-xs">Pago directo</span>
+                    </p-chip>
+                  </div>
+                </p-accordion-header>
+                <p-accordion-content>
+                  <div class="space-y-3">
+                    <p class="text-gray-700 text-sm">
+                      Te contactaremos por WhatsApp para coordinar el pago y la entrega.
+                    </p>
+                    <button appButtonPrimary type="button" (click)="payWithWhatsApp()" [disabled]="isProcessing"
+                      class="w-full text-white py-3 px-4 rounded-md transition-colors font-medium bg-green-600 hover:bg-green-700 disabled:opacity-50">
+                      <i class="fa-brands fa-whatsapp mr-2"></i>
+                      {{ isProcessing ? 'Procesando...' : 'Comprar por WhatsApp ' + (total | currency:'USD':'symbol':'1.2-2':'en-US') }}
+                    </button>
+                  </div>
+                </p-accordion-content>
+              </p-accordion-panel>
+              <!-- MERCADOPAGO OPTION - TEMPORARILY COMMENTED OUT -->
+              <!-- <p-accordion-panel [value]="1">
                 <p-accordion-header>
                   <div class="w-full flex px-4 justify-between items-center">
                     <div class="flex items-center gap-2">
@@ -80,7 +107,7 @@
                     Ir a pagar {{ total | currency:'USD':'symbol':'1.2-2':'en-US' }}
                   </button>
                 </p-accordion-content>
-              </p-accordion-panel>
+              </p-accordion-panel> -->
               <!-- <p-accordion-panel [value]="1">
                 <p-accordion-header>
                   <div class="w-full flex px-4 justify-between items-center">

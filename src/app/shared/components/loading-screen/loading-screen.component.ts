@@ -235,7 +235,6 @@ export class LoadingScreenComponent implements AfterViewInit, OnDestroy {
 
     tl.call(() => {
       this.unblockScrollAndInteraction();
-      console.log('Scroll enabled when screen turns black');
     }, undefined, 'fadeOutStart+=0.5');
 
     tl.to(this.screen.nativeElement, { 

@@ -8,12 +8,17 @@ import { Router } from '@angular/router';
   providedIn: 'root'
 })
 export class AuthService {
+  private static supabaseInstance: SupabaseClient | null = null;
   private supabase: SupabaseClient;
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   private sessionSubject = new BehaviorSubject<Session | null>(null);
 
   constructor(private router: Router) {
-    this.supabase = createClient(environment.SUPABASE_URL, environment.SUPABASE_KEY);
+    // Usar singleton para evitar múltiples instancias
+    if (!AuthService.supabaseInstance) {
+      AuthService.supabaseInstance = createClient(environment.SUPABASE_URL, environment.SUPABASE_KEY);
+    }
+    this.supabase = AuthService.supabaseInstance;
     this.initializeAuth();
   }
 
@@ -81,7 +86,13 @@ export class AuthService {
       }
 
       if (data.user) {
-        this.router.navigate(['/user-panel']);
+        // Redirigir según el rol del usuario
+        const userRole = this.getUserRole();
+        if (userRole === 'admin') {
+          this.router.navigate(['/dashboard']);
+        } else {
+          this.router.navigate(['/user-panel']);
+        }
         return { success: true };
       }
 
@@ -92,13 +103,18 @@ export class AuthService {
   }
 
   /**
-   * Registra un nuevo usuario
+   * Registra un nuevo usuario con rol por defecto
    */
   async signUp(email: string, password: string): Promise<{ success: boolean; error?: string }> {
     try {
       const { data, error } = await this.supabase.auth.signUp({
         email,
-        password
+        password,
+        options: {
+          data: {
+            role: 'user' // Rol por defecto
+          }
+        }
       });
 
       if (error) {
@@ -169,5 +185,50 @@ export class AuthService {
     } catch (error) {
       return { success: false, error: 'Error al eliminar la cuenta' };
     }
+  }
+
+  /**
+   * Obtiene el rol del usuario actual
+   */
+  getUserRole(): string {
+    const user = this.getCurrentUser();
+    return user?.user_metadata?.['role'] || 'user';
+  }
+
+  /**
+   * Verifica si el usuario es admin
+   */
+  isAdmin(): boolean {
+    return this.getUserRole() === 'admin';
+  }
+
+  /**
+   * Actualiza el rol de un usuario (solo admins)
+   */
+  async updateUserRole(userId: string, newRole: 'user' | 'admin'): Promise<{ success: boolean; error?: string }> {
+    try {
+      if (!this.isAdmin()) {
+        return { success: false, error: 'No tienes permisos para cambiar roles' };
+      }
+
+      const { error } = await this.supabase.auth.admin.updateUserById(userId, {
+        user_metadata: { role: newRole }
+      });
+
+      if (error) {
+        return { success: false, error: error.message };
+      }
+
+      return { success: true };
+    } catch (error) {
+      return { success: false, error: 'Error al actualizar rol' };
+    }
+  }
+
+  /**
+   * Obtiene el cliente de Supabase autenticado
+   */
+  getAuthenticatedClient() {
+    return this.supabase;
   }
 }

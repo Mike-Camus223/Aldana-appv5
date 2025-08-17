@@ -40,7 +40,7 @@ import { trigger, transition, style, animate, state } from '@angular/animations'
 })
 export class NoviasTemplateComponent implements AfterViewInit {
   CollectionBrides: Collection[] = [];
-  productColumns: number = 3;
+  productColumns: number = 4;
 
 
   constructor(

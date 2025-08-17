@@ -27,27 +27,21 @@ export class PublicLayoutComponent implements OnInit, OnDestroy {
   showMainLoader = true;
   private routerSubscription?: Subscription;
 
-  constructor(private loaderService: LoaderService, private router: Router) {}
+  constructor(private loaderService: LoaderService, private router: Router) { }
 
   ngOnInit(): void {
-    console.log('PublicLayoutComponent initialized');
-    
     this.loaderService.showLoaderOnNavigation();
-    
+
     this.routerSubscription = this.router.events.pipe(
       filter(event => event instanceof NavigationStart)
     ).subscribe((event: NavigationStart) => {
-      console.log('Navigation to:', event.url);
-      
       if (!this.showMainLoader) {
-        console.log('Showing GENERIC loader');
         this.loaderService.showLoaderOnNavigation();
       }
     });
   }
 
   onMainLoadingFinished(): void {
-    console.log('PRINCIPAL loading finished');
     this.showMainLoader = false;
   }
 

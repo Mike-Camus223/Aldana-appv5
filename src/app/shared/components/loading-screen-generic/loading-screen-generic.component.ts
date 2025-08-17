@@ -77,7 +77,6 @@ export class LoadingScreenGenericComponent implements OnInit, OnDestroy, AfterVi
         
         if (typeof ScrollTrigger !== 'undefined') {
           ScrollTrigger.refresh();
-          console.log('ScrollTrigger refreshed after generic loader');
         }
       }
     });
