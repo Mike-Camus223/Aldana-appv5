@@ -3,6 +3,7 @@ import { getDataHelperService } from '../data-access/getDataHelper.service';
 import { CartItem } from '../../../shared/utils/models/cartItems-model';
 import { ShippingData, DiscountData } from '../shipping.service';
 import { AuthService } from '../auth/auth.service';
+import { environment } from '../../../../environments/environment';
 
 export interface OrderData {
   order_number: string;
@@ -164,6 +165,83 @@ export class OrdersService {
       return { success: true, orderId: data?.id };
     } catch (error: any) {
       console.error('Error in createOrder:', error);
+      return { success: false, error: error.message || 'Error desconocido' };
+    }
+  }
+
+  /**
+   * Ejecuta limpieza manual de órdenes pendientes mayores a 3 días
+   */
+  async cleanupPendingOrders(): Promise<{ success: boolean; deletedCount?: number; error?: string }> {
+    try {
+      if (!this.authService.isAuthenticated()) {
+        return { success: false, error: 'Usuario no autenticado' };
+      }
+
+      console.log('🧹 Ejecutando limpieza manual de órdenes pendientes...');
+
+      const response = await fetch(`${environment.SUPABASE_URL}/functions/v1/cleanup-pending-orders`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': environment.SUPABASE_KEY,
+          'Authorization': `Bearer ${environment.SUPABASE_KEY}`,
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error HTTP: ${response.status}`);
+      }
+
+      const result = await response.json();
+
+      if (result.success) {
+        console.log(`✅ Limpieza completada: ${result.deletedCount} órdenes eliminadas`);
+        return { 
+          success: true, 
+          deletedCount: result.deletedCount 
+        };
+      } else {
+        return { success: false, error: result.error };
+      }
+
+    } catch (error: any) {
+      console.error('Error en limpieza manual:', error);
+      return { success: false, error: error.message || 'Error desconocido' };
+    }
+  }
+
+  /**
+   * Obtiene órdenes pendientes mayores a 3 días (para preview antes de eliminar)
+   */
+  async getPendingOrdersToCleanup(): Promise<{ success: boolean; orders?: any[]; error?: string }> {
+    try {
+      if (!this.authService.isAuthenticated()) {
+        return { success: false, error: 'Usuario no autenticado' };
+      }
+
+      const supabaseClient = this.authService.getAuthenticatedClient();
+      
+      // Calcular fecha límite (3 días atrás)
+      const threeDaysAgo = new Date();
+      threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+      const cutoffDate = threeDaysAgo.toISOString();
+
+      const { data, error } = await supabaseClient
+        .from('orders')
+        .select('id, order_number, customer_email, customer_first_name, customer_last_name, created_at, total_final')
+        .eq('status', 'pending')
+        .lt('created_at', cutoffDate)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        return { success: false, error: error.message };
+      }
+
+      return { success: true, orders: data || [] };
+
+    } catch (error: any) {
+      console.error('Error obteniendo órdenes para limpieza:', error);
       return { success: false, error: error.message || 'Error desconocido' };
     }
   }
