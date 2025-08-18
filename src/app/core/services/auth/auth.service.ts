@@ -3,6 +3,7 @@ import { createClient, SupabaseClient, User, Session } from '@supabase/supabase-
 import { environment } from '../../../../environments/environment';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Router } from '@angular/router';
+import { ConfirmationGuard } from '../../guards/confirmation.guard';
 
 @Injectable({
   providedIn: 'root'
@@ -30,10 +31,37 @@ export class AuthService {
     this.sessionSubject.next(session);
     this.currentUserSubject.next(session?.user ?? null);
 
-    this.supabase.auth.onAuthStateChange((event, session) => {
+    this.supabase.auth.onAuthStateChange(async (event, session) => {
       this.sessionSubject.next(session);
       this.currentUserSubject.next(session?.user ?? null);
+      
+      // Manejar confirmación de email
+      if (event === 'SIGNED_IN' && session?.user) {
+        await this.handleEmailConfirmation();
+      }
     });
+  }
+
+  /**
+   * Maneja la confirmación de email y redirige apropiadamente
+   */
+  private async handleEmailConfirmation(): Promise<void> {
+    // Check if current URL has a confirmation token
+    const hash = window.location.hash.substring(1);
+    const params = new URLSearchParams(hash);
+    
+    if (params.get('type') === 'signup' && params.get('access_token')) {
+      // Set confirmation state before redirecting
+      ConfirmationGuard.setConfirmationState('register-success');
+      
+      // Clean up the URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+      
+      // Redirect to success page
+      await this.router.navigate(['/register-success'], { 
+        replaceUrl: true
+      });
+    }
   }
 
   /**

@@ -6,6 +6,7 @@ import { passwordStrengthValidator } from '../../../../shared/utils/validators/P
 import { PasswordMatch } from '../../../../shared/utils/validators/PasswordMatchValidator';
 import { AuthService } from '../../../../core/services/auth/auth.service';
 import { Router } from '@angular/router';
+import { ConfirmationGuard } from '../../../../core/guards/confirmation.guard'; // Importar el guard de confirmación
 
 interface SignUpForm {
   email: FormControl<null | string>;
@@ -119,5 +120,34 @@ export default class RegisterPageComponent {
 
   isSubmitting = false;
   submitError: string | null = null;
+
+  async onSubmit(): Promise<void> {
+    if (this.form.invalid) {
+      return;
+    }
+
+    this.isSubmitting = true;
+    this.submitError = '';
+
+    try {
+      const result = await this._authService.signUp(
+        this.form.get('email')?.value ?? '',
+        this.form.get('password')?.value ?? ''
+      );
+
+      if (result.success) {
+        // Establecer el estado de confirmación antes de redirigir
+        ConfirmationGuard.setConfirmationState('register-confirm');
+        this._router.navigate(['/register-confirm']);
+      } else {
+        this.submitError = result.error || 'Error en el registro';
+      }
+    } catch (error) {
+      this.submitError = 'Error inesperado al registrar la cuenta';
+      console.error('Error en registro:', error);
+    } finally {
+      this.isSubmitting = false;
+    }
+  }
 
 }

@@ -35,6 +35,7 @@ import { Router } from '@angular/router';
 import { onlyCuitValidator } from '../../../../shared/utils/validators/onlyCuit.validator';
 import { SupabaseService } from '../../../../core/services/data-access/supabase.service';
 import { DiscountData } from '../../../../core/services/shipping.service';
+import { AuthService } from '../../../../core/services/auth/auth.service';
 
 @Component({
   selector: 'app-shipping',
@@ -94,10 +95,15 @@ export class ShippingComponent implements OnInit, OnDestroy {
     private shippingService: ShippingService,
     private router: Router,
     private supabaseService: SupabaseService,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
     this.initForm();
+    
+    // Configurar el email del usuario autenticado
+    this.setupUserEmail();
+    
     const discountData = this.shippingService.getDiscountData();
     if (discountData) {
       this.form.patchValue({
@@ -143,7 +149,7 @@ export class ShippingComponent implements OnInit, OnDestroy {
     const formDefaults = savedData ? JSON.parse(savedData) : {};
 
     this.form = this.fb.group({
-      email: [formDefaults.email || '', [Validators.required, Validators.email]],
+      email: [{ value: '', disabled: true }, [Validators.required, Validators.email]],
       receiveOffers: [formDefaults.receiveOffers || false],
       zipCode: [formDefaults.zipCode || '', [Validators.required, cpaArg]],
       name: [formDefaults.name || '', Validators.required],
@@ -166,6 +172,21 @@ export class ShippingComponent implements OnInit, OnDestroy {
       otherPersonName: [formDefaults.otherPersonName || ''],
       otherPersonSurname: [formDefaults.otherPersonSurname || ''],
     });
+  }
+
+  private setupUserEmail(): void {
+    const currentUser = this.authService.getCurrentUser();
+    if (currentUser?.email) {
+      // Pre-llenar el email del usuario autenticado y mantenerlo deshabilitado
+      this.form.patchValue({ email: currentUser.email });
+    } else {
+      // Si no hay usuario autenticado, redirigir al login
+      this.notification.showError(
+        'Sesión requerida', 
+        'Debes iniciar sesión para continuar con la compra.'
+      );
+      this.router.navigate(['/auth/login']);
+    }
   }
 
   private toggleInvoiceValidators(isCompany: boolean): void {
@@ -230,6 +251,30 @@ export class ShippingComponent implements OnInit, OnDestroy {
   submitForm(): void {
     if (this.form.valid) {
       const formValue = this.form.value;
+      const currentUser = this.authService.getCurrentUser();
+
+      // Validación de seguridad: verificar usuario autenticado
+      if (!currentUser?.email) {
+        this.notification.showError(
+          'Error de autenticación', 
+          'No se pudo verificar tu identidad. Por favor, inicia sesión nuevamente.'
+        );
+        this.router.navigate(['/auth/login']);
+        return;
+      }
+
+      // Obtener el email del formulario (está deshabilitado, usar getRawValue)
+      const formEmail = this.form.getRawValue().email;
+      
+      // Validación adicional de seguridad
+      if (formEmail !== currentUser.email) {
+        this.notification.showError(
+          'Error de seguridad', 
+          'El email de la cuenta no coincide. Por favor, inicia sesión nuevamente.'
+        );
+        this.router.navigate(['/auth/login']);
+        return;
+      }
 
       const nameToUse = formValue.otherPerson ? formValue.otherPersonName : formValue.name;
       const surnameToUse = formValue.otherPerson ? formValue.otherPersonSurname : formValue.surname;
@@ -247,7 +292,7 @@ export class ShippingComponent implements OnInit, OnDestroy {
         invoiceToCompany: formValue.invoiceToCompany,
         dniOrCuit: formValue.cuit || formValue.hasDniCuit,
         razonSocial: formValue.socialReason,
-        email: formValue.email
+        email: formEmail // Usar el email del usuario autenticado
       };
 
       const dataToSave = { ...formValue };

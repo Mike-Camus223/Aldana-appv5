@@ -1,0 +1,41 @@
+/* Estilos para el componente register-success */
+.fade-in {
+  animation: fadeIn 0.8s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.pulse-icon {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+/* Efecto de entrada escalonada */
+.fade-in:nth-child(1) {
+  animation-delay: 0.2s;
+}
+
+.fade-in:nth-child(2) {
+  animation-delay: 0.4s;
+}
+
+.fade-in:nth-child(3) {
+  animation-delay: 0.6s;
+}

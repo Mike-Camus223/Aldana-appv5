@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { RedirectGuard } from './core/guards/redirect.guard';
+import { ConfirmationGuard } from './core/guards/confirmation.guard';
 
 export const routes: Routes = [
     // Auth routes with RedirectGuard at top level
@@ -12,6 +13,16 @@ export const routes: Routes = [
         path: 'register',
         loadComponent: () => import('./features/auth/pages/register-page/register-page.component'),
         canActivate: [RedirectGuard]
+    },
+    {
+        path: 'register-confirm',
+        loadComponent: () => import('./features/auth/pages/register-confirm/register-confirm.component'),
+        canActivate: [ConfirmationGuard]
+    },
+    {
+        path: 'register-success',
+        loadComponent: () => import('./features/auth/pages/register-success/register-success.component'),
+        canActivate: [ConfirmationGuard]
     },
     {
         path: 'pre-login',

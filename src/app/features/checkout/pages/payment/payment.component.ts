@@ -218,7 +218,6 @@ export class PaymentComponent implements OnInit, AfterViewInit, OnDestroy {
     this.router.navigate(['/checkout/shipping']);
   }
 
-  // Helper method to format currency for WhatsApp message
   private formatCurrency(amount: number): string {
     return `$${amount.toFixed(2)}`;
   }

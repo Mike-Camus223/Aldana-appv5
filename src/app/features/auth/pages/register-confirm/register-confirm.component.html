@@ -1,0 +1,59 @@
+<div class="flex items-center justify-center w-full h-screen bg-aldy-bg overflow-hidden">
+  <div class="w-full max-w-md mx-auto text-center px-6">
+    
+    <!-- Icono de éxito -->
+    <div class="mb-8">
+      <div class="mx-auto w-24 h-24 bg-green-100 rounded-full flex items-center justify-center">
+        <i class="fas fa-check-circle text-green-500 text-4xl"></i>
+      </div>
+    </div>
+
+    <!-- Título principal -->
+    <h1 class="text-3xl font-bold text-aldy-primary-600 mb-4">
+      ¡Cuenta Registrada!
+    </h1>
+
+    <!-- Mensaje descriptivo -->
+    <div class="mb-8 space-y-4">
+      <p class="text-lg text-gray-700 leading-relaxed">
+        Tu cuenta ha sido creada exitosamente.
+      </p>
+      <p class="text-gray-600">
+        <strong>Revisa tu correo electrónico</strong> para confirmar tu cuenta y activar todas las funcionalidades.
+      </p>
+    </div>
+
+    <!-- Información adicional -->
+    <div class="mb-8 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+      <div class="flex items-start space-x-3">
+        <i class="fas fa-info-circle text-blue-500 mt-1"></i>
+        <div class="text-left">
+          <p class="text-sm text-blue-800 font-medium mb-1">
+            ¿No recibiste el correo?
+          </p>
+          <p class="text-xs text-blue-600">
+            Revisa tu carpeta de spam o correo no deseado. El email puede tardar unos minutos en llegar.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Botón para ir al home -->
+    <button 
+      (click)="goToHome()" 
+      class="w-full bg-aldy-primary-600 hover:bg-aldy-primary-700 text-white font-medium py-3 px-6 rounded-lg transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-aldy-primary-200 shadow-md">
+      Ir al Inicio
+    </button>
+
+    <!-- Link alternativo -->
+    <div class="mt-6">
+      <p class="text-sm text-gray-500">
+        ¿Ya confirmaste tu cuenta? 
+        <a routerLink="/auth/login" class="text-aldy-primary-600 hover:text-aldy-primary-700 font-medium transition-colors">
+          Inicia sesión aquí
+        </a>
+      </p>
+    </div>
+
+  </div>
+</div>

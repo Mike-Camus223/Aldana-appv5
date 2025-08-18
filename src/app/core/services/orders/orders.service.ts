@@ -64,6 +64,18 @@ export class OrdersService {
         return { success: false, error: 'Usuario no autenticado' };
       }
 
+      const currentUser = this.authService.getCurrentUser();
+      if (!currentUser?.email) {
+        return { success: false, error: 'No se pudo verificar la identidad del usuario' };
+      }
+
+      if (shippingData.email !== currentUser.email) {
+        return { 
+          success: false, 
+          error: 'El email del pedido debe coincidir con el email de la cuenta por seguridad' 
+        };
+      }
+
       const orderNumber = this.generateOrderNumber();
       
       const addressParts = shippingData.address.split(' ');
@@ -109,17 +121,43 @@ export class OrdersService {
         customer_notes: undefined
       };
 
-      // Usar el método autenticado del dataHelper
-      const result = await this.dataHelper.insertWithAuth<{ id: string }>(
-        'orders',
-        orderData,
-        'id'
-      );
+      // 🔧 USAR DIRECTAMENTE EL CLIENTE AUTENTICADO
+      const supabaseClient = this.authService.getAuthenticatedClient();
+      
+      // Verificar sesión antes de insertar
+      const { data: { session } } = await supabaseClient.auth.getSession();
 
-      const { data, error } = result;
+      console.log('🔍 DEBUG - Estado de autenticación:', {
+        hasSession: !!session,
+        userId: session?.user?.id,
+        userEmail: session?.user?.email,
+        accessToken: session?.access_token ? 'Present' : 'Missing',
+        orderData: orderData
+      });
+
+      if (!session) {
+        console.error('❌ No hay sesión activa');
+        return { success: false, error: 'No hay sesión activa' };
+      }
+
+      console.log('📤 Intentando insertar orden en Supabase...');
+
+      // Insertar directamente con el cliente autenticado
+      const { data, error } = await supabaseClient
+        .from('orders')
+        .insert(orderData)
+        .select('id')
+        .single();
+
+      console.log('📝 Resultado de inserción:', {
+        success: !error,
+        error: error?.message,
+        errorDetails: error,
+        data: data
+      });
 
       if (error) {
-        console.error('Error creating order:', error);
+        console.error('❌ Error creating order:', error);
         return { success: false, error: error.message };
       }
 
