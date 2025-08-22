@@ -1,4 +1,4 @@
-import {
+﻿import {
   Component,
   OnInit,
   AfterViewInit,
@@ -21,7 +21,6 @@ import {
   DiscountData,
 } from '../../../../core/services/shipping.service';
 import { Router } from '@angular/router';
-import { environment } from '../../../../../environments/environment';
 import { OrdersService } from '../../../../core/services/orders/orders.service';
 
 @Component({
