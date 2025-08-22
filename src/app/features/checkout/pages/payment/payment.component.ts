@@ -134,45 +134,47 @@ export class PaymentComponent implements OnInit, AfterViewInit, OnDestroy {
     this.isProcessing = true;
 
     try {
-      // Generate WhatsApp message
-      const productsList = this.cartItems.map(item => 
-        `- ${item.name} (cantidad: ${item.quantity}, precio: $${this.getDiscountedPrice(item).toFixed(2)})`
-      ).join(', ');
+      // 1. Generar el mensaje de texto para WhatsApp
+      let message = '¡Hola! Quisiera hacer el siguiente pedido:\n\n';
+      this.cartItems.forEach(item => {
+        message += `- ${item.name} (x${item.quantity}) - $${(item.price * item.quantity).toFixed(2)}\n`;
+      });
+      message += `\nSubtotal: $${this.subtotal.toFixed(2)}`;
+      if (this.discountData) {
+        message += `\nDescuento: -$${this.discountData.discountAmount.toFixed(2)}`;
+      }
+      message += `\n*Total: $${this.total.toFixed(2)}*\n\n`;
+      message += `Datos de envío:\n`;
+      message += `${this.shippingData.name} ${this.shippingData.surname}\n`;
+      message += `${this.shippingData.address}, ${this.shippingData.city}\n`;
 
-      const whatsappMessage = `Hola soy ${this.shippingData.name} ${this.shippingData.surname}, deseo comprar estos productos: ${productsList}.El total de todo es: $${this.total.toFixed(2)}`;
-
-      // Create order in database
+      // 2. Crear la orden en la base de datos
       const orderResult = await this.ordersService.createOrder(
         this.cartItems,
         this.shippingData,
         this.discountData,
         this.subtotal,
         this.total,
-        whatsappMessage
+        message // Guardamos el mensaje en la BD
       );
 
       if (!orderResult.success) {
-        alert(`Error al crear la orden: ${orderResult.error}`);
-        return;
+        throw new Error(orderResult.error || 'No se pudo crear la orden.');
       }
-
-      // Add order ID to WhatsApp message
-      const finalMessage = `${whatsappMessage}. Pedido #${orderResult.orderId}`;
-      const encodedMessage = encodeURIComponent(finalMessage);
-      const whatsappUrl = `https://wa.me/15556080222?text=${encodedMessage}`;
-
-      // Clear cart after successful order creation
-      this.cartService.clearCart();
+      // 3. Redirigir al cliente a WhatsApp
+      const sellerPhoneNumber = '15556080222'; // Reemplaza con el número de WhatsApp del vendedor
+      const encodedMessage = encodeURIComponent(message);
+      const whatsappUrl = `https://wa.me/${sellerPhoneNumber}?text=${encodedMessage}`;
       
-      // Open WhatsApp in new tab
       window.open(whatsappUrl, '_blank');
-      
-      // Navigate to success page or home
-      this.router.navigate(['/']);
-      
-    } catch (error: any) {
-      console.error('Error in payWithWhatsApp:', error);
-      alert('Error al procesar el pedido. Por favor intenta nuevamente.');
+
+      // 4. Limpiar el carrito y redirigir
+      this.cartService.clearCart();
+      this.router.navigate(['/checkout/success']);
+
+    } catch (error) {
+      console.error('Error en payWithWhatsApp:', error);
+      alert(`Error al procesar el pedido: ${(error as Error).message}`);
     } finally {
       this.isProcessing = false;
     }
