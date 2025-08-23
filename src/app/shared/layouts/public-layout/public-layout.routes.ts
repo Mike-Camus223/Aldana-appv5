@@ -24,7 +24,7 @@ export const routes: Routes = [
       {
         path: 'colecciones/:slug',
         loadComponent: () =>
-          import('../../../shared/components/generic-collection/generic-collection.component').then(c => c.GenericCollectionComponent),
+          import('../../../shared/components/templates/generic-collection/generic-collection.component').then(c => c.GenericCollectionComponent),
       },
       {
         path: 'novias-colecciones',
@@ -33,7 +33,7 @@ export const routes: Routes = [
       {
         path: 'novias-colecciones/:slug',
         loadComponent: () => 
-          import('../../../shared/components/generic-collection-brides/generic-collection-brides.component').then(c => c.GenericCollectionBridesComponent),
+          import('../../../shared/components/templates/generic-collection-brides/generic-collection-brides.component').then(c => c.GenericCollectionBridesComponent),
       },
       {
         path: 'tienda/categoria/:categoria',
@@ -50,7 +50,7 @@ export const routes: Routes = [
       {
         path: 'producto/:slug',
         loadComponent: () =>
-          import('../../../shared/components/items-purchase/items-purchase.component').then(m => m.ItemsPurchaseComponent),
+          import('../../../shared/components/templates/items-purchase/items-purchase.component').then(m => m.ItemsPurchaseComponent),
       }
       ,
       {

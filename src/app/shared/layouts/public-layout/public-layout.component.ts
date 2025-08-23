@@ -1,10 +1,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, NavigationStart } from '@angular/router';
-import { NavbarPublicv2Component } from "../../components/navbar-publicv2/navbar-publicv2.component";
-import { Footerv2Component } from '../../components/footerv2/footerv2.component';
-import { LoadingScreenComponent } from "../../components/loading-screen/loading-screen.component";
-import { LoadingScreenGenericComponent } from '../../components/loading-screen-generic/loading-screen-generic.component';
+import { NavbarPublicv2Component } from "../../components/system/navbar-publicv2/navbar-publicv2.component";
+import { Footerv2Component } from '../../components/system/footerv2/footerv2.component';
+import { LoadingScreenComponent } from "../../components/system/loading-screen/loading-screen.component";
+import { LoadingScreenGenericComponent } from '../../components/system/loading-screen-generic/loading-screen-generic.component';
 import { RouterOutlet } from '@angular/router';
 import { LoaderService } from '../../../core/services/utils/loader.service';
 import { Subscription, filter } from 'rxjs';

@@ -1,8 +1,8 @@
 import { RevealDirection } from './../../../../shared/utils/directives/card-init-animation.directive';
 import { AppMenuItem } from './../../../../shared/utils/models/app-menu-item.model';
 import { Component } from '@angular/core';
-import { BreadcrumbComponent } from "../../../../shared/components/breadcrump/breadcrump.component";
-import { AboutTemplateComponent } from "../../../../shared/components/about-template/about-template.component";
+import { BreadcrumbComponent } from "../../../../shared/components/system/breadcrump/breadcrump.component";
+import { AboutTemplateComponent } from "../../../../shared/components/templates/about-template/about-template.component";
 import { RouterModule } from '@angular/router';
 
 @Component({

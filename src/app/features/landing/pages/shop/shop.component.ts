@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
-import { BreadcrumbComponent } from '../../../../shared/components/breadcrump/breadcrump.component';
+import { BreadcrumbComponent } from '../../../../shared/components/system/breadcrump/breadcrump.component';
 import { RouterModule } from '@angular/router';
 import { AppMenuItem } from '../../../../shared/utils/models/app-menu-item.model';
-import { StoreTemplateComponent } from '../../../../shared/components/store-template/store-template.component';
+import { StoreTemplateComponent } from '../../../../shared/components/templates/store-template/store-template.component';
 
 @Component({
   selector: 'app-shop',

@@ -17,8 +17,8 @@ import {
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
-import { InputComponent } from '../../../../shared/components/input/input.component';
-import { SelectsComponent } from '../../../../shared/components/selects/selects.component';
+import { InputComponent } from '../../../../shared/components/generic/forms/input/input.component';
+import { SelectsComponent } from '../../../../shared/components/generic/forms/selects/selects.component';
 import { AldyCheckboxV1Directive } from '../../../../shared/utils/directives/aldy-checkbox-v1.directive';
 import { ButtonPrimaryDirective } from '../../../../shared/utils/directives/button-primary.directive';
 

@@ -32,7 +32,7 @@ export const checkoutRoutes: Routes = [
         path: 'success',
         canActivate: [paymentsuccesguardGuard],
         loadComponent: () =>
-          import('../../shared/components/success-pay/success-pay.component').then(c => c.SuccessPayComponent),
+          import('../../shared/components/templates/success-pay/success-pay.component').then(c => c.SuccessPayComponent),
       }
     ]
   }

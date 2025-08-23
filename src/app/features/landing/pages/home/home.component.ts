@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { DualSectionComponent } from "../../../../shared/components/dual-section/dual-section.component";
-import { AboutSecHomeComponent } from '../../../../shared/components/about-sec-home/about-sec-home.component';
-import { ReelsSectionComponent } from "../../../../shared/components/reels-section/reels-section.component";
-import { BettercustomDualComponent } from '../../../../shared/components/bettercustom-dual/bettercustom-dual.component';
-import { DinamicTitlesComponent } from '../../../../shared/components/dinamic-titles/dinamic-titles.component';
+import { DualSectionComponent } from "../../../../shared/components/generic/dual-section/dual-section.component";
+import { AboutSecHomeComponent } from '../../../../shared/components/sections/about-sec-home/about-sec-home.component';
+import { ReelsSectionComponent } from "../../../../shared/components/sections/reels-section/reels-section.component";
+import { BettercustomDualComponent } from '../../../../shared/components/generic/bettercustom-dual/bettercustom-dual.component';
+import { DinamicTitlesComponent } from '../../../../shared/components/generic/dinamic-titles/dinamic-titles.component';
 
 @Component({
   selector: 'app-home',
