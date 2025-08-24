@@ -8,6 +8,7 @@ import { LoadingScreenGenericComponent } from '../../components/system/loading-s
 import { RouterOutlet } from '@angular/router';
 import { LoaderService } from '../../../core/services/utils/loader.service';
 import { Subscription, filter } from 'rxjs';
+import { NewsletterComponent } from "../../components/system/newsletter/newsletter.component";
 
 @Component({
   selector: 'app-public-layout',
@@ -18,8 +19,9 @@ import { Subscription, filter } from 'rxjs';
     NavbarPublicv2Component,
     Footerv2Component,
     LoadingScreenComponent,
-    LoadingScreenGenericComponent
-  ],
+    LoadingScreenGenericComponent,
+    NewsletterComponent
+],
   templateUrl: './public-layout.component.html',
   styles: ``
 })

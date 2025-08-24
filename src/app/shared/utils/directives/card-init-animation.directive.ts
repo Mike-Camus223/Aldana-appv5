@@ -2,7 +2,6 @@ import { Directive, ElementRef, AfterViewInit, Renderer2, OnDestroy, Input } fro
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
-// Registrar ScrollTrigger
 gsap.registerPlugin(ScrollTrigger);
 
 export type RevealDirection = 'up' | 'down' | 'left' | 'right';
