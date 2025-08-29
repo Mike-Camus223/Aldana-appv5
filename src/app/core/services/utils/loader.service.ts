@@ -8,6 +8,8 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 export class LoaderService {
   private isFirstLoad = true;
   private isMainLoaderComplete = false;
+  // Rutas o patrones donde NO se debe mostrar el loader genérico
+  private skipGenericLoaderMatchers: Array<string | RegExp> = [];
   
   private currentLoaderSubject = new BehaviorSubject<'main' | 'generic' | null>(null);
   public currentLoader$ = this.currentLoaderSubject.asObservable();
@@ -18,11 +20,29 @@ export class LoaderService {
  
   showLoaderOnNavigation() {
     if (this.isFirstLoad) {
+      this.animationsEnabledSubject.next(false);
       this.currentLoaderSubject.next('main');
       this.isFirstLoad = false;
     } else {
+      this.animationsEnabledSubject.next(false);
       this.currentLoaderSubject.next('generic');
     }
+  }
+
+  // Muestra loader respetando exclusiones configuradas
+  showLoaderOnNavigationIfAllowed(url: string) {
+    if (this.isFirstLoad) {
+      this.animationsEnabledSubject.next(false);
+      this.currentLoaderSubject.next('main');
+      this.isFirstLoad = false;
+      return;
+    }
+
+    if (!this.isMainLoaderComplete) return;
+    if (this.shouldSkipGeneric(url)) return;
+
+    this.animationsEnabledSubject.next(false);
+    this.currentLoaderSubject.next('generic');
   }
 
   finish(loaderType?: 'main' | 'generic') {
@@ -34,9 +54,12 @@ export class LoaderService {
     
     if (loaderType === 'generic') {
     }
-
-    this.animationsEnabledSubject.next(true);
-    ScrollTrigger.refresh();
+    
+    // Pequeño delay para asegurar que las directivas procesen el 'false' antes del 'true'
+    setTimeout(() => {
+      this.animationsEnabledSubject.next(true);
+      ScrollTrigger.refresh();
+    }, 50);
   }
 
   refreshScrollTrigger() {
@@ -60,5 +83,30 @@ export class LoaderService {
 
   setAnimationsEnabled(enabled: boolean): void {
     this.animationsEnabledSubject.next(enabled);
+  }
+
+  // Configura listado completo de rutas/patrones a omitir
+  setSkipGenericLoaderMatchers(matchers: (string | RegExp)[]) {
+    this.skipGenericLoaderMatchers = matchers;
+  }
+
+  // Agrega una ruta/patrón a omitir
+  addSkipGenericLoaderMatcher(matcher: string | RegExp) {
+    this.skipGenericLoaderMatchers.push(matcher);
+  }
+
+  private shouldSkipGeneric(url: string): boolean {
+    return this.skipGenericLoaderMatchers.some(m =>
+      typeof m === 'string' ? url.startsWith(m) : (m as RegExp).test(url)
+    );
+  }
+
+  // Fuerza el reinicio de las animaciones en rutas sin loader
+  triggerAnimations() {
+    this.animationsEnabledSubject.next(false);
+    setTimeout(() => {
+      this.animationsEnabledSubject.next(true);
+      ScrollTrigger.refresh();
+    }, 50); // Pequeño delay para que las directivas procesen el 'false'
   }
 }

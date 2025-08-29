@@ -1,6 +1,8 @@
 import { Directive, ElementRef, AfterViewInit, Renderer2, OnDestroy, Input } from '@angular/core';
+import { Subject, takeUntil } from 'rxjs';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { LoaderService } from '../../../core/services/utils/loader.service';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -15,19 +17,40 @@ export class CardInitAnimationDirective implements AfterViewInit, OnDestroy {
   
   private animation: gsap.core.Timeline | null = null;
   private scrollTrigger: ScrollTrigger | null = null;
+  private destroy$ = new Subject<void>();
+  private stylesInitialized = false;
 
-  constructor(private el: ElementRef, private renderer: Renderer2) {}
+  constructor(private el: ElementRef, private renderer: Renderer2, private loaderService: LoaderService) {}
 
   ngAfterViewInit(): void {
     const element = this.el.nativeElement;
     if (!element) return;
     this.setupInitialStyles(element);
-    setTimeout(() => {
-      this.setupScrollTrigger(element);
-    }, 100);
+
+    // Reset al iniciar cualquier loader
+    this.loaderService.currentLoader$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((loader) => {
+        if (loader) {
+          this.resetAnimation();
+        }
+      });
+
+    // Re-configurar cuando las animaciones estén habilitadas (post-loader)
+    this.loaderService.animationsEnabled$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((enabled) => {
+        if (enabled) {
+          // Pequeño delay para asegurar layout estable
+          setTimeout(() => {
+            this.setupScrollTrigger(element);
+          }, 50);
+        }
+      });
   }
 
   private setupInitialStyles(element: HTMLElement): void {
+    if (this.stylesInitialized) return;
     this.renderer.setStyle(element, 'transform', 'scale(1.5)');
     this.renderer.setStyle(element, 'filter', 'blur(4px)');
     this.renderer.setStyle(element, 'opacity', '0.7');
@@ -42,9 +65,14 @@ export class CardInitAnimationDirective implements AfterViewInit, OnDestroy {
     } else if (this.direction === 'right') {
       this.renderer.setStyle(element, 'clip-path', 'inset(0 0 0 100%)');
     }
+    this.stylesInitialized = true;
   }
 
   private setupScrollTrigger(element: HTMLElement): void {
+    if (this.scrollTrigger) {
+      this.scrollTrigger.kill();
+      this.scrollTrigger = null;
+    }
     this.scrollTrigger = ScrollTrigger.create({
       trigger: element,
       start: "top 85%",
@@ -57,6 +85,10 @@ export class CardInitAnimationDirective implements AfterViewInit, OnDestroy {
   }
 
   private startAnimation(element: HTMLElement): void {
+    if (this.animation) {
+      this.animation.kill();
+      this.animation = null;
+    }
     this.animation = gsap.timeline();
     if (this.direction === 'up') {
       this.animateUp(element);
@@ -67,6 +99,20 @@ export class CardInitAnimationDirective implements AfterViewInit, OnDestroy {
     } else if (this.direction === 'right') {
       this.animateRight(element);
     }
+  }
+
+  private resetAnimation(): void {
+    const element: HTMLElement = this.el.nativeElement;
+    if (this.animation) {
+      this.animation.kill();
+      this.animation = null;
+    }
+    if (this.scrollTrigger) {
+      this.scrollTrigger.kill();
+      this.scrollTrigger = null;
+    }
+    this.stylesInitialized = false;
+    this.setupInitialStyles(element);
   }
 
   private animateUp(element: HTMLElement): void {
@@ -153,5 +199,7 @@ export class CardInitAnimationDirective implements AfterViewInit, OnDestroy {
     if (this.scrollTrigger) {
       this.scrollTrigger.kill();
     }
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

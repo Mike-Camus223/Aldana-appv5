@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, NavigationStart } from '@angular/router';
+import { Router, NavigationStart, NavigationEnd } from '@angular/router';
 import { NavbarPublicv2Component } from "../../components/system/navbar-publicv2/navbar-publicv2.component";
 import { Footerv2Component } from '../../components/system/footerv2/footerv2.component';
 import { LoadingScreenComponent } from "../../components/system/loading-screen/loading-screen.component";
@@ -32,13 +32,26 @@ export class PublicLayoutComponent implements OnInit, OnDestroy {
   constructor(private loaderService: LoaderService, private router: Router) { }
 
   ngOnInit(): void {
-    this.loaderService.showLoaderOnNavigation();
+    this.loaderService.setSkipGenericLoaderMatchers([
+      /^\/checkout\/(?!carrito).*/,
+    ]);
+
+    this.loaderService.showLoaderOnNavigationIfAllowed(this.router.url);
 
     this.routerSubscription = this.router.events.pipe(
       filter(event => event instanceof NavigationStart)
     ).subscribe((event: NavigationStart) => {
       if (!this.showMainLoader) {
-        this.loaderService.showLoaderOnNavigation();
+        this.loaderService.showLoaderOnNavigationIfAllowed(event.url);
+      }
+    });
+
+    this.router.events.pipe(
+      filter((event): event is NavigationEnd => event instanceof NavigationEnd)
+    ).subscribe((event: NavigationEnd) => {
+      const url = event.urlAfterRedirects;
+      if (url.startsWith('/checkout/') && !url.includes('/checkout/carrito')) {
+        this.loaderService.triggerAnimations();
       }
     });
   }

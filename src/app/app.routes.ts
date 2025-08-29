@@ -3,7 +3,6 @@ import { RedirectGuard } from './core/guards/redirect.guard';
 import { ConfirmationGuard } from './core/guards/confirmation.guard';
 
 export const routes: Routes = [
-    // Auth routes with RedirectGuard at top level
     {
         path: 'login',
         loadComponent: () => import('./features/auth/pages/login-page/login-page.component'),
@@ -29,7 +28,6 @@ export const routes: Routes = [
         loadComponent: () => import('./features/auth/pages/pre-login/pre-login.component'),
         canActivate: [RedirectGuard]
     },
-    // Other route modules
     {
         path: '',
         loadChildren: () => import('./shared/layouts/public-layout/public-layout.routes').then(r => r.routes),

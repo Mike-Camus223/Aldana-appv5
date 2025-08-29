@@ -63,7 +63,8 @@ export class LoadingScreenGenericComponent implements OnInit, OnDestroy, AfterVi
     window.addEventListener('scroll', this.preventScroll, { passive: false });
 
     this.showLoader();
-    gsap.set(screen, { opacity: 0 });
+    // Pantalla blanca visible sin fade inicial
+    gsap.set(screen, { opacity: 1 });
     gsap.set(logo, { opacity: 0, y: 20 });
 
     this.timeline = gsap.timeline({
@@ -82,10 +83,12 @@ export class LoadingScreenGenericComponent implements OnInit, OnDestroy, AfterVi
     });
 
     this.timeline
-      .to(screen, { duration: 0.3, opacity: 1, ease: 'power2.out' })
-      .to(logo, { duration: 0.35, opacity: 1, y: 0, ease: 'power2.out' }, '-=0.15')
+      // Solo el logo hace fade-in al inicio
+      .to(logo, { duration: 0.35, opacity: 1, y: 0, ease: 'power2.out' })
       .to({}, { duration: 0.3 })
+      // Luego el logo desaparece
       .to(logo, { duration: 0.25, opacity: 0, y: 20, ease: 'power2.in' })
+      // Al final recién aplicamos el fade-out global de la pantalla
       .to(screen, {
         duration: 0.4,
         opacity: 0,
