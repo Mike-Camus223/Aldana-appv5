@@ -55,7 +55,6 @@ export class LoaderService {
     if (loaderType === 'generic') {
     }
     
-    // Pequeño delay para asegurar que las directivas procesen el 'false' antes del 'true'
     setTimeout(() => {
       this.animationsEnabledSubject.next(true);
       ScrollTrigger.refresh();
