@@ -4,7 +4,7 @@ export const routes: Routes = [
   {
     path: '',
     loadComponent: () =>
-      import('./public-layout.component').then(c => c.PublicLayoutComponent),
+    import('./public-layout.component').then(c => c.PublicLayoutComponent),
     children: [
       {
         path: '',

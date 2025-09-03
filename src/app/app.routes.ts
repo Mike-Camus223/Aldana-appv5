@@ -34,7 +34,7 @@ export const routes: Routes = [
     },
     {
         path: '',
-        loadChildren: () => import('./features/userpanel/userpanel.routes'),
+        loadChildren: () => import('./features/userpanel/userpanel.routes').then(r => r.userPanelRoutes),
     },
     {
         path: '',

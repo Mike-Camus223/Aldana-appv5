@@ -1,25 +1,37 @@
 import { Routes } from '@angular/router';
 import { AuthGuard } from '../../core/guards/auth.guard';
 
-export default [
+export const userPanelRoutes: Routes = [
   {
-    path: 'user-panel',
-    loadComponent: () => import('./user-panel.component'),
-    canActivate: [AuthGuard]
-  },
-  {
-    path: 'user-panel/historial-ordenes',
-    loadComponent: () => import('./pages/order-history/order-history.component'),
-    canActivate: [AuthGuard]
-  },
-  {
-    path: 'user-panel/cuenta',
-    loadComponent: () => import('./pages/account/account.component'),
-    canActivate: [AuthGuard]
-  },
-  {
-    path: 'user-panel/borrar-cuenta',
-    loadComponent: () => import('./pages/delete-account/delete-account.component'),
-    canActivate: [AuthGuard]
+    path: '',
+    loadComponent: () => import('./user-panel.component').then(m => m.UserPanelComponent),
+    canActivate: [AuthGuard],
+    children: [
+      {
+        path: 'panel-control',
+        loadComponent: () => import('./pages/control-panel/control-panel.component').then(c => c.ControlPanelComponent),
+      },
+      {
+        path: 'historial-ordenes',
+        loadComponent: () => import('./pages/orders-history/orders-history.component').then(c => c.OrdersHistoryComponent),
+      },
+      {
+        path: 'informacion-cuenta',
+        loadComponent: () => import('./pages/account-info/account-info.component').then(c => c.AccountInfoComponent),
+      },
+      {
+        path: 'cerrar-sesion',
+        loadComponent: () => import('./pages/logout/logout.component').then(c => c.LogoutComponent),
+      },
+      {
+        path: '',
+        redirectTo: 'panel-control',
+        pathMatch: 'full'
+      },
+      {
+        path: '**',
+        redirectTo: 'panel-control'
+      }
+    ]
   }
-] as Routes;
+];

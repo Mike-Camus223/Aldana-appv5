@@ -1,0 +1,69 @@
+<div class="w-full max-w-xl mx-auto space-y-6">
+    <!-- Foto de perfil -->
+    <div class="relative w-24 h-24">
+        <img src="https://via.placeholder.com/96"
+          alt="Profile"
+          class="w-24 h-24 object-cover" />
+        <!-- Botón circular -->
+        <button
+          type="button"
+          class="absolute bottom-0 right-0 flex items-center justify-center w-8 h-8 bg-aldy-primary-500 hover:bg-aldy-primary-600 text-white transition-colors duration-500 ease-in-out">
+          <!-- Ícono de lápiz -->
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+            viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+            class="w-4 h-4">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652l-1.688 1.687m-2.651-2.651L7.5 15.75H4.5v-3l9.362-9.263m2.651 2.651L13.5 6.75" />
+          </svg>
+        </button>
+      </div>
+  
+    <!-- Formulario -->
+    <form class="space-y-6">
+      <!-- Nombre -->
+      <div class="grid grid-cols-2 gap-4">
+        <div class="flex flex-col">
+          <label class="mb-1 text-sm font-medium">First Name *</label>
+          <input type="text" placeholder="Bessie"
+            class="border border-gray-300 p-2 focus:outline-none focus:border-aldy-primary-500 transition-colors duration-500 ease-in-out" />
+        </div>
+        <div class="flex flex-col">
+          <label class="mb-1 text-sm font-medium">Last Name *</label>
+          <input type="text" placeholder="Cooper"
+            class="border border-gray-300 p-2 focus:outline-none focus:border-aldy-primary-500 transition-colors duration-500 ease-in-out" />
+        </div>
+      </div>
+  
+      <!-- Email -->
+      <div class="flex flex-col">
+        <label class="mb-1 text-sm font-medium">Email *</label>
+        <input type="email" placeholder="example@gmail.com"
+          class="border border-gray-300 p-2 focus:outline-none focus:border-aldy-primary-500 transition-colors duration-500 ease-in-out" />
+      </div>
+  
+      <!-- Phone -->
+      <div class="flex flex-col">
+        <label class="mb-1 text-sm font-medium">Phone *</label>
+        <input type="tel" placeholder="+0123-456-789"
+          class="border border-gray-300 p-2 focus:outline-none focus:border-aldy-primary-500 transition-colors duration-500 ease-in-out" />
+      </div>
+  
+      <!-- Gender -->
+      <div class="flex flex-col">
+        <label class="mb-1 text-sm font-medium">Gender *</label>
+        <select
+          class="border border-gray-300 p-2 focus:outline-none focus:border-aldy-primary-500 transition-colors duration-500 ease-in-out">
+          <option>Female</option>
+          <option>Male</option>
+          <option>Other</option>
+        </select>
+      </div>
+  
+      <!-- Botón -->
+      <button type="submit"
+        class="px-6 py-2 text-white bg-aldy-primary-500 hover:bg-aldy-primary-600 transition-colors duration-500 ease-in-out">
+        Update Changes
+      </button>
+    </form>
+  </div>
+  
