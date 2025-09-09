@@ -1,12 +1,83 @@
-<p-floatlabel variant="on">
-  <p-select
+<div class="relative group" [class.dropdown-open]="isOpen">
+  <div
     [id]="id"
-    [options]="options"
-    [ngModel]="value"
-    (ngModelChange)="onValueChange($event)"
-    (onBlur)="onTouched()"
-    [optionLabel]="optionLabel"
-    class="w-full"
-  ></p-select>
-  <label [for]="id">{{ label }}</label>
-</p-floatlabel>
+    (click)="toggleDropdown()"
+    (keydown)="onKeyDown($event)"
+    [attr.tabindex]="disabled ? -1 : 0"
+    [class.border-b-red-400]="invalid"
+    [class.text-red-400]="invalid"
+    [class.border-b-aldy-primary-400]="!invalid && value && !disabled"
+    [class.border-b-gray-300]="!invalid && !value && !disabled"
+    [class.bg-gray-100]="disabled"
+    [class.text-gray-400]="disabled"
+    [class.text-gray-900]="!invalid && !disabled"
+    class="peer block w-full px-2.5 pb-2.5 pt-4 text-sm bg-transparent border-0 border-b-1 transition-all duration-300 ease-in-out appearance-none focus:outline-none focus:ring-0 cursor-pointer relative"
+    [class]="invalid ? 'focus:border-b-red-400' : 'focus:border-b-aldy-primary-400'"
+    role="combobox"
+    [attr.aria-expanded]="isOpen"
+    [attr.aria-haspopup]="true"
+    [ngClass]="{
+      'px-2.5 pb-7 pt-4.5': !value,  
+      'px-2.5 pb-2.5 pt-4': value     
+    }"
+  >
+    <span class="block truncate" [class.text-gray-400]="!value">
+      {{ value ? getDisplayText() : '' }}
+    </span>
+  </div>
+  <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+    <svg 
+      class="w-4 h-4 text-gray-400 transition-transform duration-300"
+      [class.rotate-180]="isOpen"
+      fill="none" 
+      stroke="currentColor" 
+      viewBox="0 0 24 24"
+    >
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+    </svg>
+  </div>
+  <div 
+    *ngIf="isOpen"
+    class="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg transition-all duration-300 ease-in-out"
+    [@slideDown]
+  >
+    <div class="max-h-60 overflow-y-auto">
+      <div 
+        *ngFor="let option of options; let i = index"
+        (click)="selectOption(option)"
+        [class.bg-aldy-primary-200]="isSelected(option)"
+        [class.text-aldy-primary-700]="isSelected(option)"
+        class="px-3 py-2 text-sm text-gray-900 hover:bg-aldy-primary-100 cursor-pointer transition-colors duration-200 flex items-center justify-between"
+      >
+        <span>{{ getOptionLabel(option) }}</span>
+        <svg 
+          *ngIf="isSelected(option)"
+          class="w-4 h-4 text-aldy-primary-600"
+          fill="currentColor" 
+          viewBox="0 0 20 20"
+        >
+          <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+        </svg>
+      </div>
+    </div>
+  </div>
+  <label
+    [for]="id"
+    [class.text-red-400]="invalid"
+    [class.text-aldy-primary-400]="!invalid && (value || isOpen) && !disabled"
+    [class.text-gray-400]="disabled"
+    [class.text-gray-500]="!invalid && !value && !disabled"
+    class="absolute pointer-events-none start-1 z-10 origin-[0] bg-white px-2 text-sm text-gray-500 transition-all duration-300 cursor-text"
+    [ngClass]="{
+      'top-1/2 -translate-y-1/2 scale-100': !value && !isOpen,
+      'top-2 -translate-y-4 scale-75': value || isOpen
+    }"
+  >
+    {{ label }}
+  </label>
+  <div 
+    *ngIf="isOpen"
+    class="fixed inset-0 z-30"
+    (click)="closeDropdown()"
+  ></div>
+</div>

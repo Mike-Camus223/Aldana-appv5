@@ -17,16 +17,14 @@
   <!-- <div class="max-w-5xl mx-auto">
     <app-breadcrumb [items]="breadcrumbItemsAccount"></app-breadcrumb>
   </div> -->
-  <div class="max-w-5xl mx-auto px-4 flex h-screen">
+  <div class="max-w-7xl mx-auto px-4 flex h-screen">
     <div class="w-64">
       <nav class="mt-6">
         <div class="px-3 space-y-1">
           <a *ngFor="let item of navItems" [routerLink]="item.route"
-            routerLinkActive="bg-aldy-primary-200 text-gray-600"
+            routerLinkActive="bg-aldy-primary-100 text-gray-600"
             class="w-full flex items-center px-3 py-4 text-sm font-medium transition-colors duration-200">
-            <!-- <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="item.icon"></path>
-            </svg> -->
+            <lucide-icon [size]="22" [strokeWidth]="1.75" [name]="item.icon" class="mr-1.5 text-aldy-primary-500"></lucide-icon>
             {{ item.title }}
           </a>
         </div>

@@ -1,0 +1,56 @@
+<div class="flex items-center justify-center flex-row-reverse gap-4 mt-4">
+    <div class="relative group w-24" [class.dropdown-open]="isPageSizeOpen">
+        <div (click)="togglePageSizeDropdown()"
+            class="peer block w-full px-2.5 py-2 text-sm bg-transparent border-0 border-b border-b-gray-300 text-gray-900 cursor-pointer relative"
+            role="combobox" [attr.aria-expanded]="isPageSizeOpen">
+            <span class="block truncate">{{ pageSize }}</span>
+        </div>
+        <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+            <svg class="w-4 h-4 text-gray-400 transition-transform duration-300" [class.rotate-180]="isPageSizeOpen"
+                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+        </div>
+        <div *ngIf="isPageSizeOpen" @slideDown
+            class="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg transition-all duration-300 ease-in-out">
+            <div class="max-h-60 overflow-y-auto">
+                <div *ngFor="let size of pageSizeOptions" (click)="selectPageSize(size)"
+                    [class.bg-aldy-primary-200]="pageSize === size" [class.text-aldy-primary-700]="pageSize === size"
+                    class="px-3 py-2 text-sm text-gray-900 hover:bg-aldy-primary-100 cursor-pointer transition-colors duration-200 flex items-center justify-between">
+                    <span>{{ size }}</span>
+                    <svg *ngIf="pageSize === size" class="w-4 h-4 text-aldy-primary-600" fill="currentColor"
+                        viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                            clip-rule="evenodd"></path>
+                    </svg>
+                </div>
+            </div>
+        </div>
+        <div *ngIf="isPageSizeOpen" class="fixed inset-0 z-30" (click)="closePageSizeDropdown()">
+        </div>
+    </div>
+    <div class="flex items-center space-x-1">
+        <button (click)="changePage(1)" [disabled]="currentPage === 1"
+            class="px-3 py-1 bg-transparent enabled:text-aldy-primary-700 enabled:cursor-pointer hover:bg-gray-100 disabled:opacity-50">
+            <lucide-icon name="chevrons-left" [size]="16" [strokeWidth]="1.75"></lucide-icon>
+        </button>
+        <button (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1"
+            class="px-3 py-1 bg-transparent enabled:text-aldy-primary-700 enabled:cursor-pointer hover:bg-gray-100 disabled:opacity-50">
+            <lucide-icon name="chevron-left" [size]="16" [strokeWidth]="1.75"></lucide-icon>
+        </button>
+        <button *ngFor="let page of pages" (click)="changePage(page)"
+            [ngClass]="{'bg-aldy-primary-100 hover:bg-aldy-primary-200': page === currentPage, 'bg-transparent hover:bg-gray-100': page !== currentPage}"
+            class="px-3 py-1 transition-colors cursor-pointer rounded-full duration-300 text-aldy-primary-700">
+            {{ page }}
+        </button>
+        <button (click)="changePage(currentPage + 1)" [disabled]="currentPage === totalPages"
+            class="px-3 py-1 bg-transparent enabled:text-aldy-primary-700 enabled:cursor-pointer hover:bg-gray-100 disabled:opacity-50">
+            <lucide-icon name="chevron-right" [size]="16" [strokeWidth]="1.75"></lucide-icon>
+        </button>
+        <button (click)="changePage(totalPages)" [disabled]="currentPage === totalPages"
+            class="px-3 py-1 bg-transparent enabled:text-aldy-primary-700 enabled:cursor-pointer hover:bg-gray-100 disabled:opacity-50">
+            <lucide-icon name="chevrons-right" [size]="16" [strokeWidth]="1.75"></lucide-icon>
+        </button>
+    </div>
+</div>

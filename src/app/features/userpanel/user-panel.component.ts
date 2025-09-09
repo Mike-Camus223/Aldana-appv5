@@ -4,15 +4,28 @@ import { NavigationEnd, NavigationStart, NavigationCancel, NavigationError, Rout
 import { AuthService } from '../../core/services/auth/auth.service';
 import { User } from '@supabase/supabase-js';
 import { filter } from 'rxjs/operators';
-import { BreadcrumbComponent } from '../../shared/components/system/breadcrump/breadcrump.component';
 import { AppMenuItem } from '../../shared/utils/models/app-menu-item.model';
 import { NavbarPublicv2Component } from "../../shared/components/system/navbar-publicv2/navbar-publicv2.component";
+import { Heart, LogOut, LUCIDE_ICONS, LucideAngularModule, LucideIconProvider, Package, Settings, UserRound } from 'lucide-angular';
 
 @Component({
   selector: 'app-user-panel',
   standalone: true,
-  imports: [CommonModule, RouterModule, NavbarPublicv2Component],
+  imports: [CommonModule, RouterModule, NavbarPublicv2Component,LucideAngularModule],
   templateUrl: './user-panel.component.html',
+  providers: [
+      {
+        provide: LUCIDE_ICONS,
+        multi: true,
+        useValue: new LucideIconProvider({
+          Settings,
+          UserRound,
+          Package,
+          LogOut,
+          Heart
+        })
+      }
+    ],
   styleUrls: ['./user-panel.component.css']
 })
 export class UserPanelComponent implements OnInit {
@@ -25,36 +38,45 @@ export class UserPanelComponent implements OnInit {
       { label: 'MI CUENTA', route: '/panel-control' }
     ];
   
-  
   navItems = [
     {
       title: 'Panel de Control',
-      icon: '',
+      icon: 'settings',
       route: '/panel-control'
     },
     {
       title: 'Información Personal',
-      icon: '',
+      icon: 'user-round',
       route: '/informacion-cuenta'
     },
     {
       title: 'Mis Órdenes',
-      icon: '',
+      icon: 'package',
       route: '/historial-ordenes'
     },
     {
       title: 'Cerrar Sesión',
-      icon: '',
+      icon: 'log-out',
       route: '/cerrar-sesion'
     },
+    {
+      title: 'Favoritos',
+      icon: 'heart',
+      route: '/favoritos'
+    },
+    {
+      title: 'order-item',
+      icon: 'package',
+      route: 'order-item'
+    }
   ];
   
-
   private authService = inject(AuthService);
   private router = inject(Router);
 
   constructor() {
-    this.router.events
+    this.router.events   
+
       .pipe(
         filter(event => 
           event instanceof NavigationStart || 
@@ -75,8 +97,6 @@ export class UserPanelComponent implements OnInit {
             currentRoute.includes(item.route)
           );
         }
-
-        // Hide spinner with a delay
         setTimeout(() => this.isLoading = false, 300);
       });
   }

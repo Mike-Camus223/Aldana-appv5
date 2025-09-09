@@ -122,8 +122,14 @@
               </div>
             </div>
             <div *ngIf="selected === 'retiro'" class="mt-4">
-              <app-selects formControlName="city" [options]="ciudades" optionLabel="name" label="Ciudad"
-                id="ciudad"></app-selects>
+              <app-selects              
+                formControlName="city" 
+                [options]="ciudades" 
+                optionLabel="name" 
+                label="Ciudad"
+                placeholder="Seleccionar ciudad"
+                id="ciudad">
+              </app-selects>
               <p class="text-sm text-gray-500 mt-2">Lunes a viernes, de 11:00 a 18:00</p>
             </div>
             <div class="flex justify-center w-full h-auto">
@@ -251,8 +257,13 @@
             <app-input label="Departamento (opcional)" formControlName="apartment"></app-input>
           </div>
           <div>
-            <app-selects label="Provincia" formControlName="province" [options]="provinces" optionLabel="name"
-              id="Provincia">
+            <app-selects 
+              formControlName="province" 
+              [options]="provinces" 
+              optionLabel="name" 
+              label="Provincia"
+              placeholder="Seleccionar provincia"
+              id="provincia">
             </app-selects>
             <div *ngIf="form.get('province')?.invalid && form.get('province')?.touched"
               class="text-red-400 text-sm mt-1">
@@ -261,7 +272,14 @@
           </div>
           <div class="grid grid-cols-2 gap-4">
             <div>
-              <app-input label="Ciudad" formControlName="city"></app-input>
+              <app-selects   
+                formControlName="city" 
+                [options]="ciudades" 
+                optionLabel="name" 
+                label="Ciudad"
+                placeholder="Seleccionar ciudad"
+                id="ciudad">
+              </app-selects>
               <div *ngIf="form.get('city')?.invalid && form.get('city')?.touched" class="text-red-400 text-sm mt-1">
                 La ciudad es obligatoria.
               </div>

@@ -275,7 +275,6 @@ export class ShippingComponent implements OnInit, OnDestroy {
         this.router.navigate(['/auth/login']);
         return;
       }
-
       const nameToUse = formValue.otherPerson ? formValue.otherPersonName : formValue.name;
       const surnameToUse = formValue.otherPerson ? formValue.otherPersonSurname : formValue.surname;
 

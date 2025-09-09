@@ -24,6 +24,14 @@ export const userPanelRoutes: Routes = [
         loadComponent: () => import('./pages/logout/logout.component').then(c => c.LogoutComponent),
       },
       {
+        path: 'favoritos',
+        loadComponent: () => import('./pages/whitelist/whitelist.component').then(c => c.WhitelistComponent),
+      },
+      {
+        path: 'order-item',
+        loadComponent: () => import('../../shared/components/templates/order-status/order-status.component').then(c => c.OrderStatusComponent),
+      },
+      {
         path: '',
         redirectTo: 'panel-control',
         pathMatch: 'full'

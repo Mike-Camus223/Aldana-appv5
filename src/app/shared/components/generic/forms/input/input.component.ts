@@ -1,14 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, Optional, Self } from '@angular/core';
-import { ControlValueAccessor, FormsModule, NgControl } from '@angular/forms';
-import { FloatLabelModule } from 'primeng/floatlabel';
-import { InputTextModule } from 'primeng/inputtext';
+import { ControlValueAccessor, FormsModule, NgControl, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-input',
   standalone: true,
-  imports: [CommonModule, InputTextModule, FloatLabelModule, FormsModule],
-  templateUrl: './input.component.html'
+  imports: [CommonModule, FormsModule, ReactiveFormsModule],
+  templateUrl: './input.component.html',
+  styleUrls: ['./input.component.css']
 })
 export class InputComponent implements ControlValueAccessor {
   @Input() label = '';
@@ -16,8 +15,8 @@ export class InputComponent implements ControlValueAccessor {
   @Input() disabled = false;
   @Input() numericMax11 = false;
 
-
   value = '';
+  isFocused = false;
   onChange = (_: any) => { };
   onTouched = () => { };
 
@@ -47,26 +46,32 @@ export class InputComponent implements ControlValueAccessor {
     this.onTouched = fn;
   }
 
-  onInput(event: Event): void {
-  const input = event.target as HTMLInputElement;
-  let value = input.value;
-
-  if (this.numericMax11) {
-    const raw = value.replace(/\D/g, '').slice(0, 11);
-    let formatted = raw;
-    if (raw.length > 8) {
-      formatted = raw.replace(/^(\d{2})(\d{8})(\d{0,1})$/, (_, a, b, c) =>
-        [a, b, c].filter(Boolean).join('-')
-      );
-    }
-    value = formatted;
-    input.value = value;
+  onFocus(): void {
+    this.isFocused = true;
   }
 
-  this.value = value;
-  this.onChange(this.value);
-}
+  onBlur(): void {
+    this.isFocused = false;
+    this.onTouched();
+  }
 
+  onInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    let value = input.value;
 
+    if (this.numericMax11) {
+      const raw = value.replace(/\D/g, '').slice(0, 11);
+      let formatted = raw;
+      if (raw.length > 8) {
+        formatted = raw.replace(/^(\d{2})(\d{8})(\d{0,1})$/, (_, a, b, c) =>
+          [a, b, c].filter(Boolean).join('-')
+        );
+      }
+      value = formatted;
+      input.value = value;
+    }
 
+    this.value = value;
+    this.onChange(this.value);
+  }
 }

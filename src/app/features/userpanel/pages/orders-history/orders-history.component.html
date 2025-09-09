@@ -1,48 +1,63 @@
 <div class="p-4 sm:p-6 lg:p-8">
-    <div class="mx-auto max-w-7xl">
-      <div class="mb-8 flex items-center justify-between">
-        <h1 class="text-lg aldyFont font-bold text-gray-900">
-          Pedidos <span class="text-gray-500">({{ orders.length }})</span>
-        </h1>
-        <div class="relative">
-          <select class="appearance-none border border-gray-300 bg-white py-2 pl-3 pr-10 text-sm text-gray-700 hover:border-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500">
-            <option selected>Ordenar por</option>
-            <option>Fecha de creación</option>
-            <option>Estado</option>
-          </select>
-          <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-          </div>
+  <div class="mx-auto max-w-7xl">
+    <div class="mb-8 px-1 flex items-center justify-between">
+      <h1 class="text-lg aldyFont font-bold text-gray-900">
+        Pedidos <span class="text-gray-500">({{ orders.length }})</span>
+      </h1>
+      <div>
+        <div class="relative w-48"> 
+          <app-selects 
+              id="sort-orders" 
+              label="Ordenar por" 
+              [options]="sortOptions" 
+              optionLabel="label"
+              optionValue="value">
+          </app-selects>
         </div>
       </div>
-        <div class="space-y-4 max-h-[65vh] overflow-y-auto pr-2">
-        <div *ngFor="let order of orders" class="border border-gray-200 bg-white p-4 shadow-sm sm:p-6">
-          <div class="flex items-center justify-between gap-6">
-            <div class="grid flex-1 grid-cols-1 gap-4 sm:grid-cols-3">
-              <div>
-                <dt class="text-sm font-medium text-gray-500">ID del Pedido</dt>
-                <dd class="mt-1 text-sm font-semibold text-gray-900">{{ order.id }}</dd>
-              </div>
-              <div>
-                <dt class="text-sm font-medium text-gray-500">Fecha de creación</dt>
-                <dd class="mt-1 text-sm text-gray-700">{{ order.creationDate }}</dd>
-              </div>
-              <div>
-                <dt class="text-sm font-medium text-gray-500">Estado</dt>
-                <dd class="mt-1 text-sm font-medium" [ngClass]="{
+    </div>
+
+    <!-- Lista paginada -->
+    <div class="space-y-4 max-h-[65vh] overflow-y-auto p-1">
+      <div *ngFor="let order of paginatedOrders" 
+           class="hover:shadow-md transition-all duration-400 ease-in-out bg-white p-4 sm:p-6">
+        <div class="flex items-center justify-between gap-6">
+          <div class="grid flex-1 grid-cols-1 gap-4 sm:grid-cols-3">
+            <div>
+              <dt class="text-sm text-gray-500">ID del Pedido</dt>
+              <dd class="mt-1 text-sm font-semibold text-gray-900">{{ order.id }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm text-gray-500">Fecha de creación</dt>
+              <dd class="mt-1 text-sm text-gray-700">{{ order.creationDate }}</dd>
+            </div>
+            <div>
+              <dt class="text-sm text-gray-500">Estado</dt>
+              <dd class="mt-1 text-sm" [ngClass]="{
                   'text-green-600': order.status === 'Entregado',
                   'text-yellow-600': order.status === 'En camino',
                   'text-red-600': order.status === 'Cancelado'
                 }">{{ order.status }}</dd>
-              </div>
             </div>
-            <div class="flex flex-col items-stretch space-y-2">
-              <a href="#" class="border border-gray-300 bg-white px-3 py-2 text-center text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50">Ver detalles</a>
-              <a href="#" class="transition-colors duration-500 ease-in-out border border-transparent bg-aldy-primary-500 px-3 py-2 text-center text-sm font-medium text-white shadow-sm hover:bg-aldy-primary-600">Seguir pedido</a>
-              <a href="#" class="text-center transition-colors duration-500 ease-in-out text-sm font-medium text-aldy-primary-500 hover:text-aldy-primary-600">Factura</a>
-            </div>
+          </div>
+          <div class="flex flex-col items-stretch space-y-2">
+            <a href="#" class="border border-gray-300 bg-white px-3 py-2 text-center text-sm text-gray-700 shadow-sm hover:bg-gray-50">Ver detalles</a>
+            <a href="#" class="transition-colors duration-500 ease-in-out border border-transparent bg-aldy-primary-500 px-3 py-2 text-center text-sm text-white shadow-sm hover:bg-aldy-primary-600">Seguir pedido</a>
+            <a href="#" class="text-center transition-colors duration-500 ease-in-out text-sm text-aldy-primary-500 hover:text-aldy-primary-600">Factura</a>
           </div>
         </div>
       </div>
     </div>
+
+    <div class="pt-4 lg:pt-6">
+      <app-paginator 
+        *ngIf="orders.length >= 5"
+        [totalItems]="orders.length"
+        [pageSizeOptions]="[5, 10, 20]"
+        [initialPageSize]="5"
+        (pageChange)="onPageChange($event)"
+        (pageSizeChange)="onPageSizeChange($event)">
+      </app-paginator>
+    </div>
   </div>
+</div>
