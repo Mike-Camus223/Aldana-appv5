@@ -93,7 +93,6 @@
   <div class="bg-gray-50 rounded-xl p-4 space-y-2">
     <h3 class="font-semibold text-gray-700">Método de pago</h3>
     <p class="text-sm"><span class="font-medium">Plataforma:</span> {{ payment.platform }}</p>
-    <p class="text-sm"><span class="font-medium">Tarjeta:</span> {{ payment.card }}</p>
     <p class="text-sm"><span class="font-medium">Estado del pago:</span> {{ payment.status }}</p>
   </div>
 
@@ -117,6 +116,15 @@
             <p class="text-sm font-medium text-gray-700">
               {{ product.name }}
             </p>
+            <div class="flex items-center gap-2">
+              <p class="text-xs text-gray-500">
+                Color: Rojo
+              </p>
+              <div class="h-4 w-4 rounded-xs bg-red-500"></div>
+            </div>
+            <p class="text-xs text-gray-500">
+              Talla: L
+            </p>
             <p class="text-xs text-gray-500">
               Cantidad: {{ product.quantity }}
             </p>
@@ -128,13 +136,14 @@
       </div>
     </div>
   </div>
-  
-
-  <!-- Resumen de costos -->
-  <div class="border-t pt-4 space-y-2">
+    <div class="pt-4 space-y-2">
     <div class="flex justify-between text-sm text-gray-600">
       <span>Subtotal</span>
       <span>{{ costs.subtotal }}</span>
+    </div>
+    <div class="flex justify-between text-sm text-gray-600">
+      <span>Descuento</span>
+      <span class="text-gray-600 line-through">${{costs.discount}}</span>
     </div>
     <div class="flex justify-between text-sm text-gray-600">
       <span>Envío</span>
@@ -145,10 +154,14 @@
       <span>{{ costs.total }}</span>
     </div>
   </div>
-
-  <!-- Acciones -->
-  <div class="flex justify-between items-center border-t pt-4">
-    <button class="text-sm text-blue-600 underline">Descargar factura</button>
-    <button class="px-4 py-2 bg-red-100 text-red-600 text-sm font-medium rounded-lg">Contactar soporte</button>
+  <div class="flex justify-between items-center pt-4">
+    <button class="mt-2 px-5 flex text-sm items-center py-2 bg-aldy-primary-500 text-white hover:bg-aldy-primary-600 transition-colors duration-500 ease-in-out">
+      <lucide-icon name="arrow-down-to-line" [size]="18" [strokeWidth]="1.75"></lucide-icon>
+      <span>Descargar factura</span>
+    </button>
+    <button class="mt-2 gap-2 text-sm items-center px-5 py-2 flex bg-aldy-primary-500 text-white hover:bg-aldy-primary-600 transition-colors duration-500 ease-in-out">
+      <lucide-icon name="headset" [size]="18" [strokeWidth]="1.75"></lucide-icon>
+      <span>Contactar soporte</span>
+    </button>
   </div>
 </div>

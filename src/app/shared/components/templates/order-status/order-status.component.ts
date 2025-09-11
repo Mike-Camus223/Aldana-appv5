@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { Book, BookCheck, Check, House, LUCIDE_ICONS, LucideAngularModule, LucideIconProvider, NotepadText, Package, Truck } from 'lucide-angular';
+import { ArrowDownToLine, Book, BookCheck, Check, Headset, House, LUCIDE_ICONS, LucideAngularModule, LucideIconProvider, NotepadText, Package, Truck } from 'lucide-angular';
 
 interface Step {
   id: number;
@@ -34,7 +34,9 @@ interface Product {
             Book,
             Package,
             Truck,
-            House
+            House,
+            Headset,
+            ArrowDownToLine
           })
         }
       ],
@@ -66,7 +68,6 @@ export class OrderStatusComponent {
 
   payment = {
     platform: 'Mercado Pago',
-    card: 'Visa •••• 1234',
     status: 'Confirmado',
   };
 
@@ -88,6 +89,7 @@ export class OrderStatusComponent {
   costs = {
     subtotal: '$900.00',
     shipping: 'Gratis',
-    total: '$900.00',
+    total: '$700.00',
+    discount: 200
   };
 }

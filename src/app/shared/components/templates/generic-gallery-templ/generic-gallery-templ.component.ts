@@ -6,9 +6,9 @@ import {
 } from '@angular/core';
 import { isPlatformBrowser, CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
-import { SupabaseService } from '../../../../core/services/data-access/supabase.service';
 import { Collection } from '../../../utils/models/collection.model';
 import { trigger, transition, style, animate, state } from '@angular/animations';
+import { CollectionService } from '../../../../core/services/data-access/collection/collection.service';
 
 @Component({
   selector: 'app-generic-gallery-templ',
@@ -42,13 +42,13 @@ export class GenericGalleryTemplComponent implements AfterViewInit {
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
-    private supabaseService: SupabaseService,
+    private CollectionService: CollectionService,
     private router: Router
   ) { }
 
   async ngAfterViewInit() {
     try {
-      const result = await this.supabaseService.getAllCollections();
+      const result = await this.CollectionService.getAllCollections();
       this.collections = result ?? [];
     } catch (error) {
       console.error('Error al obtener colecciones:', error);
