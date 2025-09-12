@@ -1,6 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ArrowDownToLine, Book, BookCheck, Check, Headset, House, LUCIDE_ICONS, LucideAngularModule, LucideIconProvider, NotepadText, Package, Truck } from 'lucide-angular';
+import { OrdersService } from '../../../../core/services/orders/orders.service';
+import { Order } from '../../../utils/models/order.interface';
 
 interface Step {
   id: number;
@@ -9,87 +12,218 @@ interface Step {
   active: boolean;
   completed: boolean;
   time: string;
-  icon: string
-}
-
-interface Product {
-  name: string;
-  quantity: number;
-  price: string;
-  image: string;
+  icon: string;
 }
 
 @Component({
   selector: 'app-order-status',
   standalone: true,
-  imports: [CommonModule,LucideAngularModule],
+  imports: [CommonModule, LucideAngularModule],
   providers: [
-        {
-          provide: LUCIDE_ICONS,
-          multi: true,
-          useValue: new LucideIconProvider({
-            Check,
-            NotepadText,
-            BookCheck,
-            Book,
-            Package,
-            Truck,
-            House,
-            Headset,
-            ArrowDownToLine
-          })
-        }
-      ],
+    {
+      provide: LUCIDE_ICONS,
+      multi: true,
+      useValue: new LucideIconProvider({
+        Check,
+        NotepadText,
+        BookCheck,
+        Book,
+        Package,
+        Truck,
+        House,
+        Headset,
+        ArrowDownToLine
+      })
+    }
+  ],
   templateUrl: './order-status.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class OrderStatusComponent {
-  orderId = '#1123123';
-  orderDate = '08 Feb 2023';
-  status = 'En envío';
+export class OrderStatusComponent implements OnInit {
+  order: Order | null = null;
+  loading = true;
+  error: string | null = null;
+  steps: Step[] = [];
 
-  steps: Step[] = [
-    { id: 1, label: 'Pedido confirmado', date: '08 Feb 2023', time: '10:15 AM', active: true, completed: true, icon: 'book' },
-    { id: 2, label: 'Pedido aceptado', date: '10 Feb 2023', time: '03:30 PM', active: true, completed: true, icon: 'book-check' },
-    { id: 3, label: 'En preparación', date: 'Est. 15 Feb 2023', time: '09:00 AM', active: true, completed: true, icon: 'package' },
-    { id: 4, label: 'En camino', date: '—', time: '—', active: false, completed: false, icon: 'truck' },
-    { id: 5, label: 'Entregado en domicilio', date: '—', time: '—', active: false, completed: false, icon: 'house' },
-  ];
-  
-  
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private ordersService: OrdersService
+  ) {}
 
-  shipping = {
-    courier: 'FedEx',
-    tracking: 'SSA4569AEF4592',
-    trackingUrl: 'https://tracking-link.com',
-    address: 'Calle Falsa 123, Buenos Aires, Argentina',
-    estimated: '15 Feb 2023',
-  };
+  ngOnInit() {
+    const orderId = this.route.snapshot.paramMap.get('id');
+    if (orderId) {
+      this.loadOrderDetails(orderId);
+    } else {
+      this.error = 'ID de orden no válido';
+      this.loading = false;
+    }
+  }
 
-  payment = {
-    platform: 'Mercado Pago',
-    status: 'Confirmado',
-  };
+  async loadOrderDetails(orderId: string) {
+    this.loading = true;
+    this.error = null;
 
-  products: Product[] = [
-    {
-      name: 'Aros Dior Tribales Beige',
-      quantity: 1,
-      price: '$450.00 USD',
-      image: 'https://via.placeholder.com/60',
-    },
-    {
-      name: 'Zapatos Slingback Mizza',
-      quantity: 1,
-      price: '$450.00 USD',
-      image: 'https://via.placeholder.com/60',
-    },
-  ];
+    try {
+      const result = await this.ordersService.getUserOrderById(orderId);
+      
+      if (result.success && result.order) {
+        this.order = result.order;
+        this.generateSteps();
+      } else {
+        this.error = result.error || 'Error al cargar los detalles de la orden';
+      }
+    } catch (error: any) {
+      this.error = 'Error inesperado al cargar la orden';
+      console.error('Error loading order details:', error);
+    } finally {
+      this.loading = false;
+    }
+  }
 
-  costs = {
-    subtotal: '$900.00',
-    shipping: 'Gratis',
-    total: '$700.00',
-    discount: 200
-  };
+  generateSteps() {
+    if (!this.order) return;
+
+    const status = this.order.status;
+    
+    this.steps = [
+      { 
+        id: 1, 
+        label: 'Pedido confirmado', 
+        date: this.formatDate(this.order.created_at), 
+        time: this.formatTime(this.order.created_at), 
+        active: true, 
+        completed: true, 
+        icon: 'book' 
+      },
+      { 
+        id: 2, 
+        label: 'Pedido aceptado', 
+        date: this.order.confirmed_at ? this.formatDate(this.order.confirmed_at) : '—', 
+        time: this.order.confirmed_at ? this.formatTime(this.order.confirmed_at) : '—', 
+        active: status !== 'pending', 
+        completed: status !== 'pending', 
+        icon: 'book-check' 
+      },
+      { 
+        id: 3, 
+        label: 'En preparación', 
+        date: status === 'in_transit' || status === 'completed' ? this.formatDate(this.order.updated_at) : '—', 
+        time: status === 'in_transit' || status === 'completed' ? this.formatTime(this.order.updated_at) : '—', 
+        active: status === 'in_transit' || status === 'completed', 
+        completed: status === 'in_transit' || status === 'completed', 
+        icon: 'package' 
+      },
+      { 
+        id: 4, 
+        label: 'En camino', 
+        date: status === 'in_transit' ? this.formatDate(this.order.updated_at) : (this.order.estimated_delivery_at ? this.formatDate(this.order.estimated_delivery_at) : '—'), 
+        time: status === 'in_transit' ? this.formatTime(this.order.updated_at) : '—', 
+        active: status === 'in_transit', 
+        completed: status === 'completed', 
+        icon: 'truck' 
+      },
+      { 
+        id: 5, 
+        label: 'Entregado en domicilio', 
+        date: this.order.delivered_at ? this.formatDate(this.order.delivered_at) : '—', 
+        time: this.order.delivered_at ? this.formatTime(this.order.delivered_at) : '—', 
+        active: false, 
+        completed: status === 'completed', 
+        icon: 'house' 
+      },
+    ];
+
+    // Si está rechazado, marcar solo el primer paso como completado
+    if (status === 'rejected') {
+      this.steps.forEach((step, index) => {
+        if (index > 0) {
+          step.completed = false;
+          step.active = false;
+        }
+      });
+    }
+  }
+
+  formatDate(dateString: string): string {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('es-AR', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric'
+    });
+  }
+
+  formatTime(dateString: string): string {
+    const date = new Date(dateString);
+    return date.toLocaleTimeString('es-AR', {
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  }
+
+  formatPrice(price: number): string {
+    return new Intl.NumberFormat('es-AR', {
+      style: 'currency',
+      currency: 'ARS'
+    }).format(price);
+  }
+
+  getStatusLabel(): string {
+    if (!this.order) return '';
+    
+    const statusMap: { [key: string]: string } = {
+      'pending': 'Pendiente',
+      'in_transit': 'En camino',
+      'completed': 'Entregado',
+      'rejected': 'Cancelado'
+    };
+    return statusMap[this.order.status] || this.order.status;
+  }
+
+  getStatusClass(): string {
+    if (!this.order) return '';
+    
+    const classMap: { [key: string]: string } = {
+      'pending': 'bg-yellow-100 text-yellow-700',
+      'in_transit': 'bg-blue-100 text-blue-700',
+      'completed': 'bg-green-100 text-green-700',
+      'rejected': 'bg-red-100 text-red-700'
+    };
+    return classMap[this.order.status] || 'bg-gray-100 text-gray-700';
+  }
+
+  getFullAddress(): string {
+    if (!this.order) return '';
+    
+    const parts = [
+      this.order.address_street,
+      this.order.address_number,
+      this.order.address_apartment,
+      this.order.city,
+      this.order.province
+    ].filter(Boolean);
+    
+    return parts.join(', ');
+  }
+
+  getCustomerName(): string {
+    if (!this.order) return '';
+    return `${this.order.customer_first_name} ${this.order.customer_last_name}`;
+  }
+
+  goBack() {
+    this.router.navigate(['/user-panel/orders-history']);
+  }
+
+  downloadInvoice() {
+    // Implementar descarga de factura
+    console.log('Descargar factura para orden:', this.order?.id);
+  }
+
+  contactSupport() {
+    // Implementar contacto con soporte
+    console.log('Contactar soporte para orden:', this.order?.id);
+  }
 }

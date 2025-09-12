@@ -12,24 +12,20 @@ export const userPanelRoutes: Routes = [
         loadComponent: () => import('./pages/control-panel/control-panel.component').then(c => c.ControlPanelComponent),
       },
       {
-        path: 'historial-ordenes',
+        path: 'orders-history',
         loadComponent: () => import('./pages/orders-history/orders-history.component').then(c => c.OrdersHistoryComponent),
+      },
+      {
+        path: 'order-details/:id',
+        loadComponent: () => import('../../shared/components/templates/order-status/order-status.component').then(c => c.OrderStatusComponent),
       },
       {
         path: 'informacion-cuenta',
         loadComponent: () => import('./pages/account-info/account-info.component').then(c => c.AccountInfoComponent),
       },
       {
-        path: 'cerrar-sesion',
-        loadComponent: () => import('./pages/logout/logout.component').then(c => c.LogoutComponent),
-      },
-      {
         path: 'favoritos',
         loadComponent: () => import('./pages/whitelist/whitelist.component').then(c => c.WhitelistComponent),
-      },
-      {
-        path: 'order-item',
-        loadComponent: () => import('../../shared/components/templates/order-status/order-status.component').then(c => c.OrderStatusComponent),
       },
       {
         path: '',

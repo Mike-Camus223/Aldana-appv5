@@ -4,6 +4,7 @@ import { CartItem } from '../../../shared/utils/models/cartItems-model';
 import { ShippingData, DiscountData } from '../shipping.service';
 import { AuthService } from '../auth/auth.service';
 import { environment } from '../../../../environments/environment';
+import { Order, OrderSummary } from '../../../shared/utils/models/order.interface';
 
 export interface OrderData {
   order_number: string;
@@ -34,6 +35,7 @@ export interface OrderData {
   whatsapp_message?: string;
   source_channel: string;
   customer_notes?: string;
+  user_id: string;
 }
 
 @Injectable({
@@ -119,7 +121,8 @@ export class OrdersService {
         status: 'pending',
         whatsapp_message: whatsappMessage,
         source_channel: 'web',
-        customer_notes: undefined
+        customer_notes: undefined,
+        user_id: currentUser.id
       };
 
       // 🔧 USAR DIRECTAMENTE EL CLIENTE AUTENTICADO
@@ -165,6 +168,91 @@ export class OrdersService {
       return { success: true, orderId: data?.id };
     } catch (error: any) {
       console.error('Error in createOrder:', error);
+      return { success: false, error: error.message || 'Error desconocido' };
+    }
+  }
+
+
+  async getUserOrders(): Promise<{ success: boolean; orders?: OrderSummary[]; error?: string }> {
+    try {
+      if (!this.authService.isAuthenticated()) {
+        return { success: false, error: 'Usuario no autenticado' };
+      }
+
+      const currentUser = this.authService.getCurrentUser();
+      if (!currentUser?.id) {
+        return { success: false, error: 'No se pudo verificar la identidad del usuario' };
+      }
+
+      const supabaseClient = this.authService.getAuthenticatedClient();
+      
+      const { data, error } = await supabaseClient
+        .from('orders')
+        .select(`
+          id,
+          order_number,
+          created_at,
+          status,
+          total_final,
+          products
+        `)
+        .eq('user_id', currentUser.id)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error obteniendo órdenes del usuario:', error);
+        return { success: false, error: error.message };
+      }
+
+      const orderSummaries: OrderSummary[] = (data || []).map(order => ({
+        id: order.id,
+        order_number: order.order_number,
+        created_at: order.created_at,
+        status: order.status,
+        total_final: order.total_final,
+        products: order.products || [],
+        totalItems: Array.isArray(order.products) ? order.products.reduce((sum: number, product: any) => sum + (product.quantity || 0), 0) : 0
+      }));
+
+      return { success: true, orders: orderSummaries };
+
+    } catch (error: any) {
+      console.error('Error en getUserOrders:', error);
+      return { success: false, error: error.message || 'Error desconocido' };
+    }
+  }
+
+
+
+  async getUserOrderById(orderId: string): Promise<{ success: boolean; order?: Order; error?: string }> {
+    try {
+      if (!this.authService.isAuthenticated()) {
+        return { success: false, error: 'Usuario no autenticado' };
+      }
+
+      const currentUser = this.authService.getCurrentUser();
+      if (!currentUser?.id) {
+        return { success: false, error: 'No se pudo verificar la identidad del usuario' };
+      }
+
+      const supabaseClient = this.authService.getAuthenticatedClient();
+      
+      const { data, error } = await supabaseClient
+        .from('orders')
+        .select('*')
+        .eq('id', orderId)
+        .eq('user_id', currentUser.id)
+        .single();
+
+      if (error) {
+        console.error('Error obteniendo orden específica:', error);
+        return { success: false, error: 'Orden no encontrada o no tienes permisos para verla' };
+      }
+
+      return { success: true, order: data as Order };
+
+    } catch (error: any) {
+      console.error('Error en getUserOrderById:', error);
       return { success: false, error: error.message || 'Error desconocido' };
     }
   }
@@ -246,3 +334,4 @@ export class OrdersService {
     }
   }
 }
+

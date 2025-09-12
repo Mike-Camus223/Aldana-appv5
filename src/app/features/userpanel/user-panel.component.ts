@@ -33,7 +33,7 @@ export class UserPanelComponent implements OnInit {
   activeSection: string = 'control-panel';
   isLoading = false;
 
-   breadcrumbItemsAccount: AppMenuItem[] = [
+  breadcrumbItemsAccount: AppMenuItem[] = [
       { label: 'INICIO', route: '/home' },
       { label: 'MI CUENTA', route: '/panel-control' }
     ];
@@ -42,33 +42,23 @@ export class UserPanelComponent implements OnInit {
     {
       title: 'Panel de Control',
       icon: 'settings',
-      route: '/panel-control'
+      route: 'panel-control'
     },
     {
       title: 'Información Personal',
       icon: 'user-round',
-      route: '/informacion-cuenta'
+      route: 'informacion-cuenta'
     },
     {
       title: 'Mis Órdenes',
       icon: 'package',
-      route: '/historial-ordenes'
-    },
-    {
-      title: 'Cerrar Sesión',
-      icon: 'log-out',
-      route: '/cerrar-sesion'
+      route: 'orders-history'
     },
     {
       title: 'Favoritos',
       icon: 'heart',
-      route: '/favoritos'
+      route: 'favoritos'
     },
-    {
-      title: 'order-item',
-      icon: 'package',
-      route: 'order-item'
-    }
   ];
   
   private authService = inject(AuthService);
@@ -76,7 +66,6 @@ export class UserPanelComponent implements OnInit {
 
   constructor() {
     this.router.events   
-
       .pipe(
         filter(event => 
           event instanceof NavigationStart || 
@@ -110,14 +99,7 @@ export class UserPanelComponent implements OnInit {
     });
   }
 
-  async onSignOut(): Promise<void> {
-    const result = await this.authService.signOut();
-    if (!result.success) {
-      this.router.navigate(['/login']);
-    }
-  }
-
-  setActiveSection(section: string): void {
-    this.activeSection = section;
+  onSignOut() {
+    this.authService.signOut();
   }
 }

@@ -1,5 +1,3 @@
-
-
 <app-navbar-publicv2></app-navbar-publicv2>
 <div class="h-[0px] lg:h-[88px]"></div>
 <div class="min-h-screen w-full bg-gray-50 overflow-x-hidden">
@@ -14,30 +12,24 @@
       </h1>
     </div>
   </div>
-  <!-- <div class="max-w-5xl mx-auto">
-    <app-breadcrumb [items]="breadcrumbItemsAccount"></app-breadcrumb>
-  </div> -->
   <div class="max-w-7xl mx-auto px-4 flex h-screen">
     <div class="w-64">
       <nav class="mt-6">
         <div class="px-3 space-y-1">
           <a *ngFor="let item of navItems" [routerLink]="item.route"
             routerLinkActive="bg-aldy-primary-100 text-gray-600"
-            class="w-full flex items-center px-3 py-4 text-sm font-medium transition-colors duration-200">
+            class="w-full flex items-center px-3 py-4 text-sm font-medium">
             <lucide-icon [size]="22" [strokeWidth]="1.75" [name]="item.icon" class="mr-1.5 text-aldy-primary-500"></lucide-icon>
             {{ item.title }}
           </a>
         </div>
-        <!-- <div class="px-3 mt-8 pt-6 border-t border-gray-200">
+        <div class="px-3 space-y-1 mt-8">
           <button (click)="onSignOut()"
-            class="w-full flex items-center px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-md transition-colors duration-200">
-            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
-            </svg>
+            class="w-full cursor-pointer flex items-center hover:bg-aldy-primary-100 transition-colors duration-300 ease-in-out px-3 py-4 text-sm font-medium">
+            <lucide-icon [size]="22" [strokeWidth]="1.75" name="log-out" class="mr-1.5 text-aldy-primary-500"></lucide-icon>
             Cerrar Sesión
           </button>
-        </div> -->
+        </div>
       </nav>
     </div>
     <div class="flex-1 p-8 relative">
