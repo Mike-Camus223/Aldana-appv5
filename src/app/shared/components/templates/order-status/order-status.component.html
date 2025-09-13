@@ -124,7 +124,7 @@
       <div *ngFor="let item of order.products" class="flex items-center justify-between py-3 border-b border-gray-200 last:border-0 last:pb-0">
         <div class="flex items-center">
           <img [src]="item.image || 'assets/images/placeholder-product.png'" 
-               class="w-16 h-16 object-cover rounded-md" 
+               class="w-20 h-20 object-cover" 
                [alt]="item.name">
           <div class="ml-4">
             <h4 class="text-sm font-medium text-gray-900">{{ item.name }}</h4>

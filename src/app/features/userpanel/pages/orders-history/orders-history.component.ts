@@ -105,9 +105,16 @@ export class OrdersHistoryComponent implements OnInit {
   }
 
   viewOrderDetails(orderId: string) {
-    this.router.navigate(['/panel-control/order-details', orderId]).catch(error => {
-      console.error('Navigation error:', error);
-    });
+    console.log('Navegando a detalles de la orden:', orderId);
+    this.router.navigate(['/order-details', orderId])
+      .then(success => {
+        if (!success) {
+          console.error('Error de navegación: No se pudo cargar la ruta');
+        }
+      })
+      .catch(error => {
+        console.error('Error de navegación:', error);
+      });
   }
 
   getProductImages(products: any[]): string[] {

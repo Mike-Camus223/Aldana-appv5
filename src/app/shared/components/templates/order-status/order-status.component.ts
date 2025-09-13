@@ -53,6 +53,7 @@ export class OrderStatusComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    // Manejar el parámetro de ruta inicial
     const orderId = this.route.snapshot.paramMap.get('id');
     if (orderId) {
       this.loadOrderDetails(orderId);
@@ -60,6 +61,14 @@ export class OrderStatusComponent implements OnInit {
       this.error = 'ID de orden no válido';
       this.loading = false;
     }
+
+    // Suscribirse a cambios en los parámetros de ruta
+    this.route.paramMap.subscribe(params => {
+      const newOrderId = params.get('id');
+      if (newOrderId) {
+        this.loadOrderDetails(newOrderId);
+      }
+    });
   }
 
   async loadOrderDetails(orderId: string) {
@@ -252,7 +261,7 @@ export class OrderStatusComponent implements OnInit {
   }
 
   goBack(): void {
-    this.router.navigate(['/panel-control/mis-pedidos']);
+    this.router.navigate(['/orders-history']);
   }
 
   downloadInvoice() {
