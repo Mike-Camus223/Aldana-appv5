@@ -8,7 +8,7 @@ export interface OrderProduct {
     image: string;
   }
   
-  export interface Order {
+  export interface OrderModel {
     id: string;
     order_number: string;
     customer_first_name: string;
@@ -35,6 +35,16 @@ export interface OrderProduct {
     discount_type?: 'percent' | 'fixed';
     total_final: number;
     status: 'pending' | 'in_transit' | 'completed' | 'rejected';
+    payment_method?: 'mercadopago' | 'transfer' | 'cash';
+    payment_status?: 'pending' | 'approved' | 'rejected' | 'in_process' | 'authorized' | 'in_mediation' | 'rejected' | 'cancelled' | 'refunded' | 'charged_back';
+    payment_id?: string;
+    payment_mercadopago_id?: string;
+    payment_mercadopago_status?: string;
+    payment_mercadopago_status_detail?: string;
+    payment_mercadopago_installments?: number;
+    payment_mercadopago_payment_type?: string;
+    payment_mercadopago_installment_amount?: number;
+    payment_mercadopago_total_paid_amount?: number;
     whatsapp_message?: string;
     wamid?: string;
     created_at: string;
@@ -58,5 +68,6 @@ export interface OrderProduct {
     total_final: number;
     products: OrderProduct[];
     totalItems: number;
+    payment_method?: 'mercadopago' | 'transfer' | 'cash';
+    payment_status?: string;
   }
-  

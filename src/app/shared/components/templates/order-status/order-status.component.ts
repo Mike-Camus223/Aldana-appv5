@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@
 import { ActivatedRoute, Router } from '@angular/router';
 import { ArrowDownToLine, Book, BookCheck, Check, Headset, House, LUCIDE_ICONS, LucideAngularModule, LucideIconProvider, NotepadText, Package, Truck } from 'lucide-angular';
 import { OrdersService } from '../../../../core/services/orders/orders.service';
-import { Order, OrderProduct } from '../../../../shared/utils/models/order.interface';
+import { OrderModel, OrderProduct } from '../../../../shared/utils/models/order.interface';
 
 interface Step {
   id: number;
@@ -96,38 +96,40 @@ export class OrderStatusComponent implements OnInit {
     if (!this.order) return;
   
     const orderDate = new Date(this.order.created_at);
-    const formattedDate = orderDate.toLocaleDateString('es-AR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric'
-    });
-    const formattedTime = orderDate.toLocaleTimeString('es-AR', {
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+    const formattedDate = this.formatDate(this.order.created_at);
+    const formattedTime = this.formatTime(this.order.created_at);
   
-    // Create a new array for each status
-    let steps: Step[] = [
+    // Define all possible steps in order
+    const allSteps: Step[] = [
       {
         id: 1,
-        label: 'Pedido realizado',
+        label: 'Pedido confirmado',
         date: formattedDate,
         time: formattedTime,
-        active: false,
+        active: true,
         completed: true,
-        icon: 'NotepadText'
+        icon: 'BookCheck'
       },
       {
         id: 2,
-        label: 'Pedido confirmado',
+        label: 'Pedido aceptado',
         date: '',
         time: '',
         active: false,
         completed: false,
-        icon: 'BookCheck'
+        icon: 'Book'
       },
       {
         id: 3,
+        label: 'En preparación',
+        date: '',
+        time: '',
+        active: false,
+        completed: false,
+        icon: 'Package'
+      },
+      {
+        id: 4,
         label: 'En camino',
         date: '',
         time: '',
@@ -136,8 +138,8 @@ export class OrderStatusComponent implements OnInit {
         icon: 'Truck'
       },
       {
-        id: 4,
-        label: 'Entregado',
+        id: 5,
+        label: 'Entregado en domicilio',
         date: '',
         time: '',
         active: false,
@@ -146,20 +148,23 @@ export class OrderStatusComponent implements OnInit {
       }
     ];
   
+    // Update steps based on order status
     switch (this.order.status) {
       case 'pending':
-        steps = [{
-          ...steps[0],
-          completed: true,
-          active: false
-        }];
+        // Only first step is completed
+        this.steps = allSteps.map((step, index) => ({
+          ...step,
+          active: index === 0,
+          completed: index === 0
+        }));
         break;
         
       case 'in_transit':
-        steps = steps.map((step, index) => {
-          if (index < 2) {
+        // First 4 steps completed, 4th active
+        this.steps = allSteps.map((step, index) => {
+          if (index < 3) {
             return { ...step, completed: true, active: false };
-          } else if (index === 2) {
+          } else if (index === 3) {
             return {
               ...step,
               completed: true,
@@ -173,25 +178,27 @@ export class OrderStatusComponent implements OnInit {
         break;
         
       case 'completed':
-        steps = steps.map(step => ({
+        // All steps completed
+        this.steps = allSteps.map((step, index) => ({
           ...step,
           completed: true,
           active: false,
-          date: step.id === 4 ? formattedDate : step.date,
-          time: step.id === 4 ? formattedTime : step.time
+          date: index === 4 ? formattedDate : step.date,
+          time: index === 4 ? formattedTime : step.time
         }));
         break;
         
       case 'rejected':
-        steps = [{
-          ...steps[0],
+        // Only first step shown, marked as rejected
+        this.steps = [{
+          ...allSteps[0],
+          label: 'Pedido rechazado',
           completed: true,
           active: false
         }];
         break;
     }
-  
-    this.steps = steps;
+    
     this.cdr.detectChanges();
   }
 
@@ -265,13 +272,27 @@ export class OrderStatusComponent implements OnInit {
   }
 
   downloadInvoice() {
-    // Implementar descarga de factura
-    console.log('Descargar factura para orden:', this.order?.id);
+    if (!this.order) return;
+    
+    // In a real implementation, you would call a service to generate/download the invoice
+    console.log('Downloading invoice for order:', this.order.id);
+    // Example: this.orderService.downloadInvoice(this.order.id).subscribe(...);
+    
+    // For demo purposes, we'll show an alert
+    alert('La factura se está generando y se descargará automáticamente.');
   }
 
   contactSupport() {
-    // Implementar contacto con soporte
-    console.log('Contactar soporte para orden:', this.order?.id);
+    if (!this.order) return;
+    
+    // In a real implementation, you might open a support chat or redirect to a contact form
+    console.log('Contacting support for order:', this.order.id);
+    
+    // For demo purposes, we'll open WhatsApp with a pre-filled message
+    const phoneNumber = '+5491122334455'; // Replace with your support number
+    const message = `Hola, necesito ayuda con mi pedido #${this.order.order_number}`;
+    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
   }
 
   trackOrder(): void {
@@ -280,8 +301,8 @@ export class OrderStatusComponent implements OnInit {
       return;
     }
     
-    // Here you would typically open a tracking URL or show a modal
     console.log('Tracking order:', this.order.wamid);
+    // Example: window.open(`https://tracking.example.com/?id=${this.order.wamid}`, '_blank');
   }
 
   getTotal(): number {
@@ -294,4 +315,39 @@ export class OrderStatusComponent implements OnInit {
     if (product.size) parts.push(product.size);
     return parts.join(' • ');
   }
+}
+
+export interface Order {
+  id: string;
+  order_number: string;
+  status: 'pending' | 'in_transit' | 'completed' | 'rejected';
+  created_at: string;
+  updated_at: string;
+  total_final: number;
+  subtotal: number;
+  discount_applied?: number;
+  discount_code?: string;
+  customer_first_name: string;
+  customer_last_name: string;
+  customer_phone?: string;
+  customer_notes?: string;
+  seller_notes?: string;
+  address_street: string;
+  address_number: string;
+  address_apartment?: string;
+  city: string;
+  province: string;
+  payment_method?: 'mercadopago' | 'transfer' | 'cash';
+  payment_status?: 'pending' | 'approved' | 'rejected';
+  wamid?: string; // For WhatsApp message ID
+  estimated_delivery_at?: string;
+  products: Array<{
+    id: string;
+    name: string;
+    price: number;
+    quantity: number;
+    image?: string;
+    color?: string;
+    size?: string;
+  }>;
 }
