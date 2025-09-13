@@ -1,29 +1,38 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Component, inject, OnInit } from '@angular/core';
+import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth/auth.service';
 import { Heart, LUCIDE_ICONS, LucideAngularModule, LucideIconProvider, Send, User } from 'lucide-angular';
 
 @Component({
   selector: 'app-control-panel',
   standalone: true,
-  imports: [CommonModule, RouterModule,LucideAngularModule],
+  imports: [CommonModule, RouterModule, LucideAngularModule],
   templateUrl: './control-panel.component.html',
+  styleUrls: ['./control-panel.component.css'],
   providers: [
-      {
-        provide: LUCIDE_ICONS,
-        multi: true,
-        useValue: new LucideIconProvider({
-          Send,
-          User,
-          Heart
-        })
-      }
-    ],
-  
-  styleUrl: './control-panel.component.css',
+    {
+      provide: LUCIDE_ICONS,
+      multi: true,
+      useValue: new LucideIconProvider({
+        Send,
+        User,
+        Heart
+      })
+    }
+  ]
 })
 export class ControlPanelComponent {
+
   private authService = inject(AuthService);
+  private router = inject(Router);
   user = this.authService.currentUser$;
+
+  Gotofav() {
+    this.router.navigate(['/favoritos']);
+  }
+
+  GotoAccountInfo() {
+    this.router.navigate(['/informacion-cuenta']);
+  }
 }

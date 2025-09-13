@@ -1,1 +1,21 @@
-<p>whitelist works!</p>
+<div class="w-full max-w-screen mx-auto p-6">
+  <ng-container *ngIf="favorites$ | async as favorites">
+    <div *ngIf="favorites.length > 0; else emptyFavorites">
+      <h1 class="text-2xl font-semibold mb-6">Mi Lista de Favoritos</h1>
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+        <app-cardproduct 
+          *ngFor="let fav of favorites" 
+          [product]="fav" 
+          (wishlistToggled)="removeFromFavorites($event)">
+        </app-cardproduct>
+      </div>
+    </div>
+
+    <ng-template #emptyFavorites>
+      <div class="text-center py-12">
+        <h2 class="text-xl font-semibold mb-2">Tu lista de favoritos está vacía</h2>
+        <p class="text-gray-600">Añade los productos que te gustan para verlos aquí.</p>
+      </div>
+    </ng-template>
+  </ng-container>
+</div>

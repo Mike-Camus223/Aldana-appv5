@@ -19,11 +19,11 @@
         <lucide-icon name="user" class="text-aldy-primary-500" [size]="24" [strokeWidth]="1.75"></lucide-icon>
         <h2 class="text-lg font-semibold">Mis Datos Personales</h2>
       </div>
-      <div class="text-sm text-gray-700">
-        <p class="font-medium">Michael Campos</p>
-        <p>michaelcamposvilgmail.com</p>
+      <div class="text-sm text-gray-700" *ngIf="user | async as userData">
+        <p class="font-medium">{{ userData.user_metadata['full_name'] || userData.user_metadata['name'] || 'Usuario' }}</p>
+        <p>{{ userData.email || 'usuario@ejemplo.com' }}</p>
       </div>
-      <button
+      <button (click)="GotoAccountInfo()"
         class="px-5 py-2 bg-aldy-primary-500 text-white hover:bg-aldy-primary-600 transition-colors duration-500 ease-in-out">
         Modificar
       </button>
@@ -36,7 +36,7 @@
         <h2 class="text-lg font-semibold">Lista de favoritos</h2>
       </div>
       <p class="text-sm text-gray-600">Guarda aquí los productos que te gustan para comprarlos más adelante.</p>
-      <button
+      <button (click)="Gotofav()"
         class="mt-2 px-5 py-2 bg-aldy-primary-500 text-white hover:bg-aldy-primary-600 transition-colors duration-500 ease-in-out">
         Ver lista
       </button>

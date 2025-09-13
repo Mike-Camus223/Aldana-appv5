@@ -224,6 +224,34 @@ export class AuthService {
   }
 
   /**
+   * Actualiza los datos del usuario actual
+   */
+  async updateUserData(data: { 
+    firstName: string;
+    lastName: string;
+    phone: string;
+    gender: string;
+  }): Promise<{ success: boolean; error?: string }> {
+    try {
+      const { error } = await this.supabase.auth.updateUser({
+        phone: data.phone,
+        data: {
+          full_name: `${data.firstName} ${data.lastName}`.trim(),
+          gender: data.gender
+        }
+      });
+
+      if (error) {
+        return { success: false, error: error.message };
+      }
+
+      return { success: true };
+    } catch (error) {
+      return { success: false, error: 'Error al actualizar los datos' };
+    }
+  }
+
+  /**
    * Verifica si el usuario es admin
    */
   isAdmin(): boolean {
