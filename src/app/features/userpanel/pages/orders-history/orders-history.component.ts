@@ -105,7 +105,9 @@ export class OrdersHistoryComponent implements OnInit {
   }
 
   viewOrderDetails(orderId: string) {
-    this.router.navigate(['/user-panel/order-details', orderId]);
+    this.router.navigate(['/panel-control/order-details', orderId]).catch(error => {
+      console.error('Navigation error:', error);
+    });
   }
 
   getProductImages(products: any[]): string[] {

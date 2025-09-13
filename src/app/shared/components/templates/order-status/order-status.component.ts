@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ArrowDownToLine, Book, BookCheck, Check, Headset, House, LUCIDE_ICONS, LucideAngularModule, LucideIconProvider, NotepadText, Package, Truck } from 'lucide-angular';
 import { OrdersService } from '../../../../core/services/orders/orders.service';
-import { Order } from '../../../utils/models/order.interface';
+import { Order, OrderProduct } from '../../../../shared/utils/models/order.interface';
 
 interface Step {
   id: number;
@@ -48,7 +48,8 @@ export class OrderStatusComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private ordersService: OrdersService
+    private ordersService: OrdersService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
@@ -70,7 +71,7 @@ export class OrderStatusComponent implements OnInit {
       
       if (result.success && result.order) {
         this.order = result.order;
-        this.generateSteps();
+        this.updateSteps();
       } else {
         this.error = result.error || 'Error al cargar los detalles de la orden';
       }
@@ -82,68 +83,107 @@ export class OrderStatusComponent implements OnInit {
     }
   }
 
-  generateSteps() {
+  private updateSteps() {
     if (!this.order) return;
-
-    const status = this.order.status;
-    
-    this.steps = [
-      { 
-        id: 1, 
-        label: 'Pedido confirmado', 
-        date: this.formatDate(this.order.created_at), 
-        time: this.formatTime(this.order.created_at), 
-        active: true, 
-        completed: true, 
-        icon: 'book' 
+  
+    const orderDate = new Date(this.order.created_at);
+    const formattedDate = orderDate.toLocaleDateString('es-AR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    });
+    const formattedTime = orderDate.toLocaleTimeString('es-AR', {
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  
+    // Create a new array for each status
+    let steps: Step[] = [
+      {
+        id: 1,
+        label: 'Pedido realizado',
+        date: formattedDate,
+        time: formattedTime,
+        active: false,
+        completed: true,
+        icon: 'NotepadText'
       },
-      { 
-        id: 2, 
-        label: 'Pedido aceptado', 
-        date: this.order.confirmed_at ? this.formatDate(this.order.confirmed_at) : '—', 
-        time: this.order.confirmed_at ? this.formatTime(this.order.confirmed_at) : '—', 
-        active: status !== 'pending', 
-        completed: status !== 'pending', 
-        icon: 'book-check' 
+      {
+        id: 2,
+        label: 'Pedido confirmado',
+        date: '',
+        time: '',
+        active: false,
+        completed: false,
+        icon: 'BookCheck'
       },
-      { 
-        id: 3, 
-        label: 'En preparación', 
-        date: status === 'in_transit' || status === 'completed' ? this.formatDate(this.order.updated_at) : '—', 
-        time: status === 'in_transit' || status === 'completed' ? this.formatTime(this.order.updated_at) : '—', 
-        active: status === 'in_transit' || status === 'completed', 
-        completed: status === 'in_transit' || status === 'completed', 
-        icon: 'package' 
+      {
+        id: 3,
+        label: 'En camino',
+        date: '',
+        time: '',
+        active: false,
+        completed: false,
+        icon: 'Truck'
       },
-      { 
-        id: 4, 
-        label: 'En camino', 
-        date: status === 'in_transit' ? this.formatDate(this.order.updated_at) : (this.order.estimated_delivery_at ? this.formatDate(this.order.estimated_delivery_at) : '—'), 
-        time: status === 'in_transit' ? this.formatTime(this.order.updated_at) : '—', 
-        active: status === 'in_transit', 
-        completed: status === 'completed', 
-        icon: 'truck' 
-      },
-      { 
-        id: 5, 
-        label: 'Entregado en domicilio', 
-        date: this.order.delivered_at ? this.formatDate(this.order.delivered_at) : '—', 
-        time: this.order.delivered_at ? this.formatTime(this.order.delivered_at) : '—', 
-        active: false, 
-        completed: status === 'completed', 
-        icon: 'house' 
-      },
+      {
+        id: 4,
+        label: 'Entregado',
+        date: '',
+        time: '',
+        active: false,
+        completed: false,
+        icon: 'House'
+      }
     ];
-
-    // Si está rechazado, marcar solo el primer paso como completado
-    if (status === 'rejected') {
-      this.steps.forEach((step, index) => {
-        if (index > 0) {
-          step.completed = false;
-          step.active = false;
-        }
-      });
+  
+    switch (this.order.status) {
+      case 'pending':
+        steps = [{
+          ...steps[0],
+          completed: true,
+          active: false
+        }];
+        break;
+        
+      case 'in_transit':
+        steps = steps.map((step, index) => {
+          if (index < 2) {
+            return { ...step, completed: true, active: false };
+          } else if (index === 2) {
+            return {
+              ...step,
+              completed: true,
+              active: true,
+              date: formattedDate,
+              time: formattedTime
+            };
+          }
+          return step;
+        });
+        break;
+        
+      case 'completed':
+        steps = steps.map(step => ({
+          ...step,
+          completed: true,
+          active: false,
+          date: step.id === 4 ? formattedDate : step.date,
+          time: step.id === 4 ? formattedTime : step.time
+        }));
+        break;
+        
+      case 'rejected':
+        steps = [{
+          ...steps[0],
+          completed: true,
+          active: false
+        }];
+        break;
     }
+  
+    this.steps = steps;
+    this.cdr.detectChanges();
   }
 
   formatDate(dateString: string): string {
@@ -170,16 +210,14 @@ export class OrderStatusComponent implements OnInit {
     }).format(price);
   }
 
-  getStatusLabel(): string {
-    if (!this.order) return '';
-    
-    const statusMap: { [key: string]: string } = {
+  getStatusLabel(status: string): string {
+    const statusLabels: { [key: string]: string } = {
       'pending': 'Pendiente',
       'in_transit': 'En camino',
-      'completed': 'Entregado',
-      'rejected': 'Cancelado'
+      'completed': 'Completado',
+      'rejected': 'Rechazado'
     };
-    return statusMap[this.order.status] || this.order.status;
+    return statusLabels[status] || status;
   }
 
   getStatusClass(): string {
@@ -213,8 +251,8 @@ export class OrderStatusComponent implements OnInit {
     return `${this.order.customer_first_name} ${this.order.customer_last_name}`;
   }
 
-  goBack() {
-    this.router.navigate(['/user-panel/orders-history']);
+  goBack(): void {
+    this.router.navigate(['/panel-control/mis-pedidos']);
   }
 
   downloadInvoice() {
@@ -225,5 +263,26 @@ export class OrderStatusComponent implements OnInit {
   contactSupport() {
     // Implementar contacto con soporte
     console.log('Contactar soporte para orden:', this.order?.id);
+  }
+
+  trackOrder(): void {
+    if (!this.order?.wamid) {
+      console.warn('No tracking information available for this order');
+      return;
+    }
+    
+    // Here you would typically open a tracking URL or show a modal
+    console.log('Tracking order:', this.order.wamid);
+  }
+
+  getTotal(): number {
+    return this.order?.total_final || 0;
+  }
+
+  getVariantInfo(product: OrderProduct): string {
+    const parts = [];
+    if (product.color) parts.push(product.color);
+    if (product.size) parts.push(product.size);
+    return parts.join(' • ');
   }
 }
