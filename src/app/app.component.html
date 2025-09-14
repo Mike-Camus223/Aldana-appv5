@@ -1,3 +1,7 @@
 <p-toast key="main"></p-toast>
+<app-loading-screen 
+  *ngIf="showMainLoader" 
+  (loadingFinished)="onMainLoadingFinished()">
+</app-loading-screen>
 <router-outlet></router-outlet>
 <app-loading-screen-generic></app-loading-screen-generic>

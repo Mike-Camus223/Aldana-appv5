@@ -34,16 +34,19 @@ export class LoadingScreenComponent implements AfterViewInit, OnDestroy {
   ) { }
 
   ngAfterViewInit(): void {
+    console.log('🎬 LoadingScreen - ngAfterViewInit called');
     requestAnimationFrame(() => {
       this.initializeAnimation();
     });
   }
 
   private initializeAnimation(): void {
+    console.log('🎬 LoadingScreen - initializeAnimation called');
     this.blockScrollAndInteraction();
     this.preloadElements();
     this.timeline = gsap.timeline({
       onComplete: () => {
+        console.log('🎬 LoadingScreen - Animation completed, emitting loadingFinished');
         this.unblockScrollAndInteraction();
         this.loadingFinished.emit();
         this.loaderService.finish('main');
