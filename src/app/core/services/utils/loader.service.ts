@@ -34,14 +34,8 @@ export class LoaderService {
 
   // Muestra loader respetando exclusiones configuradas
   showLoaderOnNavigationIfAllowed(url: string) {
-    console.log('🔄 LoaderService - URL:', url);
-    console.log('🔄 LoaderService - Context:', this.currentContext);
-    console.log('🔄 LoaderService - isFirstLoad:', this.isFirstLoad);
-    console.log('🔄 LoaderService - isUserPanelRoute:', this.isUserPanelRoute(url));
-
     // Si es la primera carga
     if (this.isFirstLoad) {
-      console.log('🔄 LoaderService - Showing MAIN loader');
       this.animationsEnabledSubject.next(false);
       this.currentLoaderSubject.next('main');
       this.isFirstLoad = false;
@@ -50,14 +44,11 @@ export class LoaderService {
 
     // Si es una ruta del panel de usuario
     if (this.isUserPanelRoute(url)) {
-      console.log('🔄 LoaderService - User panel route detected');
       // Solo mostrar loader si venimos desde contexto público
       if (this.currentContext === 'public') {
-        console.log('🔄 LoaderService - Showing GENERIC loader (from public context)');
         this.animationsEnabledSubject.next(false);
         this.currentLoaderSubject.next('generic');
       } else {
-        console.log('🔄 LoaderService - NOT showing loader (already in user panel)');
         // Si ya estamos en user panel, no mostrar loader
         this.currentLoaderSubject.next(null);
       }
@@ -66,20 +57,16 @@ export class LoaderService {
 
     // Para otras rutas, verificar si deben omitir el loader genérico
     if (this.shouldSkipGeneric(url)) {
-      console.log('🔄 LoaderService - Skipping generic loader');
       this.currentLoaderSubject.next(null);
       return;
     }
 
     // Mostrar loader genérico para otras rutas
-    console.log('🔄 LoaderService - Showing GENERIC loader (normal route)');
     this.animationsEnabledSubject.next(false);
     this.currentLoaderSubject.next('generic');
   }
 
   finish(loaderType?: 'main' | 'generic') {
-    console.log('🔄 LoaderService - finish() called with type:', loaderType);
-    
     this.currentLoaderSubject.next(null);
 
     if (loaderType === 'main') {

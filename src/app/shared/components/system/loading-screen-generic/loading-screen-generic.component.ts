@@ -27,16 +27,13 @@ export class LoadingScreenGenericComponent implements OnInit, OnDestroy, AfterVi
     this.hideLoader();
 
     this.loaderSubscription = this.loaderService.currentLoader$.subscribe(loader => {
-      console.log('🎬 LoadingScreenGeneric - Received loader state:', loader);
-      
       if (loader === 'generic' && !this.isAnimating) {
-        console.log('🎬 LoadingScreenGeneric - Playing animation');
         this.isAnimating = true;
         this.playAnimation();
       } else if (loader !== 'generic' && !this.isAnimating) {
-        console.log('🎬 LoadingScreenGeneric - Not showing (loader is not generic)');
+        // Not showing (loader is not generic)
       } else if (this.isAnimating) {
-        console.log('🎬 LoadingScreenGeneric - Ignoring state change - animation in progress');
+        // Ignoring state change - animation in progress
       }
     });
   }
@@ -44,8 +41,6 @@ export class LoadingScreenGenericComponent implements OnInit, OnDestroy, AfterVi
   private hideLoader(): void {
     const screen = this.loadingScreenRef.nativeElement;
 
-    console.log('🎬 LoadingScreenGeneric - hideLoader() called');
-    console.trace('🎬 LoadingScreenGeneric - hideLoader() stack trace:');
     screen.style.display = 'none';
     screen.style.pointerEvents = 'none';
     screen.style.opacity = '0';
@@ -55,16 +50,10 @@ export class LoadingScreenGenericComponent implements OnInit, OnDestroy, AfterVi
   private showLoader(): void {
     const screen = this.loadingScreenRef.nativeElement;
 
-    console.log('🎬 LoadingScreenGeneric - showLoader() called');
     screen.style.display = 'flex';
     screen.style.pointerEvents = 'auto';
     screen.style.visibility = 'visible';
     screen.style.zIndex = '9999';
-    console.log('🎬 LoadingScreenGeneric - Loader shown with styles:', {
-      display: screen.style.display,
-      opacity: screen.style.opacity,
-      zIndex: screen.style.zIndex
-    });
   }
 
   private playAnimation(): void {
@@ -80,67 +69,42 @@ export class LoadingScreenGenericComponent implements OnInit, OnDestroy, AfterVi
     window.addEventListener('scroll', this.preventScroll, { passive: false });
 
     this.showLoader();
-    // Pantalla blanca visible sin fade inicial
-    gsap.set(screen, { opacity: 1 });
+    
+    // Configurar estado inicial
+    gsap.set(screen, { opacity: 1, display: 'flex' });
     gsap.set(logo, { opacity: 0, y: 20 });
-
-    console.log('🎬 LoadingScreenGeneric - Creating timeline');
-    this.timeline = gsap.timeline({
-      onComplete: () => {
-        console.log('🎬 LoadingScreenGeneric - Timeline completed - calling hideLoader and finish');
-        this.hideLoader();
-
-        this.isScrollBlocked = false;
-        window.removeEventListener('scroll', this.preventScroll);
-
-        this.loaderService.finish('generic');
-        
-        if (typeof ScrollTrigger !== 'undefined') {
-          ScrollTrigger.refresh();
-        }
-        this.isAnimating = false;
-      },
-      onStart: () => {
-        console.log('🎬 LoadingScreenGeneric - Timeline started');
-      },
-      onUpdate: () => {
-        console.log('🎬 LoadingScreenGeneric - Timeline updating');
-      }
-    });
-
-    console.log('🎬 LoadingScreenGeneric - Starting animation sequence');
-    this.timeline
-      // Solo el logo hace fade-in al inicio
+    
+    // Animación simple y directa
+    gsap.timeline()
       .to(logo, { 
-        duration: 0.35, 
+        duration: 0.3, 
         opacity: 1, 
         y: 0, 
-        ease: 'power2.out',
-        onStart: () => console.log('🎬 Logo fade-in started'),
-        onComplete: () => console.log('🎬 Logo fade-in completed')
+        ease: 'power2.out'
       })
       .to({}, { 
-        duration: 0.3,
-        onComplete: () => console.log('🎬 Delay completed')
+        duration: 0.5
       })
-      // Luego el logo desaparece
       .to(logo, { 
-        duration: 0.25, 
+        duration: 0.3, 
         opacity: 0, 
-        y: 20, 
-        ease: 'power2.in',
-        onStart: () => console.log('🎬 Logo fade-out started'),
-        onComplete: () => console.log('🎬 Logo fade-out completed')
+        y: -20, 
+        ease: 'power2.in'
       })
-      // Al final recién aplicamos el fade-out global de la pantalla
       .to(screen, {
-        duration: 0.4,
+        duration: 0.3,
         opacity: 0,
         ease: 'power2.in',
-        onStart: () => console.log('🎬 Screen fade-out started'),
         onComplete: () => {
-          console.log('🎬 Screen fade-out completed');
           this.hideLoader();
+          this.isScrollBlocked = false;
+          window.removeEventListener('scroll', this.preventScroll);
+          this.loaderService.finish('generic');
+          this.isAnimating = false;
+          
+          if (typeof ScrollTrigger !== 'undefined') {
+            ScrollTrigger.refresh();
+          }
         }
       });
   }
@@ -152,8 +116,6 @@ export class LoadingScreenGenericComponent implements OnInit, OnDestroy, AfterVi
   };
 
   ngOnDestroy(): void {
-    console.log('🎬 LoadingScreenGeneric - ngOnDestroy called, isAnimating:', this.isAnimating);
-    
     if (this.loaderSubscription) {
       this.loaderSubscription.unsubscribe();
     }

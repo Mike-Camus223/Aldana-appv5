@@ -21,13 +21,9 @@ export class AppComponent implements OnInit {
   constructor(
     private router: Router,
     private viewportScroller: ViewportScroller
-  ) {
-    console.log('AppComponent - Constructor, showMainLoader:', this.showMainLoader);
-  }
+  ) {}
 
   ngOnInit(): void {
-    console.log('AppComponent - ngOnInit, showMainLoader:', this.showMainLoader);
-    
     this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe(() => {
@@ -39,7 +35,6 @@ export class AppComponent implements OnInit {
   }
 
   onMainLoadingFinished(): void {
-    console.log('AppComponent - onMainLoadingFinished called');
     this.showMainLoader = false;
   }
 }
