@@ -1,21 +1,27 @@
-<div class="w-full max-w-screen mx-auto p-6">
-  <ng-container *ngIf="favorites$ | async as favorites">
-    <div *ngIf="favorites.length > 0; else emptyFavorites">
-      <h1 class="text-2xl font-semibold mb-6">Mi Lista de Favoritos</h1>
-      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-        <app-cardproduct 
-          *ngFor="let fav of favorites" 
-          [product]="fav" 
-          (wishlistToggled)="removeFromFavorites($event)">
-        </app-cardproduct>
+<div class="container mx-auto px-4 py-8">
+  <h1 class="text-2xl font-bold mb-6">Mis Favoritos</h1>
+  
+  <div *ngIf="isLoading" class="text-center py-12">
+    <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-900 mx-auto"></div>
+    <p class="mt-4">Cargando favoritos...</p>
+  </div>
+
+  <div *ngIf="!isLoading && favorites.length === 0" class="text-center py-12">
+    <p>No tienes productos favoritos aún</p>
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+    <div *ngFor="let fav of favorites" 
+         class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+      <img [src]="fav.product?.main_image || 'assets/images/placeholder-product.jpg'" 
+           [alt]="fav.product?.name" 
+           class="w-full h-48 object-cover cursor-pointer"
+           (click)="navigateToProduct(fav.product?.slug)">
+      
+      <div class="p-4">
+        <h3 class="font-semibold text-lg mb-2">{{ fav.product?.name }}</h3>
+        <p class="text-gray-600">{{ fav.product?.price | currency:'ARS':'symbol':'1.0-0' }}</p>
       </div>
     </div>
-
-    <ng-template #emptyFavorites>
-      <div class="text-center py-12">
-        <h2 class="text-xl font-semibold mb-2">Tu lista de favoritos está vacía</h2>
-        <p class="text-gray-600">Añade los productos que te gustan para verlos aquí.</p>
-      </div>
-    </ng-template>
-  </ng-container>
+  </div>
 </div>

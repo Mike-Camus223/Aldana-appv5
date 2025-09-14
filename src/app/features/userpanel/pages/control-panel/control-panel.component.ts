@@ -36,3 +36,7 @@ export class ControlPanelComponent {
     this.router.navigate(['/informacion-cuenta']);
   }
 }
+
+// ANTES DE IRTE RECUERDA QUE TENES QUE HACER EL SISTEMA DE WHITELIST 
+// CON LA TABLA QUE CREAMOS Y CONECTARLO CON USUARIOS Y EL COMPONENTE DE TIENDA
+// OK? 

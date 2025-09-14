@@ -1,113 +1,126 @@
-import { Injectable, inject } from '@angular/core';
-import { SupabaseClient, User } from '@supabase/supabase-js';
-import { BehaviorSubject, Observable, from, of } from 'rxjs';
-import { catchError, map, switchMap, tap } from 'rxjs/operators';
+import { Injectable } from '@angular/core';
+import { SupabaseService } from '../data-access/supabase.service';
 import { AuthService } from '../auth/auth.service';
-import { Product } from '../../../shared/utils/models/Products-supabase.interface';
+import { BehaviorSubject, Observable, from, of } from 'rxjs';
+import { switchMap, tap, map, catchError } from 'rxjs/operators';
+
+export interface Favorite {
+  id: string;
+  user_id: string;
+  product_id: string;
+  created_at: string;
+  product?: any; // Product details will be joined
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class FavoritesService {
-  private authService = inject(AuthService);
-  private supabase: SupabaseClient;
-  private favoritesSubject = new BehaviorSubject<string[]>([]);
-
+  private favoritesSubject = new BehaviorSubject<Favorite[]>([]);
   favorites$ = this.favoritesSubject.asObservable();
 
-  constructor() {
-    this.supabase = this.authService.getAuthenticatedClient();
-    this.authService.currentUser$.subscribe(user => {
-      if (user) {
-        this.loadUserFavorites(user.id).subscribe();
+  constructor(
+    private supabase: SupabaseService,
+    private authService: AuthService
+  ) {
+    this.loadFavorites();
+  }
+
+  private async loadFavorites() {
+    const user = this.authService.getCurrentUser();
+    if (!user) {
+      this.favoritesSubject.next([]);
+      return;
+    }
+
+    try {
+      const { data, error } = await this.supabase['supabase']
+        .from('user_favorites')
+        .select(`
+          *,
+          product:products (
+            id,
+            name,
+            price,
+            main_image,
+            slug
+          )
+        `)
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+      this.favoritesSubject.next(data || []);
+    } catch (error) {
+      console.error('Error loading favorites:', error);
+      this.favoritesSubject.next([]);
+    }
+  }
+
+  async toggleFavorite(productId: string): Promise<{ success: boolean; message: string }> {
+    const user = this.authService.getCurrentUser();
+    if (!user) {
+      return { success: false, message: 'Debes iniciar sesión para guardar favoritos' };
+    }
+
+    try {
+      // Check if already favorited
+      const { data: existing } = await this.supabase['supabase']
+        .from('user_favorites')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('product_id', productId)
+        .single();
+
+      if (existing) {
+        // Remove from favorites
+        const { error } = await this.supabase['supabase']
+          .from('user_favorites')
+          .delete()
+          .eq('user_id', user.id)
+          .eq('product_id', productId);
+        
+        if (error) throw error;
+        await this.loadFavorites();
+        return { success: true, message: 'Producto eliminado de favoritos' };
       } else {
-        this.favoritesSubject.next([]);
+        // Add to favorites
+        const { error } = await this.supabase['supabase']
+          .from('user_favorites')
+          .insert([{ user_id: user.id, product_id: productId }]);
+        
+        if (error) throw error;
+        await this.loadFavorites();
+        return { success: true, message: 'Producto añadido a favoritos' };
       }
-    });
+    } catch (error) {
+      console.error('Error toggling favorite:', error);
+      return { 
+        success: false, 
+        message: 'Error al actualizar favoritos. Inténtalo de nuevo.' 
+      };
+    }
   }
 
-  private loadUserFavorites(userId: string): Observable<string[]> {
-    return from(this.supabase
-      .from('user_favorites')
-      .select('product_id')
-      .eq('user_id', userId))
-      .pipe(
-        map(response => {
-          if (response.error) throw response.error;
-          const favoriteIds = response.data.map(fav => fav.product_id);
-          this.favoritesSubject.next(favoriteIds);
-          return favoriteIds;
-        }),
-        catchError(error => {
-          console.error('Error loading user favorites:', error);
-          return of([]);
-        })
-      );
-  }
-
-  getFavorites(): Observable<Product[]> {
+  async isFavorite(productId: string): Promise<boolean> {
     const user = this.authService.getCurrentUser();
-    if (!user) return of([]);
+    if (!user) return false;
 
-    return from(this.supabase
-      .from('user_favorites')
-      .select('products(*)')
-      .eq('user_id', user.id))
-      .pipe(
-        map(response => {
-          if (response.error) throw response.error;
-          return response.data.map((item: any) => item.products) as Product[];
-        }),
-        catchError(error => {
-          console.error('Error fetching favorite products:', error);
-          return of([]);
-        })
-      );
+    try {
+      const { data, error } = await this.supabase['supabase']
+        .from('user_favorites')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('product_id', productId)
+        .single();
+
+      return !!data;
+    } catch (error) {
+      console.error('Error checking favorite:', error);
+      return false;
+    }
   }
 
-  addFavorite(productId: string): Observable<any> {
-    const user = this.authService.getCurrentUser();
-    if (!user) return of(null);
-
-    return from(this.supabase
-      .from('user_favorites')
-      .insert({ user_id: user.id, product_id: productId }))
-      .pipe(
-        tap(() => {
-          const currentFavorites = this.favoritesSubject.getValue();
-          this.favoritesSubject.next([...currentFavorites, productId]);
-        }),
-        catchError(error => {
-          console.error('Error adding favorite:', error);
-          return of(null);
-        })
-      );
-  }
-
-  removeFavorite(productId: string): Observable<any> {
-    const user = this.authService.getCurrentUser();
-    if (!user) return of(null);
-
-    return from(this.supabase
-      .from('user_favorites')
-      .delete()
-      .eq('user_id', user.id)
-      .eq('product_id', productId))
-      .pipe(
-        tap(() => {
-          const currentFavorites = this.favoritesSubject.getValue();
-          this.favoritesSubject.next(currentFavorites.filter(id => id !== productId));
-        }),
-        catchError(error => {
-          console.error('Error removing favorite:', error);
-          return of(null);
-        })
-      );
-  }
-
-  isFavorite(productId: string): Observable<boolean> {
-    return this.favorites$.pipe(
-      map(favorites => favorites.includes(productId))
-    );
+  getFavorites(): Observable<Favorite[]> {
+    return this.favorites$;
   }
 }
