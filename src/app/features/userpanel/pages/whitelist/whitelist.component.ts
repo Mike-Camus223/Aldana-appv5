@@ -4,12 +4,23 @@ import { AuthService } from '../../../../core/services/auth/auth.service';
 import { Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { CommonModule } from '@angular/common';
+import { Heart, HeartPlus, LUCIDE_ICONS, LucideAngularModule, LucideIconProvider } from 'lucide-angular';
 
 @Component({
   selector: 'app-whitelist',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule,LucideAngularModule],
   templateUrl: './whitelist.component.html',
+  providers: [
+      {
+        provide: LUCIDE_ICONS,
+        multi: true,
+        useValue: new LucideIconProvider({
+          Heart,
+          HeartPlus
+        })
+      }
+    ],
   styleUrls: ['./whitelist.component.css']
 })
 export class WhitelistComponent implements OnInit, OnDestroy {
@@ -26,7 +37,6 @@ export class WhitelistComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.loadFavorites();
     
-    // Suscribirse a cambios en la autenticación
     this.authService.currentUser$
       .pipe(takeUntil(this.destroy$))
       .subscribe(user => {
@@ -49,7 +59,14 @@ export class WhitelistComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     this.favoritesService.favorites$.subscribe({
       next: (favorites) => {
-        this.favorites = favorites || [];
+        // Ensure wishlisted is set to true for all favorited products
+        this.favorites = (favorites || []).map(fav => ({
+          ...fav,
+          product: {
+            ...fav.product,
+            wishlisted: true // Set wishlisted to true since these are all favorited items
+          }
+        }));
         this.isLoading = false;
       },
       error: (error) => {
@@ -59,12 +76,26 @@ export class WhitelistComponent implements OnInit, OnDestroy {
     });
   }
 
-  navigateToProduct(slug: string) {
-    this.router.navigate(['/producto', slug]);
+  
+  async toggleFavorite(event: Event, productId: string) {
+    event.stopPropagation();
+    
+    if (!this.authService.isAuthenticated()) {
+      alert('Por favor inicia sesión para modificar favoritos');
+      return;
+    }
+
+    try {
+      const result = await this.favoritesService.toggleFavorite(productId);
+      alert(result.message);
+    } catch (error) {
+      console.error('Error toggling favorite:', error);
+      alert('Ocurrió un error al actualizar favoritos');
+    }
   }
 
-  trackByFn(index: number, item: any): string {
-    return item.id;
+  navigateToProduct(slug: string) {
+    this.router.navigate(['/producto', slug]);
   }
 
   ngOnDestroy() {
