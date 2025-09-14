@@ -4,11 +4,12 @@ import { ViewportScroller } from '@angular/common';
 import { filter } from 'rxjs/operators';
 import { ToastModule } from 'primeng/toast';
 import * as AOS from 'aos'
+import { LoadingScreenGenericComponent } from "./shared/components/system/loading-screen-generic/loading-screen-generic.component";
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, ToastModule],
+  imports: [RouterOutlet, ToastModule, LoadingScreenGenericComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })

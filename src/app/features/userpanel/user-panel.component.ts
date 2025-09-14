@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, OnDestroy } from '@angular/core';
 import { NavigationEnd, NavigationStart, NavigationCancel, NavigationError, Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../core/services/auth/auth.service';
 import { User } from '@supabase/supabase-js';
@@ -7,6 +7,7 @@ import { filter } from 'rxjs/operators';
 import { AppMenuItem } from '../../shared/utils/models/app-menu-item.model';
 import { NavbarPublicv2Component } from "../../shared/components/system/navbar-publicv2/navbar-publicv2.component";
 import { Heart, LogOut, LUCIDE_ICONS, LucideAngularModule, LucideIconProvider, Package, Settings, UserRound } from 'lucide-angular';
+import { LoaderService } from '../../core/services/utils/loader.service';
 
 @Component({
   selector: 'app-user-panel',
@@ -28,7 +29,7 @@ import { Heart, LogOut, LUCIDE_ICONS, LucideAngularModule, LucideIconProvider, P
     ],
   styleUrls: ['./user-panel.component.css']
 })
-export class UserPanelComponent implements OnInit {
+export class UserPanelComponent implements OnInit, OnDestroy {
   currentUser: User | null = null;
   activeSection: string = 'control-panel';
   isLoading = false;
@@ -63,6 +64,8 @@ export class UserPanelComponent implements OnInit {
   
   private authService = inject(AuthService);
   private router = inject(Router);
+  private loaderService = inject(LoaderService);
+  private previousUrl: string | null = null;
 
   constructor() {
     this.router.events   
@@ -80,23 +83,37 @@ export class UserPanelComponent implements OnInit {
           return;
         }
 
-        if (event instanceof NavigationEnd) {
-          const currentRoute = event.urlAfterRedirects || event.url;
-          const currentItem = this.navItems.find(item => 
-            currentRoute.includes(item.route)
-          );
+        if (event instanceof NavigationEnd || event instanceof NavigationCancel || event instanceof NavigationError) {
+          const currentUrl = event.url;
+          
+          // Ocultar loader después de un pequeño retraso para evitar parpadeo
+          setTimeout(() => {
+            this.isLoading = false;
+          }, 100);
         }
-        setTimeout(() => this.isLoading = false, 300);
       });
   }
 
+  // Verificar si la URL pertenece al panel de usuario
+  private isUserPanelRoute(url: string): boolean {
+    return this.navItems.some(item => url.includes(item.route));
+  }
+
   ngOnInit(): void {
+    // Establecer contexto user-panel al inicializar el componente
+    this.loaderService.setContext('user-panel');
+    
     this.authService.currentUser$.subscribe(user => {
       this.currentUser = user;
       if (!user) {
         this.router.navigate(['/login']);
       }
     });
+  }
+
+  ngOnDestroy() {
+    // Restablecer contexto público al salir del panel de usuario
+    this.loaderService.setContext('public');
   }
 
   onSignOut() {
