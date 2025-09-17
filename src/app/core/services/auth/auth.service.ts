@@ -119,7 +119,7 @@ export class AuthService {
         if (userRole === 'admin') {
           this.router.navigate(['/dashboard']);
         } else {
-          this.router.navigate(['/user-panel']);
+          this.router.navigate(['/panel-control']);
         }
         return { success: true };
       }

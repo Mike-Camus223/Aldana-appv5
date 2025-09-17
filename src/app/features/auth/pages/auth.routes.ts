@@ -1,5 +1,6 @@
 import { Routes } from "@angular/router";
 import { RedirectGuard } from "../../../core/guards/redirect.guard";
+import { ConfirmationGuard } from "../../../core/guards/confirmation.guard";
 
 export default [
     {
@@ -14,11 +15,13 @@ export default [
     },
     {
         path: 'register-confirm',
-        loadComponent: () => import('./register-confirm/register-confirm.component')
+        loadComponent: () => import('./register-confirm/register-confirm.component'),
+        canActivate: [RedirectGuard, ConfirmationGuard]
     },
     {
         path: 'register-success',
-        loadComponent: () => import('./register-success/register-success.component')
+        loadComponent: () => import('./register-success/register-success.component'),
+        canActivate: [RedirectGuard, ConfirmationGuard]
     },
     {
         path: 'pre-login',

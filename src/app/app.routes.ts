@@ -16,12 +16,12 @@ export const routes: Routes = [
     {
         path: 'register-confirm',
         loadComponent: () => import('./features/auth/pages/register-confirm/register-confirm.component'),
-        canActivate: [ConfirmationGuard]
+        canActivate: [RedirectGuard, ConfirmationGuard]
     },
     {
         path: 'register-success',
         loadComponent: () => import('./features/auth/pages/register-success/register-success.component'),
-        canActivate: [ConfirmationGuard]
+        canActivate: [RedirectGuard, ConfirmationGuard]
     },
     {
         path: 'pre-login',

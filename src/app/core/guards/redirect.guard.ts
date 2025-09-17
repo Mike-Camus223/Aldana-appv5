@@ -18,7 +18,7 @@ export class RedirectGuard implements CanActivate {
       if (this.authService.isAdmin()) {
         return of(this.router.createUrlTree(['/dashboard']));
       } else {
-        return of(this.router.createUrlTree(['/user-panel']));
+        return of(this.router.createUrlTree(['/panel-control']));
       }
     }
     return of(true);
