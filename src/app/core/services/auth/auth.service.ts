@@ -28,10 +28,20 @@ export class AuthService {
    */
   private async initializeAuth(): Promise<void> {
     const { data: { session } } = await this.supabase.auth.getSession();
+    console.log('🔧 AuthService: Sesión obtenida:', session ? 'SÍ' : 'NO');
+    if (session?.user) {
+      console.log('🔧 AuthService: Usuario en sesión:', session.user.email);
+    }
+    
     this.sessionSubject.next(session);
     this.currentUserSubject.next(session?.user ?? null);
 
     this.supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('🔧 AuthService: Cambio de estado de auth:', event);
+      if (session?.user) {
+        console.log('🔧 AuthService: Usuario en cambio de estado:', session.user.email);
+      }
+      
       this.sessionSubject.next(session);
       this.currentUserSubject.next(session?.user ?? null);
       
