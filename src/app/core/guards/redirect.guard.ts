@@ -29,9 +29,7 @@ export class RedirectGuard implements CanActivate {
     if (this.isRateLimited()) {
       console.warn('Alerta de guard: Rate limit excedido, bloqueando acceso');
       this.logSecurityEvent('RATE_LIMIT_EXCEEDED', 'anonymous');
-      return of(this.router.createUrlTree(['/home'], {
-        queryParams: { error: 'too_many_attempts' }
-      }));
+      return of(this.router.createUrlTree(['/home']));
     }
 
     // Registrar intento de acceso
