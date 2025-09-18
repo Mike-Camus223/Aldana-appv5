@@ -35,8 +35,7 @@
               "src/styles.css",
               "node_modules/@fancyapps/ui/dist/fancybox/fancybox.css",
               "node_modules/aos/dist/aos.css",
-                "node_modules/keen-slider/keen-slider.min.css"
-
+              "node_modules/keen-slider/keen-slider.min.css"
             ],
             "scripts": [
               "node_modules/aos/dist/aos.js"
@@ -44,6 +43,11 @@
           },
           "configurations": {
             "production": {
+              "server": "src/main.server.ts",
+              "prerender": true,
+              "ssr": {
+                "entry": "src/server.ts"
+              },
               "budgets": [
                 {
                   "type": "initial",
