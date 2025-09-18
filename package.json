@@ -4,10 +4,16 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
+    "dev": "ng serve --configuration=development",
+    "build": "ng build --configuration=development",
+    "build:prod": "ng build --configuration=production",
+    "build:ssr": "ng build --configuration=production",
+    "build:ssr-local": "ng build --configuration=ssr-local",
+    "serve:ssr": "node dist/aldyapp2/server/server.mjs",
+    "serve:ssr:local": "npm run build:ssr-local && node dist/aldyapp2/server/server.mjs",
+    "test:ssr": "npm run build:ssr-local && npm run serve:ssr",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test",
-    "serve:ssr:Aldyapp2": "node dist/aldyapp2/server/server.mjs"
+    "test": "ng test"
   },
   "private": true,
   "dependencies": {
