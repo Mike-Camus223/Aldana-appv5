@@ -1,9 +1,10 @@
-import { Injectable } from '@angular/core';
-import { createClient, SupabaseClient, User, Session } from '@supabase/supabase-js';
-import { environment } from '../../../../environments/environment';
+import { Injectable, PLATFORM_ID, inject } from '@angular/core';
+import { SupabaseClient, User, Session } from '@supabase/supabase-js';
 import { BehaviorSubject, Observable, timer, Subscription } from 'rxjs';
 import { Router } from '@angular/router';
 import { ConfirmationGuard } from '../../guards/confirmation.guard';
+import { isPlatformBrowser } from '@angular/common';
+import { createSupabaseClient } from '../supabase/supabase-ssr.config';
 
 interface LoginAttempt {
   email: string;
@@ -23,6 +24,8 @@ export class AuthService {
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   private sessionSubject = new BehaviorSubject<Session | null>(null);
   private sessionTimeoutSubscription?: Subscription;
+  private platformId = inject(PLATFORM_ID);
+  private isBrowser = isPlatformBrowser(this.platformId);
   
   // Security configurations
   private readonly MAX_LOGIN_ATTEMPTS = 5;
@@ -34,10 +37,31 @@ export class AuthService {
   constructor(private router: Router) {
     // Usar singleton para evitar múltiples instancias
     if (!AuthService.supabaseInstance) {
-      AuthService.supabaseInstance = createClient(environment.SUPABASE_URL, environment.SUPABASE_KEY);
+      AuthService.supabaseInstance = createSupabaseClient();
     }
     this.supabase = AuthService.supabaseInstance;
-    this.initializeAuth();
+    
+    // Solo inicializar auth en el navegador o con cuidado en SSR
+    if (this.isBrowser) {
+      this.initializeAuth();
+    } else {
+      // En el servidor, inicializar con cuidado (sin listeners ni timers)
+      this.initializeAuthSSR();
+    }
+  }
+  
+  /**
+   * Versión segura para SSR de la inicialización de autenticación
+   */
+  private async initializeAuthSSR(): Promise<void> {
+    try {
+      const { data: { session } } = await this.supabase.auth.getSession();
+      this.sessionSubject.next(session);
+      this.currentUserSubject.next(session?.user ?? null);
+      // No iniciar timers ni listeners en SSR
+    } catch (error) {
+      console.error('Error initializing auth in SSR:', error);
+    }
   }
 
   /**
