@@ -1,4 +1,5 @@
-import { Component, ElementRef, ViewChild, AfterViewInit, Output, EventEmitter, OnDestroy, Renderer2 } from '@angular/core';
+import { Component, ElementRef, ViewChild, AfterViewInit, Output, EventEmitter, OnDestroy, Renderer2, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { gsap } from 'gsap';
 import { LoaderService } from '../../../../core/services/utils/loader.service';
 
@@ -30,16 +31,31 @@ export class LoadingScreenComponent implements AfterViewInit, OnDestroy {
 
   constructor(
     private renderer: Renderer2,
-    private loaderService: LoaderService
+    private loaderService: LoaderService,
+    @Inject(PLATFORM_ID) private platformId: Object
   ) { }
 
   ngAfterViewInit(): void {
-    requestAnimationFrame(() => {
-      this.initializeAnimation();
-    });
+    if (isPlatformBrowser(this.platformId)) {
+      if (typeof requestAnimationFrame !== 'undefined') {
+        requestAnimationFrame(() => {
+          this.initializeAnimation();
+        });
+      } else {
+        setTimeout(() => {
+          this.initializeAnimation();
+        }, 0);
+      }
+    }
   }
 
   private initializeAnimation(): void {
+    if (!isPlatformBrowser(this.platformId)) {
+      this.loadingFinished.emit();
+      this.loaderService.finish('main');
+      return;
+    }
+
     this.blockScrollAndInteraction();
     this.preloadElements();
     this.timeline = gsap.timeline({
@@ -249,6 +265,9 @@ export class LoadingScreenComponent implements AfterViewInit, OnDestroy {
   }
 
   private cleanupWillChange(): void {
+    // Solo ejecutar en el navegador
+    if (!isPlatformBrowser(this.platformId)) return;
+
     const elements = [
       ...Array.from(document.querySelectorAll('[style*="will-change"]')),
       this.screen.nativeElement,
@@ -273,12 +292,17 @@ export class LoadingScreenComponent implements AfterViewInit, OnDestroy {
   }
 
   private blockScrollAndInteraction(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    
     if (this.isScrollBlocked) return;
     
     this.isScrollBlocked = true;
     
-    this.renderer.addClass(document.body, 'reserve-scrollbar-space');
-    this.renderer.setStyle(document.body, 'overflow', 'hidden');
+    // Verificar que document.body existe antes de usarlo
+    if (typeof document !== 'undefined' && document.body) {
+      this.renderer.addClass(document.body, 'reserve-scrollbar-space');
+      this.renderer.setStyle(document.body, 'overflow', 'hidden');
+    }
     
     this.wheelListener = (event: WheelEvent) => {
       event.preventDefault();
@@ -308,8 +332,11 @@ export class LoadingScreenComponent implements AfterViewInit, OnDestroy {
     
     this.isScrollBlocked = false;
     
-    this.renderer.removeClass(document.body, 'reserve-scrollbar-space');
-    this.renderer.removeStyle(document.body, 'overflow');
+    // Verificar que document.body existe antes de usarlo
+    if (typeof document !== 'undefined' && document.body) {
+      this.renderer.removeClass(document.body, 'reserve-scrollbar-space');
+      this.renderer.removeStyle(document.body, 'overflow');
+    }
     
     if (this.wheelListener) {
       document.removeEventListener('wheel', this.wheelListener, { capture: true } as any);
@@ -333,6 +360,9 @@ export class LoadingScreenComponent implements AfterViewInit, OnDestroy {
       this.timeline = undefined;
     }
     
-    this.cleanupWillChange();
+    // Solo limpiar will-change en el navegador
+    if (isPlatformBrowser(this.platformId)) {
+      this.cleanupWillChange();
+    }
   }
 }

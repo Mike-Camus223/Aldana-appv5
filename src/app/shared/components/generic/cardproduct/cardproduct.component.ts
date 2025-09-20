@@ -7,9 +7,11 @@ import {
   HostListener,
   CUSTOM_ELEMENTS_SCHEMA,
   ViewChild,
-  ElementRef
+  ElementRef,
+  Inject
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { PLATFORM_ID } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { Product } from '../../../utils/models/Products-supabase.interface';
 import {
@@ -69,7 +71,8 @@ export class CardproductComponent implements OnInit {
   constructor(
     // ... existing injections
     private favoritesService: FavoritesService,
-    private authService: AuthService
+    private authService: AuthService,
+    @Inject(PLATFORM_ID) private platformId: Object
   ) {}
 
   ngOnInit(): void {
@@ -95,6 +98,8 @@ export class CardproductComponent implements OnInit {
   
 
   private updateView(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    
     const isMobileScreen = window.innerWidth < 768;
     this.isMobileView = isMobileScreen
       ? this.mobileMode === 'ismobile'

@@ -5,8 +5,11 @@ import {
   ElementRef,
   ViewChild,
   AfterViewInit,
-  OnDestroy
+  OnDestroy,
+  Inject,
+  PLATFORM_ID
 } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { CommonModule } from '@angular/common';
 import { WordRevealDirective } from '../../../utils/directives/word-reveal.directive';
 import { FadeUpLetterDirective } from '../../../utils/directives/fadeupletter.directive';
@@ -16,7 +19,10 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { LoaderService } from '../../../../core/services/utils/loader.service';
 import { Subscription } from 'rxjs';
 
-gsap.registerPlugin(ScrollTrigger);
+// Solo registrar plugins en el navegador
+if (typeof window !== 'undefined') {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 @Component({
   selector: 'app-bettercustom-dual',
@@ -62,14 +68,24 @@ export class BettercustomDualComponent implements AfterViewInit, OnDestroy {
   @ViewChild('parallaxImage', { static: false }) parallaxImage!: ElementRef<HTMLImageElement>;
   @ViewChild('parallaxContainer', { static: false }) parallaxContainer!: ElementRef<HTMLDivElement>;
 
-  screenWidth = window.innerWidth;
+  screenWidth = 0;
   private animSub?: Subscription;
 
-  constructor(private el: ElementRef, private loaderService: LoaderService) {}
+  constructor(
+    private el: ElementRef, 
+    private loaderService: LoaderService,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {
+    if (isPlatformBrowser(this.platformId)) {
+      this.screenWidth = window.innerWidth;
+    }
+  }
 
   @HostListener('window:resize')
   onResize() {
-    this.screenWidth = window.innerWidth;
+    if (isPlatformBrowser(this.platformId)) {
+      this.screenWidth = window.innerWidth;
+    }
   }
 
   ngAfterViewInit() {
@@ -77,11 +93,14 @@ export class BettercustomDualComponent implements AfterViewInit, OnDestroy {
       console.warn('BettercustomDualComponent: mediaType is set to "video" but videoSrc is missing.');
     }
 
-    this.animSub = this.loaderService.animationsEnabled$.subscribe((enabled: boolean) => {
-      if (enabled && this.mediaType === 'image') {
-        this.initParallax();
-      }
-    });
+    // Solo inicializar animaciones en el navegador
+    if (isPlatformBrowser(this.platformId)) {
+      this.animSub = this.loaderService.animationsEnabled$.subscribe((enabled: boolean) => {
+        if (enabled && this.mediaType === 'image') {
+          this.initParallax();
+        }
+      });
+    }
   }
 
   ngOnDestroy() {
@@ -90,6 +109,9 @@ export class BettercustomDualComponent implements AfterViewInit, OnDestroy {
   }
 
   private initParallax() {
+    // Solo ejecutar en el navegador
+    if (!isPlatformBrowser(this.platformId)) return;
+    
     const imageEl = this.parallaxImage?.nativeElement;
     const containerEl = this.parallaxContainer?.nativeElement;
     if (!imageEl || !containerEl) return;
@@ -158,14 +180,17 @@ export class BettercustomDualComponent implements AfterViewInit, OnDestroy {
   }
 
   getImageStyle() {
+    if (!isPlatformBrowser(this.platformId)) return {};
     return this.screenWidth >= 768 ? { width: this.imageWidth } : {};
   }
 
   getTextStyle() {
+    if (!isPlatformBrowser(this.platformId)) return {};
     return this.screenWidth >= 768 ? { width: this.textWidth } : {};
   }
 
   getBlockHeight() {
+    if (!isPlatformBrowser(this.platformId)) return {};
     const isDesktop = this.screenWidth >= 768;
     if (isDesktop) {
       return { height: this.height };

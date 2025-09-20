@@ -1,4 +1,5 @@
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild, AfterViewInit, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import gsap from 'gsap';
 import ScrollTrigger from 'gsap/ScrollTrigger';
 import { LoaderService } from '../../../../core/services/utils/loader.service';
@@ -19,7 +20,10 @@ export class LoadingScreenGenericComponent implements OnInit, OnDestroy, AfterVi
   private isScrollBlocked = false;
   private isAnimating = false;
 
-  constructor(private loaderService: LoaderService) {}
+  constructor(
+    private loaderService: LoaderService,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {}
 
   ngOnInit(): void {}
 
@@ -57,6 +61,8 @@ export class LoadingScreenGenericComponent implements OnInit, OnDestroy, AfterVi
   }
 
   private playAnimation(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    
     const screen = this.loadingScreenRef.nativeElement;
     const logo = this.logoRef.nativeElement;
 

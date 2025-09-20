@@ -1,5 +1,6 @@
-import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, OnDestroy, HostListener, Inject } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { PLATFORM_ID } from '@angular/core';
 import { CheckboxModule } from 'primeng/checkbox';
 import { SliderModule } from 'primeng/slider';
 import { FormsModule } from '@angular/forms';
@@ -134,7 +135,8 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
     private supabaseService: SupabaseService,
     private route: ActivatedRoute,
     private router: Router,
-    private location: Location
+    private location: Location,
+    @Inject(PLATFORM_ID) private platformId: Object
   ) { }
 
   ngOnInit(): void {
@@ -147,9 +149,11 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
 
   @HostListener('window:resize', ['$event'])
   onResize(event: any): void {
-    this.checkMobileView();
-    if (!this.isMobileView && this.showFilters) {
-      this.showFilters = false;
+    if (isPlatformBrowser(this.platformId)) {
+      this.checkMobileView();
+      if (!this.isMobileView && this.showFilters) {
+        this.showFilters = false;
+      }
     }
   }
 
@@ -192,7 +196,9 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
   }
 
   checkMobileView(): void {
-    this.isMobileView = window.innerWidth < 1024;
+    if (isPlatformBrowser(this.platformId)) {
+      this.isMobileView = window.innerWidth < 1024;
+    }
   }
 
   setProductColumns(cols: number): void {
@@ -203,8 +209,10 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
 
   toggleFilters(): void {
     this.showFilters = !this.showFilters;
-    if (this.isMobileView) {
-      document.body.style.overflow = this.showFilters ? 'hidden' : 'auto';
+    if (this.isMobileView && isPlatformBrowser(this.platformId)) {
+      if (typeof document !== 'undefined' && document.body) {
+        document.body.style.overflow = this.showFilters ? 'hidden' : 'auto';
+      }
     }
   }
 

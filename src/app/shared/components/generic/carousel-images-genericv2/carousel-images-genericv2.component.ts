@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import {
   Component,
   ElementRef,
@@ -7,7 +7,9 @@ import {
   AfterViewInit,
   OnDestroy,
   Output,
-  EventEmitter
+  EventEmitter,
+  Inject,
+  PLATFORM_ID
 } from '@angular/core';
 import KeenSlider, { KeenSliderInstance } from 'keen-slider';
 import { FadeupallDirective } from '../../../utils/directives/fadeupall.directive';
@@ -40,23 +42,29 @@ export class CarouselImagesGenericv2Component implements AfterViewInit, OnDestro
   @Output() imageClick = new EventEmitter<any>();
 
   private sliderInstance: KeenSliderInstance | null = null;
+  
+  constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
 
   ngAfterViewInit(): void {
-    if (this.images.length && this.sliderRef?.nativeElement) {
+    // Solo inicializar el slider en el navegador, no en el servidor
+    if (isPlatformBrowser(this.platformId) && this.images.length && this.sliderRef?.nativeElement) {
       this.initializeSlider();
     }
   }
 
   private initializeSlider(): void {
-    this.sliderInstance = new KeenSlider(this.sliderRef.nativeElement, {
-      loop: this.loop,
-      mode: 'snap',
-      slides: {
-        perView: this.slidesPerView,
-        spacing: this.spacing,
-      },
-      breakpoints: this.breakpoints
-    });
+    // Verificar nuevamente que estamos en el navegador
+    if (isPlatformBrowser(this.platformId)) {
+      this.sliderInstance = new KeenSlider(this.sliderRef.nativeElement, {
+        loop: this.loop,
+        mode: 'snap',
+        slides: {
+          perView: this.slidesPerView,
+          spacing: this.spacing,
+        },
+        breakpoints: this.breakpoints
+      });
+    }
   }
 
   ngOnDestroy(): void {

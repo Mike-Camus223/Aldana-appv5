@@ -1,10 +1,14 @@
-import { Directive, ElementRef, AfterViewInit, Renderer2, OnDestroy, Input } from '@angular/core';
+import { Directive, ElementRef, AfterViewInit, Renderer2, OnDestroy, Input, Inject, PLATFORM_ID } from '@angular/core';
 import { Subject, takeUntil } from 'rxjs';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { LoaderService } from '../../../core/services/utils/loader.service';
+import { isPlatformBrowser } from '@angular/common';
 
-gsap.registerPlugin(ScrollTrigger);
+// Solo registrar plugins en el navegador
+if (typeof window !== 'undefined') {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 export type RevealDirection = 'up' | 'down' | 'left' | 'right';
 

@@ -1,4 +1,5 @@
-import { Directive, ElementRef, Renderer2, HostListener } from '@angular/core';
+import { Directive, ElementRef, Renderer2, HostListener, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 
 @Directive({
   selector: '[appAldyRadio]'
@@ -6,7 +7,11 @@ import { Directive, ElementRef, Renderer2, HostListener } from '@angular/core';
 export class AldyRadioDirective {
   private checkmarkIcon: HTMLElement | null = null;
 
-  constructor(private el: ElementRef, private renderer: Renderer2) {
+  constructor(
+    private el: ElementRef, 
+    private renderer: Renderer2,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {
     this.setBaseStyles();
     if ((this.el.nativeElement as HTMLInputElement).checked) {
       this.applyCheckedStyles();

@@ -40,6 +40,7 @@
     "gsap": "^3.13.0",
     "keen-slider": "^6.8.6",
     "lucide-angular": "^0.525.0",
+    "ngx-cookie-service": "^19.0.0",
     "postcss": "^8.5.4",
     "primeicons": "^7.0.0",
     "primeng": "^19.1.3",

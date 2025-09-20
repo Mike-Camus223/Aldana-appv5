@@ -1,4 +1,5 @@
-import { AfterViewInit, Directive, ElementRef, Renderer2, OnDestroy } from '@angular/core';
+import { AfterViewInit, Directive, ElementRef, Renderer2, OnDestroy, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { Subject, takeUntil } from 'rxjs';
 import gsap from 'gsap';
 import { LoaderService } from '../../../core/services/utils/loader.service';
@@ -18,7 +19,8 @@ export class WordRevealDirective implements AfterViewInit, OnDestroy {
   constructor(
     private el: ElementRef, 
     private renderer: Renderer2,
-    private loaderService: LoaderService
+    private loaderService: LoaderService,
+    @Inject(PLATFORM_ID) private platformId: Object
   ) {
     // En lugar de ocultar completamente, usamos opacity para mantener el espacio
     this.renderer.setStyle(this.el.nativeElement, 'opacity', '0');
@@ -27,6 +29,13 @@ export class WordRevealDirective implements AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
+    // Solo ejecutar en el navegador
+    if (!isPlatformBrowser(this.platformId)) {
+      // En SSR, mostrar el contenido directamente sin animación
+      this.renderer.setStyle(this.el.nativeElement, 'opacity', '1');
+      return;
+    }
+    
     this.originalContent = this.el.nativeElement.innerHTML || this.el.nativeElement.textContent || '';
     
     // Calculamos las dimensiones originales inmediatamente
@@ -54,6 +63,15 @@ export class WordRevealDirective implements AfterViewInit, OnDestroy {
 
   private calculateAndReserveDimensions(): void {
     if (this.dimensionsCalculated) return;
+
+    // Solo calcular dimensiones en el navegador
+    if (!isPlatformBrowser(this.platformId)) {
+      // En SSR, usar dimensiones por defecto
+      this.originalDimensions.width = 0;
+      this.originalDimensions.height = 0;
+      this.dimensionsCalculated = true;
+      return;
+    }
 
     const nativeElement = this.el.nativeElement;
     
@@ -100,6 +118,12 @@ export class WordRevealDirective implements AfterViewInit, OnDestroy {
   private setupAnimation(): void {
     if (this.animationSetup) return;
     this.animationSetup = true;
+
+    // Solo ejecutar animaciones en el navegador
+    if (!isPlatformBrowser(this.platformId)) {
+      this.renderer.setStyle(this.el.nativeElement, 'opacity', '1');
+      return;
+    }
 
     requestAnimationFrame(() => {
       try {

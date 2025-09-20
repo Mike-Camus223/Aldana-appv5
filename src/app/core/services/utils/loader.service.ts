@@ -1,6 +1,7 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { isPlatformBrowser } from '@angular/common';
 
 @Injectable({
   providedIn: 'root'
@@ -13,12 +14,23 @@ export class LoaderService {
   private userPanelRoutes = ['/panel-control', '/favoritos', '/user-panel'];
   private isInUserPanel = false;
   private currentContext: 'public' | 'user-panel' = 'public';
+  private isBrowser: boolean;
   
   private currentLoaderSubject = new BehaviorSubject<'main' | 'generic' | null>(null);
   public currentLoader$ = this.currentLoaderSubject.asObservable();
 
   private animationsEnabledSubject = new BehaviorSubject<boolean>(false);
   public animationsEnabled$ = this.animationsEnabledSubject.asObservable();
+  
+  constructor(@Inject(PLATFORM_ID) private platformId: Object) {
+    this.isBrowser = isPlatformBrowser(this.platformId);
+    // En SSR, marcar el loader como completado inmediatamente
+    if (!this.isBrowser) {
+      this.isMainLoaderComplete = true;
+      this.isFirstLoad = false;
+      this.animationsEnabledSubject.next(true);
+    }
+  }
 
  
   showLoaderOnNavigation() {
@@ -73,18 +85,29 @@ export class LoaderService {
       this.isMainLoaderComplete = true;
     }
     
-    setTimeout(() => {
+    if (this.isBrowser) {
+      setTimeout(() => {
+        this.animationsEnabledSubject.next(true);
+        if (typeof ScrollTrigger !== 'undefined') {
+          ScrollTrigger.refresh();
+        }
+      }, 50);
+    } else {
+      // En SSR, activar animaciones inmediatamente sin ScrollTrigger
       this.animationsEnabledSubject.next(true);
-      ScrollTrigger.refresh();
-    }, 50);
+    }
   }
 
   refreshScrollTrigger() {
-    ScrollTrigger.refresh();
+    if (this.isBrowser && typeof ScrollTrigger !== 'undefined') {
+      ScrollTrigger.refresh();
+    }
   }
 
   clearAllAnimations(): void {
-    ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+    if (this.isBrowser && typeof ScrollTrigger !== 'undefined') {
+      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+    }
   }
 
   reset() {
@@ -121,10 +144,17 @@ export class LoaderService {
   // Fuerza el reinicio de las animaciones en rutas sin loader
   triggerAnimations() {
     this.animationsEnabledSubject.next(false);
-    setTimeout(() => {
+    if (this.isBrowser) {
+      setTimeout(() => {
+        this.animationsEnabledSubject.next(true);
+        if (typeof ScrollTrigger !== 'undefined') {
+          ScrollTrigger.refresh();
+        }
+      }, 50); // Pequeño delay para que las directivas procesen el 'false'
+    } else {
+      // En SSR, activar animaciones inmediatamente
       this.animationsEnabledSubject.next(true);
-      ScrollTrigger.refresh();
-    }, 50); // Pequeño delay para que las directivas procesen el 'false'
+    }
   }
 
   // Método para verificar si estamos en el panel de usuario

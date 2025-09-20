@@ -3,8 +3,10 @@ import {
   AfterViewInit,
   ElementRef,
   ViewChild,
+  Inject,
+  PLATFORM_ID
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { DinamicTitlesComponent } from '../../generic/dinamic-titles/dinamic-titles.component';
 import gsap from 'gsap';
 import ScrollTrigger from 'gsap/ScrollTrigger';
@@ -14,7 +16,10 @@ import { CardInitAnimationDirective } from '../../../utils/directives/card-init-
 import { FadeUpLetterDirective } from '../../../utils/directives/fadeupletter.directive';
 import { WordRevealDirective } from '../../../utils/directives/word-reveal.directive';
 
-gsap.registerPlugin(ScrollTrigger);
+// Solo registrar plugins en el navegador
+if (typeof window !== 'undefined') {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 @Component({
   selector: 'app-about-template',

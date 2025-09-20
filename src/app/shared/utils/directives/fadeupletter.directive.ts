@@ -1,4 +1,5 @@
-import { AfterViewInit, Directive, ElementRef, Renderer2, OnDestroy } from '@angular/core';
+import { AfterViewInit, Directive, ElementRef, Renderer2, OnDestroy, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { Subject, takeUntil } from 'rxjs';
 import gsap from 'gsap';
 import { LoaderService } from '../../../core/services/utils/loader.service';
@@ -16,31 +17,36 @@ export class FadeUpLetterDirective implements AfterViewInit, OnDestroy {
   constructor(
     private el: ElementRef, 
     private renderer: Renderer2,
-    private loaderService: LoaderService
+    private loaderService: LoaderService,
+    @Inject(PLATFORM_ID) private platformId: Object
   ) {
-    this.renderer.setStyle(this.el.nativeElement, 'opacity', '0');
-    this.renderer.setStyle(this.el.nativeElement, 'transform', 'translateY(0px)');
-    this.renderer.setStyle(this.el.nativeElement, 'visibility', 'visible');
+    if (isPlatformBrowser(this.platformId)) {
+      this.renderer.setStyle(this.el.nativeElement, 'opacity', '0');
+      this.renderer.setStyle(this.el.nativeElement, 'transform', 'translateY(0px)');
+      this.renderer.setStyle(this.el.nativeElement, 'visibility', 'visible');
+    }
   }
 
   ngAfterViewInit(): void {
-    this.calculateAndReserveDimensions();
-    
-    this.loaderService.animationsEnabled$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((enabled: boolean) => {
-        if (enabled && !this.animationSetup) {
-          setTimeout(() => {
-            this.startAnimation();
-          }, 50);
-        } else if (!enabled) {
-          this.resetAnimation();
-        }
-      });
+    if (isPlatformBrowser(this.platformId)) {
+      this.calculateAndReserveDimensions();
+      
+      this.loaderService.animationsEnabled$
+        .pipe(takeUntil(this.destroy$))
+        .subscribe((enabled: boolean) => {
+          if (enabled && !this.animationSetup) {
+            setTimeout(() => {
+              this.startAnimation();
+            }, 50);
+          } else if (!enabled) {
+            this.resetAnimation();
+          }
+        });
+    }
   }
 
   private calculateAndReserveDimensions(): void {
-    if (this.dimensionsCalculated) return;
+    if (this.dimensionsCalculated || !isPlatformBrowser(this.platformId)) return;
 
     const nativeElement = this.el.nativeElement;
     const originalOpacity = nativeElement.style.opacity;
@@ -67,6 +73,7 @@ export class FadeUpLetterDirective implements AfterViewInit, OnDestroy {
   }
 
   private resetAnimation(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
     this.animationSetup = false;
     gsap.killTweensOf(this.el.nativeElement);
     this.renderer.setStyle(this.el.nativeElement, 'opacity', '0');
@@ -74,7 +81,7 @@ export class FadeUpLetterDirective implements AfterViewInit, OnDestroy {
   }
 
   private startAnimation(): void {
-    if (this.animationSetup) return;
+    if (this.animationSetup || !isPlatformBrowser(this.platformId)) return;
     this.animationSetup = true;
 
     requestAnimationFrame(() => {
@@ -117,7 +124,9 @@ export class FadeUpLetterDirective implements AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    gsap.killTweensOf(this.el.nativeElement);
+    if (isPlatformBrowser(this.platformId)) {
+      gsap.killTweensOf(this.el.nativeElement);
+    }
     this.destroy$.next();
     this.destroy$.complete();
   }

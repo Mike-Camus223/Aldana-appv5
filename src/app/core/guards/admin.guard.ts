@@ -1,4 +1,5 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { CanActivate, CanActivateChild, Router, UrlTree } from '@angular/router';
 import { Observable, map, catchError, of, switchMap, take } from 'rxjs';
 import { AuthService } from '../services/auth/auth.service';
@@ -11,6 +12,8 @@ export class AdminGuard implements CanActivate, CanActivateChild {
   private router = inject(Router);
   private readonly MAX_RETRY_ATTEMPTS = 2;
   private retryCount = 0;
+
+  constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
 
   canActivate(): Observable<boolean | UrlTree> {
     return this.checkAdminAccess();

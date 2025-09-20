@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import {
   Component,
   Input,
@@ -8,7 +8,9 @@ import {
   SimpleChanges,
   AfterViewInit,
   OnDestroy,
-  ChangeDetectorRef
+  ChangeDetectorRef,
+  Inject,
+  PLATFORM_ID
 } from '@angular/core';
 import { Carousel } from '@fancyapps/ui';
 import { Thumbs } from '@fancyapps/ui/dist/carousel/carousel.thumbs.esm.js';
@@ -29,6 +31,7 @@ export class FancyCarouselComponent implements AfterViewInit, OnChanges, OnDestr
   
   currentSlideIndex: number = 0;
   isComponentReady: boolean = false; 
+  isCarouselReady: boolean = false;
   
   private carouselInstance: Carousel | null = null;
   private isViewInitialized = false;
@@ -40,7 +43,11 @@ export class FancyCarouselComponent implements AfterViewInit, OnChanges, OnDestr
   private isDesktop = false;
   private isInitialized = false;
   
-  constructor(private host: ElementRef, private cdr: ChangeDetectorRef) {
+  constructor(
+    private host: ElementRef, 
+    private cdr: ChangeDetectorRef,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {
     this.isDesktop = this.getIsDesktop();
   }
   
@@ -90,7 +97,7 @@ export class FancyCarouselComponent implements AfterViewInit, OnChanges, OnDestr
   }
 
   private getIsDesktop(): boolean {
-    if (typeof window === 'undefined') return true;
+    if (!isPlatformBrowser(this.platformId)) return true;
     
     const windowWidth = window.innerWidth;
     const actualViewportWidth = document.documentElement.clientWidth;
@@ -100,6 +107,8 @@ export class FancyCarouselComponent implements AfterViewInit, OnChanges, OnDestr
   }
   
   private setupResizeObserver(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    
     if (typeof ResizeObserver !== 'undefined') {
       this.resizeObserver = new ResizeObserver((entries) => {
         const newIsDesktop = this.getIsDesktop();
@@ -113,7 +122,9 @@ export class FancyCarouselComponent implements AfterViewInit, OnChanges, OnDestr
       const container = this.host.nativeElement.querySelector('.product-container');
       if (container) {
         this.resizeObserver.observe(container);
-        this.resizeObserver.observe(document.documentElement);
+        if (typeof document !== 'undefined' && document.documentElement) {
+          this.resizeObserver.observe(document.documentElement);
+        }
       }
     } else {
       this.setupMediaQueryListener();
@@ -121,6 +132,8 @@ export class FancyCarouselComponent implements AfterViewInit, OnChanges, OnDestr
   }
   
   private setupMediaQueryListener(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    
     const mediaQueries = [
       window.matchMedia('(min-width: 768px)'),
       window.matchMedia('(max-width: 767px)')
@@ -216,12 +229,36 @@ export class FancyCarouselComponent implements AfterViewInit, OnChanges, OnDestr
         },
         { Thumbs }
       );
+      
+      if (!isPlatformBrowser(this.platformId)) return;
+      
+      this.carouselInstance.on('ready', () => {
+        this.isCarouselReady = true;
+        this.cdr.detectChanges();
+      });
+      
+      this.carouselInstance.on('change', (current: number) => {
+        this.currentSlideIndex = current;
+        this.cdr.detectChanges();
+      });
+      
+      if (this.fancyboxInstance) {
+        this.fancyboxInstance.on('Carousel.change', (fancybox: any) => {
+          const currentIndex = fancybox.getSlide()?.index || 0;
+          if (this.carouselInstance) {
+            // Usar el método correcto para cambiar slide en FancyApps Carousel
+            this.carouselInstance.slideTo(currentIndex);
+          }
+        });
+      }
     } catch (error) {
       console.warn('Error initializing carousel:', error);
     }
   }
   
   private destroyCarousel(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    
     if (this.carouselInstance) {
       try {
         this.carouselInstance.destroy();
@@ -244,6 +281,8 @@ export class FancyCarouselComponent implements AfterViewInit, OnChanges, OnDestr
   }
 
   private setupFancybox(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    
     this.destroyFancybox();
     
     requestAnimationFrame(() => {

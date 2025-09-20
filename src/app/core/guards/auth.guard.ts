@@ -1,4 +1,5 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { CanActivate, CanActivateChild, Router, UrlTree } from '@angular/router';
 import { Observable, map, take, catchError, of, switchMap } from 'rxjs';
 import { AuthService } from '../services/auth/auth.service';
@@ -11,6 +12,8 @@ export class AuthGuard implements CanActivate, CanActivateChild {
   private router = inject(Router);
   private readonly MAX_RETRY_ATTEMPTS = 3;
   private retryCount = 0;
+
+  constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
 
   canActivate(): Observable<boolean | UrlTree> {
     return this.checkAuthentication();
@@ -107,22 +110,24 @@ export class AuthGuard implements CanActivate, CanActivateChild {
   }
 
   private logSecurityEvent(event: string, userEmail: string | undefined, metadata?: any): void {
-    const safeEmail = userEmail || 'unknown';
-    const logEntry = {
-      timestamp: new Date().toISOString(),
-      event,
-      userEmail: safeEmail,
-      userAgent: navigator.userAgent,
-      url: window.location.href,
-      metadata
-    };
-        
-    // En producción, enviar estos logs a un servicio de monitoreo
-    if (typeof window !== 'undefined' && (window as any).gtag) {
-      (window as any).gtag('event', event, {
-        custom_parameter_1: safeEmail,
-        custom_parameter_2: metadata ? JSON.stringify(metadata) : ''
-      });
+    if (isPlatformBrowser(this.platformId)) {
+      const safeEmail = userEmail || 'unknown';
+      const logEntry = {
+        timestamp: new Date().toISOString(),
+        event,
+        userEmail: safeEmail,
+        userAgent: navigator.userAgent,
+        url: window.location.href,
+        metadata
+      };
+          
+      // En producción, enviar estos logs a un servicio de monitoreo
+      if (typeof window !== 'undefined' && (window as any).gtag) {
+        (window as any).gtag('event', event, {
+          custom_parameter_1: safeEmail,
+          custom_parameter_2: metadata ? JSON.stringify(metadata) : ''
+        });
+      }
     }
   }
 }

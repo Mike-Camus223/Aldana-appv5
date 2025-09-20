@@ -1,9 +1,12 @@
-import { Directive, ElementRef, AfterViewInit, Renderer2, OnDestroy } from '@angular/core';
+import { Directive, ElementRef, AfterViewInit, Renderer2, OnDestroy, Inject, PLATFORM_ID } from '@angular/core';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { isPlatformBrowser } from '@angular/common';
 
-// Registrar ScrollTrigger
-gsap.registerPlugin(ScrollTrigger);
+// Solo registrar plugins en el navegador
+if (typeof window !== 'undefined') {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 @Directive({
   selector: '[appZoomout]'

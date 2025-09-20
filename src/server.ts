@@ -27,30 +27,23 @@ const commonEngine = new CommonEngine();
 /**
  * Serve static files from /browser
  */
-app.get(
-  '**',
-  express.static(browserDistFolder, {
-    maxAge: '1y',
-    index: 'index.html'
-  }),
-);
+app.use(express.static(browserDistFolder, {
+  maxAge: '1y',
+  index: false // Importante: evitar que sirva index.html automáticamente
+}));
 
 /**
- * Handle all other requests by rendering the Angular application.
+ * Handle all other requests by serving the client-side version directly.
  */
-app.get('**', (req, res, next) => {
-  const { protocol, originalUrl, baseUrl, headers } = req;
-
-  commonEngine
-    .render({
-      bootstrap,
-      documentFilePath: indexHtml,
-      url: `${protocol}://${headers.host}${originalUrl}`,
-      publicPath: browserDistFolder,
-      providers: [{ provide: APP_BASE_HREF, useValue: baseUrl }],
-    })
-    .then((html) => res.send(html))
-    .catch((err) => next(err));
+app.get('*', (req, res, next) => {
+  if (req.baseUrl.startsWith('/api')) {
+    next();
+    return;
+  }
+  
+  // Servir directamente el index.csr.html para todas las rutas
+  const clientIndexHtml = join(browserDistFolder, 'index.csr.html');
+  res.sendFile(clientIndexHtml);
 });
 
 /**

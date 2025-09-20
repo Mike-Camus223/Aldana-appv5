@@ -1,4 +1,5 @@
-import { Directive, ElementRef, OnInit, OnDestroy, Inject, Input } from '@angular/core';
+import { Directive, ElementRef, OnInit, OnDestroy, Inject, Input, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { LoaderService } from '../../../core/services/utils/loader.service';
@@ -18,20 +19,25 @@ export class FadeupallDirective implements OnInit, OnDestroy {
 
   constructor(
     private elementRef: ElementRef,
-    private loaderService: LoaderService
+    private loaderService: LoaderService,
+    @Inject(PLATFORM_ID) private platformId: Object
   ) { }
 
   ngOnInit(): void {
-    this.detectCarouselContext();
-    this.setupInitialState();
-    this.animationSubscription = this.loaderService.animationsEnabled$.subscribe((enabled: boolean) => {
-      if (enabled) {
-        this.createScrollTriggerAnimation();
-      }
-    });
+    if (isPlatformBrowser(this.platformId)) {
+      this.detectCarouselContext();
+      this.setupInitialState();
+      this.animationSubscription = this.loaderService.animationsEnabled$.subscribe((enabled: boolean) => {
+        if (enabled) {
+          this.createScrollTriggerAnimation();
+        }
+      });
+    }
   }
 
   private detectCarouselContext(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    
     const keenSliderParent = this.elementRef.nativeElement.closest('.keen-slider');
     const keenSliderSlideParent = this.elementRef.nativeElement.closest('.keen-slider__slide');
 
@@ -44,6 +50,8 @@ export class FadeupallDirective implements OnInit, OnDestroy {
   }
 
   private calculateAnimationIndex(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    
     const parent = this.elementRef.nativeElement.closest('.keen-slider');
     if (parent) {
       const slides = Array.from(parent.querySelectorAll('.keen-slider__slide'));
@@ -52,6 +60,8 @@ export class FadeupallDirective implements OnInit, OnDestroy {
   }
 
   private setupInitialState(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    
     if (this.isInCarousel) {
       gsap.set(this.elementRef.nativeElement, {
         opacity: 0,
@@ -67,6 +77,8 @@ export class FadeupallDirective implements OnInit, OnDestroy {
   }
 
   private createScrollTriggerAnimation(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    
     if (this.isInCarousel) {
       this.scrollTriggerInstance = ScrollTrigger.create({
         trigger: this.elementRef.nativeElement.closest('.keen-slider') || this.elementRef.nativeElement,
@@ -110,11 +122,13 @@ export class FadeupallDirective implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if (this.animationSubscription) {
-      this.animationSubscription.unsubscribe();
-    }
-    if (this.scrollTriggerInstance) {
-      this.scrollTriggerInstance.kill();
+    if (isPlatformBrowser(this.platformId)) {
+      if (this.animationSubscription) {
+        this.animationSubscription.unsubscribe();
+      }
+      if (this.scrollTriggerInstance) {
+        this.scrollTriggerInstance.kill();
+      }
     }
   }
 }

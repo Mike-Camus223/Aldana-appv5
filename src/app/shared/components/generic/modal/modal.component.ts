@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import {
   Component,
   Input,
@@ -11,7 +11,9 @@ import {
   OnChanges,
   SimpleChanges,
   AfterViewInit,
-  HostListener
+  HostListener,
+  Inject,
+  PLATFORM_ID
 } from '@angular/core';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
@@ -46,7 +48,10 @@ export class ModalComponent implements OnChanges, AfterViewInit {
   maximizeState: boolean = false;
   isMobileScreen: boolean = false;
 
-  constructor(private cd: ChangeDetectorRef) {}
+  constructor(
+    private cd: ChangeDetectorRef,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {}
 
   ngAfterViewInit() {
     this.updateMobileState();
@@ -54,8 +59,10 @@ export class ModalComponent implements OnChanges, AfterViewInit {
 
   @HostListener('window:resize')
   updateMobileState() {
-    this.isMobileScreen = window.innerWidth < 1024;
-    this.cd.detectChanges();
+    if (isPlatformBrowser(this.platformId)) {
+      this.isMobileScreen = window.innerWidth < 1024;
+      this.cd.detectChanges();
+    }
   }
 
   ngOnChanges(changes: SimpleChanges): void {

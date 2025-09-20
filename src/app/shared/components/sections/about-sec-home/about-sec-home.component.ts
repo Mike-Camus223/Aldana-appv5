@@ -5,9 +5,11 @@ import {
   ElementRef,
   ViewChildren,
   QueryList,
-  OnDestroy
+  OnDestroy,
+  Inject,
+  PLATFORM_ID
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Subject, takeUntil } from 'rxjs';
@@ -15,7 +17,10 @@ import { WordRevealDirective } from '../../../utils/directives/word-reveal.direc
 import { FadeUpLetterDirective } from '../../../utils/directives/fadeupletter.directive';
 import { LoaderService } from '../../../../core/services/utils/loader.service';
 
-gsap.registerPlugin(ScrollTrigger);
+// Solo registrar plugins en el navegador
+if (typeof window !== 'undefined') {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 @Component({
   selector: 'app-about-sec-home',
