@@ -10,7 +10,7 @@ import {
   ElementRef,
   Inject
 } from '@angular/core';
-import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { CommonModule, isPlatformBrowser, NgOptimizedImage } from '@angular/common';
 import { PLATFORM_ID } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { Product } from '../../../utils/models/Products-supabase.interface';
@@ -36,7 +36,8 @@ import { AuthService } from '../../../../core/services/auth/auth.service';
     LucideAngularModule,
     FadeDirective,
     ZoomoutDirective,
-    MoveupFadeDirective
+    MoveupFadeDirective,
+    NgOptimizedImage
   ],
   templateUrl: './cardproduct.component.html',
   styleUrls: ['./cardproduct.component.css'],

@@ -3,11 +3,12 @@
     <a [routerLink]="['/producto', product.slug]" class="group block relative">
       <div class="relative w-full aspect-[4/5] overflow-hidden bg-white">
         <img appZoomout *ngIf="displayImage || product.main_image" 
-             [src]="displayImage || product.main_image" 
-             [alt]="product.name"
-               loading="eager"
-
-             class="w-full h-full cursor-pointer object-cover object-top"/>
+     [ngSrc]="displayImage || product.main_image" 
+     [alt]="product.name"
+     width="400"
+     height="500"
+     priority
+     class="w-full h-full cursor-pointer object-cover object-top"/>
 
         <button type="button" 
                 aria-label="Añadir a favoritos" 
@@ -46,15 +47,16 @@
   <div appFade class="relative overflow-hidden group bg-white aspect-[3/4] sm:aspect-[3/4] md:aspect-[3/5] lg:aspect-[3/5] xl:aspect-[3/5]">
     <button type="button" [routerLink]="['/producto', product.slug]" class="absolute inset-0 z-0">
       <img
-      #productImage
-      [src]="currentImage"
-      alt="{{ product.name }}"
-      class="w-full h-full cursor-pointer object-cover object-top"
-        (mouseenter)="onMouseEnter($event)"
-      (mouseleave)="onMouseLeave()"
-        loading="eager"
-
-    />
+  #productImage
+  [ngSrc]="currentImage"
+  alt="{{ product.name }}"
+  width="400"
+  height="500"
+  priority
+  class="w-full h-full cursor-pointer object-cover object-top"
+  (mouseenter)="onMouseEnter($event)"
+  (mouseleave)="onMouseLeave()"
+/>
     </button>
     <div appMoveupFade class="absolute inset-0 flex items-end z-10 pointer-events-none">
       <div class="w-full bg-white p-4 m-3 pointer-events-auto">

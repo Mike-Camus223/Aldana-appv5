@@ -1,7 +1,6 @@
 import { Directive, ElementRef, AfterViewInit, Renderer2, OnDestroy, Inject, PLATFORM_ID } from '@angular/core';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { isPlatformBrowser } from '@angular/common';
 
 // Solo registrar plugins en el navegador
 if (typeof window !== 'undefined') {

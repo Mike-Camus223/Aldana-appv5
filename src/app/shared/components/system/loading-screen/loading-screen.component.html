@@ -1,37 +1,43 @@
 <div #screen class="fixed inset-0 bg-white z-[9999] overflow-hidden flex items-center justify-center select-none px-4">
   <div class="relative w-full max-w-[600px] h-[600px] sm:h-[600px] flex flex-col items-center justify-center">
     <div #circleGroup class="absolute inset-0 z-[10]">
-      <div #box1 class="absolute z-28 rounded-md
-        w-[151px] h-[111px] top-[10rem] left-1/2 -translate-x-1/2
-        sm:w-[303px] sm:h-[222px] sm:top-[-1.75rem]">
-        <img class="w-full h-full object-cover rounded-md" src="../../../../assets/images/loadingINTRO/loading1.webp" alt="box1" />
+      <!-- Box 1 - YA ESTABA BIEN -->
+      <div #box1 class="absolute z-28 rounded-md w-[151px] h-[111px] top-[10rem] left-1/2 -translate-x-1/2 sm:w-[303px] sm:h-[222px] sm:top-[-1.75rem]">
+        <div class="w-full h-full relative rounded-md overflow-hidden">
+          <img class="object-cover" ngSrc="../../../../assets/images/loadingINTRO/loading1.webp" alt="box1" fill dragable="false"/>
+        </div>
       </div>
-      <div #box2 class="absolute z-29 rounded-md
-        w-[110px] h-[151px] bottom-[6rem] left-1/2 -translate-x-1/2
-        sm:w-[203px] sm:h-[320px] sm:bottom-[-8rem]">
-        <img class="w-full h-full object-cover rounded-md" src="../../../../assets/images/loadingINTRO/loading8.webp" alt="box2" />
+      <!-- Box 2 - CORREGIDO -->
+      <div #box2 class="absolute z-29 rounded-md w-[110px] h-[151px] bottom-[6rem] left-1/2 -translate-x-1/2 sm:w-[203px] sm:h-[320px] sm:bottom-[-8rem]">
+        <div class="w-full h-full relative rounded-md overflow-hidden">
+          <img class="object-cover" ngSrc="../../../../assets/images/loadingINTRO/loading8.webp" alt="box2" fill dragable="false"/>
+        </div>
       </div>
-      <div #box3 class="absolute z-28 rounded-md
-        w-[151px] h-[153px] top-1/2 left-[2rem] sm:left-0 -translate-y-1/2
-        sm:w-[302px] sm:h-[303px]">
-        <img class="w-full h-full object-cover rounded-md" src="../../../../assets/images/loadingINTRO/loading5.webp" alt="box3" />
+      <!-- Box 3 - CORREGIDO -->
+      <div #box3 class="absolute z-28 rounded-md w-[151px] h-[153px] top-1/2 left-[2rem] sm:left-0 -translate-y-1/2 sm:w-[302px] sm:h-[303px]">
+        <div class="w-full h-full relative rounded-md overflow-hidden">
+          <img class="object-cover" ngSrc="../../../../assets/images/loadingINTRO/loading5.webp" alt="box3" fill dragable="false"/>
+        </div>
       </div>
-      <div #box4 class="absolute z-26 rounded-md
-        w-[201px] h-[151px] top-1/2 right-[2rem] -translate-y-1/2
-        sm:w-[403px] sm:h-[453px] sm:right-[-5rem]">
-        <img class="w-full h-full object-cover rounded-md" src="../../../../assets/images/loadingINTRO/loading7.webp" alt="box4" />
+      <!-- Box 4 - CORREGIDO -->
+      <div #box4 class="absolute z-26 rounded-md w-[201px] h-[151px] top-1/2 right-[2rem] -translate-y-1/2 sm:w-[403px] sm:h-[453px] sm:right-[-5rem]">
+        <div class="w-full h-full relative rounded-md overflow-hidden">
+          <img class="object-cover" ngSrc="../../../../assets/images/loadingINTRO/loading7.webp" alt="box4" fill dragable="false"/>
+        </div>
       </div>
     </div>
     <div class="flex justify-center">
       <div class="relative z-[100] w-[60px] h-[50px] sm:w-[80px] sm:h-[100px]">
-        <div #letterA class="absolute left-0 sm:left-0 -top-1  sm:top-0  aldyFont text-aldy-primary-400 text-6xl sm:text-8xl font-normal opacity-0">A</div>
-        <div #letterV class="absolute left-[25px] sm:left-[40px] -top-1 aldyFont text-aldy-primary-400 text-6xl sm:text-8xl font-normal opacity-0">V</div>
+        <div #letterA class="absolute left-0 sm:left-0 -top-1 sm:top-0 aldyFont text-aldy-primary-400 text-6xl sm:text-8xl font-normal opacity-0">
+          A
+        </div>
+        <div #letterV class="absolute left-[25px] sm:left-[40px] -top-1 aldyFont text-aldy-primary-400 text-6xl sm:text-8xl font-normal opacity-0">
+          V
+        </div>
       </div>
     </div>
-
     <div #name class="mt-2 relative z-[100] aldy text-white text-2xl sm:text-4xl opacity-0 text-center aldyFont px-2">
       ALDANA VILCABANA
     </div>
-
   </div>
 </div>

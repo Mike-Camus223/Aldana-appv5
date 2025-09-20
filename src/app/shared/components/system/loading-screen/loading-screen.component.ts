@@ -1,11 +1,12 @@
 import { Component, ElementRef, ViewChild, AfterViewInit, Output, EventEmitter, OnDestroy, Renderer2, Inject, PLATFORM_ID } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
+import { isPlatformBrowser, NgOptimizedImage } from '@angular/common';
 import { gsap } from 'gsap';
 import { LoaderService } from '../../../../core/services/utils/loader.service';
 
 @Component({
   standalone: true,
   selector: 'app-loading-screen',
+  imports: [NgOptimizedImage],
   templateUrl: './loading-screen.component.html',
   styleUrls: ['./loading-screen.component.css']
 })
