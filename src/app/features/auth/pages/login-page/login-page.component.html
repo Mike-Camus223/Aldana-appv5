@@ -1,4 +1,4 @@
-<div class="absolute p-4 w-full flex gap-4 h-auto z-2 overflow-x-hidden">
+<!-- <div class="absolute p-4 w-full flex gap-4 h-auto z-2 overflow-x-hidden">
   <a routerLink="/pre-login">
     <button type="button"
       class="w-auto sm:w-auto px-5 py-2.5 text-sm font-medium rounded-lg text-center transition duration-150 ease-in-out focus:outline-none focus:ring-4 focus:ring-aldy-primary-200 bg-aldy-primary-600 hover:bg-aldy-primary-700 text-aldy-bg cursor-pointer">Volver</button>
@@ -67,5 +67,123 @@
     </form>
     <p *ngIf="authError" class="text-red-600 pt-3 text-sm">{{ authError }}</p>
 
+  </div>
+</div> -->
+<!-- Botones superiores -->
+<div class="absolute p-4 w-full flex gap-4 h-auto z-2 overflow-x-hidden">
+  <a routerLink="/pre-login">
+    <button type="button"
+      class="w-auto sm:w-auto px-5 py-2.5 text-sm font-medium rounded-lg text-center transition duration-150 ease-in-out focus:outline-none focus:ring-4 focus:ring-aldy-primary-200 bg-aldy-primary-600 hover:bg-aldy-primary-700 text-aldy-bg cursor-pointer">
+      Volver
+    </button>
+  </a>
+  <a routerLink="/register">
+    <button type="button"
+      class="w-auto sm:w-auto px-5 py-2.5 text-sm font-medium rounded-lg text-center transition duration-150 ease-in-out focus:outline-none focus:ring-4 focus:ring-aldy-primary-200 bg-aldy-primary-600 hover:bg-aldy-primary-700 text-aldy-bg cursor-pointer">
+      Register
+    </button>
+  </a>
+  <a href="/home">
+    <button type="button"
+      class="w-auto sm:w-auto px-5 py-2.5 text-sm font-medium rounded-lg text-center transition duration-150 ease-in-out focus:outline-none focus:ring-4 focus:ring-aldy-primary-200 bg-aldy-primary-600 hover:bg-aldy-primary-700 text-aldy-bg cursor-pointer">
+      Ir a inicio
+    </button>
+  </a>
+</div>
+
+<!-- Contenedor principal tipo dos columnas -->
+<div class="flex w-full h-screen">
+  <!-- Lado izquierdo: imagen -->
+  <div class="hidden lg:flex w-1/2 h-full p-4 rounded-2xl">
+    <img src="https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/multimedia/about%20me/section-photos/preview/preview_6.jpg" alt="Login background"
+      class="w-full h-full rounded-2xl object-cover object-top overflow-hidden" />
+  </div>
+
+  <!-- Lado derecho: formulario -->
+  <div class="flex items-center justify-center w-full lg:w-1/2 h-full bg-aldy-bg flex-col px-6 overflow-x-hidden">
+    <!-- Logo / título -->
+    <div class="mb-10 text-center">
+      <h1 class="text-aldy-primary-600 font-bold text-4xl mb-2">
+        Aldana App
+      </h1>
+      <p class="text-gray-600 text-sm">Login Page test</p>
+    </div>
+
+    <!-- Card formulario -->
+    <div class="max-w-md w-full bg-white shadow-md rounded-lg p-6">
+      <form class="w-full" [formGroup]="formLogin" (ngSubmit)="onSubmit()">
+
+        <!-- Email -->
+        <div class="mb-5">
+          <label for="email" class="block mb-2 text-sm font-medium text-gray-900">Ingresa tu correo</label>
+          <div class="relative">
+            <div class="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none">
+              <i class="fa-solid fa-user w-4 h-4 text-aldy-primary-600"></i>
+            </div>
+            <input type="email" id="email-address-icon" formControlName="email"
+              class="border-aldy-primary-600 text-aldy-text-soft focus:border-aldy-primary-600 focus:outline-aldy-primary-600 outline-offset-0 border text-sm rounded-lg block w-full ps-10 p-2.5"
+              placeholder="Correo@email.com" />
+          </div>
+        </div>
+
+        <!-- Password -->
+        <div class="mb-5">
+          <label for="password" class="block mb-2 text-sm font-medium text-gray-900">Ingresa tu contraseña</label>
+          <div class="relative">
+            <div class="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none">
+              <i class="fa-solid fa-lock w-4 h-4 text-aldy-primary-600"></i>
+            </div>
+            <input [type]="visibilityPass.password ? 'text' : 'password'" id="password" formControlName="password"
+              class="border-aldy-primary-600 text-aldy-text-soft focus:border-aldy-primary-600 focus:outline-aldy-primary-600 outline-offset-0 border text-sm rounded-lg block w-full ps-10 p-2.5" />
+            <button type="button" class="absolute right-4 top-[10px]" (click)="togglePasswordIcon()">
+              <i class="fa-solid text-aldy-primary-600 text-[1.2rem]"
+                [ngClass]="visibilityPass.password ? 'fa-eye' : 'fa-eye-slash'"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Remember -->
+        <div class="flex items-start mb-5 justify-between">
+          <div class="flex items-center">
+            <input id="remember" type="checkbox"
+              class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500" />
+            <label for="remember" class="ms-2 text-sm font-medium text-gray-900">Recuérdame</label>
+          </div>
+          <a href="#" class="text-sm text-aldy-primary-600 hover:underline">¿Olvidaste tu contraseña?</a>
+        </div>
+
+        <!-- Botón -->
+        <button type="submit" [disabled]="isSubmitting || formLogin.invalid"
+          [ngClass]="{
+            'bg-aldy-primary-600 hover:bg-aldy-primary-700 text-aldy-bg cursor-pointer': !(isSubmitting || formLogin.invalid),
+            'bg-gray-200 text-gray-400 cursor-not-allowed': (isSubmitting || formLogin.invalid)
+          }"
+          class="w-full px-5 py-2.5 text-sm font-medium rounded-lg text-center transition duration-150 ease-in-out focus:outline-none focus:ring-4 focus:ring-aldy-primary-200">
+          {{ isSubmitting ? 'Ingresando...' : 'Continuar' }}
+        </button>
+      </form>
+
+      <!-- Error -->
+      <p *ngIf="authError" class="text-red-600 pt-3 text-sm">{{ authError }}</p>
+
+      <!-- Quick login -->
+      <div class="mt-6 border-t pt-4">
+        <p class="text-sm text-gray-500 mb-3 text-center">O ingresa con</p>
+        <div class="flex flex-col gap-2">
+          <button type="button"
+            class="w-full flex items-center justify-center gap-2 border rounded-lg py-2 text-sm hover:bg-gray-50">
+            <i class="fab fa-facebook text-blue-600"></i> Continuar con Facebook
+          </button>
+          <button type="button"
+            class="w-full flex items-center justify-center gap-2 border rounded-lg py-2 text-sm hover:bg-gray-50">
+            <i class="fab fa-google text-red-500"></i> Continuar con Google
+          </button>
+          <button type="button"
+            class="w-full flex items-center justify-center gap-2 border rounded-lg py-2 text-sm hover:bg-gray-50">
+            <i class="fab fa-apple text-black"></i> Continuar con Apple
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
