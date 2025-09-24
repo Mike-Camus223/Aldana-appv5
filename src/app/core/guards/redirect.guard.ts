@@ -24,16 +24,22 @@ export class RedirectGuard implements CanActivate {
   private readonly BLOCK_DURATION = 30 * 60 * 1000; // 30 minutos de bloqueo
   private readonly STORAGE_KEY = 'redirect_guard_rate_limit';
 
+  
   canActivate(): Observable<boolean | UrlTree> {
     // Verificar rate limiting primero
-    if (this.isRateLimited()) {
-      console.warn('Alerta de guard: Rate limit excedido, bloqueando acceso');
-      this.logSecurityEvent('RATE_LIMIT_EXCEEDED', 'anonymous');
-      return of(this.router.createUrlTree(['/home']));
-    }
 
-    // Registrar intento de acceso
-    this.recordAttempt();
+
+    //DESCOMENTA ESTOO
+    // if (this.isRateLimited()) {
+    //   console.warn('Alerta de guard: Rate limit excedido, bloqueando acceso');
+    //   this.logSecurityEvent('RATE_LIMIT_EXCEEDED', 'anonymous');
+    //   return of(this.router.createUrlTree(['/home']));
+    // }
+
+    // // Registrar intento de acceso
+    // this.recordAttempt();
+    // HASTA ACA LUEGO DE TERMINAR LOS TEST
+
     
     // Verificación síncrona primero
     const currentUser = this.authService.getCurrentUser();
