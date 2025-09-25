@@ -6,24 +6,27 @@ import { passwordStrengthValidator } from '../../../../shared/utils/validators/P
 import { PasswordMatch } from '../../../../shared/utils/validators/PasswordMatchValidator';
 import { AuthService } from '../../../../core/services/auth/auth.service';
 import { Router } from '@angular/router';
-import { ConfirmationGuard } from '../../../../core/guards/confirmation.guard'; // Importar el guard de confirmación
+import { ConfirmationGuard } from '../../../../core/guards/confirmation.guard';
+import { InputComponent } from '../../../../shared/components/generic/forms/input/input.component';
+import { InputpasswordComponent } from '../../../../shared/components/generic/forms/inputpassword/inputpassword.component';
 
 interface SignUpForm {
   email: FormControl<null | string>;
   password: FormControl<null | string>;
-  repeatpassword: FormControl<null | string>;
+  repeatPassword: FormControl<null | string>;
+  nombre: FormControl<null | string>;
+  apellido: FormControl<null | string>;
+  newsletter: FormControl<null | boolean>;
   termsAccepted: FormControl<null | boolean>;
 }
 
 @Component({
   selector: 'app-register-page',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule],
+  imports: [RouterModule, ReactiveFormsModule, CommonModule, InputComponent, InputpasswordComponent],
   templateUrl: './register-page.component.html',
 })
 export default class RegisterPageComponent {
-  showPasswordPopover = false;
-
   private _fb = inject(FormBuilder);
   private _authService = inject(AuthService);
   private _router = inject(Router);
@@ -37,13 +40,19 @@ export default class RegisterPageComponent {
         Validators.minLength(6),
         passwordStrengthValidator()
       ]),
-      repeatpassword: this._fb.control(null, [Validators.required]),
+      repeatPassword: this._fb.control(null, [Validators.required]),
+      nombre: this._fb.control(null, [Validators.required]),
+      apellido: this._fb.control(null, [Validators.required]),
+      newsletter: this._fb.control(false),
       termsAccepted: this._fb.control(false, [Validators.requiredTrue]),
     },
     {
-      validators: [PasswordMatch('password', 'repeatpassword')]
+      validators: [PasswordMatch('password', 'repeatPassword')]
     }
   );
+
+  isSubmitting = false;
+  authError: string | null = null;
 
   get password(): string {
     return this.form.get('password')?.value ?? '';
@@ -59,23 +68,6 @@ export default class RegisterPageComponent {
 
   get hasSymbol(): boolean {
     return /[^a-zA-Z0-9]/.test(this.password);
-  }
-
-  get passwordStrength(): number {
-    let score = 0;
-    if (this.passwordLength >= 6) score++;
-    if (this.hasMixedCase) score++;
-    if (this.hasSymbol) score++;
-    return score;
-  }
-
-  barColorClass(index: number): string {
-    if (this.passwordStrength >= index) {
-      if (this.passwordStrength <= 1) return 'bg-red-400';
-      if (this.passwordStrength === 2) return 'bg-yellow-400';
-      return 'bg-green-400';
-    }
-    return 'bg-gray-200';
   }
 
   get passwordErrorMessage(): string {
@@ -98,36 +90,36 @@ export default class RegisterPageComponent {
       passwordStrength: 'caracteres especiales, mayúsculas, etc.'
     };
 
-    return `La contraseña le falta ${errorMessages[errorKey] ?? 'requisitos válidos'}`;
+    return `La contraseña debe ${errorMessages[errorKey] ?? 'cumplir con los requisitos válidos'}`;
   }
 
-  visibility = {
-    password: false,
-    repeatPassword: false
-  };
+  get repeatPasswordErrorMessage(): string {
+    const control = this.form.get('repeatPassword');
+    if (!control?.touched) return '';
 
-  toggleVisibility(field: 'password' | 'repeatPassword') {
-    this.visibility[field] = !this.visibility[field];
+    if (control.errors?.['required']) {
+      return 'Debes repetir la contraseña';
+    }
+
+    if (this.form.errors?.['passwordNotMatch']) {
+      return 'Las contraseñas no coinciden';
+    }
+
+    return '';
   }
-
-  get repeatPasswordInvalid(): boolean {
-    const control = this.form.get('repeatpassword');
-    return (
-      ((control?.touched && control.invalid) ?? false) ||
-      ((this.form.hasError('passwordNotMatch') && control?.touched) ?? false)
-    );
-  }
-
-  isSubmitting = false;
-  submitError: string | null = null;
 
   async onSubmit(): Promise<void> {
     if (this.form.invalid) {
+      // Marcar todos los campos como touched para mostrar errores
+      Object.keys(this.form.controls).forEach(key => {
+        const control = this.form.get(key);
+        control?.markAsTouched();
+      });
       return;
     }
 
     this.isSubmitting = true;
-    this.submitError = '';
+    this.authError = null;
 
     try {
       const result = await this._authService.signUp(
@@ -140,14 +132,13 @@ export default class RegisterPageComponent {
         ConfirmationGuard.setConfirmationState('register-confirm');
         this._router.navigate(['/register-confirm']);
       } else {
-        this.submitError = result.error || 'Error en el registro';
+        this.authError = result.error || 'Error en el registro';
       }
     } catch (error) {
-      this.submitError = 'Error inesperado al registrar la cuenta';
+      this.authError = 'Error inesperado al registrar la cuenta';
       console.error('Error en registro:', error);
     } finally {
       this.isSubmitting = false;
     }
   }
-
 }

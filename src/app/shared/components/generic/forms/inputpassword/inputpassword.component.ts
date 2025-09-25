@@ -1,16 +1,13 @@
 import { Component, forwardRef, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { PasswordModule } from 'primeng/password';
-import { FloatLabelModule } from 'primeng/floatlabel';
-import { DividerModule } from 'primeng/divider';
 
 @Component({
   selector: 'app-inputpassword',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, PasswordModule, FloatLabelModule, DividerModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule],
   templateUrl: './inputpassword.component.html',
-  styleUrl: './inputpassword.component.css',
+  styleUrls: ['./inputpassword.component.css'],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -20,9 +17,14 @@ import { DividerModule } from 'primeng/divider';
   ]
 })
 export class InputpasswordComponent implements ControlValueAccessor {
-  @Input() placeholder = 'Contraseña';
+  @Input() label = 'Contraseña';
+  @Input() id = 'password';
+  @Input() disabled = false;
 
   value = '';
+  showPassword = false;
+  invalid = false;
+
   onChange = (_: any) => {};
   onTouched = () => {};
 
@@ -38,9 +40,14 @@ export class InputpasswordComponent implements ControlValueAccessor {
     this.onTouched = fn;
   }
 
-  onInput(value: string): void {
-    this.value = value;
+  onInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.value = input.value;
     this.onChange(this.value);
     this.onTouched();
+  }
+
+  toggleVisibility(): void {
+    this.showPassword = !this.showPassword;
   }
 }

@@ -1,32 +1,9 @@
 import { Routes } from '@angular/router';
-import { RedirectGuard } from './core/guards/redirect.guard';
-import { ConfirmationGuard } from './core/guards/confirmation.guard';
 
 export const routes: Routes = [
     {
-        path: 'login',
-        loadComponent: () => import('./features/auth/pages/login-page/login-page.component'),
-        canActivate: [RedirectGuard]
-    },
-    {
-        path: 'register',
-        loadComponent: () => import('./features/auth/pages/register-page/register-page.component'),
-        canActivate: [RedirectGuard]
-    },
-    {
-        path: 'register-confirm',
-        loadComponent: () => import('./features/auth/pages/register-confirm/register-confirm.component'),
-        canActivate: [RedirectGuard, ConfirmationGuard]
-    },
-    {
-        path: 'register-success',
-        loadComponent: () => import('./features/auth/pages/register-success/register-success.component'),
-        canActivate: [RedirectGuard, ConfirmationGuard]
-    },
-    {
-        path: 'pre-login',
-        loadComponent: () => import('./features/auth/pages/pre-login/pre-login.component'),
-        canActivate: [RedirectGuard]
+        path: '',
+        loadChildren: () => import('./features/auth/pages/auth.routes').then(r => r.authRoutes),
     },
     {
         path: '',
