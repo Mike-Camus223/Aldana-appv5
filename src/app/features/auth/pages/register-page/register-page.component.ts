@@ -16,6 +16,9 @@ interface SignUpForm {
   repeatPassword: FormControl<null | string>;
   nombre: FormControl<null | string>;
   apellido: FormControl<null | string>;
+  birthDay: FormControl<null | number>;
+  birthMonth: FormControl<null | number>;
+  birthYear: FormControl<null | number>;
   newsletter: FormControl<null | boolean>;
   termsAccepted: FormControl<null | boolean>;
 }
@@ -23,7 +26,7 @@ interface SignUpForm {
 @Component({
   selector: 'app-register-page',
   standalone: true,
-  imports: [RouterModule, ReactiveFormsModule, CommonModule, InputComponent, InputpasswordComponent],
+  imports: [RouterModule, ReactiveFormsModule, CommonModule, InputComponent, InputpasswordComponent,],
   templateUrl: './register-page.component.html',
 })
 export default class RegisterPageComponent {
@@ -43,6 +46,9 @@ export default class RegisterPageComponent {
       repeatPassword: this._fb.control(null, [Validators.required]),
       nombre: this._fb.control(null, [Validators.required]),
       apellido: this._fb.control(null, [Validators.required]),
+      birthDay: this._fb.control(null, [Validators.required]),
+    birthMonth: this._fb.control(null, [Validators.required]),
+    birthYear: this._fb.control(null, [Validators.required]),
       newsletter: this._fb.control(false),
       termsAccepted: this._fb.control(false, [Validators.requiredTrue]),
     },
