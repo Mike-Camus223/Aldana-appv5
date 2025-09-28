@@ -1,5 +1,5 @@
 <!-- Layout principal dividido en 2 partes (40% y 60%) -->
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[6fr_4fr] w-full lg:h-screen">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[6fr_4fr] w-full h-screen">
     <!-- Lado derecho - Imagen (60%) -->
     <div class="relative hidden md:block h-full w-full overflow-hidden">
       <img [draggable]="false"
@@ -9,12 +9,14 @@
     </div>
     
     <!-- Lado izquierdo - Formulario (40%) -->
-    <div class="h-auto lg:h-full overflow-x-hidden px-4 sm:px-8 lg:px-5 xl:px-6">
-      <div class="w-full flex justify-center md:justify-start max-w-full">
+    <div class="h-full overflow-x-hidden px-4 sm:px-8 lg:px-5 xl:px-6 flex justify-center md:justify-start items-center">
+      <!-- Esto asegura que cualquier contenido del router-outlet se centre -->
+      <div class="w-full max-w-md flex flex-col justify-center items-center h-full">
         <router-outlet></router-outlet>
       </div>
     </div>
-  </div>
+</div>
+
   <app-newsletter></app-newsletter>
   <app-footerv2></app-footerv2>
   

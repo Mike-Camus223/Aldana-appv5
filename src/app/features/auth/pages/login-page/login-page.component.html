@@ -2,10 +2,12 @@
   <!-- Card con max-width responsive pero que se estira dentro de su contenedor -->
   <div
     class="w-full max-w-sx sm:max-w-xl px-4 sm:px-0 md:max-w-md lg:max-w-md xl:max-w-md flex flex-col justify-between sm:min-h-0">
+
     <!-- Contenido principal -->
-    <div class="flex-grow flex flex-col justify-center py-4 sm:py-6 md:py-8">
+    <div class="flex flex-col justify-center py-4 sm:py-6 md:py-8">
       <!-- Main Card -->
       <div class="w-full">
+
         <!-- Logo AV -->
         <a routerLink="/home">
           <div class="flex flex-col items-center text-center justify-center mb-8 sm:mb-6 md:mb-8 lg:mb-10">
@@ -23,15 +25,16 @@
           </div>
         </a>
 
-        <!-- Login Form -->
-        <div class="mb-4 sm:mb-6 md:mb-8">
-          <h2
-            class="font-semibold aldyFont text-[18px] min-[360px]:text-[18px] sm:text-[20px] tracking-tight text-gray-600 text-left mb-4 sm:mb-6">
-            Iniciar Sesión
-          </h2>
-        </div>
+        <!-- LOGIN FORM -->
+        <form class="w-full" *ngIf="!isForgotPassword" [formGroup]="formLogin" (ngSubmit)="onSubmit()">
 
-        <form class="w-full" [formGroup]="formLogin" (ngSubmit)="onSubmit()">
+          <!-- Título Login -->
+          <div class="mb-4 sm:mb-6 md:mb-8">
+            <h2
+              class="font-semibold aldyFont text-[18px] min-[360px]:text-[18px] sm:text-[20px] tracking-tight text-gray-600 text-left mb-4 sm:mb-6">
+              Iniciar Sesión
+            </h2>
+          </div>
 
           <!-- Email -->
           <div class="mb-4 min-[360px]:mb-5 sm:mb-6 md:mb-7">
@@ -41,7 +44,6 @@
           <!-- Password -->
           <div class="mb-3 min-[360px]:mb-3 sm:mb-3 md:mb-3">
             <app-inputpassword label="Contraseña" formControlName="password"></app-inputpassword>
-            <!-- Error Message debajo del password input -->
             <p *ngIf="authError" class="text-red-500 text-xs min-[360px]:text-sm mt-1.5 min-[360px]:mt-2">
               {{ authError }}
             </p>
@@ -49,9 +51,9 @@
 
           <!-- Remember & Forgot Password -->
           <div
-            class="flex flex-col space-y-3 sm:flex-row sm:items-center sm:justify-between sm:space-y-0 pt-1 min-[360px]:pt-2 mb-4 min-[360px]:mb-4 sm:mb-4 md:mb-5">
-            <a href="#"
-              class="text-[14px] min-[360px] text-aldy-primary-600 hover:text-aldy-primary-700 hover:underline transition-colors duration-200 text-center sm:text-left">
+            class="flex flex-col space-y-3 sm:flex-row sm:items-start sm:justify-between sm:space-y-0 pt-1 min-[360px]:pt-2 mb-4 min-[360px]:mb-4 sm:mb-4 md:mb-5">
+            <a href="#" (click)="showForgotPassword($event)"
+              class="text-[14px] min-[360px] text-aldy-primary-600 hover:text-aldy-primary-700 hover:underline transition-colors duration-200 text-left sm:text-left">
               ¿Olvidaste tu contraseña?
             </a>
           </div>
@@ -59,9 +61,10 @@
           <!-- Submit Button -->
           <div class="min-[360px] mb-4 min-[360px]:mb-5 sm:mb-6 md:mb-7">
             <button type="submit" [disabled]="isSubmitting || formLogin.invalid" [ngClass]="{
-      'bg-aldy-primary-600 hover:bg-aldy-primary-700 text-aldy-bg cursor-pointer': !(isSubmitting || formLogin.invalid),
-      'bg-aldy-primary-400 text-white cursor-not-allowed': (isSubmitting || formLogin.invalid)
-    }" class="w-full px-4 min-[360px]:px-5 sm:px-6 py-3 min-[360px]:py-3.5 sm:py-4 text-sm min-[360px]:text-base font-semibold text-center transition duration-200 ease-in-out focus:outline-none focus:ring-4 focus:ring-aldy-primary-200 disabled:opacity-50">
+              'bg-aldy-primary-600 hover:bg-aldy-primary-700 text-aldy-bg cursor-pointer': !(isSubmitting || formLogin.invalid),
+              'bg-aldy-primary-400 text-white cursor-not-allowed': (isSubmitting || formLogin.invalid)
+            }"
+              class="w-full px-4 min-[360px]:px-5 sm:px-6 py-3 min-[360px]:py-3.5 sm:py-4 text-sm min-[360px]:text-base font-semibold text-center transition duration-200 ease-in-out focus:outline-none focus:ring-4 focus:ring-aldy-primary-200 disabled:opacity-50">
               {{ isSubmitting ? 'Ingresando...' : 'Iniciar Sesión' }}
             </button>
           </div>
@@ -76,12 +79,54 @@
               Crear cuenta
             </a>
           </div>
-
         </form>
 
+        <!-- FORGOT PASSWORD FORM -->
+        <div *ngIf="isForgotPassword" class="w-full h-full flex flex-col  px-4 sm:px-0">
 
-        <!-- Divider -->
-        <div class="relative my-5 min-[360px]:my-6 sm:my-8">
+          <form class="max-w-md w-auto h-auto mx-auto flex flex-col my-auto" [formGroup]="formForgotPassword"
+            (ngSubmit)="onForgotPasswordSubmit()">
+
+            <!-- Título grande -->
+            <h2
+              class="font-semibold aldyFont text-[18px] min-[360px]:text-[18px] sm:text-[20px] tracking-tight text-gray-600 mb-4 text-center  md:text-start">
+              ¿Has olvidado tu contraseña?
+            </h2>
+
+            <!-- Input de correo -->
+            <div class="mb-2 w-full">
+              <app-input label="Email" formControlName="email"></app-input>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="mt-4 w-full">
+              <button type="submit" [disabled]="isSubmitting || formForgotPassword.invalid" [ngClass]="{
+        'bg-aldy-primary-600 hover:bg-aldy-primary-700 text-aldy-bg cursor-pointer': !(isSubmitting || formForgotPassword.invalid),
+        'bg-aldy-primary-400 text-white cursor-not-allowed': (isSubmitting || formForgotPassword.invalid)
+      }" class="w-full px-4 sm:px-6 py-3 text-sm sm:text-base font-semibold text-center transition duration-200 ease-in-out focus:outline-none focus:ring-4 focus:ring-aldy-primary-200 disabled:opacity-50">
+                {{ isSubmitting ? 'Enviando...' : 'Enviar' }}
+              </button>
+            </div>
+
+            <!-- Volver a identificación debajo del input -->
+            <div class="text-start w-full mt-3 mb-2">
+              <a href="#" (click)="backToLogin($event)"
+                class="text-[14px] min-[360px]:text-[14px] sm:text-[14px] text-aldy-primary-600 hover:text-aldy-primary-700 hover:underline transition-colors duration-200">
+                « Volver a la identificación
+              </a>
+            </div>
+
+            <!-- Texto pequeño de instrucciones debajo -->
+            <p class="text-gray-500 text-[14px] min-[360px]:text-[14px] sm:text-[14px] mt-1 px-2 sm:px-0 text-center">
+              Indica tu usuario o email y te enviaremos instrucciones indicando como generar una nueva contraseña.
+            </p>
+
+          </form>
+        </div>
+
+
+        <!-- Divider y Quick Login se ocultan en forgot password -->
+        <div class="relative my-5 min-[360px]:my-6 sm:my-8" *ngIf="!isForgotPassword">
           <div class="absolute inset-0 flex items-center">
             <div class="w-full border-t border-gray-300"></div>
           </div>
@@ -91,7 +136,7 @@
         </div>
 
         <!-- Social Login Section -->
-        <div class="mb-6 min-[360px]:mb-8 sm:mb-10">
+        <div class="mb-6 min-[360px]:mb-8 sm:mb-10" *ngIf="!isForgotPassword">
           <div class="flex justify-center gap-3 min-[360px]:gap-4 sm:gap-6">
             <button type="button"
               class="w-10 h-10 min-[360px]:w-11 min-[360px]:h-11 sm:w-12 sm:h-12 flex items-center justify-center bg-blue-600 border border-blue-600 rounded-full cursor-pointer hover:bg-blue-700 hover:border-blue-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-300"
@@ -110,6 +155,7 @@
             </button>
           </div>
         </div>
+
       </div>
     </div>
 
