@@ -93,11 +93,6 @@ export class WordRevealDirective implements AfterViewInit, OnDestroy {
       this.renderer.setStyle(nativeElement, 'min-height', `${this.originalDimensions.height}px`);
     }
     
-    // Si el elemento tiene un ancho específico, lo preservamos
-    if (this.originalDimensions.width > 0 && computedStyle.width !== 'auto') {
-      this.renderer.setStyle(nativeElement, 'min-width', `${this.originalDimensions.width}px`);
-    }
-    
     // Volvemos a ocultar el elemento
     this.renderer.setStyle(nativeElement, 'opacity', '0');
     

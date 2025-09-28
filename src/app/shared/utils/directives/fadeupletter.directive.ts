@@ -55,15 +55,10 @@ export class FadeUpLetterDirective implements AfterViewInit, OnDestroy {
     this.renderer.setStyle(nativeElement, 'transform', 'none');
     nativeElement.offsetHeight;
     const rect = nativeElement.getBoundingClientRect();
-    const computedStyle = window.getComputedStyle(nativeElement);
     this.originalDimensions.width = rect.width;
     this.originalDimensions.height = rect.height;
     if (this.originalDimensions.height > 0) {
       this.renderer.setStyle(nativeElement, 'min-height', `${this.originalDimensions.height}px`);
-    }
-    
-    if (this.originalDimensions.width > 0 && computedStyle.width !== 'auto') {
-      this.renderer.setStyle(nativeElement, 'min-width', `${this.originalDimensions.width}px`);
     }
     
     this.renderer.setStyle(nativeElement, 'opacity', originalOpacity);

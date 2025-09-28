@@ -1,23 +1,25 @@
-<div class="mx-auto max-w-7xl">
+<div class="mx-auto w-full">
   <div class="bg-white border-t border-gray-200 text-gray-700 text-sm sm:text-base">
-    <div
-      class="w-full max-w-screen-xl mx-auto py-10 px-6 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-8 text-center">
+    <div class="w-full mx-auto py-6 sm:py-8 md:py-10 px-2 min-[320px]:px-3 sm:px-4 md:px-6 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 min-[320px]:gap-4 sm:gap-6 md:gap-8 text-center">
+      
       <div>
-        <h3 class="titles font-semibold uppercase mb-4 tracking-wider">Conócenos</h3>
-        <ul class="space-y-2 font-main text-sm md:text-md">
+        <h3 class="titles font-semibold uppercase mb-3 sm:mb-4 tracking-normal min-[320px]:tracking-wide sm:tracking-wider text-xs min-[320px]:text-sm sm:text-sm">Conócenos</h3>
+        <ul class="space-y-1.5 sm:space-y-2 font-main text-xs min-[320px]:text-sm sm:text-sm md:text-md">
           <li><a routerLink="/acerca-de" class="hover:text-aldy-primary-400 transition">Acerca de mí</a></li>
           <li><a routerLink="/galeria" class="hover:text-aldy-primary-400 transition">Galería</a></li>
         </ul>
       </div>
+      
       <div>
-        <h3 class="titles font-semibold uppercase mb-4 tracking-wider">Novias</h3>
-        <ul class="space-y-2 font-main text-sm md:text-md">
+        <h3 class="titles font-semibold uppercase mb-3 sm:mb-4 tracking-normal min-[320px]:tracking-wide sm:tracking-wider text-xs min-[320px]:text-sm sm:text-sm">Novias</h3>
+        <ul class="space-y-1.5 sm:space-y-2 font-main text-xs min-[320px]:text-sm sm:text-sm md:text-md">
           <li><a routerLink="/novias" class="hover:text-aldy-primary-400 transition">Novias</a></li>
         </ul>
       </div>
+      
       <div>
-        <h3 class="titles font-semibold uppercase mb-4 tracking-wider">Tienda</h3>
-        <ul class="space-y-2 font-main text-sm md:text-md">
+        <h3 class="titles font-semibold uppercase mb-3 sm:mb-4 tracking-normal min-[320px]:tracking-wide sm:tracking-wider text-xs min-[320px]:text-sm sm:text-sm">Tienda</h3>
+        <ul class="space-y-1.5 sm:space-y-2 font-main text-xs min-[320px]:text-sm sm:text-sm md:text-md">
           <li *ngFor="let item of tiendaItems">
             <a [routerLink]="['/tienda']" [queryParams]="{ categoria: normalizeCategory(item) }"
               class="hover:text-aldy-primary-400 transition">
@@ -26,25 +28,25 @@
           </li>
         </ul>
       </div>
+      
       <div>
-        <h3 class="titles font-semibold uppercase mb-4 tracking-wider">Síguenos</h3>
-        <div class="flex justify-center space-x-4 text-lg md:text-xl">
-          <a href="#" aria-label="Instagram" class="hover:text-aldy-primary-400 transition"><i
-              class="fab fa-instagram"></i></a>
-          <a href="#" aria-label="Facebook" class="hover:text-aldy-primary-400 transition"><i
-              class="fab fa-facebook-f"></i></a>
-          <a href="#" aria-label="Pinterest" class="hover:text-aldy-primary-400 transition"><i
-              class="fab fa-pinterest-p"></i></a>
-          <a href="#" aria-label="Twitter" class="hover:text-aldy-primary-400 transition"><i
-              class="fab fa-twitter"></i></a>
+        <h3 class="titles font-semibold uppercase mb-3 sm:mb-4 tracking-normal min-[320px]:tracking-wide sm:tracking-wider text-xs min-[320px]:text-sm sm:text-sm">Síguenos</h3>
+        <div class="flex justify-center space-x-2.5 min-[320px]:space-x-3 sm:space-x-4 text-sm min-[320px]:text-base sm:text-lg md:text-xl">
+          <a href="#" aria-label="Instagram" class="hover:text-aldy-primary-400 transition"><i class="fab fa-instagram"></i></a>
+          <a href="#" aria-label="Facebook" class="hover:text-aldy-primary-400 transition"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" aria-label="Pinterest" class="hover:text-aldy-primary-400 transition"><i class="fab fa-pinterest-p"></i></a>
+          <a href="#" aria-label="Twitter" class="hover:text-aldy-primary-400 transition"><i class="fab fa-twitter"></i></a>
         </div>
       </div>
+      
     </div>
-    <div class="border-t border-gray-200 py-6 text-center text-xs sm:text-sm text-gray-500">
+    
+    <div class="border-t border-gray-200 py-4 sm:py-6 text-center text-xs sm:text-sm text-gray-500 px-2 min-[320px]:px-3 sm:px-4 md:px-6">
       <a routerLink="/" class="block mb-2">
-        <img src="../../../../assets/images/LogotypeD.png" alt="logo" class="h-8 mx-auto object-contain" />
+        <img src="../../../../assets/images/LogotypeD.png" alt="logo" class="h-6 min-[320px]:h-7 sm:h-8 mx-auto object-contain" />
       </a>
       © {{ 2025 }} Aldy. Todos los derechos reservados.
     </div>
+    
   </div>
 </div>
