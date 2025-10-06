@@ -44,51 +44,6 @@
   --color-aldy-danger: #e27d7d;
 }
 
-::-webkit-scrollbar {
-  width: 4px;
-  height: 4px;
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--color-aldy-primary-400);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--color-aldy-primary-500);
-}
-
-::-webkit-scrollbar-corner {
-  background: transparent;
-}
-
-.body-scroll-lock {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  overflow-y: scroll;
-  pointer-events: none;
-  user-select: none;
-  scrollbar-width: thin;
-}
-
-.body-scroll-lock::-webkit-scrollbar {
-  width: 6px;
-  background: #fff;
-}
-
-.body-scroll-lock::-webkit-scrollbar-thumb {
-  background: var(--color-aldy-primary-400);
-  border-radius: 6px;
-}
-
-body.reserve-scrollbar-space {
-  overflow-y: scroll;
-}
-
 .font-main {
   font-family: "PT Sans Narrow", sans-serif;
 }
@@ -106,6 +61,12 @@ body.reserve-scrollbar-space {
 .titles {
   font-family: "PT Sans Narrow", sans-serif;
   font-weight: 500;
+}
+
+.titles2 {
+  font-family: "Cormorant", serif;
+  font-optical-sizing: auto;
+  font-style: normal;
 }
 
 .navbarColorBG {

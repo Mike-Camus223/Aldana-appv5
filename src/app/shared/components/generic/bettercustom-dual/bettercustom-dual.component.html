@@ -5,7 +5,7 @@
   [ngStyle]="getCombinedStyle(getImageStyle())"
   [style.aspect-ratio]="useAspectRatio ? aspectRatio : null">
         <img 
-        appZoomout
+        appCardInitAnimation="up"
         [ngClass]="[imageStyles]"
         *ngIf="mediaType === 'image'"
          #parallaxImage

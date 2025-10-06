@@ -12,12 +12,12 @@ import {
   PLATFORM_ID
 } from '@angular/core';
 import KeenSlider, { KeenSliderInstance } from 'keen-slider';
-import { FadeupallDirective } from '../../../utils/directives/fadeupall.directive';
+import { CardInitAnimationDirective } from '../../../utils/directives/card-init-animation.directive';
 
 @Component({
   selector: 'app-carousel-images-genericv2',
   standalone: true,
-  imports: [CommonModule, FadeupallDirective],
+  imports: [CommonModule, CardInitAnimationDirective],
   templateUrl: './carousel-images-genericv2.component.html',
   styleUrls: ['./carousel-images-genericv2.component.css']
 })

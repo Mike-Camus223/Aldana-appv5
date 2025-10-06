@@ -23,6 +23,7 @@ export class CardInitAnimationDirective implements AfterViewInit, OnDestroy {
   private scrollTrigger: ScrollTrigger | null = null;
   private destroy$ = new Subject<void>();
   private stylesInitialized = false;
+  @Input() animationDelay: number = 0;
 
   constructor(private el: ElementRef, private renderer: Renderer2, private loaderService: LoaderService) {}
 
@@ -123,7 +124,8 @@ export class CardInitAnimationDirective implements AfterViewInit, OnDestroy {
     this.animation!.to(element, {
       clipPath: 'inset(0% 0 0 0)',
       duration: 2.5,
-      ease: 'power2.out'
+      ease: 'power2.out',
+      delay: this.animationDelay,
     }, 0);
     this.animation!.to(element, {
       scale: 1,
@@ -131,6 +133,7 @@ export class CardInitAnimationDirective implements AfterViewInit, OnDestroy {
       opacity: 1,
       duration: 2.6,
       ease: 'power2.out',
+      delay: this.animationDelay,
       onComplete: () => {
         this.cleanupStyles(element);
       }

@@ -1,18 +1,18 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, NavigationStart, NavigationEnd } from '@angular/router';
-import { NavbarPublicv2Component } from "../../components/system/navbar-publicv2/navbar-publicv2.component";
 import { Footerv2Component } from '../../components/system/footerv2/footerv2.component';
 import { RouterOutlet } from '@angular/router';
 import { LoaderService } from '../../../core/services/utils/loader.service';
 import { Subscription, filter } from 'rxjs';
 import { NewsletterComponent } from "../../components/system/newsletter/newsletter.component";
+import { NavbarPublicv3Component } from '../../components/system/navbar-publicv3/navbar-publicv3.component';
 
 @Component({
   selector: 'app-public-layout',
   standalone: true,
   imports: [
     RouterOutlet,
-    NavbarPublicv2Component,
+    NavbarPublicv3Component,
     Footerv2Component,
     NewsletterComponent
 ],

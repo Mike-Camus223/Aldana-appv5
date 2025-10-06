@@ -1,0 +1,56 @@
+<div class="w-screen h-screen overflow-hidden relative select-none">
+  <div
+    class="flex h-full transition-transform duration-300 ease-out"
+    [style.transform]="transform"
+    [class.transition-none]="isDragging"
+    (touchstart)="onTouchStart($event)"
+    (touchmove)="onTouchMove($event)"
+    (touchend)="onTouchEnd()"
+    (mousedown)="onMouseDown($event)"
+    (mousemove)="onMouseMove($event)"
+    (mouseup)="onMouseUp()"
+    (mouseleave)="onMouseLeave()"
+  >
+    <div *ngFor="let slide of slides" class="min-w-full h-full relative flex items-center justify-center">
+      <img
+        [src]="slide.image"
+        class="w-full h-full object-cover object-top pointer-events-none"
+        draggable="false"
+      />
+      <div
+        class="absolute inset-0 bg-black/30 saturate-150 z-[2] pointer-events-none"
+      ></div>
+      <div
+        *ngIf="slide.announcement"
+        class="absolute inset-0 flex z-[3] items-center justify-center pointer-events-none"
+      >
+        <div class="p-4 sm:p-6 md:p-8 max-w-3xl lg:max-w-6xl mx-4 text-center pointer-events-auto">
+          <h2 appWordReveal class="text-gray-100 titles2 font-light text-3xl sm:text-4xl md:text-5xl lg:text-6xl mb-4 sm:mb-5 md:mb-6 leading-none">
+            {{ slide.announcement.text }}
+          </h2>
+          <div>
+            <a
+              [href]="slide.announcement.buttonLink"
+              appWordReveal class="relative inline-block pt-16 sm:pt-18 md:pt-20 text-white scale-y-95 text-xs sm:text-sm uppercase tracking-[.25em] sm:tracking-[.30em] transition-colors duration-300 ease-in-out hover:text-gray-200 aldyFont group"
+            >
+              {{ slide.announcement.buttonText }}
+              <span
+                class="absolute left-0 -bottom-[5px] w-full h-[1px] bg-white transition-transform duration-300 ease-in-out group-hover:-translate-y-[4px]"
+              ></span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="absolute bottom-20 sm:bottom-20 md:bottom-20 left-0 right-0 flex justify-center gap-2 z-10 pointer-events-none">
+    <button
+      *ngFor="let slide of slides; let i = index"
+      (click)="goToSlide(i)"
+      [ngClass]="[
+        'h-1.5 sm:h-2 rounded-full transition-all duration-300 hover:bg-white pointer-events-auto cursor-pointer border-0 outline-none',
+        i === currentIndex ? 'bg-white w-8 sm:w-10 md:w-12' : 'bg-white/60 w-4 sm:w-5 md:w-6'
+      ]"
+    ></button>
+  </div>
+</div>

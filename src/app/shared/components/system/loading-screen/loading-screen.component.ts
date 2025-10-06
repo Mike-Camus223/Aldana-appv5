@@ -25,10 +25,13 @@ export class LoadingScreenComponent implements AfterViewInit, OnDestroy {
   @Output() loadingFinished = new EventEmitter<void>();
 
   private isScrollBlocked = false;
+  private imagesLoaded = 0;
+  private totalImages = 4;
   private wheelListener?: (event: WheelEvent) => void;
   private touchMoveListener?: (event: TouchEvent) => void;
   private keydownListener?: (event: KeyboardEvent) => void;
   private timeline?: gsap.core.Timeline;
+  private isAnimationComplete = false;
 
   constructor(
     private renderer: Renderer2,
@@ -38,113 +41,155 @@ export class LoadingScreenComponent implements AfterViewInit, OnDestroy {
 
   ngAfterViewInit(): void {
     if (isPlatformBrowser(this.platformId)) {
-      if (typeof requestAnimationFrame !== 'undefined') {
-        requestAnimationFrame(() => {
-          this.initializeAnimation();
-        });
-      } else {
-        setTimeout(() => {
-          this.initializeAnimation();
-        }, 0);
-      }
+      // Configurar estados iniciales inmediatamente
+      this.setupInitialStates();
+      
+      // Pequeño delay para asegurar que el DOM esté listo
+      setTimeout(() => {
+        this.initializeAnimation();
+      }, 100);
     }
+  }
+
+  private setupInitialStates(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+
+    // Ocultar todo inmediatamente con CSS nativo
+    const elements = [
+      this.box1?.nativeElement,
+      this.box2?.nativeElement,
+      this.box3?.nativeElement,
+      this.box4?.nativeElement,
+      this.letterA?.nativeElement,
+      this.letterV?.nativeElement,
+      this.name?.nativeElement
+    ].filter(el => el);
+
+    elements.forEach(el => {
+      this.renderer.setStyle(el, 'opacity', '0');
+      this.renderer.setStyle(el, 'visibility', 'hidden');
+    });
+
+    // Configurar grayscale inicial en las imágenes
+    this.setupImagePreloading();
+  }
+
+  private setupImagePreloading(): void {
+    const boxes = [this.box1, this.box2, this.box3, this.box4];
+    
+    boxes.forEach(box => {
+      if (box?.nativeElement) {
+        const img = box.nativeElement.querySelector('img');
+        if (img) {
+          // Forzar carga eager
+          img.loading = 'eager';
+          img.fetchPriority = 'high';
+          
+          // Aplicar grayscale inicial inmediatamente
+          this.renderer.setStyle(img, 'filter', 'grayscale(100%)');
+          
+          if (img.complete) {
+            this.onImageLoad();
+          } else {
+            img.addEventListener('load', this.onImageLoad.bind(this));
+            img.addEventListener('error', this.onImageLoad.bind(this));
+          }
+        }
+      }
+    });
+  }
+
+  private onImageLoad(): void {
+    this.imagesLoaded++;
   }
 
   private initializeAnimation(): void {
     if (!isPlatformBrowser(this.platformId)) {
-      this.loadingFinished.emit();
-      this.loaderService.finish('main');
+      this.hideAndComplete();
       return;
     }
 
-    this.blockScrollAndInteraction();
-    this.preloadElements();
-    this.timeline = gsap.timeline({
-      onComplete: () => {
-        this.unblockScrollAndInteraction();
-        this.loadingFinished.emit();
-        this.loaderService.finish('main');
-      }
-    });
+    // Esperar a que las imágenes carguen o timeout
+    const startAnimation = () => {
+      this.blockScrollAndInteraction();
+      this.optimizePerformance();
+      this.createAnimationSequence();
+    };
 
-    this.setupInitialStates();
-    this.createAnimationSequence();
+    if (this.imagesLoaded >= this.totalImages) {
+      startAnimation();
+    } else {
+      // Timeout de seguridad
+      const timeoutId = setTimeout(() => {
+        startAnimation();
+      }, 2000);
+
+      // También iniciar si todas las imágenes cargan antes
+      const checkImages = setInterval(() => {
+        if (this.imagesLoaded >= this.totalImages) {
+          clearTimeout(timeoutId);
+          clearInterval(checkImages);
+          startAnimation();
+        }
+      }, 100);
+    }
   }
 
-  private preloadElements(): void {
-    const elements = [
-      this.box1.nativeElement,
-      this.box2.nativeElement,
-      this.box3.nativeElement,
-      this.box4.nativeElement,
-      this.letterA.nativeElement,
-      this.letterV.nativeElement,
-      this.name.nativeElement,
+  private optimizePerformance(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+
+    // Mostrar elementos antes de animar
+    const allElements = [
+      this.screen.nativeElement,
       this.circleGroup.nativeElement,
-      this.screen.nativeElement
+      this.box1.nativeElement, this.box2.nativeElement, 
+      this.box3.nativeElement, this.box4.nativeElement,
+      this.letterA.nativeElement, this.letterV.nativeElement,
+      this.name.nativeElement
     ];
 
-    elements.forEach(el => {
-      el.offsetHeight; 
+    allElements.forEach(el => {
+      this.renderer.setStyle(el, 'visibility', 'visible');
+      el.style.transform = 'translateZ(0)';
+      el.style.backfaceVisibility = 'hidden';
+      el.style.perspective = '1000px';
     });
 
-    [this.box1, this.box2, this.box3, this.box4].forEach(box => {
-      const img = box.nativeElement.querySelector('img');
-      if (img) {
-        gsap.set(img, { 
-          force3D: true,
-          transformOrigin: "center center",
-          backfaceVisibility: "hidden"
-        });
-        img.style.willChange = 'filter, transform';
+    // Forzar layout sync
+    this.screen.nativeElement.offsetHeight;
+  }
+
+  private createAnimationSequence(): void {
+    this.timeline = gsap.timeline({
+      onComplete: () => {
+        this.hideAndComplete();
       }
     });
 
-    [this.letterA.nativeElement, this.letterV.nativeElement, this.name.nativeElement].forEach(el => {
-      gsap.set(el, { 
-        force3D: true,
-        transformOrigin: "center center",
-        backfaceVisibility: "hidden"
-      });
-      el.style.willChange = 'transform, opacity';
-    });
-
-    gsap.set([this.screen.nativeElement, this.circleGroup.nativeElement], {
-      force3D: true,
-      backfaceVisibility: "hidden"
-    });
-    
-    this.screen.nativeElement.style.willChange = 'transform, background-color';
-    this.circleGroup.nativeElement.style.willChange = 'opacity';
-  }
-
-  private setupInitialStates(): void {
+    // Configurar estados iniciales para GSAP (MANTENIENDO GRAYSCALE)
     const boxes = [this.box1, this.box2, this.box3, this.box4];
     
     gsap.set(boxes.map(b => b.nativeElement), { 
-      scale: 1,
-      force3D: true,
-      transformOrigin: "center center"
+      scale: 0,
+      rotation: 0,
+      opacity: 0,
+      force3D: true
     });
 
+    // MANTENER el grayscale en las imágenes
     boxes.forEach(box => {
       const img = box.nativeElement.querySelector('img');
       if (img) {
         gsap.set(img, { 
           filter: 'grayscale(100%)',
-          force3D: true
+          force3D: true,
+          willChange: "filter"
         });
       }
     });
 
-    gsap.set(this.letterA.nativeElement, { 
-      x: -90, 
-      opacity: 0,
-      force3D: true
-    });
-    
-    gsap.set(this.letterV.nativeElement, { 
-      x: 90, 
+    gsap.set([this.letterA.nativeElement, this.letterV.nativeElement], { 
+      scale: 0,
       opacity: 0,
       force3D: true
     });
@@ -154,140 +199,166 @@ export class LoadingScreenComponent implements AfterViewInit, OnDestroy {
       y: 20,
       force3D: true
     });
-  }
 
-  private createAnimationSequence(): void {
-    const tl = this.timeline!;
-
-    tl.from(this.box1.nativeElement, { 
-      y: '-40vh', 
-      scale: 0, 
-      duration: 1.5, 
-      ease: 'back.out(1.7)',
-      force3D: true
-    }, 0);
-    
-    tl.from(this.box2.nativeElement, { 
-      y: '40vh', 
-      scale: 0, 
-      duration: 1.5, 
-      ease: 'back.out(1.7)',
-      force3D: true
-    }, 0.2);
-    
-    tl.from(this.box3.nativeElement, { 
-      x: '-40vw', 
-      scale: 0, 
-      duration: 1.5, 
-      ease: 'back.out(1.7)',
-      force3D: true
-    }, 0.4);
-    
-    tl.from(this.box4.nativeElement, { 
-      x: '40vw', 
-      scale: 0, 
-      duration: 1.5, 
-      ease: 'back.out(1.7)',
-      force3D: true
-    }, 0.6);
-
-    tl.to(this.letterA.nativeElement, { 
-      x: 0, 
-      opacity: 1, 
-      duration: 0.6, 
-      ease: 'power2.out',
-      force3D: true
-    }, '+=0.3');
-    
-    tl.to(this.letterV.nativeElement, { 
-      x: 0, 
-      opacity: 1, 
-      duration: 0.6, 
-      ease: 'power2.out',
-      force3D: true
-    }, '<');
-    
-    tl.fromTo(this.name.nativeElement, 
-      { opacity: 0, y: 20 }, 
+    // Animación secuencial de boxes (CON ROTACIÓN INICIAL COMO TENÍAS)
+    this.timeline.fromTo(this.box1.nativeElement, 
       { 
-        opacity: 1, 
-        y: 0, 
-        duration: 0.8, 
-        ease: 'power2.out',
+        scale: 0,
+        rotation: -5,
+        opacity: 0
+      },
+      { 
+        scale: 1,
+        rotation: 0,
+        opacity: 1,
+        duration: 1.1, 
+        ease: "back.out(1.4)",
         force3D: true
-      }, '+=0.3');
-    
-    [this.box1, this.box2, this.box3, this.box4].forEach(box => {
-      const img = box.nativeElement.querySelector('img');
-      if (img) {
-        tl.to(img, { 
-          filter: 'grayscale(0%)', 
-          duration: 1, 
-          ease: 'power2.out',
-          force3D: true
-        }, '-=0.5');
-      }
-    });
+      }, 0);
 
-    tl.addLabel('fadeOutStart');
+    this.timeline.fromTo(this.box2.nativeElement, 
+      { 
+        scale: 0,
+        rotation: 3,
+        opacity: 0
+      },
+      { 
+        scale: 1,
+        rotation: 0,
+        opacity: 1,
+        duration: 1.1, 
+        ease: "back.out(1.6)",
+        force3D: true
+      }, 0.15);
+
+    this.timeline.fromTo(this.box3.nativeElement, 
+      { 
+        scale: 0,
+        rotation: -4,
+        opacity: 0
+      },
+      { 
+        scale: 1,
+        rotation: 0,
+        opacity: 1,
+        duration: 1.1, 
+        ease: "back.out(1.5)",
+        force3D: true
+      }, 0.3);
+
+    this.timeline.fromTo(this.box4.nativeElement, 
+      { 
+        scale: 0,
+        rotation: 4,
+        opacity: 0
+      },
+      { 
+        scale: 1,
+        rotation: 0,
+        opacity: 1,
+        duration: 1.1, 
+        ease: "back.out(1.7)",
+        force3D: true
+      }, 0.45);
+
+    // Letras
+    this.timeline.to([this.letterA.nativeElement, this.letterV.nativeElement], { 
+      scale: 1,
+      opacity: 1, 
+      duration: 0.7, 
+      ease: 'back.out(1.8)',
+      stagger: 0.1
+    }, '+=0.1');
     
-    tl.to(this.circleGroup.nativeElement, { 
+    // Nombre
+    this.timeline.to(this.name.nativeElement, { 
+      opacity: 1, 
+      y: 0, 
+      duration: 0.8, 
+      ease: 'power2.out'
+    }, '-=0.2');
+    
+    // COLORIZACIÓN - MANTENIENDO LA ANIMACIÓN DE GRAYSCALE A COLOR
+    this.timeline.to([this.box1, this.box2, this.box3, this.box4].map(box => 
+      box.nativeElement.querySelector('img')), { 
+        filter: 'grayscale(0%)', 
+        duration: 1, 
+        ease: 'power2.out',
+        force3D: true,
+        stagger: 0.1
+      }, '-=0.3');
+
+    // Salida
+    this.timeline.to(this.circleGroup.nativeElement, { 
       opacity: 0, 
-      duration: 0.3, 
-      ease: 'power2.out',
-      force3D: true
-    }, 'fadeOutStart');
+      duration: 0.4, 
+      ease: 'power2.out'
+    }, '+=0.5');
     
-    tl.to(this.screen.nativeElement, { 
+    this.timeline.to(this.screen.nativeElement, { 
       backgroundColor: '#000', 
-      duration: 1, 
+      duration: 0.8, 
       ease: 'power2.out'
-    }, 'fadeOutStart');
-    
-    tl.to(this.name.nativeElement, { 
+    }, '-=0.4');
+
+    this.timeline.to(this.name.nativeElement, { 
       color: '#ffffff', 
-      duration: 1, 
+      duration: 0.3,
       ease: 'power2.out'
-    }, 'fadeOutStart');
+    }, '-=0.7');
 
-    tl.call(() => {
-      this.unblockScrollAndInteraction();
-    }, undefined, 'fadeOutStart+=0.5');
-
-    tl.to(this.screen.nativeElement, { 
+    this.timeline.to(this.screen.nativeElement, { 
       y: '-100%', 
-      duration: 0.5, 
+      duration: 0.6, 
       ease: 'power2.inOut',
-      force3D: true,
       onComplete: () => {
         this.cleanupWillChange();
       }
-    }, 'fadeOutStart+=1');
+    }, '-=0.3');
   }
 
+  private hideAndComplete(): void {
+  this.isAnimationComplete = true;
+  
+  // Activar animaciones INMEDIATAMENTE usando el servicio
+  this.loaderService.setAnimationsEnabled(true);
+  
+  this.unblockScrollAndInteraction();
+  
+  // Ocultar completamente el componente
+  if (this.screen?.nativeElement) {
+    this.renderer.setStyle(this.screen.nativeElement, 'display', 'none');
+  }
+  
+  this.loadingFinished.emit();
+  this.loaderService.finish('main');
+}
+
   private cleanupWillChange(): void {
-    // Solo ejecutar en el navegador
     if (!isPlatformBrowser(this.platformId)) return;
 
     const elements = [
-      ...Array.from(document.querySelectorAll('[style*="will-change"]')),
-      this.screen.nativeElement,
-      this.circleGroup.nativeElement,
-      this.letterA.nativeElement,
-      this.letterV.nativeElement,
-      this.name.nativeElement
-    ];
+      this.screen?.nativeElement,
+      this.circleGroup?.nativeElement,
+      this.letterA?.nativeElement,
+      this.letterV?.nativeElement,
+      this.name?.nativeElement
+    ].filter(el => el);
 
     elements.forEach((el: any) => {
       if (el && el.style) {
         el.style.willChange = 'auto';
+        el.style.transform = '';
+        el.style.backfaceVisibility = '';
+        el.style.perspective = '';
       }
     });
 
     [this.box1, this.box2, this.box3, this.box4].forEach(box => {
-      const img = box.nativeElement.querySelector('img');
-      if (img) {
+      const img = box?.nativeElement?.querySelector('img');
+      if (img && img.style) {
         img.style.willChange = 'auto';
+        img.style.transform = '';
       }
     });
   }
@@ -299,10 +370,10 @@ export class LoadingScreenComponent implements AfterViewInit, OnDestroy {
     
     this.isScrollBlocked = true;
     
-    // Verificar que document.body existe antes de usarlo
     if (typeof document !== 'undefined' && document.body) {
       this.renderer.addClass(document.body, 'reserve-scrollbar-space');
       this.renderer.setStyle(document.body, 'overflow', 'hidden');
+      this.renderer.setStyle(document.body, 'overscrollBehavior', 'none');
     }
     
     this.wheelListener = (event: WheelEvent) => {
@@ -325,7 +396,7 @@ export class LoadingScreenComponent implements AfterViewInit, OnDestroy {
 
     document.addEventListener('wheel', this.wheelListener, { passive: false, capture: true });
     document.addEventListener('touchmove', this.touchMoveListener, { passive: false, capture: true });
-    document.addEventListener('keydown', this.keydownListener, { passive: false, capture: true });
+    document.addEventListener('keydown', this.keydownListener, { capture: true });
   }
 
   private unblockScrollAndInteraction(): void {
@@ -333,23 +404,20 @@ export class LoadingScreenComponent implements AfterViewInit, OnDestroy {
     
     this.isScrollBlocked = false;
     
-    // Verificar que document.body existe antes de usarlo
     if (typeof document !== 'undefined' && document.body) {
       this.renderer.removeClass(document.body, 'reserve-scrollbar-space');
       this.renderer.removeStyle(document.body, 'overflow');
+      this.renderer.removeStyle(document.body, 'overscrollBehavior');
     }
     
     if (this.wheelListener) {
       document.removeEventListener('wheel', this.wheelListener, { capture: true } as any);
-      this.wheelListener = undefined;
     }
     if (this.touchMoveListener) {
       document.removeEventListener('touchmove', this.touchMoveListener, { capture: true } as any);
-      this.touchMoveListener = undefined;
     }
     if (this.keydownListener) {
       document.removeEventListener('keydown', this.keydownListener, { capture: true } as any);
-      this.keydownListener = undefined;
     }
   }
 
@@ -361,7 +429,6 @@ export class LoadingScreenComponent implements AfterViewInit, OnDestroy {
       this.timeline = undefined;
     }
     
-    // Solo limpiar will-change en el navegador
     if (isPlatformBrowser(this.platformId)) {
       this.cleanupWillChange();
     }

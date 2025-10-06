@@ -32,7 +32,6 @@ export class LoaderService {
     }
   }
 
- 
   showLoaderOnNavigation() {
     if (this.isFirstLoad) {
       this.animationsEnabledSubject.next(false);
@@ -79,22 +78,22 @@ export class LoaderService {
   }
 
   finish(loaderType?: 'main' | 'generic') {
+    // ORDEN OPTIMIZADO: Primero activar animaciones, luego notificar fin del loader
+    this.animationsEnabledSubject.next(true);
+    
     this.currentLoaderSubject.next(null);
 
     if (loaderType === 'main') {
       this.isMainLoaderComplete = true;
     }
     
+    // ScrollTrigger refresh más rápido pero seguro
     if (this.isBrowser) {
       setTimeout(() => {
-        this.animationsEnabledSubject.next(true);
         if (typeof ScrollTrigger !== 'undefined') {
           ScrollTrigger.refresh();
         }
-      }, 50);
-    } else {
-      // En SSR, activar animaciones inmediatamente sin ScrollTrigger
-      this.animationsEnabledSubject.next(true);
+      }, 10); // Reducido de 50ms a 10ms para eliminar delay
     }
   }
 
@@ -150,7 +149,7 @@ export class LoaderService {
         if (typeof ScrollTrigger !== 'undefined') {
           ScrollTrigger.refresh();
         }
-      }, 50); // Pequeño delay para que las directivas procesen el 'false'
+      }, 10); // Reducido de 50ms a 10ms
     } else {
       // En SSR, activar animaciones inmediatamente
       this.animationsEnabledSubject.next(true);

@@ -15,8 +15,6 @@ import { Award, Leaf, LUCIDE_ICONS, LucideAngularModule, LucideIconProvider, Sta
 import { CardInitAnimationDirective } from '../../../utils/directives/card-init-animation.directive';
 import { FadeUpLetterDirective } from '../../../utils/directives/fadeupletter.directive';
 import { WordRevealDirective } from '../../../utils/directives/word-reveal.directive';
-
-// Solo registrar plugins en el navegador
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger);
 }

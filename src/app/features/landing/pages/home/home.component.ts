@@ -1,19 +1,37 @@
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { DualSectionComponent } from "../../../../shared/components/generic/dual-section/dual-section.component";
 import { AboutSecHomeComponent } from '../../../../shared/components/sections/about-sec-home/about-sec-home.component';
 import { ReelsSectionComponent } from "../../../../shared/components/sections/reels-section/reels-section.component";
-import { BettercustomDualComponent } from '../../../../shared/components/generic/bettercustom-dual/bettercustom-dual.component';
 import { DinamicTitlesComponent } from '../../../../shared/components/generic/dinamic-titles/dinamic-titles.component';
+import { CarouselScreenComponent, CarouselSlide } from '../../../../shared/components/generic/carousel-screen/carousel-screen.component';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [RouterModule, DualSectionComponent, DinamicTitlesComponent, AboutSecHomeComponent, BettercustomDualComponent, ReelsSectionComponent],
+  imports: [RouterModule, CarouselScreenComponent, DinamicTitlesComponent, AboutSecHomeComponent, ReelsSectionComponent],
   templateUrl: './home.component.html',
   styles: ``
 })
 export class HomeComponent {
+
+ slides: CarouselSlide[] = [
+  { 
+    image: '../../../../assets/images/Novias.jpeg', 
+    announcement: { 
+      text: 'Descubre nuestra colección exclusiva de vestidos de novia para tu día más especial.', 
+      buttonText: 'Ver Colección Novias', 
+      buttonLink: '/novias' 
+    } 
+  },
+  { 
+    image: '../../../../assets/images/Chlotes.jpg',
+    announcement: {
+      text: 'Explora nuestra línea prêt-à-porter con diseños elegantes y contemporáneos.',
+      buttonText: 'Ver Prêt-à-Porter',
+      buttonLink: '/tienda'
+    }
+  }
+];
 
   bloquesSobreMi = [
     {
