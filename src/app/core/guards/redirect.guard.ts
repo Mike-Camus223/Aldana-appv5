@@ -33,13 +33,18 @@ export class RedirectGuard implements CanActivate {
     // if (this.isRateLimited()) {
     //   console.warn('Alerta de guard: Rate limit excedido, bloqueando acceso');
     //   this.logSecurityEvent('RATE_LIMIT_EXCEEDED', 'anonymous');
-    //   return of(this.router.createUrlTree(['/home']));
+    //   return of(this.router.createUrlTree(['/']));
     // }
 
     // // Registrar intento de acceso
     // this.recordAttempt();
     // HASTA ACA LUEGO DE TERMINAR LOS TEST
 
+    // Permitir acceso a rutas de autenticación
+    const url = this.router.url;
+    if (url === '/login' || url === '/register' || url === '/register-confirm' || url === '/register-success') {
+      return of(true);
+    }
     
     // Verificación síncrona primero
     const currentUser = this.authService.getCurrentUser();
@@ -49,9 +54,9 @@ export class RedirectGuard implements CanActivate {
       
       // Usuario autenticado, redirigir según el rol
       if (this.authService.isAdmin()) {
-        return of(this.router.createUrlTree(['/dashboard']));
+        return of(this.router.createUrlTree(['/admin/home']));
       } else {
-        return of(this.router.createUrlTree(['/panel-control']));
+        return of(this.router.createUrlTree(['/panel/panel-control']));
       }
     }
 
@@ -61,13 +66,19 @@ export class RedirectGuard implements CanActivate {
       switchMap(() => this.authService.currentUser$),
       take(1),
       map(user => {
+        // Permitir acceso a rutas de autenticación
+        const url = this.router.url;
+        if (url === '/login' || url === '/register' || url === '/register-confirm' || url === '/register-success') {
+          return true;
+        }
+        
         if (user) {          
           this.logSecurityEvent('AUTHENTICATED_USER_BLOCKED_ASYNC', user.email || 'unknown');
           
           if (this.authService.isAdmin()) {
-            return this.router.createUrlTree(['/dashboard']);
+            return this.router.createUrlTree(['/admin/home']);
           } else {
-            return this.router.createUrlTree(['/panel-control']);
+            return this.router.createUrlTree(['/panel/panel-control']);
           }
         }
         

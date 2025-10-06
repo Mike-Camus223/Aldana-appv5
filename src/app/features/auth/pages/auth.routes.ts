@@ -14,23 +14,23 @@ export const authRoutes: Routes = [
       },
       {
         path: 'login',
-        loadComponent: () => import('./login-page/login-page.component'),
-        // canActivate: [RedirectGuard]
+        loadComponent: () => import('./login-page/login-page.component').then(c => c.default),
+        canActivate: [RedirectGuard]
       },
       {
         path: 'register',
-        loadComponent: () => import('./register-page/register-page.component'),
-        // canActivate: [RedirectGuard]
+        loadComponent: () => import('./register-page/register-page.component').then(c => c.default),
+        canActivate: [RedirectGuard]
       },
       {
         path: 'register-confirm',
         loadComponent: () => import('./register-confirm/register-confirm.component'),
-        // canActivate: [RedirectGuard, ConfirmationGuard]
+        canActivate: [RedirectGuard, ConfirmationGuard]
       },
       {
         path: 'register-success',
         loadComponent: () => import('./register-success/register-success.component'),
-        // canActivate: [RedirectGuard, ConfirmationGuard]
+        canActivate: [RedirectGuard, ConfirmationGuard]
       },
       {
         path: '**',

@@ -289,28 +289,28 @@ export class NavbarPublicv3Component implements OnInit, OnDestroy {
   }
 
   onUserButtonClick(): void {
-  // Cerrar todos los menús desplegables
-  this.menuOpen = false;
-  this.dropdownOpen = false;
-  this.mobileDropdownOpen = false;
-  
-  if (this.isBrowser) {
-    document.body.style.overflow = '';
-  }
-
-  // Navegar según el estado de autenticación
-  if (this.isAuthenticated) {
-    // Usuario autenticado
-    if (this.authService.isAdmin()) {
-      this.router.navigate(['/admin/home']);
-    } else {
-      this.router.navigate(['/panel/panel-control']);
+    // Cerrar todos los menús desplegables
+    this.menuOpen = false;
+    this.dropdownOpen = false;
+    this.mobileDropdownOpen = false;
+    
+    if (this.isBrowser) {
+      document.body.style.overflow = '';
     }
-  } else {
-    // Usuario no autenticado
-    this.router.navigate(['/auth/login']);
+
+    // Navegar según el estado de autenticación
+    if (this.isAuthenticated) {
+      // Usuario autenticado
+      if (this.authService.isAdmin()) {
+        this.router.navigate(['/admin/home']);
+      } else {
+        this.router.navigate(['/panel/panel-control']);
+      }
+    } else {
+      // Usuario no autenticado
+    this.router.navigate(['/login']);
+    }
   }
-}
 
   get leftLinks(): RouterlinkNavbar[] {
     return this.navLinks.slice(0, 2);

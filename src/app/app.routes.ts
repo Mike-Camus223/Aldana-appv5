@@ -6,8 +6,20 @@ export const routes: Routes = [
     loadChildren: () => import('./shared/layouts/public-layout/public-layout.routes').then(r => r.routes),
   },
   {
-    path: 'auth',
-    loadChildren: () => import('./features/auth/pages/auth.routes').then(r => r.authRoutes),
+    path: 'login',
+    loadComponent: () => import('./features/auth/pages/login-page/login-page.component').then(c => c.default),
+  },
+  {
+    path: 'register',
+    loadComponent: () => import('./features/auth/pages/register-page/register-page.component').then(c => c.default),
+  },
+  {
+    path: 'register-confirm',
+    loadComponent: () => import('./features/auth/pages/register-confirm/register-confirm.component').then(c => c.default),
+  },
+  {
+    path: 'register-success',
+    loadComponent: () => import('./features/auth/pages/register-success/register-success.component').then(c => c.default),
   },
   {
     path: 'panel',
@@ -17,6 +29,7 @@ export const routes: Routes = [
     path: 'admin',
     loadChildren: () => import('./shared/layouts/dashboard-layout/dashboard-layout.routes').then(r => r.default),
   },
+
   {
     path: '**',
     redirectTo: '',
