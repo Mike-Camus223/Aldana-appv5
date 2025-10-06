@@ -8,27 +8,34 @@ export const authRoutes: Routes = [
     loadComponent: () => import('../authPanel.component').then(m => m.AuthPanelComponent),
     children: [
       {
+        path: '',
+        redirectTo: 'login',
+        pathMatch: 'full'
+      },
+      {
         path: 'login',
         loadComponent: () => import('./login-page/login-page.component'),
-        canActivate: [RedirectGuard]
+        // canActivate: [RedirectGuard]
       },
       {
         path: 'register',
         loadComponent: () => import('./register-page/register-page.component'),
-        canActivate: [RedirectGuard]
+        // canActivate: [RedirectGuard]
       },
       {
         path: 'register-confirm',
         loadComponent: () => import('./register-confirm/register-confirm.component'),
-        canActivate: [RedirectGuard, ConfirmationGuard]
+        // canActivate: [RedirectGuard, ConfirmationGuard]
       },
       {
         path: 'register-success',
         loadComponent: () => import('./register-success/register-success.component'),
-        canActivate: [RedirectGuard, ConfirmationGuard]
+        // canActivate: [RedirectGuard, ConfirmationGuard]
       },
+      {
+        path: '**',
+        redirectTo: 'login'
+      }
     ]
   }
 ];
-
-export default authRoutes;

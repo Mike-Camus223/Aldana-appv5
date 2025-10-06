@@ -29,7 +29,7 @@ export class RedirectGuard implements CanActivate {
     // Verificar rate limiting primero
 
 
-    //DESCOMENTA ESTOO
+    //DESCOMENTA ESTOO cuando reparemos todo  esto de aca es un regulador
     // if (this.isRateLimited()) {
     //   console.warn('Alerta de guard: Rate limit excedido, bloqueando acceso');
     //   this.logSecurityEvent('RATE_LIMIT_EXCEEDED', 'anonymous');

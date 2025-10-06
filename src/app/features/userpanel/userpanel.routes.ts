@@ -8,6 +8,11 @@ export const userPanelRoutes: Routes = [
     canActivate: [AuthGuard],
     children: [
       {
+        path: '',
+        redirectTo: 'panel-control',
+        pathMatch: 'full'
+      },
+      {
         path: 'panel-control',
         loadComponent: () => import('./pages/control-panel/control-panel.component').then(c => c.ControlPanelComponent),
       },
@@ -28,15 +33,9 @@ export const userPanelRoutes: Routes = [
         loadComponent: () => import('./pages/whitelist/whitelist.component').then(c => c.WhitelistComponent),
       },
       {
-        path: '',
-        redirectTo: 'panel-control',
-        pathMatch: 'full'
-      },
-      {
         path: '**',
         redirectTo: 'panel-control'
       }
     ]
   }
 ];
-

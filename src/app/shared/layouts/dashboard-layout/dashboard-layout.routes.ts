@@ -3,10 +3,15 @@ import { AdminGuard } from '../../../core/guards/admin.guard';
 
 export default [
   {
-    path: 'dashboard',
+    path: '',
     loadComponent: () => import('./dashboard-layout.component'),
     canActivate: [AdminGuard],
     children: [
+      {
+        path: '',
+        redirectTo: 'home',
+        pathMatch: 'full',
+      },
       {
         path: 'home',
         loadComponent: () => import('../../../features/dashboard/pages/dashhome/dashhome.component').then(c => c.DashhomeComponent),
@@ -22,11 +27,6 @@ export default [
       {
         path: 'users',
         loadComponent: () => import('../../../features/dashboard/pages/users-management/users-management.component').then(c => c.UsersManagementComponent),
-      },
-      {
-        path: '',
-        redirectTo: 'home',
-        pathMatch: 'full',
       },
       {
         path: '**',

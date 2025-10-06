@@ -3,8 +3,7 @@ import { Routes } from '@angular/router';
 export const routes: Routes = [
   {
     path: '',
-    loadComponent: () =>
-    import('./public-layout.component').then(c => c.PublicLayoutComponent),
+    loadComponent: () => import('./public-layout.component').then(c => c.PublicLayoutComponent),
     children: [
       {
         path: '',
@@ -36,6 +35,10 @@ export const routes: Routes = [
           import('../../../shared/components/templates/generic-collection-brides/generic-collection-brides.component').then(c => c.GenericCollectionBridesComponent),
       },
       {
+        path: 'tienda',
+        loadComponent: () => import('../../../features/landing/pages/shop/shop.component').then(c => c.ShopComponent),
+      },
+      {
         path: 'tienda/categoria/:categoria',
         loadComponent: () => import('../../../features/landing/pages/shop/shop.component').then(c => c.ShopComponent),
       },
@@ -44,15 +47,10 @@ export const routes: Routes = [
         loadComponent: () => import('../../../features/landing/pages/shop/shop.component').then(c => c.ShopComponent),
       },
       {
-        path: 'tienda',
-        loadComponent: () => import('../../../features/landing/pages/shop/shop.component').then(c => c.ShopComponent),
-      },
-      {
         path: 'producto/:slug',
         loadComponent: () =>
           import('../../../shared/components/templates/items-purchase/items-purchase.component').then(m => m.ItemsPurchaseComponent),
-      }
-      ,
+      },
       {
         path: 'contacto',
         loadComponent: () =>
@@ -71,6 +69,10 @@ export const routes: Routes = [
       {
         path: 'busqueda',
         loadComponent: () => import('../../../features/landing/pages/search-page/search-page.component').then(c => c.SearchPageComponent),
+      },
+      {
+        path: '**',
+        redirectTo: 'home',
       }
     ]
   }
