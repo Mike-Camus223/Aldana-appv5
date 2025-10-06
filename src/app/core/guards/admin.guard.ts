@@ -39,7 +39,7 @@ export class AdminGuard implements CanActivate, CanActivateChild {
         if (clientRole !== 'admin') {
           console.warn('AdminGuard: Rol de cliente no es admin:', clientRole);
           this.logSecurityEvent('ADMIN_ACCESS_DENIED_CLIENT_ROLE', session.user.email, { clientRole });
-          return of(this.router.createUrlTree(['/home']));
+          return of(this.router.createUrlTree(['/']));
         }
 
         // Verificar rol desde el servidor para mayor seguridad
@@ -56,7 +56,7 @@ export class AdminGuard implements CanActivate, CanActivateChild {
         }
         
         this.retryCount = 0;
-        return of(this.router.createUrlTree(['/home']));
+        return of(this.router.createUrlTree(['/']));
       })
     );
   }
@@ -72,7 +72,7 @@ export class AdminGuard implements CanActivate, CanActivateChild {
         if (error || !user) {
           console.error('AdminGuard: Error al obtener usuario del servidor:', error);
           this.logSecurityEvent('ADMIN_SERVER_VERIFICATION_ERROR', userEmail, { error: error?.message });
-          observer.next(this.router.createUrlTree(['/home']));
+          observer.next(this.router.createUrlTree(['/']));
           observer.complete();
           return;
         }
@@ -87,7 +87,7 @@ export class AdminGuard implements CanActivate, CanActivateChild {
         } else {
           console.warn('AdminGuard: Rol del servidor no es admin:', serverRole);
           this.logSecurityEvent('ADMIN_ACCESS_DENIED_SERVER_ROLE', userEmail, { serverRole });
-          observer.next(this.router.createUrlTree(['/home']));
+          observer.next(this.router.createUrlTree(['/']));
         }
         
         observer.complete();
@@ -96,7 +96,7 @@ export class AdminGuard implements CanActivate, CanActivateChild {
         this.logSecurityEvent('ADMIN_SERVER_CONNECTION_ERROR', userEmail, { error: serverError.message });
         
         // En caso de error del servidor, denegar acceso por seguridad
-        observer.next(this.router.createUrlTree(['/home']));
+        observer.next(this.router.createUrlTree(['/']));
         observer.complete();
       });
     });

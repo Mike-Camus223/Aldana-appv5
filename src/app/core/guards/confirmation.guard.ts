@@ -40,7 +40,7 @@ export class ConfirmationGuard implements CanActivate {
       }
       
       // Redirigir a home si no hay un estado de confirmación válido
-      this.router.navigate(['/home']);
+      this.router.navigate(['/']);
       return false;
     }
     

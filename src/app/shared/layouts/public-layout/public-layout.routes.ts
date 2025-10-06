@@ -7,11 +7,6 @@ export const routes: Routes = [
     children: [
       {
         path: '',
-        redirectTo: 'home',
-        pathMatch: 'full',
-      },
-      {
-        path: 'home',
         loadComponent: () =>
           import('../../../features/landing/pages/home/home.component').then(c => c.HomeComponent),
       },
@@ -72,7 +67,7 @@ export const routes: Routes = [
       },
       {
         path: '**',
-        redirectTo: 'home',
+        redirectTo: '',
       }
     ]
   }

@@ -1,9 +1,30 @@
 import { Routes } from '@angular/router';
+import { isPlatformServer } from '@angular/common';
+import { inject, PLATFORM_ID } from '@angular/core';
 
 export const routes: Routes = [
   {
     path: '',
+    canActivate: [() => {
+      const platformId = inject(PLATFORM_ID);
+      if (isPlatformServer(platformId)) {
+        return false; // Bloquea la activación de esta ruta en SSR
+      }
+      return true;
+    }],
     loadChildren: () => import('./shared/layouts/public-layout/public-layout.routes').then(r => r.routes),
+  },
+  {
+    path: '',
+    canActivate: [() => {
+      const platformId = inject(PLATFORM_ID);
+      if (isPlatformServer(platformId)) {
+        return true; // Solo activa esta ruta en SSR
+      }
+      return false;
+    }],
+    redirectTo: '',
+    pathMatch: 'full'
   },
   {
     path: 'login',

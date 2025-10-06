@@ -147,7 +147,7 @@ export class NavbarPublicv3Component implements OnInit, OnDestroy {
     this.router.events
       .pipe(filter(e => e instanceof NavigationEnd))
       .subscribe(() => {
-        this.isHomePage = this.router.url === '/home';
+        this.isHomePage = this.router.url === '/' || this.router.url === '/home';
         this.menuOpen = false;
         this.dropdownOpen = false;
         this.mobileDropdownOpen = false;
@@ -155,7 +155,7 @@ export class NavbarPublicv3Component implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.isHomePage = this.router.url === '/home';
+    this.isHomePage = this.router.url === '/' || this.router.url === '/home';
     
     this.cartService.cartItems$.subscribe(items => {
       this.cartItems = items;

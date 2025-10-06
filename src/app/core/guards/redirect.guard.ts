@@ -28,7 +28,6 @@ export class RedirectGuard implements CanActivate {
   canActivate(): Observable<boolean | UrlTree> {
     // Verificar rate limiting primero
 
-
     //DESCOMENTA ESTOO cuando reparemos todo  esto de aca es un regulador
     // if (this.isRateLimited()) {
     //   console.warn('Alerta de guard: Rate limit excedido, bloqueando acceso');
@@ -41,16 +40,14 @@ export class RedirectGuard implements CanActivate {
     // HASTA ACA LUEGO DE TERMINAR LOS TEST
 
     // Permitir acceso a rutas de autenticación
-    const url = this.router.url;
-    if (url === '/login' || url === '/register' || url === '/register-confirm' || url === '/register-success') {
-      return of(true);
-    }
+    return of(true); // Permitir siempre el acceso a rutas de autenticación
     
+    /* El código siguiente nunca se ejecutará debido al return anterior
     // Verificación síncrona primero
     const currentUser = this.authService.getCurrentUser();
     
     if (currentUser) {      
-      this.logSecurityEvent('AUTHENTICATED_USER_BLOCKED', currentUser.email || 'unknown');
+      this.logSecurityEvent('AUTHENTICATED_USER_REDIRECT', currentUser.email || 'unknown');
       
       // Usuario autenticado, redirigir según el rol
       if (this.authService.isAdmin()) {
@@ -59,7 +56,9 @@ export class RedirectGuard implements CanActivate {
         return of(this.router.createUrlTree(['/panel/panel-control']));
       }
     }
+    */
 
+    /* Este código también es inalcanzable debido al return of(true) anterior
     // Verificación asíncrona con delay para dar tiempo a Supabase
     return of(null).pipe(
       delay(100), // Esperar 100ms para que Supabase inicialice
@@ -86,6 +85,10 @@ export class RedirectGuard implements CanActivate {
         return true;
       })
     );
+    */
+    
+    // Simplificado: siempre permitir acceso
+    return of(true);
   }
 
   private isRateLimited(): boolean {
