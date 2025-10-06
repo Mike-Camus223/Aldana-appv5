@@ -1,4 +1,4 @@
-// carousel-screen.component.ts - SOLO cambios necesarios para responsividad
+// carousel-screen.component.ts
 import { Component, Input, PLATFORM_ID, Inject, OnInit, AfterViewInit, HostListener } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { WordRevealDirective } from '../../../utils/directives/word-reveal.directive';
@@ -15,7 +15,7 @@ export interface CarouselSlide {
 @Component({
   selector: 'app-carousel-screen',
   standalone: true,
-  imports: [CommonModule,WordRevealDirective],
+  imports: [CommonModule, WordRevealDirective],
   templateUrl: './carousel-screen.component.html',
   styleUrl: './carousel-screen.component.css'
 })
@@ -70,6 +70,10 @@ export class CarouselScreenComponent implements OnInit, AfterViewInit {
 
   get transform(): string {
     return `translateX(${this.currentTranslate}px)`;
+  }
+
+  getSlideId(index: number): string {
+    return `slide-${this.currentIndex}-${index}`;
   }
 
   onTouchStart(event: TouchEvent): void {

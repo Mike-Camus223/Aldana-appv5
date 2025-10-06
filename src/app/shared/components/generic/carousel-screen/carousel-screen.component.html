@@ -11,7 +11,7 @@
     (mouseup)="onMouseUp()"
     (mouseleave)="onMouseLeave()"
   >
-    <div *ngFor="let slide of slides" class="min-w-full h-full relative flex items-center justify-center">
+    <div *ngFor="let slide of slides; let i = index" class="min-w-full h-full relative flex items-center justify-center">
       <img
         [src]="slide.image"
         class="w-full h-full object-cover object-top pointer-events-none"
@@ -21,7 +21,7 @@
         class="absolute inset-0 bg-black/30 saturate-150 z-[2] pointer-events-none"
       ></div>
       <div
-        *ngIf="slide.announcement"
+        *ngIf="slide.announcement && i === currentIndex"
         class="absolute inset-0 flex z-[3] items-center justify-center pointer-events-none"
       >
         <div class="p-4 sm:p-6 md:p-8 max-w-3xl lg:max-w-6xl mx-4 text-center pointer-events-auto">
