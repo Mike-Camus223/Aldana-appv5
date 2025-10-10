@@ -10,12 +10,14 @@ import { RouterModule, Router } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
 import { CollectionBridesService } from '../../../../core/services/data-access/collection-brides/collection_brides.service';
 import { trigger, transition, style, animate, state } from '@angular/animations';
+import { CardInitAnimationDirective } from '../../../utils/directives/card-init-animation.directive';
+import { WordRevealDirective } from '../../../utils/directives/word-reveal.directive';
 
 
 @Component({
   selector: 'app-novias-template',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule,CardInitAnimationDirective,WordRevealDirective],
   animations: [
     trigger('gridAnimation', [
       transition('* => *', [
@@ -40,7 +42,7 @@ import { trigger, transition, style, animate, state } from '@angular/animations'
 })
 export class NoviasTemplateComponent implements AfterViewInit {
   CollectionBrides: Collection[] = [];
-  productColumns: number = 4;
+  productColumns: number = 3;
 
 
   constructor(
