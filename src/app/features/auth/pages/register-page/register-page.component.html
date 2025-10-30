@@ -1,207 +1,194 @@
-<div class="w-full flex flex-col items-center justify-center md:justify-start py-2 sm:py-6">
-    <!-- Card con max-width responsive -->
-    <div class="w-full max-w-sx sm:max-w-xl px-4 sm:px-0 md:max-w-md lg:max-w-md xl:max-w-md">
-      <!-- Contenido principal -->
-      <div class="py-0 sm:py-4">
-        <!-- Main Card -->
-        <div class="w-full">
-          <!-- Logo AV -->
-          <a routerLink="/">
-            <div class="flex flex-col items-center text-center justify-center mb-5 sm:mb-7">
-              <h1
-                class="relative aldyFont font-bold text-3xl min-[360px]:text-4xl sm:text-5xl md:text-6xl text-aldy-primary-600">
-                <div class="relative flex justify-center">
-                  <span class="relative -mr-0.5 min-[360px]:-mr-1">A</span>
-                  <span class="relative -top-[2px] min-[360px]:-top-[3px]">V</span>
-                </div>
-              </h1>
-              <div
-                class="aldyFont font-bold text-xs min-[360px]:text-sm sm:text-base md:text-lg text-gray-700 tracking-wide min-[360px]:tracking-widest uppercase mt-0.5 min-[360px]:mt-1">
-                aldana vilcabana
-              </div>
+<div class="w-full min-h-screen flex flex-col items-center justify-center md:justify-start py-2 sm:py-6 overflow-y-auto">
+  <!-- Card con max-width responsive -->
+  <div class="w-full max-w-sx sm:max-w-xl px-4 sm:px-0 md:max-w-md lg:max-w-md xl:max-w-md">
+    <!-- Contenido principal -->
+    <div class="py-0 sm:py-4">
+      <!-- Main Card -->
+      <div class="w-full">
+        <!-- Logo AV -->
+        <div class="w-full flex justify-center">
+          <a routerLink="/" class="flex w-[18rem] h-[6rem] items-center justify-center mb-8 sm:mb-6 md:mb-8 lg:mb-10">
+            <div class="flex justify-center items-center">
+              <img src="../../../../../assets/svg/logo_full.svg" alt="Aldana vilcabana" class="w-full h-full object-contain">
             </div>
           </a>
-  
-          <!-- Register Form -->
-          <div class="mb-4 sm:mb-6">
-            <h2
-              class="font-semibold aldyFont text-[18px] min-[360px]:text-[18px] sm:text-[20px] tracking-tight text-gray-600 text-left mb-4 sm:mb-6">
-              Crear una Cuenta
-            </h2>
+        </div>
+        <!-- Register Form -->
+        <div class="mb-4 sm:mb-6">
+          <h2
+            class="font-semibold aldyFont text-[18px] min-[360px]:text-[18px] sm:text-[20px] tracking-tight text-gray-600 text-left mb-4 sm:mb-6">
+            Crear una Cuenta
+          </h2>
+        </div>
+
+        <form class="w-full" [formGroup]="form" (ngSubmit)="onSubmit()">
+          <!-- Nombre y Apellido -->
+          <div class="mb-4 min-[360px]:mb-5 sm:mb-6 grid grid-cols-2 gap-3">
+            <app-input label="Nombre" formControlName="nombre"></app-input>
+            <app-input label="Apellido" formControlName="apellido"></app-input>
           </div>
-  
-          <form class="w-full" [formGroup]="form" (ngSubmit)="onSubmit()">
-            <!-- Nombre y Apellido -->
-            <div class="mb-4 min-[360px]:mb-5 sm:mb-6 grid grid-cols-2 gap-3">
-              <app-input label="Nombre" formControlName="nombre"></app-input>
-              <app-input label="Apellido" formControlName="apellido"></app-input>
+
+          <!-- Email -->
+          <div class="mb-4 min-[360px]:mb-5 sm:mb-6">
+            <app-input label="Correo electrónico" formControlName="email"></app-input>
+          </div>
+
+          <!-- Password -->
+          <div class="mb-4 min-[360px]:mb-5 sm:mb-6">
+            <app-inputpassword label="Contraseña" formControlName="password"></app-inputpassword>
+            <p *ngIf="form.get('password')?.touched && form.get('password')?.invalid"
+              class="text-red-500 text-xs min-[360px]:text-sm mt-1.5">
+              {{ passwordErrorMessage }}
+            </p>
+          </div>
+
+          <!-- Repeat Password -->
+          <div class="mb-4 min-[360px]:mb-5 sm:mb-6">
+            <app-inputpassword label="Repetir Contraseña" formControlName="repeatPassword"></app-inputpassword>
+            <p *ngIf="(form.get('repeatPassword')?.touched && form.get('repeatPassword')?.invalid) || (form.errors?.['passwordNotMatch'] && form.get('repeatPassword')?.touched)"
+              class="text-red-500 text-xs min-[360px]:text-sm mt-1.5">
+              {{ repeatPasswordErrorMessage }}
+            </p>
+          </div>
+
+          <!-- Fecha de Nacimiento -->
+          <div class="mb-4 min-[360px]:mb-5 sm:mb-6">
+            <label class="block text-sm min-[360px]:text-base font-medium text-gray-700 mb-2">
+              Fecha de Nacimiento
+            </label>
+            <div class="grid grid-cols-3 gap-2">
+              <input type="number" formControlName="birthDay" placeholder="Dia" min="1" max="31"
+                class="w-full px-2 py-2 border-b border-gray-300 text-center text-sm sm:text-base transition-all duration-400 ease-in-out focus:outline-none focus:border-aldy-primary-400" />
+              <input type="number" formControlName="birthMonth" placeholder="Mes" min="1" max="12"
+                class="w-full px-2 py-2 border-b border-gray-300 text-center text-sm sm:text-base transition-all duration-400 ease-in-out focus:outline-none focus:border-aldy-primary-400" />
+              <input type="number" formControlName="birthYear" placeholder="Año" min="1900" max="2100"
+                class="w-full px-2 py-2 border-b border-gray-300 text-center text-sm sm:text-base transition-all duration-400 ease-in-out focus:outline-none focus:border-aldy-primary-400" />
             </div>
-  
-            <!-- Email -->
-            <div class="mb-4 min-[360px]:mb-5 sm:mb-6">
-              <app-input label="Correo electrónico" formControlName="email"></app-input>
-            </div>
-  
-            <!-- Password -->
-            <div class="mb-4 min-[360px]:mb-5 sm:mb-6">
-              <app-inputpassword label="Contraseña" formControlName="password"></app-inputpassword>
-              <p *ngIf="form.get('password')?.touched && form.get('password')?.invalid"
-                class="text-red-500 text-xs min-[360px]:text-sm mt-1.5">
-                {{ passwordErrorMessage }}
-              </p>
-            </div>
-  
-            <!-- Repeat Password -->
-            <div class="mb-4 min-[360px]:mb-5 sm:mb-6">
-              <app-inputpassword label="Repetir Contraseña" formControlName="repeatPassword"></app-inputpassword>
-              <p
-                *ngIf="(form.get('repeatPassword')?.touched && form.get('repeatPassword')?.invalid) || (form.errors?.['passwordNotMatch'] && form.get('repeatPassword')?.touched)"
-                class="text-red-500 text-xs min-[360px]:text-sm mt-1.5">
-                {{ repeatPasswordErrorMessage }}
-              </p>
-            </div>
-  
-            <!-- Fecha de Nacimiento -->
-            <!-- Fecha de Nacimiento -->
-<div class="mb-4 min-[360px]:mb-5 sm:mb-6">
-  <label class="block text-sm min-[360px]:text-base font-medium text-gray-700 mb-2">
-    Fecha de Nacimiento
-  </label>
-  <div class="grid grid-cols-3 gap-2">
-    <input type="number" formControlName="birthDay" placeholder="Dia" min="1" max="31"
-      class="w-full px-2 py-2 border-b border-gray-300 text-center text-sm sm:text-base transition-all duration-400 ease-in-out focus:outline-none focus:border-aldy-primary-400" />
-    <input type="number" formControlName="birthMonth" placeholder="Mes" min="1" max="12"
-      class="w-full px-2 py-2 border-b border-gray-300 text-center text-sm sm:text-base transition-all duration-400 ease-in-out focus:outline-none focus:border-aldy-primary-400" />
-    <input type="number" formControlName="birthYear" placeholder="Año" min="1900" max="2100"
-      class="w-full px-2 py-2 border-b border-gray-300 text-center text-sm sm:text-base transition-all duration-400 ease-in-out focus:outline-none focus:border-aldy-primary-400" />
-  </div>
-  
-  <!-- AGREGA ESTOS MENSAJES DE ERROR PARA FECHA -->
-  <div class="mt-2 text-xs text-red-500">
-    <!-- Errores de día -->
-    <div *ngIf="form.get('birthDay')?.touched && form.get('birthDay')?.errors?.['required']">
-      El día es requerido
-    </div>
-    <div *ngIf="form.get('birthDay')?.touched && form.get('birthDay')?.errors?.['pattern']">
-      El día debe ser entre 1 y 31
-    </div>
-    
-    <!-- Errores de mes -->
-    <div *ngIf="form.get('birthMonth')?.touched && form.get('birthMonth')?.errors?.['required']">
-      El mes es requerido
-    </div>
-    <div *ngIf="form.get('birthMonth')?.touched && form.get('birthMonth')?.errors?.['pattern']">
-      El mes debe ser entre 1 y 12
-    </div>
-    
-    <!-- Errores de año -->
-    <div *ngIf="form.get('birthYear')?.touched && form.get('birthYear')?.errors?.['required']">
-      El año es requerido
-    </div>
-    <div *ngIf="form.get('birthYear')?.touched && form.get('birthYear')?.errors?.['pattern']">
-      El año debe ser entre 1900 y 2099
-    </div>
-  </div>
-</div>
-  
-            <!-- Newsletter -->
-            <div class="mb-4 min-[360px]:mb-5 sm:mb-6">
-              <p class="text-[14px] min-[360px]:text-[14px] text-gray-700 mb-3">
-                *Quiero ser la primera en recibir las newsletters de Aldana Vilcabana
-              </p>
-              <div class="flex gap-4">
-                <label class="flex items-center cursor-pointer">
-                  <input type="radio" [value]="true" formControlName="newsletter"
-                    class="peer h-3 w-3 shrink-0 appearance-none rounded-[2px] border border-gray-400 cursor-pointer
-                               flex items-center justify-center transition-all duration-200
-                               checked:bg-aldy-primary-600 checked:border-white checked:shadow-[0_0_0_2px_var(--color-aldy-primary-600)]" />
-                  <span class="ml-2 text-sm text-gray-700">Sí</span>
-                </label>
-  
-                <label class="flex items-center cursor-pointer">
-                  <input type="radio" [value]="false" formControlName="newsletter"
-                    class="peer h-3 w-3 shrink-0 appearance-none rounded-[2px] border border-gray-400 cursor-pointer
-                               flex items-center justify-center transition-all duration-200
-                               checked:bg-aldy-primary-600 checked:border-white checked:shadow-[0_0_0_2px_var(--color-aldy-primary-600)]" />
-                  <span class="ml-2 text-sm text-gray-700">No</span>
-                </label>
+
+            <!-- AGREGA ESTOS MENSAJES DE ERROR PARA FECHA -->
+            <div class="mt-2 text-xs text-red-500">
+              <!-- Errores de día -->
+              <div *ngIf="form.get('birthDay')?.touched && form.get('birthDay')?.errors?.['required']">
+                El día es requerido
+              </div>
+              <div *ngIf="form.get('birthDay')?.touched && form.get('birthDay')?.errors?.['pattern']">
+                El día debe ser entre 1 y 31
+              </div>
+
+              <!-- Errores de mes -->
+              <div *ngIf="form.get('birthMonth')?.touched && form.get('birthMonth')?.errors?.['required']">
+                El mes es requerido
+              </div>
+              <div *ngIf="form.get('birthMonth')?.touched && form.get('birthMonth')?.errors?.['pattern']">
+                El mes debe ser entre 1 y 12
+              </div>
+
+              <!-- Errores de año -->
+              <div *ngIf="form.get('birthYear')?.touched && form.get('birthYear')?.errors?.['required']">
+                El año es requerido
+              </div>
+              <div *ngIf="form.get('birthYear')?.touched && form.get('birthYear')?.errors?.['pattern']">
+                El año debe ser entre 1900 y 2099
               </div>
             </div>
-  
-            <!-- Terms -->
-            <div class="mb-4 min-[360px]:mb-5 sm:mb-6">
+          </div>
+
+          <!-- Newsletter -->
+          <div class="mb-4 min-[360px]:mb-5 sm:mb-6">
+            <p class="text-[14px] min-[360px]:text-[14px] text-gray-700 mb-3">
+              *Quiero ser la primera en recibir las newsletters de Aldana Vilcabana
+            </p>
+            <div class="flex gap-4">
               <label class="flex items-center cursor-pointer">
-                <input type="checkbox" formControlName="termsAccepted"
-                  class="peer h-3 w-3 shrink-0 appearance-none rounded-[2px] border border-gray-400 cursor-pointer 
+                <input type="radio" [value]="true" formControlName="newsletter"
+                  class="peer h-3 w-3 shrink-0 appearance-none rounded-[2px] border border-gray-400 cursor-pointer
+                               flex items-center justify-center transition-all duration-200
+                               checked:bg-aldy-primary-600 checked:border-white checked:shadow-[0_0_0_2px_var(--color-aldy-primary-600)]" />
+                <span class="ml-2 text-sm text-gray-700">Sí</span>
+              </label>
+
+              <label class="flex items-center cursor-pointer">
+                <input type="radio" [value]="false" formControlName="newsletter"
+                  class="peer h-3 w-3 shrink-0 appearance-none rounded-[2px] border border-gray-400 cursor-pointer
+                               flex items-center justify-center transition-all duration-200
+                               checked:bg-aldy-primary-600 checked:border-white checked:shadow-[0_0_0_2px_var(--color-aldy-primary-600)]" />
+                <span class="ml-2 text-sm text-gray-700">No</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Terms -->
+          <div class="mb-4 min-[360px]:mb-5 sm:mb-6">
+            <label class="flex items-center cursor-pointer">
+              <input type="checkbox" formControlName="termsAccepted"
+                class="peer h-3 w-3 shrink-0 appearance-none rounded-[2px] border border-gray-400 cursor-pointer 
                                      flex items-center justify-center transition-all duration-200
                                      checked:bg-aldy-primary-600 checked:border-white checked:shadow-[0_0_0_2px_var(--color-aldy-primary-600)]" />
-                <span class="ml-2 text-[14px] text-gray-700 select-none italic leading-[1.4]">
-                  He leído y acepto explícitamente las
-                  <a href="#" class="text-aldy-primary-600 hover:text-aldy-primary-700 underline">Condiciones Generales
-                    de Venta</a>
-                  y la
-                  <a href="#" class="text-aldy-primary-600 hover:text-aldy-primary-700 underline">Política de
-                    Privacidad</a>.
-                </span>
-              </label>
-              <!-- Error -->
-              <p *ngIf="form.get('termsAccepted')?.touched && form.get('termsAccepted')?.invalid"
-                class="text-red-500 text-xs min-[360px]:text-sm mt-1.5">
-                Debes aceptar los términos y condiciones
-              </p>
-            </div>
-  
-            <!-- Submit -->
-            <div class="mb-4 min-[360px]:mb-5 sm:mb-3">
-              <button type="submit" [disabled]="isSubmitting" [ngClass]="{
+              <span class="ml-2 text-[14px] text-gray-700 select-none italic leading-[1.4]">
+                He leído y acepto explícitamente las
+                <a href="#" class="text-aldy-primary-600 hover:text-aldy-primary-700 underline">Condiciones Generales
+                  de Venta</a>
+                y la
+                <a href="#" class="text-aldy-primary-600 hover:text-aldy-primary-700 underline">Política de
+                  Privacidad</a>.
+              </span>
+            </label>
+            <!-- Error -->
+            <p *ngIf="form.get('termsAccepted')?.touched && form.get('termsAccepted')?.invalid"
+              class="text-red-500 text-xs min-[360px]:text-sm mt-1.5">
+              Debes aceptar los términos y condiciones
+            </p>
+          </div>
+
+          <!-- Submit -->
+          <div class="mb-4 min-[360px]:mb-5 sm:mb-3">
+            <button type="submit" [disabled]="isSubmitting" [ngClass]="{
       'bg-aldy-primary-600 hover:bg-aldy-primary-700 text-aldy-bg cursor-pointer': !isSubmitting,
       'bg-aldy-primary-400 text-white cursor-not-allowed': isSubmitting
-    }"
-  class="w-full px-4 py-3 text-sm min-[360px]:text-base font-semibold text-center transition duration-200 ease-in-out focus:outline-none focus:ring-4 focus:ring-aldy-primary-200 disabled:opacity-50">
-  {{ isSubmitting ? 'Registrando...' : 'Registrate' }}
-</button>
+    }" class="w-full px-4 py-3 text-sm min-[360px]:text-base font-semibold text-center transition duration-200 ease-in-out focus:outline-none focus:ring-4 focus:ring-aldy-primary-200 disabled:opacity-50">
+              {{ isSubmitting ? 'Registrando...' : 'Registrate' }}
+            </button>
+          </div>
+
+          <!-- Error general -->
+          <div *ngIf="authError" class="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+            <div class="flex items-center">
+              <i class="fas fa-exclamation-triangle text-red-500 mr-2"></i>
+              <p class="text-red-700 text-sm font-medium">{{ authError }}</p>
             </div>
-  
-            <!-- Error general -->
-            <div *ngIf="authError" class="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-              <div class="flex items-center">
-                <i class="fas fa-exclamation-triangle text-red-500 mr-2"></i>
-                <p class="text-red-700 text-sm font-medium">{{ authError }}</p>
-              </div>
+          </div>
+
+          <!-- Login link -->
+          <div class="items-center flex justify-center gap-2 w-full mb-4">
+            <p class="text-[14px] text-aldy-primary-600 text-center">
+              ¿Ya tienes cuenta?
+            </p>
+            <a routerLink="/cuenta/iniciar-sesion"
+              class="text-[14px] font-medium text-aldy-primary-600 hover:text-aldy-primary-700 hover:underline transition-colors duration-300">
+              Inicia sesión aquí
+            </a>
+          </div>
+          <!-- Agrega esto temporalmente al final del formulario, antes del cierre </form> -->
+          <!-- <div class="mt-4 p-3 bg-gray-100 rounded-lg">
+            <button type="button" (click)="logFormStatus()" class="w-full bg-gray-600 text-white py-2 rounded">
+              Debug Form Status (ver consola)
+            </button>
+            <div class="mt-2 text-xs">
+              <div>Form Válido: {{ form.valid }}</div>
+              <div>Form Inválido: {{ form.invalid }}</div>
+              <div>Errores: {{ form.errors | json }}</div>
             </div>
-  
-            <!-- Login link -->
-            <div class="items-center flex justify-center gap-2 w-full mb-4">
-              <p class="text-[14px] text-aldy-primary-600 text-center">
-                ¿Ya tienes cuenta?
-              </p>
-              <a routerLink="/cuenta/iniciar-sesion"
-                class="text-[14px] font-medium text-aldy-primary-600 hover:text-aldy-primary-700 hover:underline transition-colors duration-300">
-                Inicia sesión aquí
-              </a>
-            </div>
-            <!-- Agrega esto temporalmente al final del formulario, antes del cierre </form> -->
-<div class="mt-4 p-3 bg-gray-100 rounded-lg">
-  <button type="button" (click)="logFormStatus()" class="w-full bg-gray-600 text-white py-2 rounded">
-    Debug Form Status (ver consola)
-  </button>
-  <div class="mt-2 text-xs">
-    <div>Form Válido: {{ form.valid }}</div>
-    <div>Form Inválido: {{ form.invalid }}</div>
-    <div>Errores: {{ form.errors | json }}</div>
-  </div>
-</div>
-          </form>
-        </div>
-      </div>
-      <!-- Footer -->
-      <div class="text-center pb-2 sm:pb-4 flex justify-center">
-        <p class="text-[10px] min-[360px]:text-xs sm:text-xs text-gray-400 max-w-[280px] leading-relaxed">
-          Al registrarte, aceptas nuestras
-          <a href="#" class="hover:text-gray-600 transition-colors underline">Políticas de Privacidad</a> y
-          <a href="#" class="hover:text-gray-600 transition-colors underline">Términos de Servicio</a>.
-        </p>
+          </div> -->
+        </form>
       </div>
     </div>
+    <!-- Footer -->
+    <div class="text-center pb-2 sm:pb-4 flex justify-center">
+      <p class="text-[10px] min-[360px]:text-xs sm:text-xs text-gray-400 max-w-[280px] leading-relaxed">
+        Al registrarte, aceptas nuestras
+        <a href="#" class="hover:text-gray-600 transition-colors underline">Políticas de Privacidad</a> y
+        <a href="#" class="hover:text-gray-600 transition-colors underline">Términos de Servicio</a>.
+      </p>
+    </div>
   </div>
-  
+</div>

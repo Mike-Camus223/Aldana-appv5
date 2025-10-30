@@ -6,24 +6,16 @@
     <!-- Contenido principal -->
     <div class="flex flex-col justify-center py-4 sm:py-6 md:py-8">
       <!-- Main Card -->
-      <div class="w-full">
+      <div class="w-full h-full">
 
-        <!-- Logo AV -->
-        <a routerLink="/">
-          <div class="flex flex-col items-center text-center justify-center mb-8 sm:mb-6 md:mb-8 lg:mb-10">
-            <h1
-              class="relative aldyFont font-bold text-3xl min-[360px]:text-4xl sm:text-5xl md:text-6xl text-aldy-primary-600">
-              <div class="relative flex justify-center">
-                <span class="relative -mr-0.5 min-[360px]:-mr-1">A</span>
-                <span class="relative -top-[2px] min-[360px]:-top-[3px]">V</span>
-              </div>
-            </h1>
-            <div
-              class="aldyFont font-bold text-xs min-[360px]:text-sm sm:text-base md:text-lg text-gray-700 tracking-wide min-[360px]:tracking-widest uppercase mt-0.5 min-[360px]:mt-1">
-              aldana vilcabana
+        <!-- Logo AV centrado -->
+        <div class="w-full flex justify-center">
+          <a routerLink="/" class="flex w-[18rem] h-[7rem] items-center justify-center mb-8 sm:mb-6 md:mb-8 lg:mb-10">
+            <div class="flex justify-center items-center">
+              <img src="../../../../../assets/svg/logo_full.svg" alt="Aldana vilcabana" class="w-full h-full object-contain">
             </div>
-          </div>
-        </a>
+          </a>
+        </div>
 
         <!-- LOGIN FORM -->
         <form class="w-full" *ngIf="!isForgotPassword" [formGroup]="formLogin" (ngSubmit)="onSubmit()">
@@ -123,6 +115,7 @@
 
           </form>
         </div>
+
         <!-- Divider y Quick Login se ocultan en forgot password -->
         <div class="relative my-5 min-[360px]:my-6 sm:my-8" *ngIf="!isForgotPassword">
           <div class="absolute inset-0 flex items-center">
