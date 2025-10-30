@@ -11,16 +11,16 @@ import { InputComponent } from '../../../../shared/components/generic/forms/inpu
 import { InputpasswordComponent } from '../../../../shared/components/generic/forms/inputpassword/inputpassword.component';
 
 interface SignUpForm {
-  email: FormControl<null | string>;
-  password: FormControl<null | string>;
-  repeatPassword: FormControl<null | string>;
-  nombre: FormControl<null | string>;
-  apellido: FormControl<null | string>;
-  birthDay: FormControl<null | number>;
-  birthMonth: FormControl<null | number>;
-  birthYear: FormControl<null | number>;
-  newsletter: FormControl<null | boolean>;
-  termsAccepted: FormControl<null | boolean>;
+  email: FormControl<string | null>;
+  password: FormControl<string | null>;
+  repeatPassword: FormControl<string | null>;
+  nombre: FormControl<string | null>;
+  apellido: FormControl<string | null>;
+  birthDay: FormControl<string | null>;  
+  birthMonth: FormControl<string | null>;   
+  birthYear: FormControl<string | null>;  
+  newsletter: FormControl<boolean | null>;
+  termsAccepted: FormControl<boolean | null>;
 }
 
 @Component({
@@ -29,33 +29,42 @@ interface SignUpForm {
   imports: [RouterModule, ReactiveFormsModule, CommonModule, InputComponent, InputpasswordComponent,],
   templateUrl: './register-page.component.html',
 })
-export default class RegisterPageComponent {
+export class RegisterPageComponent {
   private _fb = inject(FormBuilder);
   private _authService = inject(AuthService);
   private _router = inject(Router);
 
   form = this._fb.group<SignUpForm>(
-    {
-      email: this._fb.control(null, [Validators.required, Validators.email]),
-      password: this._fb.control(null, [
-        Validators.required,
-        Validators.maxLength(20),
-        Validators.minLength(6),
-        passwordStrengthValidator()
-      ]),
-      repeatPassword: this._fb.control(null, [Validators.required]),
-      nombre: this._fb.control(null, [Validators.required]),
-      apellido: this._fb.control(null, [Validators.required]),
-      birthDay: this._fb.control(null, [Validators.required]),
-    birthMonth: this._fb.control(null, [Validators.required]),
-    birthYear: this._fb.control(null, [Validators.required]),
-      newsletter: this._fb.control(false),
-      termsAccepted: this._fb.control(false, [Validators.requiredTrue]),
-    },
-    {
-      validators: [PasswordMatch('password', 'repeatPassword')]
-    }
-  );
+  {
+    email: this._fb.control(null, [Validators.required, Validators.email]),
+    password: this._fb.control(null, [
+      Validators.required,
+      Validators.maxLength(20),
+      Validators.minLength(6),
+      passwordStrengthValidator()
+    ]),
+    repeatPassword: this._fb.control(null, [Validators.required]),
+    nombre: this._fb.control(null, [Validators.required]),
+    apellido: this._fb.control(null, [Validators.required]),
+    birthDay: this._fb.control(null, [
+      Validators.required, 
+      Validators.pattern(/^(?:[1-9]|[12][0-9]|3[01])$/) // Solo números 1-31
+    ]),
+    birthMonth: this._fb.control(null, [
+      Validators.required, 
+      Validators.pattern(/^(?:[1-9]|1[0-2])$/) // Solo números 1-12
+    ]),
+    birthYear: this._fb.control(null, [
+      Validators.required, 
+      Validators.pattern(/^(19|20)\d{2}$/) // Solo años 1900-2099
+    ]),
+    newsletter: this._fb.control(false),
+    termsAccepted: this._fb.control(false, [Validators.requiredTrue]),
+  },
+  {
+    validators: [PasswordMatch('password', 'repeatPassword')]
+  }
+);
 
   isSubmitting = false;
   authError: string | null = null;
@@ -114,6 +123,48 @@ export default class RegisterPageComponent {
     return '';
   }
 
+
+  // DEBUG BORRAR LUEGO // 
+
+  get formStatus() {
+  return {
+    valid: this.form.valid,
+    invalid: this.form.invalid,
+    errors: this.form.errors,
+    controls: Object.keys(this.form.controls).reduce((acc, key) => {
+      const control = this.form.get(key);
+      acc[key] = {
+        value: control?.value,
+        valid: control?.valid,
+        invalid: control?.invalid,
+        errors: control?.errors,
+        touched: control?.touched
+      };
+      return acc;
+    }, {} as any)
+  };
+}
+
+// Método para ver el estado del formulario en consola
+logFormStatus(): void {
+  console.log('Form Status:', this.formStatus);
+  console.log('Form Valid:', this.form.valid);
+  console.log('Form Invalid:', this.form.invalid);
+  console.log('Form Errors:', this.form.errors);
+  
+  Object.keys(this.form.controls).forEach(key => {
+    const control = this.form.get(key);
+    console.log(`${key}:`, {
+      value: control?.value,
+      valid: control?.valid,
+      invalid: control?.invalid,
+      errors: control?.errors,
+      touched: control?.touched
+    });
+  });
+}
+
+
   async onSubmit(): Promise<void> {
     if (this.form.invalid) {
       // Marcar todos los campos como touched para mostrar errores
@@ -136,7 +187,7 @@ export default class RegisterPageComponent {
       if (result.success) {
         // Establecer el estado de confirmación antes de redirigir
         ConfirmationGuard.setConfirmationState('register-confirm');
-        this._router.navigate(['/register-confirm']);
+        this._router.navigate(['/confirmar-registro']);
       } else {
         this.authError = result.error || 'Error en el registro';
       }

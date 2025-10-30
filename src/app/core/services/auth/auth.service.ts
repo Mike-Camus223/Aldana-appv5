@@ -413,23 +413,33 @@ export class AuthService {
    * Obtiene los intentos de login para un email
    */
   private getLoginAttempts(email: string): LoginAttempt {
-    try {
-      const stored = localStorage.getItem(`${this.LOGIN_ATTEMPTS_KEY}_${email}`);
-      if (stored) {
-        return JSON.parse(stored);
-      }
-    } catch (error) {
-      console.error('Error getting login attempts:', error);
+  try {
+    // VERIFICAR SI ESTÁ EN BROWSER
+    if (!this.isBrowser) {
+      return {
+        email,
+        attempts: 0,
+        firstAttempt: Date.now(),
+        lastAttempt: Date.now(),
+        blocked: false
+      };
     }
-    
-    return {
-      email,
-      attempts: 0,
-      firstAttempt: Date.now(),
-      lastAttempt: Date.now(),
-      blocked: false
-    };
+    const stored = localStorage.getItem(`${this.LOGIN_ATTEMPTS_KEY}_${email}`);
+    if (stored) {
+      return JSON.parse(stored);
+    }
+  } catch (error) {
+    console.error('Error getting login attempts:', error);
   }
+  
+  return {
+    email,
+    attempts: 0,
+    firstAttempt: Date.now(),
+    lastAttempt: Date.now(),
+    blocked: false
+  };
+}
 
   /**
    * Guarda los intentos de login
@@ -472,25 +482,26 @@ export class AuthService {
    * Registra eventos de seguridad
    */
   private logSecurityEvent(event: string, userEmail: string | undefined, metadata?: any): void {
-    const safeEmail = this.maskEmail(userEmail || 'unknown');
-    const logEntry = {
-      timestamp: new Date().toISOString(),
-      event,
-      userEmail: safeEmail,
-      userAgent: navigator.userAgent,
-      url: window.location.href,
-      sessionId: this.getCurrentSession()?.access_token?.substring(0, 10) + '...',
-      metadata
-    };    
-    // En producción, enviar a servicio de monitoreo
-    if (typeof window !== 'undefined' && (window as any).gtag) {
-      (window as any).gtag('event', event, {
-        custom_parameter_1: safeEmail,
-        custom_parameter_2: metadata ? JSON.stringify(metadata) : '',
-        custom_parameter_3: 'auth_service'
-      });
-    }
+  const safeEmail = this.maskEmail(userEmail || 'unknown');
+  const logEntry = {
+    timestamp: new Date().toISOString(),
+    event,
+    userEmail: safeEmail,
+    userAgent: this.isBrowser ? navigator.userAgent : 'server',
+    url: this.isBrowser ? window.location.href : 'server',
+    sessionId: this.getCurrentSession()?.access_token?.substring(0, 10) + '...',
+    metadata
+  };
+  
+  // Solo ejecutar gtag en browser
+  if (this.isBrowser && typeof window !== 'undefined' && (window as any).gtag) {
+    (window as any).gtag('event', event, {
+      custom_parameter_1: safeEmail,
+      custom_parameter_2: metadata ? JSON.stringify(metadata) : '',
+      custom_parameter_3: 'auth_service'
+    });
   }
+}
 
   /**
    * Enmascara email para logs

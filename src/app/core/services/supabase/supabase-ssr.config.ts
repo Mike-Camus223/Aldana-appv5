@@ -7,15 +7,14 @@ export function createSupabaseClient() {
   const platformId = inject(PLATFORM_ID);
   const isBrowser = isPlatformBrowser(platformId);
 
-  // Configuración específica para SSR
   const options = {
     auth: {
-      persistSession: isBrowser, // Solo persistir sesión en el navegador
-      autoRefreshToken: isBrowser, // Solo refrescar token en el navegador
-      detectSessionInUrl: isBrowser, // Solo detectar sesión en URL en el navegador
+      persistSession: isBrowser, 
+      autoRefreshToken: isBrowser, 
+      detectSessionInUrl: isBrowser, 
     },
     global: {
-      fetch: fetch, // Usar fetch global
+      fetch: fetch, 
     }
   };
 

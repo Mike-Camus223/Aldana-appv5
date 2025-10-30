@@ -21,7 +21,7 @@ interface ForgotPasswordForm {
   imports: [RouterModule, ReactiveFormsModule, CommonModule, InputComponent, InputpasswordComponent],
   templateUrl: './login-page.component.html'
 })
-export default class LoginPageComponent {
+export class LoginPageComponent {
   isSubmitting = false;
   authError: string | null = null;
   isForgotPassword = false;

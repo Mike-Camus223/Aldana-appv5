@@ -1,11 +1,11 @@
 import { Routes } from '@angular/router';
-import { AdminGuard } from '../../../core/guards/admin.guard';
+// import { AdminGuard } from '../../../core/guards/admin.guard';
 
-export default [
+export const ADMIN_ROUTES: Routes = [
   {
     path: '',
     loadComponent: () => import('./dashboard-layout.component'),
-    canActivate: [AdminGuard],
+    // canActivate: [AdminGuard],
     children: [
       {
         path: '',
@@ -34,4 +34,4 @@ export default [
       }
     ]
   }
-] as Routes;
+];

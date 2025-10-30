@@ -9,7 +9,7 @@ import { RouterModule, Router } from '@angular/router';
   templateUrl: './register-confirm.component.html',
   styleUrls: ['./register-confirm.component.css']
 })
-export default class RegisterConfirmComponent {
+export class RegisterConfirmComponent {
   
   constructor(private router: Router) {}
 

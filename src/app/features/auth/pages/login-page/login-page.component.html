@@ -9,7 +9,7 @@
       <div class="w-full">
 
         <!-- Logo AV -->
-        <a routerLink="/home">
+        <a routerLink="/">
           <div class="flex flex-col items-center text-center justify-center mb-8 sm:mb-6 md:mb-8 lg:mb-10">
             <h1
               class="relative aldyFont font-bold text-3xl min-[360px]:text-4xl sm:text-5xl md:text-6xl text-aldy-primary-600">
@@ -74,7 +74,7 @@
             <p class="text-[14px] text-aldy-primary-600 text-center">
               ¿No tenés cuenta aún?
             </p>
-            <a routerLink="/register"
+            <a routerLink="/cuenta/registro"
               class="text-[14px] font-medium text-aldy-primary-600 hover:text-aldy-primary-700 hover:underline transition-colors duration-300">
               Crear cuenta
             </a>
@@ -123,8 +123,6 @@
 
           </form>
         </div>
-
-
         <!-- Divider y Quick Login se ocultan en forgot password -->
         <div class="relative my-5 min-[360px]:my-6 sm:my-8" *ngIf="!isForgotPassword">
           <div class="absolute inset-0 flex items-center">

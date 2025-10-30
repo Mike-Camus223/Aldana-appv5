@@ -1,11 +1,11 @@
 import { Routes } from '@angular/router';
-import { AuthGuard } from '../../core/guards/auth.guard';
+// import { AuthGuard } from '../../core/guards/auth.guard';
 
 export const userPanelRoutes: Routes = [
   {
     path: '',
     loadComponent: () => import('./user-panel.component').then(m => m.UserPanelComponent),
-    canActivate: [AuthGuard],
+    // canActivate: [AuthGuard],
     children: [
       {
         path: '',

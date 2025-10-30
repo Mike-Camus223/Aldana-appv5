@@ -9,7 +9,7 @@ import { RouterModule, Router, ActivatedRoute } from '@angular/router';
   templateUrl: './register-success.component.html',
   styleUrls: ['./register-success.component.css']
 })
-export default class RegisterSuccessComponent implements OnInit {
+export class RegisterSuccessComponent implements OnInit {
   
   constructor(
     private router: Router,

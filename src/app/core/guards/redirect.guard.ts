@@ -1,9 +1,10 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, PLATFORM_ID } from '@angular/core';
 import { CanActivate, Router, UrlTree } from '@angular/router';
-import { Observable, of, map, take, delay, switchMap } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { AuthService } from '../services/auth/auth.service';
+import { isPlatformBrowser } from '@angular/common';
 
-interface RateLimitEntry {
+interface SuspiciousActivityEntry {
   count: number;
   firstAttempt: number;
   lastAttempt: number;
@@ -17,33 +18,33 @@ interface RateLimitEntry {
 export class RedirectGuard implements CanActivate {
   private authService = inject(AuthService);
   private router = inject(Router);
+  private platformId = inject(PLATFORM_ID);
   
-  // Rate limiting configuration
-  private readonly MAX_ATTEMPTS_PER_WINDOW = 10; // Máximo 10 intentos por ventana
-  private readonly RATE_LIMIT_WINDOW = 15 * 60 * 1000; // 15 minutos
-  private readonly BLOCK_DURATION = 30 * 60 * 1000; // 30 minutos de bloqueo
-  private readonly STORAGE_KEY = 'redirect_guard_rate_limit';
+  // Configuración solo para actividad sospechosa
+  private readonly MAX_SUSPICIOUS_ATTEMPTS = 50;
+  private readonly SUSPICIOUS_WINDOW = 5 * 60 * 1000;
+  private readonly BLOCK_DURATION = 10 * 60 * 1000;
+  private readonly STORAGE_KEY = 'suspicious_activity_rate_limit';
 
-  
+  // Propiedad para verificar si estamos en el navegador
+  private get isBrowser(): boolean {
+    return isPlatformBrowser(this.platformId);
+  }
+
   canActivate(): Observable<boolean | UrlTree> {
-    // Verificar rate limiting primero
+    // 1. Verificar si es actividad sospechosa (solo en browser)
+    if (this.isBrowser && this.isSuspiciousActivity() && this.shouldApplyRateLimit()) {
+      console.warn('Actividad sospechosa detectada, aplicando rate limit');
+      this.logSecurityEvent('SUSPICIOUS_ACTIVITY_BLOCKED', 'suspicious_ip');
+      return of(this.router.createUrlTree(['/']));
+    }
 
-    //DESCOMENTA ESTOO cuando reparemos todo  esto de aca es un regulador
-    // if (this.isRateLimited()) {
-    //   console.warn('Alerta de guard: Rate limit excedido, bloqueando acceso');
-    //   this.logSecurityEvent('RATE_LIMIT_EXCEEDED', 'anonymous');
-    //   return of(this.router.createUrlTree(['/']));
-    // }
+    // 2. Registrar intento solo si es sospechoso y en browser
+    if (this.isBrowser && this.shouldApplyRateLimit()) {
+      this.recordSuspiciousAttempt();
+    }
 
-    // // Registrar intento de acceso
-    // this.recordAttempt();
-    // HASTA ACA LUEGO DE TERMINAR LOS TEST
-
-    // Permitir acceso a rutas de autenticación
-    return of(true); // Permitir siempre el acceso a rutas de autenticación
-    
-    /* El código siguiente nunca se ejecutará debido al return anterior
-    // Verificación síncrona primero
+    // 3. Verificar si el usuario YA está autenticado (lógica principal del guard)
     const currentUser = this.authService.getCurrentUser();
     
     if (currentUser) {      
@@ -56,114 +57,113 @@ export class RedirectGuard implements CanActivate {
         return of(this.router.createUrlTree(['/panel/panel-control']));
       }
     }
-    */
 
-    /* Este código también es inalcanzable debido al return of(true) anterior
-    // Verificación asíncrona con delay para dar tiempo a Supabase
-    return of(null).pipe(
-      delay(100), // Esperar 100ms para que Supabase inicialice
-      switchMap(() => this.authService.currentUser$),
-      take(1),
-      map(user => {
-        // Permitir acceso a rutas de autenticación
-        const url = this.router.url;
-        if (url === '/login' || url === '/register' || url === '/register-confirm' || url === '/register-success') {
-          return true;
-        }
-        
-        if (user) {          
-          this.logSecurityEvent('AUTHENTICATED_USER_BLOCKED_ASYNC', user.email || 'unknown');
-          
-          if (this.authService.isAdmin()) {
-            return this.router.createUrlTree(['/admin/home']);
-          } else {
-            return this.router.createUrlTree(['/panel/panel-control']);
-          }
-        }
-        
-        this.logSecurityEvent('UNAUTHENTICATED_ACCESS_ALLOWED', 'anonymous');
-        return true;
-      })
-    );
-    */
-    
-    // Simplificado: siempre permitir acceso
+    // 4. Usuario NO autenticado → PERMITIR acceso (siempre para ecommerce)
     return of(true);
   }
 
-  private isRateLimited(): boolean {
+  private shouldApplyRateLimit(): boolean {
+    // Solo aplicar en browser y a actividad claramente sospechosa
+    if (!this.isBrowser) return false;
+
+    const userAgent = navigator.userAgent.toLowerCase();
+    const suspiciousPatterns = [
+      'bot', 'crawler', 'scanner', 'spider', 'python-requests', 'curl',
+      'wget', 'masscan', 'sqlmap', 'nikto', 'acunetix', 'nessus'
+    ];
+    
+    const isSuspiciousUserAgent = suspiciousPatterns.some(pattern => 
+      userAgent.includes(pattern)
+    );
+
+    // También verificar patrones de acceso sospechosos
+    const activityData = this.getSuspiciousActivityData();
+    const now = Date.now();
+    const isRapidFire = activityData.count > 10 && 
+                       (now - activityData.firstAttempt) < 30000;
+
+    return isSuspiciousUserAgent || isRapidFire;
+  }
+
+  private isSuspiciousActivity(): boolean {
+    if (!this.isBrowser) return false;
+
     try {
-      const rateLimitData = this.getRateLimitData();
+      const activityData = this.getSuspiciousActivityData();
       const now = Date.now();
 
-      // Si está bloqueado, verificar si el bloqueo ha expirado
-      if (rateLimitData.blocked && rateLimitData.blockUntil) {
-        if (now < rateLimitData.blockUntil) {
-          return true; // Aún bloqueado
+      if (activityData.blocked && activityData.blockUntil) {
+        if (now < activityData.blockUntil) {
+          return true;
         } else {
-          // Bloqueo expirado, resetear
-          this.resetRateLimit();
+          this.resetSuspiciousActivity();
           return false;
         }
       }
 
-      // Verificar si está dentro de la ventana de tiempo
-      const timeSinceFirst = now - rateLimitData.firstAttempt;
+      const timeSinceFirst = now - activityData.firstAttempt;
       
-      if (timeSinceFirst > this.RATE_LIMIT_WINDOW) {
-        // Ventana expirada, resetear
-        this.resetRateLimit();
+      if (timeSinceFirst > this.SUSPICIOUS_WINDOW) {
+        this.resetSuspiciousActivity();
         return false;
       }
 
-      // Verificar si excede el límite
-      if (rateLimitData.count >= this.MAX_ATTEMPTS_PER_WINDOW) {
-        // Bloquear usuario
-        this.blockUser();
+      if (activityData.count >= this.MAX_SUSPICIOUS_ATTEMPTS) {
+        this.blockSuspiciousActivity();
         return true;
       }
 
       return false;
     } catch (error) {
-      return false; // En caso de error, permitir acceso
+      return false;
     }
   }
 
-  private recordAttempt(): void {
+  private recordSuspiciousAttempt(): void {
+    if (!this.isBrowser) return;
+
     try {
-      const rateLimitData = this.getRateLimitData();
+      const activityData = this.getSuspiciousActivityData();
       const now = Date.now();
 
-      rateLimitData.count++;
-      rateLimitData.lastAttempt = now;
+      activityData.count++;
+      activityData.lastAttempt = now;
 
-      if (rateLimitData.count === 1) {
-        rateLimitData.firstAttempt = now;
+      if (activityData.count === 1) {
+        activityData.firstAttempt = now;
       }
 
-      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(rateLimitData));
+      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(activityData));
 
-      // Log si se están acercando al límite
-      if (rateLimitData.count >= this.MAX_ATTEMPTS_PER_WINDOW * 0.8) {
-        console.warn(`Alerta de guards: Advertencia - ${rateLimitData.count}/${this.MAX_ATTEMPTS_PER_WINDOW} intentos`);
-        this.logSecurityEvent('RATE_LIMIT_WARNING', 'anonymous', { 
-          attempts: rateLimitData.count,
-          maxAttempts: this.MAX_ATTEMPTS_PER_WINDOW 
+      if (activityData.count >= this.MAX_SUSPICIOUS_ATTEMPTS * 0.6) {
+        console.warn(`Actividad sospechosa detectada: ${activityData.count}/${this.MAX_SUSPICIOUS_ATTEMPTS} intentos`);
+        this.logSecurityEvent('SUSPICIOUS_ACTIVITY_DETECTED', 'suspicious_ip', { 
+          attempts: activityData.count,
+          maxAttempts: this.MAX_SUSPICIOUS_ATTEMPTS 
         });
       }
     } catch (error) {
-      console.error('Error de guards: Error registrando intento:', error);
+      console.error('Error registrando actividad sospechosa:', error);
     }
   }
 
-  private getRateLimitData(): RateLimitEntry {
+  private getSuspiciousActivityData(): SuspiciousActivityEntry {
+    if (!this.isBrowser) {
+      return {
+        count: 0,
+        firstAttempt: Date.now(),
+        lastAttempt: Date.now(),
+        blocked: false
+      };
+    }
+
     try {
       const stored = localStorage.getItem(this.STORAGE_KEY);
       if (stored) {
         return JSON.parse(stored);
       }
     } catch (error) {
-      console.error('Error de guards: Error leyendo rate limit data:', error);
+      console.error('Error leyendo datos de actividad sospechosa:', error);
     }
 
     return {
@@ -174,29 +174,33 @@ export class RedirectGuard implements CanActivate {
     };
   }
 
-  private blockUser(): void {
-    try {
-      const rateLimitData = this.getRateLimitData();
-      rateLimitData.blocked = true;
-      rateLimitData.blockUntil = Date.now() + this.BLOCK_DURATION;
+  private blockSuspiciousActivity(): void {
+    if (!this.isBrowser) return;
 
-      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(rateLimitData));
+    try {
+      const activityData = this.getSuspiciousActivityData();
+      activityData.blocked = true;
+      activityData.blockUntil = Date.now() + this.BLOCK_DURATION;
+
+      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(activityData));
       
-      console.error('Error de guards: Usuario bloqueado por exceder rate limit');
-      this.logSecurityEvent('USER_BLOCKED_RATE_LIMIT', 'anonymous', {
-        attempts: rateLimitData.count,
-        blockDuration: this.BLOCK_DURATION / 1000 / 60 // en minutos
+      console.error('Actividad sospechosa bloqueada por rate limit');
+      this.logSecurityEvent('SUSPICIOUS_ACTIVITY_BLOCKED_RATE_LIMIT', 'suspicious_ip', {
+        attempts: activityData.count,
+        blockDuration: this.BLOCK_DURATION / 1000 / 60
       });
     } catch (error) {
-      console.error('Error de guards: Error bloqueando usuario:', error);
+      console.error('Error bloqueando actividad sospechosa:', error);
     }
   }
 
-  private resetRateLimit(): void {
+  private resetSuspiciousActivity(): void {
+    if (!this.isBrowser) return;
+
     try {
       localStorage.removeItem(this.STORAGE_KEY);
     } catch (error) {
-      console.error('Error de guards: Error reseteando rate limit:', error);
+      console.error('Error reseteando actividad sospechosa:', error);
     }
   }
 
@@ -213,8 +217,13 @@ export class RedirectGuard implements CanActivate {
     return `${maskedLocal}@${domain}`;
   }
 
-  private logSecurityEvent(event: string, userEmail: string | undefined, metadata?: any): void {
-    const safeEmail = userEmail === 'anonymous' ? 'anonymous' : (userEmail ? this.maskEmail(userEmail) : 'unknown');
+  private logSecurityEvent(event: string, userEmail: string, metadata?: any): void {
+    // Solo log en browser
+    if (!this.isBrowser) return;
+
+    const safeEmail = userEmail === 'suspicious_ip' ? 'suspicious_ip' : 
+                     (userEmail ? this.maskEmail(userEmail) : 'unknown');
+    
     const logEntry = {
       timestamp: new Date().toISOString(),
       event,
@@ -224,8 +233,12 @@ export class RedirectGuard implements CanActivate {
       referrer: document.referrer,
       metadata
     };
+
+    if (event.includes('BLOCKED') || event.includes('SUSPICIOUS')) {
+      console.log('Evento de seguridad:', logEntry);
+    }
         
-    // En producción, enviar estos logs a un servicio de monitoreo
+    // Google Analytics solo en browser
     if (typeof window !== 'undefined' && (window as any).gtag) {
       (window as any).gtag('event', event, {
         custom_parameter_1: logEntry.userEmail,
@@ -234,25 +247,25 @@ export class RedirectGuard implements CanActivate {
       });
     }
 
-    // Almacenar eventos críticos
-    if (event.includes('RATE_LIMIT') || event.includes('BLOCKED')) {
+    if (event.includes('SUSPICIOUS') || event.includes('BLOCKED')) {
       this.storeSecurityAlert(logEntry);
     }
   }
 
   private storeSecurityAlert(logEntry: any): void {
+    if (!this.isBrowser) return;
+
     try {
-      const alerts = JSON.parse(localStorage.getItem('redirect_security_alerts') || '[]');
+      const alerts = JSON.parse(localStorage.getItem('security_alerts') || '[]');
       alerts.push(logEntry);
       
-      // Mantener solo los últimos 100 eventos
-      if (alerts.length > 100) {
-        alerts.splice(0, alerts.length - 100);
+      if (alerts.length > 50) {
+        alerts.splice(0, alerts.length - 50);
       }
       
-      localStorage.setItem('redirect_security_alerts', JSON.stringify(alerts));
+      localStorage.setItem('security_alerts', JSON.stringify(alerts));
     } catch (error) {
-      console.error('Error de guards: Error almacenando alerta:', error);
+      console.error('Error almacenando alerta de seguridad:', error);
     }
   }
 }

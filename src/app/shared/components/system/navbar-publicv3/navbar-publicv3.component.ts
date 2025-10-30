@@ -308,7 +308,7 @@ export class NavbarPublicv3Component implements OnInit, OnDestroy {
       }
     } else {
       // Usuario no autenticado
-    this.router.navigate(['/login']);
+    this.router.navigate(['/cuenta/iniciar-sesion']);
     }
   }
 

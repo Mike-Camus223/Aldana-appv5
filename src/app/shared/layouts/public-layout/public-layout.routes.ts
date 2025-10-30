@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 
-export const routes: Routes = [
+export const PUBLIC_ROUTES: Routes = [
   {
     path: '',
     loadComponent: () => import('./public-layout.component').then(c => c.PublicLayoutComponent),
