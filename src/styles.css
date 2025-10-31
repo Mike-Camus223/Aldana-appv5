@@ -16,6 +16,9 @@
   --color-aldy-primary-900: #335c59;
   --color-aldy-primary-1000: #293d3b;
   --color-aldy-main: #85CCC6;
+  --color-aldy-bg-new: #AEC2A9;
+  --color-aldy-new:#D2E4CC;
+  --color-aldy-new-bold: #889287;
 
   --color-aldy-bg: #ffffff;
   --color-aldy-surface: #f9f9f9;
@@ -101,3 +104,9 @@
 .AldyColor {
   color: #D2E4CC;
 }
+
+.titlev3 {
+  font-family: "Lavishly Yours", cursive;
+}
+
+

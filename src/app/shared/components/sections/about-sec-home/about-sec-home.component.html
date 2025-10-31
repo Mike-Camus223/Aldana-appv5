@@ -1,32 +1,61 @@
 <section *ngFor="let item of AboutData" class="w-full px-4 max-w-screen-2xl mx-auto mt-6 md:mt-0">
   <div class="grid grid-cols-1 lg:grid-cols-5 items-stretch w-full min-h-[700px] relative">
-    <div class="flex items-center w-full lg:ps-5 xl:ps-20 pe-0 lg:pe-5 py-4 md:py-0 z-10 lg:col-span-2"
-      [ngClass]="item.textOrderMobile + ' ' + item.textOrderDesktop">
-      <div class="flex flex-col text-center lg:text-left w-full relative">
+
+    <!-- Columna de texto -->
+    <div
+      class="flex items-center w-full lg:ps-5 xl:ps-20 pe-0 lg:pe-5 md:py-0 z-10 lg:col-span-2 relative"
+      [ngClass]="item.textOrderMobile + ' ' + item.textOrderDesktop"
+    >
+      <!-- SVG decorativo centrado SOLO en mobile -->
+      <div class="absolute inset-0 flex justify-center items-center lg:hidden pointer-events-none select-none z-0">
+        <img
+          src="../../../../../assets/svg/logos-03.svg"
+          alt="Aldana Vilcabana"
+          class="w-[200px] sm:w-[260px] opacity-20 object-contain"
+          draggable="false"
+        />
+      </div>
+      <div class="flex flex-col items-center md:items-start text-center py-15 lg:py-0 lg:text-left w-full relative z-10">
         <h2
-          appWordReveal class="text-4xl  sm:text-5xl w-full lg:text-[76px] xl:text-[80px] leading-tight font-serif font-medium text-gray-900 inline-block"
-          [ngClass]="[item.maxWidthTittle, item.titleOffsetClass]">
+          appWordReveal
+          class="text-5xl sm:text-5xl w-full lg:text-[76px] xl:text-[84px] leading-tight font-serif font-medium text-white inline-block"
+          [ngClass]="[item.maxWidthTittle, item.titleOffsetClass]"
+        >
           {{ item.title }}
         </h2>
-        <p appFadeUpLetter class="text-gray-600 italic w-full text-base md:text-lg leading-relaxed mt-6">
+
+        <p appFadeUpLetter class="text-white italic w-full text-base md:text-lg leading-relaxed mt-6">
           {{ item.text }}
         </p>
+
         <ng-container *ngIf="item.useAnotherText">
-          <p appFadeUpLetter class="text-gray-600 italic w-full text-base md:text-lg leading-relaxed mt-6">
+          <p appFadeUpLetter class="text-white italic w-full text-base md:text-lg leading-relaxed mt-6">
             {{ item.anotherText }}
           </p>
         </ng-container>
         <ng-container *ngIf="item.buttonText && item.buttonUrl">
-          <a [href]="item.buttonUrl"
-            class="mt-8 inline-block border border-black px-6 py-3 text-sm tracking-widest font-medium uppercase transition hover:bg-black hover:text-white">
+          <a
+            [href]="item.buttonUrl"
+            class="mt-8 w-3/4 md:w-full flex justify-center border-2 text-white border-white py-4 px-5 sm:px-7 sm:py-5 text-sm tracking-widest font-medium uppercase transition hover:bg-aldy-new-bold hover:border-aldy-new-bold hover:text-white"
+          >
             {{ item.buttonText }}
           </a>
         </ng-container>
       </div>
     </div>
-    <div class="relative w-full lg:ms-8 xl:ms-10 aspect-[5/4] md:aspect-[4/3] lg:aspect-[4/2] lg:col-span-3"
-      [ngClass]="item.imageOrderMobile + ' ' + item.imageOrderDesktop">
-      <img  #aboutImage [draggable]="false" [src]="item.image" alt="About image" class="w-full h-full object-contain" />
+    <!-- Imagen -->
+    <div
+      class="relative w-full pb-7 lg:pb-0 z-4 lg:ms-8 xl:ms-7 aspect-[5/4] md:aspect-[4/3] lg:aspect-[4/2] lg:col-span-3"
+      [ngClass]="item.imageOrderMobile + ' ' + item.imageOrderDesktop"
+    >
+      <img
+        #aboutImage
+        [draggable]="false"
+        [src]="item.image"
+        alt="About image"
+        class="w-full z-4 h-full object-contain"
+      />
     </div>
+
   </div>
 </section>

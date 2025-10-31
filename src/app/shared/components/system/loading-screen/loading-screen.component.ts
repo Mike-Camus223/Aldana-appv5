@@ -18,9 +18,11 @@ export class LoadingScreenComponent implements AfterViewInit, OnDestroy {
   @ViewChild('box2') box2!: ElementRef;
   @ViewChild('box3') box3!: ElementRef;
   @ViewChild('box4') box4!: ElementRef;
-  @ViewChild('letterA') letterA!: ElementRef;
-  @ViewChild('letterV') letterV!: ElementRef;
-  @ViewChild('name') name!: ElementRef;
+  @ViewChild('logoContainer') logoContainer!: ElementRef;
+  @ViewChild('logoSvg') logoSvg!: ElementRef;
+  @ViewChild('nameContainer') nameContainer!: ElementRef;
+  @ViewChild('aldanaSvg') aldanaSvg!: ElementRef;
+  @ViewChild('vilcabanaSvg') vilcabanaSvg!: ElementRef;
 
   @Output() loadingFinished = new EventEmitter<void>();
 
@@ -60,9 +62,8 @@ export class LoadingScreenComponent implements AfterViewInit, OnDestroy {
       this.box2?.nativeElement,
       this.box3?.nativeElement,
       this.box4?.nativeElement,
-      this.letterA?.nativeElement,
-      this.letterV?.nativeElement,
-      this.name?.nativeElement
+      this.logoSvg?.nativeElement,
+      this.nameContainer?.nativeElement
     ].filter(el => el);
 
     elements.forEach(el => {
@@ -144,8 +145,8 @@ export class LoadingScreenComponent implements AfterViewInit, OnDestroy {
       this.circleGroup.nativeElement,
       this.box1.nativeElement, this.box2.nativeElement, 
       this.box3.nativeElement, this.box4.nativeElement,
-      this.letterA.nativeElement, this.letterV.nativeElement,
-      this.name.nativeElement
+      this.logoSvg.nativeElement,
+      this.nameContainer.nativeElement
     ];
 
     allElements.forEach(el => {
@@ -164,6 +165,11 @@ export class LoadingScreenComponent implements AfterViewInit, OnDestroy {
       onComplete: () => {
         this.hideAndComplete();
       }
+    });
+
+    // Activar animación SVG cuando el timeline comience
+    this.timeline.eventCallback('onStart', () => {
+      // El logo SVG se activará después de su animación de escala
     });
 
     // Configurar estados iniciales para GSAP (MANTENIENDO GRAYSCALE)
@@ -188,13 +194,13 @@ export class LoadingScreenComponent implements AfterViewInit, OnDestroy {
       }
     });
 
-    gsap.set([this.letterA.nativeElement, this.letterV.nativeElement], { 
+    gsap.set(this.logoSvg.nativeElement, { 
       scale: 0,
       opacity: 0,
       force3D: true
     });
 
-    gsap.set(this.name.nativeElement, { 
+    gsap.set(this.nameContainer.nativeElement, { 
       opacity: 0, 
       y: 20,
       force3D: true
@@ -261,17 +267,20 @@ export class LoadingScreenComponent implements AfterViewInit, OnDestroy {
         force3D: true
       }, 0.45);
 
-    // Letras
-    this.timeline.to([this.letterA.nativeElement, this.letterV.nativeElement], { 
+    // Logo SVG con animación
+    this.timeline.to(this.logoSvg.nativeElement, { 
       scale: 1,
       opacity: 1, 
       duration: 0.7, 
       ease: 'back.out(1.8)',
-      stagger: 0.1
+      onComplete: () => {
+        // Activar la animación SVG después de la escala
+        this.logoSvg.nativeElement.classList.add('active');
+      }
     }, '+=0.1');
     
-    // Nombre
-    this.timeline.to(this.name.nativeElement, { 
+    // Nombre (Aldana y Vilcabana SVGs)
+    this.timeline.to(this.nameContainer.nativeElement, { 
       opacity: 1, 
       y: 0, 
       duration: 0.8, 
@@ -301,8 +310,8 @@ export class LoadingScreenComponent implements AfterViewInit, OnDestroy {
       ease: 'power2.out'
     }, '-=0.4');
 
-    this.timeline.to(this.name.nativeElement, { 
-      color: '#ffffff', 
+    this.timeline.to([this.aldanaSvg.nativeElement, this.vilcabanaSvg.nativeElement], { 
+      filter: 'brightness(0) invert(1)', // Convertir a blanco
       duration: 0.3,
       ease: 'power2.out'
     }, '-=0.7');
@@ -340,9 +349,8 @@ export class LoadingScreenComponent implements AfterViewInit, OnDestroy {
     const elements = [
       this.screen?.nativeElement,
       this.circleGroup?.nativeElement,
-      this.letterA?.nativeElement,
-      this.letterV?.nativeElement,
-      this.name?.nativeElement
+      this.logoSvg?.nativeElement,
+      this.nameContainer?.nativeElement
     ].filter(el => el);
 
     elements.forEach((el: any) => {
