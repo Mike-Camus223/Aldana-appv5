@@ -16,7 +16,7 @@
       <a *ngFor="let link of leftLinks" appLinkHoverUnderline [routerLink]="link.link"
         (mouseenter)="onInteractiveEnter()" [ngClass]="{
           'text-white hover:text-gray-300 border-white': isHomePage && !MoverScroll && !hoverNavbar,
-          'text-gray-700 hover:text-gray-500 border-gray-700': !isHomePage || MoverScroll || hoverNavbar
+          'text-aldy-primary-400 border-aldy-primary-400': !isHomePage || MoverScroll || hoverNavbar
         }" class="transition-colors titles text-md tracking-widest border-transparent pb-1">
         {{ link.label }}
       </a>
@@ -27,13 +27,13 @@
           <a appLinkHoverUnderline [dynamicColor]="(!isHomePage || MoverScroll || hoverNavbar) ? 'white' : '#333'"
             (mouseenter)="onInteractiveEnter()" [ngClass]="{
               'text-white hover:text-gray-300 border-white': isHomePage && !MoverScroll && !hoverNavbar,
-              'text-gray-700 hover:text-gray-500 border-gray-700': !isHomePage || MoverScroll || hoverNavbar
+              'text-aldy-primary-400 border-aldy-primary-400': !isHomePage || MoverScroll || hoverNavbar
             }" class="transition-colors text-md titles tracking-widest pb-1">
             TIENDA
           </a>
           <lucide-icon name="chevron-down" [ngClass]="{
               'text-white': isHomePage && !MoverScroll && !hoverNavbar,
-              'text-gray-700': !isHomePage || MoverScroll || hoverNavbar,
+              'text-aldy-primary-400': !isHomePage || MoverScroll || hoverNavbar,
               'rotate-180': dropdownOpen
             }" class="w-4 h-4 transition-transform duration-200"></lucide-icon>
         </div>
@@ -128,7 +128,7 @@
         <a *ngFor="let link of rightLinks" appLinkHoverUnderline [routerLink]="link.link"
           (mouseenter)="onInteractiveEnter()" [ngClass]="{
             'text-white hover:text-gray-300 border-white': isHomePage && !MoverScroll && !hoverNavbar,
-            'text-gray-700 hover:text-gray-500 border-gray-700': !isHomePage || MoverScroll || hoverNavbar
+            'text-aldy-primary-400 border-aldy-primary-400': !isHomePage || MoverScroll || hoverNavbar
           }" class="transition-colors titles text-md tracking-widest border-transparent pb-1">
           {{ link.label }}
         </a>
@@ -154,7 +154,7 @@
           </a>
           <span translate="no" class="text-base ml-1" [ngClass]="{
               'text-white border-white': isHomePage && !MoverScroll && !hoverNavbar,
-              'text-gray-700 hover:text-gray-500 border-gray-700': !isHomePage || MoverScroll || hoverNavbar
+              'text-aldy-primary-400 border-aldy-primary-400': !isHomePage || MoverScroll || hoverNavbar
             }">
             {{ cartItemCount }}
           </span>
