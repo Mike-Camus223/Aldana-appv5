@@ -22,6 +22,7 @@ export class LoadingScreenComponent implements AfterViewInit, OnDestroy {
   @ViewChild('logoSvg') logoSvg!: ElementRef;
   @ViewChild('nameContainer') nameContainer!: ElementRef;
   @ViewChild('vilcabanaSvg') vilcabanaSvg!: ElementRef;
+  @ViewChild('aldanaSvg') aldanasvg!: ElementRef;
 
   @Output() loadingFinished = new EventEmitter<void>();
 
@@ -340,6 +341,18 @@ export class LoadingScreenComponent implements AfterViewInit, OnDestroy {
     }, '-=0.4');
 
     this.timeline.to(this.logoSvg.nativeElement, { 
+      filter: 'brightness(0) invert(1)', // Convertir logo principal a blanco
+      duration: 0.3,
+      ease: 'power2.out'
+    }, '-=0.7');
+
+    this.timeline.to(this.vilcabanaSvg.nativeElement, { 
+      filter: 'brightness(0) invert(1)', // Convertir logo principal a blanco
+      duration: 0.3,
+      ease: 'power2.out'
+    }, '-=0.7');
+
+    this.timeline.to(this.aldanasvg.nativeElement, { 
       filter: 'brightness(0) invert(1)', // Convertir logo principal a blanco
       duration: 0.3,
       ease: 'power2.out'

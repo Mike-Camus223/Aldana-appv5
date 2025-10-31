@@ -1,4 +1,4 @@
-<div class="w-full h-full py-8 sm:py-12 md:py-18 lg:py-30 px-4 sm:px-4 box-border">
+<div class="w-full h-full py-8 bg-aldy-bg-new sm:py-12 md:py-18 lg:py-30 px-4 sm:px-4 box-border">
   <div class="max-w-sx sm:max-w-full md:max-w-4xl lg:max-w-6xl mx-auto">
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 md:gap-12 lg:gap-20 xl:gap-24 items-center">
             <div class="flex justify-center lg:justify-end order-1">
@@ -20,10 +20,10 @@
       </div>
             <div class="flex flex-col justify-center space-y-4 sm:space-y-5 md:space-y-6 lg:space-y-8 order-2 lg:pl-8 xl:pl-12">
         <div class="text-center lg:text-left">
-          <h2 appWordReveal class="text-2xl min-[320px]:text-3xl sm:text-4xl md:text-4xl lg:text-4xl xl:text-5xl timesRoman font-normal text-gray-900 leading-tight mb-4 sm:mb-5 md:mb-6">
+          <h2 appWordReveal class="text-2xl min-[320px]:text-3xl sm:text-4xl md:text-4xl lg:text-4xl xl:text-5xl timesRoman font-normal text-white leading-tight mb-4 sm:mb-5 md:mb-6">
             Newsletter
           </h2>
-          <p appFadeUpLetter class="text-gray-600 font-aldy text-sm min-[320px]:text-sm sm:text-base md:text-base lg:text-base xl:text-lg font-normal leading-relaxed max-w-xs min-[320px]:max-w-sm sm:max-w-md mx-auto lg:mx-0 lg:max-w-sm xl:max-w-md">
+          <p appFadeUpLetter class="text-white font-aldy text-sm min-[320px]:text-sm sm:text-base md:text-base lg:text-base xl:text-lg font-normal leading-relaxed max-w-xs min-[320px]:max-w-sm sm:max-w-md mx-auto lg:mx-0 lg:max-w-sm xl:max-w-md">
             Descubre las creaciones de Aldana Vilcabana y suscríbete a nuestro newsletter para estar al día con
             novedades, lanzamientos y tips de estilo.
           </p>
@@ -31,14 +31,14 @@
           <form [formGroup]="form" (ngSubmit)="onSubmit()">
           <div class="relative w-full max-w-xs min-[320px]:max-w-sm sm:max-w-md md:max-w-lg mx-auto lg:mx-0 lg:max-w-sm xl:max-w-lg">
             <input appFadeUpLetter type="email" placeholder="Ingresa tu correo aqui" formControlName="email"
-              class="w-full p-2.5 min-[320px]:p-3 sm:p-3 md:p-5 lg:p-7 pr-10 min-[320px]:pr-11 sm:pr-12 border border-gray-500 focus:border-transparent shadow-sm focus:outline-none transition-all duration-300 ease-in-out focus:ring-2 focus:ring-aldy-primary-400" />
+              class="w-full p-2.5 min-[320px]:p-3 text-white sm:p-3 md:p-5 lg:p-7 pr-10 min-[320px]:pr-11 sm:pr-12 border-2 border-white focus:border-transparent shadow-sm focus:outline-none transition-all duration-300 ease-in-out focus:ring-2 focus:ring-aldy-new-bold" />
             <button type="submit">
               <lucide-icon
-                class="absolute right-3 min-[320px]:right-3.5 sm:right-4 top-1/2 transform -translate-y-1/2 text-gray-600 cursor-pointer block md:hidden"
+                class="absolute right-3 min-[320px]:right-3.5 sm:right-4 top-1/2 transform -translate-y-1/2 text-white cursor-pointer block md:hidden"
                 name="send" [size]="18" [strokeWidth]="1.2">
               </lucide-icon>
               <lucide-icon
-                class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-600 cursor-pointer hidden md:block"
+                class="absolute right-4 top-1/2 transform -translate-y-1/2 text-white cursor-pointer hidden md:block"
                 name="send" [size]="30" [strokeWidth]="1.2">
               </lucide-icon>
             </button>
