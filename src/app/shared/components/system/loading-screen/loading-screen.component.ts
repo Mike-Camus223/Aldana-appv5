@@ -21,7 +21,6 @@ export class LoadingScreenComponent implements AfterViewInit, OnDestroy {
   @ViewChild('logoContainer') logoContainer!: ElementRef;
   @ViewChild('logoSvg') logoSvg!: ElementRef;
   @ViewChild('nameContainer') nameContainer!: ElementRef;
-  @ViewChild('aldanaSvg') aldanaSvg!: ElementRef;
   @ViewChild('vilcabanaSvg') vilcabanaSvg!: ElementRef;
 
   @Output() loadingFinished = new EventEmitter<void>();
@@ -304,14 +303,44 @@ export class LoadingScreenComponent implements AfterViewInit, OnDestroy {
       ease: 'power2.out'
     }, '+=0.5');
     
+    // ---- CAMBIO CRÍTICO: activamos el scroll y ponemos SVGs en blanco EN EL MOMENTO
+    // ---- en que comienza la transición a fondo negro (onStart).
     this.timeline.to(this.screen.nativeElement, { 
       backgroundColor: '#000', 
       duration: 0.8, 
-      ease: 'power2.out'
+      ease: 'power2.out',
+      onStart: () => {
+        // Activar scrollbar justo cuando la pantalla empieza a ponerse negra
+        this.unblockScrollAndInteraction();
+
+        // Convertir los SVGs del nombre a blanco (fill y stroke)
+        if (this.nameContainer && this.nameContainer.nativeElement) {
+          const svgElements = this.nameContainer.nativeElement.querySelectorAll('path, text, polygon, rect, circle, tspan, line, polyline, g');
+          svgElements.forEach((el: Element) => {
+            try {
+              this.renderer.setStyle(el, 'fill', '#ffffff');
+              this.renderer.setStyle(el, 'stroke', '#ffffff');
+            } catch (e) {
+              // no hacer nada si algún elemento no acepta estilos directos
+            }
+          });
+        }
+
+        // También asegurar que el vilcabanaSvg (si existe) se ponga blanco
+        if (this.vilcabanaSvg && this.vilcabanaSvg.nativeElement) {
+          try {
+            const nodes = this.vilcabanaSvg.nativeElement.querySelectorAll('*');
+            nodes.forEach((n: Element) => {
+              this.renderer.setStyle(n, 'fill', '#ffffff');
+              this.renderer.setStyle(n, 'stroke', '#ffffff');
+            });
+          } catch (e) { /* ignore */ }
+        }
+      }
     }, '-=0.4');
 
-    this.timeline.to([this.aldanaSvg.nativeElement, this.vilcabanaSvg.nativeElement], { 
-      filter: 'brightness(0) invert(1)', // Convertir a blanco
+    this.timeline.to(this.logoSvg.nativeElement, { 
+      filter: 'brightness(0) invert(1)', // Convertir logo principal a blanco
       duration: 0.3,
       ease: 'power2.out'
     }, '-=0.7');
