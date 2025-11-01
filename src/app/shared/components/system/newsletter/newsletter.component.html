@@ -1,51 +1,56 @@
 <div class="w-full h-full py-8 bg-aldy-bg-new sm:py-12 md:py-18 lg:py-30 px-4 sm:px-4 box-border relative">
   <div
-    class="absolute top-0 lg:top-30 xl:top-20 right-0 aspect-[3/2] w-[200px] sm:w-[300px] md:w-[360px] lg:w-[390px] xl:w-[500px] opacity-20 z-0 pointer-events-none select-none"
-  >
-    <img
-      src="../../../../../assets/svg/logos-03.svg"
-      alt="Aldana Vilcabana"
-      class="w-full h-full object-contain hidden lg:block"
-      draggable="false"
-    />
+    class="absolute hidden lg:block top-0 lg:top-30 xl:top-20 right-0 aspect-[3/2] w-[200px] sm:w-[300px] md:w-[360px] lg:w-[390px] xl:w-[500px] opacity-20 z-0 pointer-events-none select-none">
+    <img src="../../../../../assets/svg/logos-03.svg" alt="Aldana Vilcabana" class="w-full h-full object-contain"
+      draggable="false" />
+  </div>
+  <div class="absolute inset-0 flex justify-center items-center lg:hidden pointer-events-none select-none z-0">
+    <img src="../../../../../assets/svg/logos-03.svg" alt="Aldana Vilcabana"
+      class="w-[200px] sm:w-[260px] opacity-20 object-contain" draggable="false" />
   </div>
   <div class="max-w-sx sm:max-w-full md:max-w-4xl lg:max-w-6xl mx-auto">
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 md:gap-12 lg:gap-20 xl:gap-24 items-center">
-            <div class="flex justify-center lg:justify-end order-1">
+      <div class="flex justify-center lg:justify-end order-1">
         <div class="relative flex justify-center items-center min-w-0">
           <div class="grid grid-cols-2 gap-2 min-[320px]:gap-2.5 sm:gap-3 md:gap-4 my-auto min-w-0">
-                        <div class="w-24 min-[320px]:w-28 sm:w-38 md:w-55 lg:w-64 max-w-full aspect-[4/5] bg-gradient-to-br shadow-2xl -rotate-8 transform overflow-hidden z-20 md:z-10">
+            <div
+              class="w-24 min-[320px]:w-28 sm:w-38 md:w-55 lg:w-64 max-w-full aspect-[4/5] bg-aldy-new-bold shadow-2xl -rotate-8 transform overflow-hidden z-20 md:z-10">
               <img appCardInitAnimation="down" [draggable]="false"
                 src="https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/multimedia/about%20me/section-photos/preview/preview_4.jpg"
                 alt="Fashion style" class="w-full h-full object-cover object-top" />
             </div>
-                        <div class="w-24 min-[320px]:w-28 sm:w-38 md:w-55 lg:w-64 max-w-full aspect-[4/5] bg-gradient-to-br shadow-2xl rotate-8 transform overflow-hidden z-10 md:z-20">
+            <div
+              class="w-24 min-[320px]:w-28 sm:w-38 md:w-55 lg:w-64 max-w-full aspect-[4/5] bg-aldy-new-bold shadow-2xl rotate-8 transform overflow-hidden z-10 md:z-20">
               <img appCardInitAnimation="up" [draggable]="false"
                 src="https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/products/vestidos/vestido_gladiolo/1752718247389.jpg"
                 alt="Style inspiration" class="w-full h-full object-cover object-top" />
             </div>
-            
+
           </div>
         </div>
       </div>
-            <div class="flex flex-col justify-center space-y-4 sm:space-y-5 md:space-y-6 lg:space-y-8 order-2 lg:pl-8 xl:pl-12">
+      <div
+        class="flex flex-col justify-center space-y-4 sm:space-y-5 md:space-y-6 lg:space-y-8 order-2 lg:pl-8 xl:pl-12">
         <div class="text-center lg:text-left">
-          <h2 appWordReveal class="text-2xl min-[320px]:text-3xl sm:text-4xl md:text-4xl lg:text-4xl xl:text-5xl timesRoman font-normal text-white leading-tight mb-4 sm:mb-5 md:mb-6">
+          <h2 appWordReveal
+            class="text-2xl min-[320px]:text-3xl sm:text-4xl md:text-4xl lg:text-4xl xl:text-5xl timesRoman font-normal text-white leading-tight mb-4 sm:mb-5 md:mb-6">
             Newsletter
           </h2>
-          <p appFadeUpLetter class="text-white font-aldy text-sm min-[320px]:text-sm sm:text-base md:text-base lg:text-base xl:text-lg font-normal leading-relaxed max-w-xs min-[320px]:max-w-sm sm:max-w-md mx-auto lg:mx-0 lg:max-w-sm xl:max-w-md">
+          <p appFadeUpLetter
+            class="text-white font-aldy text-sm min-[320px]:text-sm sm:text-base md:text-base lg:text-base xl:text-lg font-normal leading-relaxed max-w-xs min-[320px]:max-w-sm sm:max-w-md mx-auto lg:mx-0 lg:max-w-sm xl:max-w-md">
             Descubre las creaciones de Aldana Vilcabana y suscríbete a nuestro newsletter para estar al día con
             novedades, lanzamientos y tips de estilo.
           </p>
         </div>
-          <form [formGroup]="form" (ngSubmit)="onSubmit()">
-          <div class="relative w-full max-w-xs min-[320px]:max-w-sm sm:max-w-md md:max-w-lg mx-auto lg:mx-0 lg:max-w-sm xl:max-w-lg">
+        <form [formGroup]="form" (ngSubmit)="onSubmit()">
+          <div
+            class="relative w-full max-w-xs min-[320px]:max-w-sm sm:max-w-md md:max-w-lg mx-auto lg:mx-0 lg:max-w-sm xl:max-w-lg">
             <input appFadeUpLetter type="email" placeholder="Ingresa tu correo aqui" formControlName="email"
-              class="w-full p-2.5 min-[320px]:p-3 text-white sm:p-3 md:p-5 lg:p-7 pr-10 min-[320px]:pr-11 sm:pr-12 border-2 border-white focus:border-transparent shadow-sm focus:outline-none transition-all duration-300 ease-in-out focus:ring-2 focus:ring-aldy-new-bold" />
+              class="w-full p-2.5 min-[320px]:p-3 text-white sm:p-3 md:p-5 lg:p-7 pr-10 min-[320px]:pr-11 sm:pr-12 border-2 border-white focus:border-transparent shadow-sm focus:outline-none transition-all duration-300 ease-in-out focus:ring-2 focus:ring-aldy-white" />
             <button type="submit">
               <lucide-icon
                 class="absolute right-3 min-[320px]:right-3.5 sm:right-4 top-1/2 transform -translate-y-1/2 text-white cursor-pointer block md:hidden"
-                name="send" [size]="18" [strokeWidth]="1.2">
+                name="send" [size]="23" [strokeWidth]="1.2">
               </lucide-icon>
               <lucide-icon
                 class="absolute right-4 top-1/2 transform -translate-y-1/2 text-white cursor-pointer hidden md:block"
@@ -53,7 +58,8 @@
               </lucide-icon>
             </button>
           </div>
-          <div *ngIf="submitted && email?.invalid" class="text-red-400 text-xs min-[320px]:text-sm mt-1 text-center lg:text-left">
+          <div *ngIf="submitted && email?.invalid"
+            class="text-red-400 text-xs min-[320px]:text-sm mt-1 text-center lg:text-left">
             <span *ngIf="email?.errors?.['email']">Por favor ingrese un correo válido.</span>
           </div>
         </form>

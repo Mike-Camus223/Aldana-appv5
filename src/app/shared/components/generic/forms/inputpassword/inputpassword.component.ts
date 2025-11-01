@@ -1,20 +1,12 @@
-import { Component, forwardRef, Input } from '@angular/core';
+import { Component, Input, Optional, Self } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, ControlValueAccessor, NgControl } from '@angular/forms';
 
 @Component({
   selector: 'app-inputpassword',
   standalone: true,
   imports: [CommonModule, FormsModule, ReactiveFormsModule],
   templateUrl: './inputpassword.component.html',
-  styleUrls: ['./inputpassword.component.css'],
-  providers: [
-    {
-      provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => InputpasswordComponent),
-      multi: true
-    }
-  ]
 })
 export class InputpasswordComponent implements ControlValueAccessor {
   @Input() label = 'Contraseña';
@@ -23,10 +15,21 @@ export class InputpasswordComponent implements ControlValueAccessor {
 
   value = '';
   showPassword = false;
-  invalid = false;
+  isFocused = false;
 
   onChange = (_: any) => {};
   onTouched = () => {};
+
+  constructor(@Self() @Optional() public ngControl: NgControl) {
+    if (this.ngControl) {
+      this.ngControl.valueAccessor = this;
+    }
+  }
+
+  // Propiedad para manejar estado de validación (igual que InputComponent)
+  get invalid(): boolean {
+    return !!(this.ngControl?.control?.invalid && this.ngControl?.control?.touched);
+  }
 
   writeValue(value: any): void {
     this.value = value ?? '';
@@ -40,10 +43,22 @@ export class InputpasswordComponent implements ControlValueAccessor {
     this.onTouched = fn;
   }
 
+  setDisabledState(isDisabled: boolean): void {
+    this.disabled = isDisabled;
+  }
+
   onInput(event: Event): void {
     const input = event.target as HTMLInputElement;
     this.value = input.value;
     this.onChange(this.value);
+  }
+
+  onFocus(): void {
+    this.isFocused = true;
+  }
+
+  onBlur(): void {
+    this.isFocused = false;
     this.onTouched();
   }
 

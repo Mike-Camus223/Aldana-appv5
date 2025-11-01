@@ -186,7 +186,7 @@ logFormStatus(): void {
 
       if (result.success) {
         // Establecer el estado de confirmación antes de redirigir
-        ConfirmationGuard.setConfirmationState('register-confirm');
+        ConfirmationGuard.setConfirmationState('confirmar-registro');
         this._router.navigate(['/confirmar-registro']);
       } else {
         this.authError = result.error || 'Error en el registro';

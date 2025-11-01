@@ -50,7 +50,6 @@ export class AuthPanelComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     // Establecer contexto auth-panel al inicializar el componente
-    
     this.authService.currentUser$.subscribe(user => {
       this.currentUser = user;
       // Si el usuario está autenticado, redirigir según su rol

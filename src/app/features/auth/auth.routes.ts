@@ -26,12 +26,12 @@ export const AUTH_ROUTES: Routes = [
       {
         path: 'confirmar-registro',
         loadComponent: () => import('./pages/register-confirm/register-confirm.component').then(c => c.RegisterConfirmComponent),
-         canActivate: [RedirectGuard, ConfirmationGuard]
+         canActivate: [ConfirmationGuard]
       },
       {
         path: 'registro-exitoso',
         loadComponent: () => import('./pages/register-success/register-success.component').then(c => c.RegisterSuccessComponent),
-         canActivate: [RedirectGuard, ConfirmationGuard]
+         canActivate: [ConfirmationGuard]
       },
       {
         path: '**',

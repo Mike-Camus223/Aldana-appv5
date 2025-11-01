@@ -178,18 +178,17 @@ export class AuthService {
     
     if (params.get('type') === 'signup' && params.get('access_token')) {
       // Set confirmation state before redirecting
-      ConfirmationGuard.setConfirmationState('register-success');
+      ConfirmationGuard.setConfirmationState('registro-exitoso');
       
       // Clean up the URL
       window.history.replaceState({}, document.title, window.location.pathname);
       
       // Redirect to success page
-      await this.router.navigate(['/register-success'], { 
+      await this.router.navigate(['/registro-exitoso'], { 
         replaceUrl: true
       });
     }
   }
-
   /**
    * Observable del usuario actual
    */
@@ -300,38 +299,45 @@ export class AuthService {
    * Registra un nuevo usuario con rol por defecto
    */
   async signUp(email: string, password: string): Promise<{ success: boolean; error?: string }> {
-    try {
-      // Validaciones de seguridad básicas
-      if (!this.isValidEmail(email)) {
-        return { success: false, error: 'Email inválido' };
-      }
-
-      if (!this.isValidPassword(password)) {
-        return { success: false, error: 'La contraseña debe tener al menos 8 caracteres' };
-      }
-
-      const { data, error } = await this.supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            role: 'user' // Rol por defecto
-          }
-        }
-      });
-
-      if (error) {
-        this.logSecurityEvent('SIGNUP_FAILED', email, { error: error.message });
-        return { success: false, error: error.message };
-      }
-
-      this.logSecurityEvent('SIGNUP_SUCCESS', email);
-      return { success: true };
-    } catch (error) {
-      this.logSecurityEvent('SIGNUP_ERROR', email, { error: (error as Error).message });
-      return { success: false, error: 'Error de conexión' };
+  try {
+    if (!this.isValidEmail(email)) {
+      return { success: false, error: 'Email inválido' };
     }
+
+    if (!this.isValidPassword(password)) {
+      return { success: false, error: 'La contraseña debe tener al menos 8 caracteres' };
+    }
+    const { data, error } = await this.supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: { role: 'user' } // Rol por defecto
+      }
+    });
+
+    if (error) {
+      this.logSecurityEvent('SIGNUP_FAILED', email, { error: error.message });
+      return { success: false, error: error.message };
+    }
+
+    if (data.user) {
+      this.logSecurityEvent('SIGNUP_SUCCESS', email);
+
+      ConfirmationGuard.setConfirmationState('confirmar-registro');
+
+      await this.router.navigate(['/cuenta/confirmar-registro'], { replaceUrl: true });
+
+      return { success: true };
+    }
+
+    // Caso raro: no hay error pero tampoco hay user
+    return { success: false, error: 'Error desconocido al registrar usuario' };
+    
+  } catch (error) {
+    this.logSecurityEvent('SIGNUP_ERROR', email, { error: (error as Error).message });
+    return { success: false, error: 'Error de conexión' };
   }
+}
 
   /**
    * Cierra la sesión del usuario

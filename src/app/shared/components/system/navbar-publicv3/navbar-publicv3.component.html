@@ -24,7 +24,7 @@
       <!-- DROPDOWN TIENDA -->
       <div class="relative " (mouseenter)="onDropdownMouseEnter()" (mouseleave)="onDropdownMouseLeave()">
         <div class="flex items-center gap-1 cursor-pointer">
-          <a appLinkHoverUnderline [dynamicColor]="(!isHomePage || MoverScroll || hoverNavbar) ? 'white' : '#333'"
+          <a appLinkHoverUnderline [dynamicColor]="(!isHomePage || MoverScroll || hoverNavbar) ? 'white' : '#AEC2A9'"
             (mouseenter)="onInteractiveEnter()" [ngClass]="{
               'text-white hover:text-gray-300 border-white': isHomePage && !MoverScroll && !hoverNavbar,
               'text-aldy-primary-400 border-aldy-primary-400': !isHomePage || MoverScroll || hoverNavbar

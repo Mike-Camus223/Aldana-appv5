@@ -105,7 +105,6 @@ export class NavbarPublicv3Component implements OnInit, OnDestroy {
   lastScrollTop = 0;
   showNavbar = true;
   scrollThreshold = 100;
-
   isHomePage = false;
   MoverScroll = false;
   dropdownOpen = false;
