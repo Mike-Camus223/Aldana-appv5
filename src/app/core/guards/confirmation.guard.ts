@@ -18,6 +18,21 @@ export class ConfirmationGuard implements CanActivate {
     const routePath = route.routeConfig?.path;
 
     if (routePath === 'confirmar-registro' || routePath === 'registro-exitoso') {
+      // Verificar si hay parámetros de confirmación en la URL
+      const searchParams = new URLSearchParams(window.location.search);
+      const hashParams = new URLSearchParams(window.location.hash.substring(1));
+      
+      // Buscar token en ambos lugares
+      const accessToken = searchParams.get('access_token') || hashParams.get('access_token');
+      const type = searchParams.get('type') || hashParams.get('type');
+
+      // Si hay token de confirmación, permitir acceso inmediato
+      if (accessToken && type === 'signup') {
+        console.log('ConfirmationGuard - Access granted via URL parameters');
+        return true;
+      }
+
+      // Si no hay token en URL, verificar el estado guardado
       const confirmationState = sessionStorage.getItem(ConfirmationGuard.CONFIRMATION_KEY);
       
       // Log de depuración

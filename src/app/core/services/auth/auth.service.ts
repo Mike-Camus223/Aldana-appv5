@@ -173,10 +173,14 @@ export class AuthService {
    */
   private async handleEmailConfirmation(): Promise<void> {
     // Check if current URL has a confirmation token
-    const hash = window.location.hash.substring(1);
-    const params = new URLSearchParams(hash);
+    const searchParams = new URLSearchParams(window.location.search);
+    const hashParams = new URLSearchParams(window.location.hash.substring(1));
+    
+    // Buscar en ambos lugares (query params y hash)
+    const accessToken = searchParams.get('access_token') || hashParams.get('access_token');
+    const type = searchParams.get('type') || hashParams.get('type');
 
-    if (params.get('type') === 'signup' && params.get('access_token')) {
+    if (type === 'signup' && accessToken) {
       // Set confirmation state before redirecting
       ConfirmationGuard.setConfirmationState('registro-exitoso');
 

@@ -25,10 +25,16 @@ export class RegisterSuccessComponent implements OnInit {
 
   async ngOnInit() {
     try {
-      const fragment = window.location.hash;
+      // Buscar en ambos query params y hash
+      const searchParams = new URLSearchParams(window.location.search);
+      const hashParams = new URLSearchParams(window.location.hash.substring(1));
+      
+      // Buscar token en ambos lugares
+      const accessToken = searchParams.get('access_token') || hashParams.get('access_token');
+      const type = searchParams.get('type') || hashParams.get('type');
 
-      if (fragment.includes('access_token')) {
-        const { data, error } = await this.supabase.auth.exchangeCodeForSession(fragment);
+      if (accessToken && type === 'signup') {
+        const { data, error } = await this.supabase.auth.exchangeCodeForSession(window.location.search + window.location.hash);
 
         if (error) {
           console.error('Error al intercambiar token:', error);
@@ -39,6 +45,8 @@ export class RegisterSuccessComponent implements OnInit {
 
         console.log('Sesión restaurada correctamente:', data.session);
         this.confirmationStatus = 'success';
+        
+        // Limpiar URL completa
         window.history.replaceState({}, document.title, window.location.pathname);
       } else {
         this.confirmationStatus = 'error';
@@ -52,6 +60,6 @@ export class RegisterSuccessComponent implements OnInit {
   }
 
   goToHome() {
-    this.router.navigate(['/home']);
+    this.router.navigate(['/']);
   }
 }
