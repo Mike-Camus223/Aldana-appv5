@@ -17,12 +17,12 @@ export const routes: Routes = [
   },
   {
     path: 'confirmar-registro',
-    loadChildren: () => import('./features/auth/pages/register-confirm/register-confirm.component').then(c => c.RegisterConfirmComponent),
+    loadComponent: () => import('./features/auth/pages/register-confirm/register-confirm.component').then(c => c.RegisterConfirmComponent),
     canActivate: [RedirectGuard, ConfirmationGuard]
   },
   {
     path: 'registro-exitoso',
-    loadChildren: () => import('./features/auth/pages/register-success/register-success.component').then(c => c.RegisterSuccessComponent),
+    loadComponent: () => import('./features/auth/pages/register-success/register-success.component').then(c => c.RegisterSuccessComponent),
     canActivate: [RedirectGuard, ConfirmationGuard]
   },
   {

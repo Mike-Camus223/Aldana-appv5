@@ -311,7 +311,8 @@ export class AuthService {
         email,
         password,
         options: {
-          data: { role: 'user' } // Rol por defecto
+          data: { role: 'user' },
+          emailRedirectTo: `${window.location.origin}/registro-exitoso`
         }
       });
 
@@ -324,6 +325,10 @@ export class AuthService {
         this.logSecurityEvent('SIGNUP_SUCCESS', email);
 
         ConfirmationGuard.setConfirmationState('confirmar-registro');
+        
+        // Log de depuración
+        console.log('AuthService - Confirmation state set for confirmar-registro');
+        console.log('AuthService - Navigating to /confirmar-registro');
 
         await this.router.navigate(['/confirmar-registro'], { replaceUrl: true });
 

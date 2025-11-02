@@ -179,21 +179,25 @@ logFormStatus(): void {
     this.authError = null;
 
     try {
+      console.log('RegisterPage - Starting sign up with email:', this.form.get('email')?.value);
+      
       const result = await this._authService.signUp(
         this.form.get('email')?.value ?? '',
         this.form.get('password')?.value ?? ''
       );
 
+      console.log('RegisterPage - Sign up result:', result);
+
       if (result.success) {
+        console.log('RegisterPage - Sign up successful, navigation should be handled by service');
         // El servicio ya maneja la redirección, no necesitamos hacer nada aquí
-        // ConfirmationGuard.setConfirmationState('confirmar-registro');
-        // this._router.navigate(['/cuenta/confirmar-registro']);
       } else {
+        console.log('RegisterPage - Sign up failed:', result.error);
         this.authError = result.error || 'Error en el registro';
       }
     } catch (error) {
+      console.error('RegisterPage - Unexpected error in registro:', error);
       this.authError = 'Error inesperado al registrar la cuenta';
-      console.error('Error en registro:', error);
     } finally {
       this.isSubmitting = false;
     }

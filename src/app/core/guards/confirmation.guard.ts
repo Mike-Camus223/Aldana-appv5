@@ -19,15 +19,24 @@ export class ConfirmationGuard implements CanActivate {
 
     if (routePath === 'confirmar-registro' || routePath === 'registro-exitoso') {
       const confirmationState = sessionStorage.getItem(ConfirmationGuard.CONFIRMATION_KEY);
+      
+      // Log de depuración
+      console.log('ConfirmationGuard - Route path:', routePath);
+      console.log('ConfirmationGuard - Confirmation state:', confirmationState);
 
       if (confirmationState) {
         try {
           const { timestamp, path } = JSON.parse(confirmationState);
           const now = Date.now();
+          
+          console.log('ConfirmationGuard - Parsed state:', { timestamp, path, now, expiry: ConfirmationGuard.CONFIRMATION_EXPIRY });
+          console.log('ConfirmationGuard - Path match:', path === routePath);
+          console.log('ConfirmationGuard - Time valid:', (now - timestamp) < ConfirmationGuard.CONFIRMATION_EXPIRY);
 
           if (path === routePath && (now - timestamp) < ConfirmationGuard.CONFIRMATION_EXPIRY) {
             // No eliminar el estado aquí, dejar que se mantenga por si hay redirecciones
             // sessionStorage.removeItem(ConfirmationGuard.CONFIRMATION_KEY);
+            console.log('ConfirmationGuard - Access granted');
             return true;
           }
         } catch (e) {
@@ -35,6 +44,7 @@ export class ConfirmationGuard implements CanActivate {
         }
       }
 
+      console.log('ConfirmationGuard - Access denied, redirecting to home');
       this.router.navigate(['/']);
       return false;
     }
@@ -48,6 +58,11 @@ export class ConfirmationGuard implements CanActivate {
       path: path
     };
     sessionStorage.setItem(this.CONFIRMATION_KEY, JSON.stringify(state));
+    
+    // Log de depuración
+    console.log('ConfirmationGuard - State saved:', state);
+    console.log('ConfirmationGuard - sessionStorage key:', this.CONFIRMATION_KEY);
+    console.log('ConfirmationGuard - sessionStorage value:', sessionStorage.getItem(this.CONFIRMATION_KEY));
     
     // Limpiar automáticamente después de 5 minutos
     setTimeout(() => {

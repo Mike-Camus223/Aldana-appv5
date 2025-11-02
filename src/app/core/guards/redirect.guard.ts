@@ -32,21 +32,25 @@ export class RedirectGuard implements CanActivate {
   }
 
   canActivate(route: ActivatedRouteSnapshot): Observable<boolean | UrlTree> {
+    const currentPath = route.routeConfig?.path;
+    
+    // Excluir rutas de confirmación del rate limiting
+    const isConfirmationRoute = currentPath === 'confirmar-registro' || currentPath === 'registro-exitoso';
+    
     // 1. Verificar si es actividad sospechosa (solo en browser)
-    if (this.isBrowser && this.isSuspiciousActivity() && this.shouldApplyRateLimit()) {
+    if (this.isBrowser && !isConfirmationRoute && this.isSuspiciousActivity() && this.shouldApplyRateLimit()) {
       console.warn('Actividad sospechosa detectada, aplicando rate limit');
       this.logSecurityEvent('SUSPICIOUS_ACTIVITY_BLOCKED', 'suspicious_ip');
       return of(this.router.createUrlTree(['/']));
     }
 
-    // 2. Registrar intento solo si es sospechoso y en browser
-    if (this.isBrowser && this.shouldApplyRateLimit()) {
+    // 2. Registrar intento solo si es sospechoso y en browser (y no es ruta de confirmación)
+    if (this.isBrowser && !isConfirmationRoute && this.shouldApplyRateLimit()) {
       this.recordSuspiciousAttempt();
     }
 
     // 3. Verificar si el usuario YA está autenticado (lógica principal del guard)
     const currentUser = this.authService.getCurrentUser();
-    const currentPath = route.routeConfig?.path;
     
     // Permitir acceso a rutas de confirmación incluso si está autenticado
     if (currentPath === 'confirmar-registro' || currentPath === 'registro-exitoso') {
