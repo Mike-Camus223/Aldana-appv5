@@ -9,7 +9,7 @@ import { DualSectionComponent } from "../../../../shared/components/generic/dual
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [RouterModule, DinamicTitlesComponent, AboutSecHomeComponent, ReelsSectionComponent, DualSectionComponent],
+  imports: [RouterModule, DinamicTitlesComponent,CarouselScreenComponent, AboutSecHomeComponent, ReelsSectionComponent, DualSectionComponent],
   templateUrl: './home.component.html',
   styles: ``
 })

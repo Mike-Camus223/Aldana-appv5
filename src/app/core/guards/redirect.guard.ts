@@ -1,5 +1,5 @@
 import { Injectable, inject, PLATFORM_ID } from '@angular/core';
-import { CanActivate, Router, UrlTree } from '@angular/router';
+import { CanActivate, Router, UrlTree, ActivatedRouteSnapshot } from '@angular/router';
 import { Observable, of } from 'rxjs';
 import { AuthService } from '../services/auth/auth.service';
 import { isPlatformBrowser } from '@angular/common';
@@ -31,7 +31,7 @@ export class RedirectGuard implements CanActivate {
     return isPlatformBrowser(this.platformId);
   }
 
-  canActivate(): Observable<boolean | UrlTree> {
+  canActivate(route: ActivatedRouteSnapshot): Observable<boolean | UrlTree> {
     // 1. Verificar si es actividad sospechosa (solo en browser)
     if (this.isBrowser && this.isSuspiciousActivity() && this.shouldApplyRateLimit()) {
       console.warn('Actividad sospechosa detectada, aplicando rate limit');
@@ -46,6 +46,12 @@ export class RedirectGuard implements CanActivate {
 
     // 3. Verificar si el usuario YA está autenticado (lógica principal del guard)
     const currentUser = this.authService.getCurrentUser();
+    const currentPath = route.routeConfig?.path;
+    
+    // Permitir acceso a rutas de confirmación incluso si está autenticado
+    if (currentPath === 'confirmar-registro' || currentPath === 'registro-exitoso') {
+      return of(true);
+    }
     
     if (currentUser) {      
       this.logSecurityEvent('AUTHENTICATED_USER_REDIRECT', currentUser.email || 'unknown');

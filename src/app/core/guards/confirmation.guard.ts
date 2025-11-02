@@ -26,7 +26,8 @@ export class ConfirmationGuard implements CanActivate {
           const now = Date.now();
 
           if (path === routePath && (now - timestamp) < ConfirmationGuard.CONFIRMATION_EXPIRY) {
-            sessionStorage.removeItem(ConfirmationGuard.CONFIRMATION_KEY);
+            // No eliminar el estado aquí, dejar que se mantenga por si hay redirecciones
+            // sessionStorage.removeItem(ConfirmationGuard.CONFIRMATION_KEY);
             return true;
           }
         } catch (e) {
@@ -47,5 +48,14 @@ export class ConfirmationGuard implements CanActivate {
       path: path
     };
     sessionStorage.setItem(this.CONFIRMATION_KEY, JSON.stringify(state));
+    
+    // Limpiar automáticamente después de 5 minutos
+    setTimeout(() => {
+      this.clearConfirmationState();
+    }, this.CONFIRMATION_EXPIRY);
+  }
+
+  public static clearConfirmationState(): void {
+    sessionStorage.removeItem(this.CONFIRMATION_KEY);
   }
 }

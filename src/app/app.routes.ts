@@ -1,4 +1,6 @@
 import { Routes } from '@angular/router';
+import { RedirectGuard } from './core/guards/redirect.guard';
+import { ConfirmationGuard } from './core/guards/confirmation.guard';
 
 export const routes: Routes = [
   {
@@ -12,6 +14,16 @@ export const routes: Routes = [
   {
     path: 'admin',
     loadChildren: () => import('./shared/layouts/dashboard-layout/dashboard-layout.routes').then(r => r.ADMIN_ROUTES),
+  },
+  {
+    path: 'confirmar-registro',
+    loadChildren: () => import('./features/auth/pages/register-confirm/register-confirm.component').then(c => c.RegisterConfirmComponent),
+    canActivate: [RedirectGuard, ConfirmationGuard]
+  },
+  {
+    path: 'registro-exitoso',
+    loadChildren: () => import('./features/auth/pages/register-success/register-success.component').then(c => c.RegisterSuccessComponent),
+    canActivate: [RedirectGuard, ConfirmationGuard]
   },
   {
    path: '',

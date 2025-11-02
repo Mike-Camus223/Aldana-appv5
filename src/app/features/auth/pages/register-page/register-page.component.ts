@@ -185,9 +185,9 @@ logFormStatus(): void {
       );
 
       if (result.success) {
-        // Establecer el estado de confirmación antes de redirigir
-        ConfirmationGuard.setConfirmationState('confirmar-registro');
-        this._router.navigate(['/confirmar-registro']);
+        // El servicio ya maneja la redirección, no necesitamos hacer nada aquí
+        // ConfirmationGuard.setConfirmationState('confirmar-registro');
+        // this._router.navigate(['/cuenta/confirmar-registro']);
       } else {
         this.authError = result.error || 'Error en el registro';
       }

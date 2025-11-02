@@ -23,16 +23,16 @@ export const AUTH_ROUTES: Routes = [
         loadComponent: () => import('./pages/register-page/register-page.component').then(c => c.RegisterPageComponent),
         canActivate: [RedirectGuard]
       },
-      {
-        path: 'confirmar-registro',
-        loadComponent: () => import('./pages/register-confirm/register-confirm.component').then(c => c.RegisterConfirmComponent),
-         canActivate: [ConfirmationGuard]
-      },
-      {
-        path: 'registro-exitoso',
-        loadComponent: () => import('./pages/register-success/register-success.component').then(c => c.RegisterSuccessComponent),
-         canActivate: [ConfirmationGuard]
-      },
+      // {
+      //   path: 'confirmar-registro',
+      //   loadComponent: () => import('./pages/register-confirm/register-confirm.component').then(c => c.RegisterConfirmComponent),
+      //    canActivate: [RedirectGuard, ConfirmationGuard]
+      // },
+      // {
+      //   path: 'registro-exitoso',
+      //   loadComponent: () => import('./pages/register-success/register-success.component').then(c => c.RegisterSuccessComponent),
+      //    canActivate: [RedirectGuard, ConfirmationGuard]
+      // },
       {
         path: '**',
         redirectTo: 'iniciar-sesion'

@@ -170,21 +170,9 @@
               Inicia sesión aquí
             </a>
           </div>
-          <!-- Agrega esto temporalmente al final del formulario, antes del cierre </form> -->
-          <div class="mt-4 p-3 bg-gray-100 rounded-lg">
-            <button type="button" (click)="logFormStatus()" class="w-full bg-gray-600 text-white py-2 rounded">
-              Debug Form Status (ver consola)
-            </button>
-            <div class="mt-2 text-xs">
-              <div>Form Válido: {{ form.valid }}</div>
-              <div>Form Inválido: {{ form.invalid }}</div>
-              <div>Errores: {{ form.errors | json }}</div>
-            </div>
-          </div> 
         </form>
       </div>
     </div>
-    <!-- Footer -->
     <div class="text-center pb-2 sm:pb-4 flex justify-center">
       <p class="text-[10px] min-[360px]:text-xs sm:text-xs text-gray-400 max-w-[280px] leading-relaxed">
         Al registrarte, aceptas nuestras

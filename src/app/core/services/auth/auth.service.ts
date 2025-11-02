@@ -26,7 +26,7 @@ export class AuthService {
   private sessionTimeoutSubscription?: Subscription;
   private platformId = inject(PLATFORM_ID);
   private isBrowser = isPlatformBrowser(this.platformId);
-  
+
   // Security configurations
   private readonly MAX_LOGIN_ATTEMPTS = 5;
   private readonly LOGIN_BLOCK_DURATION = 15 * 60 * 1000; // 15 minutos
@@ -40,7 +40,7 @@ export class AuthService {
       AuthService.supabaseInstance = createSupabaseClient();
     }
     this.supabase = AuthService.supabaseInstance;
-    
+
     // Solo inicializar auth en el navegador o con cuidado en SSR
     if (this.isBrowser) {
       this.initializeAuth();
@@ -49,7 +49,7 @@ export class AuthService {
       this.initializeAuthSSR();
     }
   }
-  
+
   /**
    * Versión segura para SSR de la inicialización de autenticación
    */
@@ -70,20 +70,20 @@ export class AuthService {
   private async initializeAuth(): Promise<void> {
     try {
       const { data: { session } } = await this.supabase.auth.getSession();
-      
+
       this.sessionSubject.next(session);
       this.currentUserSubject.next(session?.user ?? null);
-      
+
       if (session) {
         this.startSessionMonitoring(session);
         this.logSecurityEvent('SESSION_INITIALIZED', session.user?.email || 'unknown');
       }
 
       this.supabase.auth.onAuthStateChange(async (event, session) => {
-        
+
         this.sessionSubject.next(session);
         this.currentUserSubject.next(session?.user ?? null);
-        
+
         if (event === 'SIGNED_IN' && session?.user) {
           this.startSessionMonitoring(session);
           this.logSecurityEvent('USER_SIGNED_IN', session.user.email);
@@ -107,7 +107,7 @@ export class AuthService {
    */
   private startSessionMonitoring(session: Session): void {
     this.stopSessionMonitoring(); // Limpiar monitoreo anterior
-    
+
     if (!session.expires_at) return;
 
     const expirationTime = new Date(session.expires_at * 1000);
@@ -163,7 +163,7 @@ export class AuthService {
 
     console.warn('Session will expire soon');
     this.logSecurityEvent('SESSION_EXPIRY_WARNING', session.user?.email || 'unknown');
-    
+
     // Aquí podrías mostrar una notificación al usuario
     // Por ejemplo, usando un servicio de notificaciones
   }
@@ -175,16 +175,16 @@ export class AuthService {
     // Check if current URL has a confirmation token
     const hash = window.location.hash.substring(1);
     const params = new URLSearchParams(hash);
-    
+
     if (params.get('type') === 'signup' && params.get('access_token')) {
       // Set confirmation state before redirecting
       ConfirmationGuard.setConfirmationState('registro-exitoso');
-      
+
       // Clean up the URL
       window.history.replaceState({}, document.title, window.location.pathname);
-      
+
       // Redirect to success page
-      await this.router.navigate(['/registro-exitoso'], { 
+      await this.router.navigate(['/registro-exitoso'], {
         replaceUrl: true
       });
     }
@@ -223,20 +223,20 @@ export class AuthService {
   isAuthenticated(): boolean {
     const user = this.getCurrentUser();
     const session = this.getCurrentSession();
-    
+
     if (!user || !session) return false;
-    
+
     // Verificar que la sesión no haya expirado
     if (session.expires_at) {
       const expirationTime = new Date(session.expires_at * 1000);
       const currentTime = new Date();
-      
+
       if (currentTime >= expirationTime) {
         console.warn('Session expired in isAuthenticated check');
         return false;
       }
     }
-    
+
     return true;
   }
 
@@ -249,15 +249,15 @@ export class AuthService {
       if (this.isLoginBlocked(email)) {
         const blockInfo = this.getLoginAttempts(email);
         const remainingTime = blockInfo.blockUntil ? Math.ceil((blockInfo.blockUntil - Date.now()) / 1000 / 60) : 0;
-        
-        this.logSecurityEvent('LOGIN_BLOCKED_RATE_LIMIT', email, { 
+
+        this.logSecurityEvent('LOGIN_BLOCKED_RATE_LIMIT', email, {
           attempts: blockInfo.attempts,
-          remainingMinutes: remainingTime 
+          remainingMinutes: remainingTime
         });
-        
-        return { 
-          success: false, 
-          error: `Demasiados intentos fallidos. Intenta nuevamente en ${remainingTime} minutos.` 
+
+        return {
+          success: false,
+          error: `Demasiados intentos fallidos. Intenta nuevamente en ${remainingTime} minutos.`
         };
       }
 
@@ -276,7 +276,7 @@ export class AuthService {
         // Login exitoso, limpiar intentos fallidos
         this.clearLoginAttempts(email);
         this.logSecurityEvent('LOGIN_SUCCESS', email);
-        
+
         // Redirigir según el rol del usuario
         const userRole = this.getUserRole();
         if (userRole === 'admin') {
@@ -299,46 +299,45 @@ export class AuthService {
    * Registra un nuevo usuario con rol por defecto
    */
   async signUp(email: string, password: string): Promise<{ success: boolean; error?: string }> {
-  try {
-    if (!this.isValidEmail(email)) {
-      return { success: false, error: 'Email inválido' };
-    }
-
-    if (!this.isValidPassword(password)) {
-      return { success: false, error: 'La contraseña debe tener al menos 8 caracteres' };
-    }
-    const { data, error } = await this.supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: { role: 'user' } // Rol por defecto
+    try {
+      if (!this.isValidEmail(email)) {
+        return { success: false, error: 'Email inválido' };
       }
-    });
 
-    if (error) {
-      this.logSecurityEvent('SIGNUP_FAILED', email, { error: error.message });
-      return { success: false, error: error.message };
+      if (!this.isValidPassword(password)) {
+        return { success: false, error: 'La contraseña debe tener al menos 8 caracteres' };
+      }
+      const { data, error } = await this.supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: { role: 'user' } // Rol por defecto
+        }
+      });
+
+      if (error) {
+        this.logSecurityEvent('SIGNUP_FAILED', email, { error: error.message });
+        return { success: false, error: error.message };
+      }
+
+      if (data.user) {
+        this.logSecurityEvent('SIGNUP_SUCCESS', email);
+
+        ConfirmationGuard.setConfirmationState('confirmar-registro');
+
+        await this.router.navigate(['/confirmar-registro'], { replaceUrl: true });
+
+        return { success: true };
+      }
+
+      // Caso raro: no hay error pero tampoco hay user
+      return { success: false, error: 'Error desconocido al registrar usuario' };
+
+    } catch (error) {
+      this.logSecurityEvent('SIGNUP_ERROR', email, { error: (error as Error).message });
+      return { success: false, error: 'Error de conexión' };
     }
-
-    if (data.user) {
-      this.logSecurityEvent('SIGNUP_SUCCESS', email);
-
-      ConfirmationGuard.setConfirmationState('confirmar-registro');
-
-      await this.router.navigate(['/cuenta/confirmar-registro'], { replaceUrl: true });
-
-      return { success: true };
-    }
-
-    // Caso raro: no hay error pero tampoco hay user
-    return { success: false, error: 'Error desconocido al registrar usuario' };
-    
-  } catch (error) {
-    this.logSecurityEvent('SIGNUP_ERROR', email, { error: (error as Error).message });
-    return { success: false, error: 'Error de conexión' };
   }
-}
-
   /**
    * Cierra la sesión del usuario
    */
@@ -348,7 +347,7 @@ export class AuthService {
       const userEmail = currentUser?.email || 'unknown';
 
       const { error } = await this.supabase.auth.signOut();
-      
+
       if (error) {
         this.logSecurityEvent('SIGNOUT_FAILED', userEmail, { error: error.message });
         return { success: false, error: error.message };
@@ -369,7 +368,7 @@ export class AuthService {
    */
   private isLoginBlocked(email: string): boolean {
     const attempts = this.getLoginAttempts(email);
-    
+
     if (attempts.blocked && attempts.blockUntil) {
       if (Date.now() < attempts.blockUntil) {
         return true;
@@ -379,7 +378,7 @@ export class AuthService {
         return false;
       }
     }
-    
+
     return false;
   }
 
@@ -390,25 +389,25 @@ export class AuthService {
     try {
       const attempts = this.getLoginAttempts(email);
       const now = Date.now();
-      
+
       attempts.attempts++;
       attempts.lastAttempt = now;
-      
+
       if (attempts.attempts === 1) {
         attempts.firstAttempt = now;
       }
-      
+
       // Bloquear si excede el límite
       if (attempts.attempts >= this.MAX_LOGIN_ATTEMPTS) {
         attempts.blocked = true;
         attempts.blockUntil = now + this.LOGIN_BLOCK_DURATION;
-        
+
         this.logSecurityEvent('LOGIN_ACCOUNT_BLOCKED', email, {
           attempts: attempts.attempts,
           blockDuration: this.LOGIN_BLOCK_DURATION / 1000 / 60
         });
       }
-      
+
       this.saveLoginAttempts(email, attempts);
     } catch (error) {
       console.error('Error recording failed login:', error);
@@ -419,33 +418,33 @@ export class AuthService {
    * Obtiene los intentos de login para un email
    */
   private getLoginAttempts(email: string): LoginAttempt {
-  try {
-    // VERIFICAR SI ESTÁ EN BROWSER
-    if (!this.isBrowser) {
-      return {
-        email,
-        attempts: 0,
-        firstAttempt: Date.now(),
-        lastAttempt: Date.now(),
-        blocked: false
-      };
+    try {
+      // VERIFICAR SI ESTÁ EN BROWSER
+      if (!this.isBrowser) {
+        return {
+          email,
+          attempts: 0,
+          firstAttempt: Date.now(),
+          lastAttempt: Date.now(),
+          blocked: false
+        };
+      }
+      const stored = localStorage.getItem(`${this.LOGIN_ATTEMPTS_KEY}_${email}`);
+      if (stored) {
+        return JSON.parse(stored);
+      }
+    } catch (error) {
+      console.error('Error getting login attempts:', error);
     }
-    const stored = localStorage.getItem(`${this.LOGIN_ATTEMPTS_KEY}_${email}`);
-    if (stored) {
-      return JSON.parse(stored);
-    }
-  } catch (error) {
-    console.error('Error getting login attempts:', error);
+
+    return {
+      email,
+      attempts: 0,
+      firstAttempt: Date.now(),
+      lastAttempt: Date.now(),
+      blocked: false
+    };
   }
-  
-  return {
-    email,
-    attempts: 0,
-    firstAttempt: Date.now(),
-    lastAttempt: Date.now(),
-    blocked: false
-  };
-}
 
   /**
    * Guarda los intentos de login
@@ -488,40 +487,40 @@ export class AuthService {
    * Registra eventos de seguridad
    */
   private logSecurityEvent(event: string, userEmail: string | undefined, metadata?: any): void {
-  const safeEmail = this.maskEmail(userEmail || 'unknown');
-  const logEntry = {
-    timestamp: new Date().toISOString(),
-    event,
-    userEmail: safeEmail,
-    userAgent: this.isBrowser ? navigator.userAgent : 'server',
-    url: this.isBrowser ? window.location.href : 'server',
-    sessionId: this.getCurrentSession()?.access_token?.substring(0, 10) + '...',
-    metadata
-  };
-  
-  // Solo ejecutar gtag en browser
-  if (this.isBrowser && typeof window !== 'undefined' && (window as any).gtag) {
-    (window as any).gtag('event', event, {
-      custom_parameter_1: safeEmail,
-      custom_parameter_2: metadata ? JSON.stringify(metadata) : '',
-      custom_parameter_3: 'auth_service'
-    });
+    const safeEmail = this.maskEmail(userEmail || 'unknown');
+    const logEntry = {
+      timestamp: new Date().toISOString(),
+      event,
+      userEmail: safeEmail,
+      userAgent: this.isBrowser ? navigator.userAgent : 'server',
+      url: this.isBrowser ? window.location.href : 'server',
+      sessionId: this.getCurrentSession()?.access_token?.substring(0, 10) + '...',
+      metadata
+    };
+
+    // Solo ejecutar gtag en browser
+    if (this.isBrowser && typeof window !== 'undefined' && (window as any).gtag) {
+      (window as any).gtag('event', event, {
+        custom_parameter_1: safeEmail,
+        custom_parameter_2: metadata ? JSON.stringify(metadata) : '',
+        custom_parameter_3: 'auth_service'
+      });
+    }
   }
-}
 
   /**
    * Enmascara email para logs
    */
   private maskEmail(email: string): string {
     if (!email || email === 'unknown') return email;
-    
+
     const [localPart, domain] = email.split('@');
     if (!domain) return '***';
-    
-    const maskedLocal = localPart.length > 2 
+
+    const maskedLocal = localPart.length > 2
       ? localPart.substring(0, 2) + '*'.repeat(localPart.length - 2)
       : '**';
-    
+
     return `${maskedLocal}@${domain}`;
   }
 
@@ -553,7 +552,7 @@ export class AuthService {
   async refreshToken(): Promise<{ success: boolean; error?: string }> {
     try {
       const { data, error } = await this.supabase.auth.refreshSession();
-      
+
       if (error) {
         this.logSecurityEvent('TOKEN_REFRESH_FAILED', 'unknown', { error: error.message });
         return { success: false, error: error.message };
@@ -581,7 +580,7 @@ export class AuthService {
       }
 
       const { error } = await this.supabase.auth.resetPasswordForEmail(email);
-      
+
       if (error) {
         this.logSecurityEvent('PASSWORD_RESET_FAILED', email, { error: error.message });
         return { success: false, error: error.message };
@@ -610,7 +609,7 @@ export class AuthService {
       // Nota: Supabase no tiene un método directo para eliminar usuarios desde el cliente
       // Esto normalmente se haría desde el servidor o usando RPC
       const { error } = await this.supabase.rpc('delete_user_account');
-      
+
       if (error) {
         this.logSecurityEvent('ACCOUNT_DELETION_FAILED', user.email || 'unknown', { error: error.message });
         return { success: false, error: error.message };
@@ -628,7 +627,7 @@ export class AuthService {
   /**
    * Actualiza los datos del usuario actual
    */
-  async updateUserData(data: { 
+  async updateUserData(data: {
     firstName: string;
     lastName: string;
     phone: string;
@@ -672,9 +671,9 @@ export class AuthService {
       }
 
       if (!this.isAdmin()) {
-        this.logSecurityEvent('UNAUTHORIZED_ROLE_UPDATE_ATTEMPT', currentUser.email || 'unknown', { 
-          targetUserId: userId, 
-          attemptedRole: newRole 
+        this.logSecurityEvent('UNAUTHORIZED_ROLE_UPDATE_ATTEMPT', currentUser.email || 'unknown', {
+          targetUserId: userId,
+          attemptedRole: newRole
         });
         return { success: false, error: 'No tienes permisos para cambiar roles' };
       }
@@ -684,24 +683,24 @@ export class AuthService {
       });
 
       if (error) {
-        this.logSecurityEvent('ROLE_UPDATE_FAILED', currentUser.email || 'unknown', { 
-          error: error.message, 
-          targetUserId: userId, 
-          newRole 
+        this.logSecurityEvent('ROLE_UPDATE_FAILED', currentUser.email || 'unknown', {
+          error: error.message,
+          targetUserId: userId,
+          newRole
         });
         return { success: false, error: error.message };
       }
 
-      this.logSecurityEvent('ROLE_UPDATE_SUCCESS', currentUser.email || 'unknown', { 
-        targetUserId: userId, 
-        newRole 
+      this.logSecurityEvent('ROLE_UPDATE_SUCCESS', currentUser.email || 'unknown', {
+        targetUserId: userId,
+        newRole
       });
       return { success: true };
     } catch (error) {
-      this.logSecurityEvent('ROLE_UPDATE_ERROR', 'unknown', { 
-        error: (error as Error).message, 
-        targetUserId: userId, 
-        newRole 
+      this.logSecurityEvent('ROLE_UPDATE_ERROR', 'unknown', {
+        error: (error as Error).message,
+        targetUserId: userId,
+        newRole
       });
       return { success: false, error: 'Error al actualizar rol' };
     }
