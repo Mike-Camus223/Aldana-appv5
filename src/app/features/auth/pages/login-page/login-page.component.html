@@ -129,12 +129,16 @@
         <!-- Social Login Section -->
         <div class="mb-6 min-[360px]:mb-8 sm:mb-10" *ngIf="!isForgotPassword">
           <div class="flex justify-center gap-3 min-[360px]:gap-4 sm:gap-6">
-            <button type="button"
+            <button 
+              (click)="onFacebookLogin()"
+              type="button"
               class="w-10 h-10 min-[360px]:w-11 min-[360px]:h-11 sm:w-12 sm:h-12 flex items-center justify-center bg-blue-600 border border-blue-600 rounded-full cursor-pointer hover:bg-blue-700 hover:border-blue-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-300"
               title="Continuar con Facebook">
               <i class="fab fa-facebook text-white text-base min-[360px]:text-lg sm:text-xl"></i>
             </button>
-            <button type="button"
+            <button
+              (click)="onGoogleLogin()" 
+              type="button"
               class="w-10 h-10 min-[360px]:w-11 min-[360px]:h-11 sm:w-12 sm:h-12 flex items-center justify-center bg-red-500 border border-red-500 rounded-full cursor-pointer hover:bg-red-600 hover:border-red-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-300"
               title="Continuar con Google">
               <i class="fab fa-google text-white text-base min-[360px]:text-lg sm:text-xl"></i>

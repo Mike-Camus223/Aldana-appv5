@@ -347,6 +347,16 @@ export class AuthService {
       return { success: false, error: 'Error de conexión' };
     }
   }
+
+  // authrapidobyproviders //
+  async signInWithOAuth(provider: 'google' | 'facebook' | 'apple') {
+  await this.supabase.auth.signInWithOAuth({
+    provider,
+    options: {
+      redirectTo: `${window.location.origin}/panel/panel-control`
+    }
+  });
+}
   /**
    * Cierra la sesión del usuario
    */

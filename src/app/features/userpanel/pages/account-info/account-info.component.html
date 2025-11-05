@@ -1,6 +1,10 @@
 <div class="w-full max-w-xl mx-auto space-y-6">
   <div class="relative w-24 h-24">
-    <img src="" alt="Profile" class="w-full h-full overflow-hidden bg-red-400 object-cover rounded-full" />
+    <img 
+  [src]="userAvatarUrl || 'https://via.placeholder.com/150/ef4444/ffffff?text=A'" 
+  alt="Profile"
+  class="w-full h-full object-cover rounded-full border border-gray-200"
+/>
     <button type="button"
       class="absolute bottom-0 right-0 flex items-center justify-center w-8 h-8 bg-aldy-primary-500 hover:bg-aldy-primary-600 text-white rounded-full transition-colors duration-500 ease-in-out">
       <lucide-icon name="pencil" [size]="17" [strokeWidth]="1.75"></lucide-icon>

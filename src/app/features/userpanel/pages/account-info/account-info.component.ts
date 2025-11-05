@@ -34,6 +34,8 @@ export class AccountInfoComponent implements OnInit {
   isSaving = false;
   private authService = inject(AuthService);
   private user: User | null = null;
+  userAvatarUrl: string | null = null; 
+
   
   genderOptions = [
     { label: 'Femenino', value: 'Femenino' },
@@ -63,6 +65,7 @@ export class AccountInfoComponent implements OnInit {
         const nameParts = fullName.split(' ');
         const firstName = nameParts.shift() || '';
         const lastName = nameParts.join(' ') || '';
+        this.userAvatarUrl = user.user_metadata?.['avatar_url'] || null;
 
         this.accountForm.patchValue({
           firstName: firstName,

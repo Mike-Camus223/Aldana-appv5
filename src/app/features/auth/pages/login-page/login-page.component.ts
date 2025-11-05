@@ -57,6 +57,27 @@ export class LoginPageComponent {
     }
   }
 
+   // --- LOGIN SOCIAL GOOGLE / FACEBOOK / APPLE ---
+  async onGoogleLogin(): Promise<void> {
+    await this.handleOAuth('google');
+  }
+
+  async onFacebookLogin(): Promise<void> {
+    await this.handleOAuth('facebook');
+  }
+
+  async onAppleLogin(): Promise<void> {
+    await this.handleOAuth('apple');
+  }
+
+  private async handleOAuth(provider: 'google' | 'facebook' | 'apple') {
+    try {
+      await this._authService.signInWithOAuth(provider);
+    } catch {
+      this.authError = `No se pudo iniciar sesión con ${provider}.`;
+    }
+  }
+  
   async onForgotPasswordSubmit(): Promise<void> {
     if (this.formForgotPassword.invalid || this.isSubmitting) return;
     this.isSubmitting = true;

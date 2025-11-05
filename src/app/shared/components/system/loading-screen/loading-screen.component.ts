@@ -307,7 +307,7 @@ export class LoadingScreenComponent implements AfterViewInit, OnDestroy {
     // ---- CAMBIO CRÍTICO: activamos el scroll y ponemos SVGs en blanco EN EL MOMENTO
     // ---- en que comienza la transición a fondo negro (onStart).
     this.timeline.to(this.screen.nativeElement, { 
-      backgroundColor: '#000', 
+      backgroundColor: '#AEC2A9', 
       duration: 0.8, 
       ease: 'power2.out',
       onStart: () => {
