@@ -16,7 +16,7 @@
       <a *ngFor="let link of leftLinks" appLinkHoverUnderline [routerLink]="link.link"
         (mouseenter)="onInteractiveEnter()" [ngClass]="{
           'text-white hover:text-gray-300 border-white': isHomePage && !MoverScroll && !hoverNavbar,
-          'text-aldy-primary-400 border-aldy-primary-400': !isHomePage || MoverScroll || hoverNavbar
+          'text-aldy-medium hover:text-aldy-medium-2 border-aldy-medium hover:border-aldy-medium-2': !isHomePage || MoverScroll || hoverNavbar
         }" class="transition-colors titles text-md tracking-widest border-transparent pb-1">
         {{ link.label }}
       </a>
@@ -27,13 +27,13 @@
           <a appLinkHoverUnderline [dynamicColor]="(!isHomePage || MoverScroll || hoverNavbar) ? 'white' : '#AEC2A9'"
             (mouseenter)="onInteractiveEnter()" [ngClass]="{
               'text-white hover:text-gray-300 border-white': isHomePage && !MoverScroll && !hoverNavbar,
-              'text-aldy-primary-400 border-aldy-primary-400': !isHomePage || MoverScroll || hoverNavbar
+              'text-aldy-medium hover:text-aldy-medium-2 border-aldy-medium hover:border-aldy-medium-2': !isHomePage || MoverScroll || hoverNavbar
             }" class="transition-colors text-md titles tracking-widest pb-1">
             TIENDA
           </a>
           <lucide-icon name="chevron-down" [ngClass]="{
               'text-white': isHomePage && !MoverScroll && !hoverNavbar,
-              'text-aldy-primary-400': !isHomePage || MoverScroll || hoverNavbar,
+              'text-aldy-medium hover:text-aldy-medium-2': !isHomePage || MoverScroll || hoverNavbar,
               'rotate-180': dropdownOpen
             }" class="w-4 h-4 transition-transform duration-200"></lucide-icon>
         </div>
@@ -51,7 +51,7 @@
                   <div class="flex gap-3 items-center">
                     <div class="h-2 w-2 bg-gray-200 rounded-full"></div>
                     <a (click)="goToCategory(item)"
-                      class="block transition-all font-medium duration-200 cursor-pointer text-gray-700 hover:text-aldy-primary-500 hover:translate-x-1 text-sm">
+                      class="block transition-all font-medium duration-200 cursor-pointer text-gray-700 hover:text-aldy-medium-2 hover:translate-x-1 text-sm">
                       {{ item }}
                     </a>
                   </div>
@@ -128,7 +128,7 @@
         <a *ngFor="let link of rightLinks" appLinkHoverUnderline [routerLink]="link.link"
           (mouseenter)="onInteractiveEnter()" [ngClass]="{
             'text-white hover:text-gray-300 border-white': isHomePage && !MoverScroll && !hoverNavbar,
-            'text-aldy-primary-400 border-aldy-primary-400': !isHomePage || MoverScroll || hoverNavbar
+            'text-aldy-medium hover:text-aldy-medium-2 border-aldy-medium hover:border-aldy-medium-2': !isHomePage || MoverScroll || hoverNavbar
           }" class="transition-colors titles text-md tracking-widest border-transparent pb-1">
           {{ link.label }}
         </a>
@@ -137,24 +137,24 @@
       <!-- ÍCONOS -->
       <div class="flex items-center space-x-6 text-xl">
         <a routerLink="/busqueda" class="cursor-pointer" (mouseenter)="onInteractiveEnter()">
-          <lucide-icon name="search" class="w-6 h-6" [ngClass]="iconColorClass"></lucide-icon>
+          <lucide-icon name="search" class="w-6 h-6 transition-colors duration-200 ease-in-out" [ngClass]="iconColorClass"></lucide-icon>
         </a>
 
         <a *ngIf="isAuthenticated" routerLink="/favoritos" class="cursor-pointer" (mouseenter)="onInteractiveEnter()">
-          <lucide-icon name="heart" class="w-6 h-6" [ngClass]="iconColorClass"></lucide-icon>
+          <lucide-icon name="heart" class="w-6 h-6 transition-colors duration-200 ease-in-out" [ngClass]="iconColorClass"></lucide-icon>
         </a>
 
         <button (click)="onUserButtonClick()" class="cursor-pointer" (mouseenter)="onInteractiveEnter()">
-          <lucide-icon name="user" class="w-6 h-6" [ngClass]="iconColorClass"></lucide-icon>
+          <lucide-icon name="user" class="w-6 h-6 transition-colors duration-200 ease-in-out" [ngClass]="iconColorClass"></lucide-icon>
         </button>
 
         <div class="flex items-center cursor-pointer" (mouseenter)="onInteractiveEnter()">
           <a routerLink="/checkout/carrito" class="cursor-pointer">
-            <lucide-icon name="shopping-bag" class="w-6 h-6" [ngClass]="iconColorClass"></lucide-icon>
+            <lucide-icon name="shopping-bag" class="w-6 h-6 transition-colors duration-200 ease-in-out" [ngClass]="iconColorClass"></lucide-icon>
           </a>
           <span translate="no" class="text-base ml-1" [ngClass]="{
               'text-white border-white': isHomePage && !MoverScroll && !hoverNavbar,
-              'text-aldy-primary-400 border-aldy-primary-400': !isHomePage || MoverScroll || hoverNavbar
+              'text-aldy-medium border-aldy-medium hover:border-aldy-medium-2': !isHomePage || MoverScroll || hoverNavbar
             }">
             {{ cartItemCount }}
           </span>
@@ -181,19 +181,19 @@
       <a routerLink="/busqueda" class="cursor-pointer">
         <lucide-icon name="search" class="w-6 h-6" [ngClass]="{
             'text-white': !menuOpen && isHomePage && !MoverScroll && !hoverNavbar,
-            'text-aldy-primary-400 hover:text-aldy-primary-500': menuOpen || !isHomePage || MoverScroll || hoverNavbar
+            'text-aldy-medium hover:text-aldy-primary-500': menuOpen || !isHomePage || MoverScroll || hoverNavbar
           }"></lucide-icon>
       </a>
       <a *ngIf="isAuthenticated" routerLink="/favoritos" class="cursor-pointer">
         <lucide-icon name="heart" class="w-6 h-6" [ngClass]="{
             'text-white': !menuOpen && isHomePage && !MoverScroll && !hoverNavbar,
-            'text-aldy-primary-400 hover:text-aldy-primary-500': menuOpen || !isHomePage || MoverScroll || hoverNavbar
+            'text-aldy-medium hover:text-aldy-primary-500': menuOpen || !isHomePage || MoverScroll || hoverNavbar
           }"></lucide-icon>
       </a>
       <button (click)="onUserButtonClick()" class="cursor-pointer">
         <lucide-icon name="user" class="w-6 h-6" [ngClass]="{
             'text-white': !menuOpen && isHomePage && !MoverScroll && !hoverNavbar,
-            'text-aldy-primary-400 hover:text-aldy-primary-500': menuOpen || !isHomePage || MoverScroll || hoverNavbar
+            'text-aldy-medium hover:text-aldy-primary-500': menuOpen || !isHomePage || MoverScroll || hoverNavbar
           }"></lucide-icon>
       </button>
     </div>
@@ -225,7 +225,7 @@
         <a routerLink="/checkout/carrito" class="cursor-pointer flex items-center">
           <lucide-icon name="shopping-bag" class="w-6 h-6" [ngClass]="{
               'text-white': !menuOpen && isHomePage && !MoverScroll && !hoverNavbar,
-              'text-aldy-primary-400 hover:text-aldy-primary-500': menuOpen || !isHomePage || MoverScroll || hoverNavbar
+              'text-aldy-medium hover:text-aldy-primary-500': menuOpen || !isHomePage || MoverScroll || hoverNavbar
             }"></lucide-icon>
         </a>
         <span class="text-sm ms-1" [ngClass]="{
@@ -240,9 +240,9 @@
       <button (click)="toggleMenu()" class="cursor-pointer flex items-center relative z-[60]">
         <lucide-icon *ngIf="!menuOpen" name="menu" class="w-6 h-6" [ngClass]="{
             'text-white': isHomePage && !MoverScroll && !hoverNavbar,
-            'text-aldy-primary-400 hover:text-aldy-primary-500': !isHomePage || MoverScroll || hoverNavbar
+            'text-aldy-medium hover:text-aldy-primary-500': !isHomePage || MoverScroll || hoverNavbar
           }"></lucide-icon>
-        <lucide-icon *ngIf="menuOpen" name="x" class="w-6 h-6 text-aldy-primary-400"></lucide-icon>
+        <lucide-icon *ngIf="menuOpen" name="x" class="w-6 h-6 text-aldy-medium"></lucide-icon>
       </button>
     </div>
   </div>
@@ -279,7 +279,7 @@
           <lucide-icon name="chevron-down" class="w-5 h-5 transition-transform duration-200 text-gray-700"
             [ngClass]="{ 'rotate-180': mobileDropdownOpen }"></lucide-icon>
         </button>
-        <div *ngIf="mobileDropdownOpen" @expandDropdown class="pl-4 mt-2 space-y-3 border-l-2 border-aldy-primary-400">
+        <div *ngIf="mobileDropdownOpen" @expandDropdown class="pl-4 mt-2 space-y-3 border-l-2 border-aldy-medium hover:border-aldy-medium-2">
           <a *ngFor="let item of tiendaItems" (click)="goToCategory(item)"
             class="block cursor-pointer text-md text-gray-600 hover:text-aldy-primary-500 titles transition-colors duration-200 py-2">
             {{ item }}

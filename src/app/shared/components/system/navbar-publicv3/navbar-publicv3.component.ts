@@ -275,7 +275,7 @@ export class NavbarPublicv3Component implements OnInit, OnDestroy {
 
     return {
       'text-white hover:text-gray-300': this.isHomePage && !active,
-      'text-aldy-primary-400 hover:text-aldy-primary-500': !this.isHomePage || active
+      'text-aldy-medium hover:text-aldy-medium-2': !this.isHomePage || active
     };
   }
 

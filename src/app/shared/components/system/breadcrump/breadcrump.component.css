@@ -1,5 +1,5 @@
 ::ng-deep .p-breadcrumb-item-link:hover {
-  color: var(--color-aldy-primary-400);
+  color: var(--color-aldy-medium);
 }
 
 ::ng-deep .p-breadcrumb {

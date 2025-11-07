@@ -8,48 +8,29 @@
   --color-aldy-primary-100: #d7f1ef;
   --color-aldy-primary-200: #bae6e1;
   --color-aldy-primary-300: #9edbd5;
-  /* --color-aldy-primary-400: #85ccc6; */
-  --color-aldy-primary-400: #AEC2A9;
+  --color-aldy-primary-400: #85ccc6;
   --color-aldy-primary-500: #6cbab4;
   --color-aldy-primary-600: #5ca29d;
   --color-aldy-primary-700: #4d8a86;
   --color-aldy-primary-800: #3f726f;
   --color-aldy-primary-900: #335c59;
   --color-aldy-primary-1000: #293d3b;
-  --color-aldy-main: #85CCC6;
+
+  /* --color-aldy-new:#D2E4CC;
   --color-aldy-bg-new: #AEC2A9;
-  --color-aldy-new:#D2E4CC;
-  --color-aldy-new-bold: #889287;
-
-  --color-aldy-bg: #ffffff;
-  --color-aldy-surface: #f9f9f9;
-  --color-aldy-surface-alt: #f1f4f4;
-  --color-aldy-border: #dcdcdc;
-
-  --color-aldy-text: #1a1a1a;
-  --color-aldy-text-muted: #4f4f4f;
-  --color-aldy-text-soft: #717171;
-  --color-aldy-text-light: #a3a3a3;
-  --color-aldy-text-invert: #ffffff;
-
-  --color-aldy-accent-100: #fdf1f5;
-  --color-aldy-accent-200: #fad7e1;
-  --color-aldy-accent-300: #f4aec9;
-  --color-aldy-accent-400: #e58fb0;
-
-  --color-aldy-secondary-100: #edf6f5;
-  --color-aldy-secondary-200: #d3ebe9;
-  --color-aldy-secondary-300: #a7dcd8;
-  --color-aldy-secondary-400: #74c7c2;
-
-  --color-aldy-success: #70c1b3;
-  --color-aldy-info: #5fb1cf;
-  --color-aldy-warning: #f4c95d;
-  --color-aldy-danger: #e27d7d;
+  --color-aldy-new-bold: #889287; */
+  --color-aldy-light:#D2E4CC;
+  --color-aldy-light-2: #A6B9A2;
+  --color-aldy-medium:#AEC2A9;
+  --color-aldy-medium-2: #97ad92;
+  --color-aldy-bold: #778a72;
+  --color-aldy-bold-2:#5f6e5b;
+  --color-aldy-green-gray:#889287;
 }
 
 .font-main {
   font-family: "PT Sans Narrow", sans-serif;
+  color: #c3cfc2;
 }
 
 .font-number {
@@ -92,6 +73,31 @@
   font-display: block;
 }
 
+@font-face {
+  font-family: 'NewAldyFont';
+  src: url('./assets/fonts/Edensor-FREE.otf') format('truetype');
+}
+
+@font-face {
+  font-family: 'NewAldyFontCursive';
+  src: url('./assets/fonts/Hijrnotes_PERSONAL_USE_ONLY.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'NewAldyFont-type1';
+  src: url('./assets/fonts/Fontspring-DEMO-bsp56-iF66826cf202f8f.otf') format('truetype');
+}
+
+@font-face {
+  font-family: 'NewAldyFont-type2';
+  src: url('./assets/fonts/Fontspring-DEMO-bsp55-iF66826cf1f3973.otf') format('truetype');
+}
+
+@font-face {
+  font-family: 'NewAldyFont-type3';
+  src: url('./assets/fonts/Fontspring-DEMO-bsd76-iF66826cf1f0050.otf') format('truetype');
+}
+
 .aldyFont {
   font-family: 'aldyfont', sans-serif;
 } 
@@ -102,6 +108,26 @@
 
 .titlev3 {
   font-family: "Lavishly Yours", cursive;
+}
+
+.NewAldyTitle {
+  font-family: 'NewAldyFont', sans-serif;
+}
+
+.NewAldyTitleCursive {
+  font-family: 'NewAldyFontCursive';
+}
+
+.NewAldyFontType1 {
+  font-family: 'NewAldyFont-type1';
+}
+
+.NewAldyFontType2 {
+  font-family: 'NewAldyFont-type2';
+}
+
+.NewAldyFontType3 {
+  font-family: 'NewAldyFont-type3';
 }
 
 .temporally{

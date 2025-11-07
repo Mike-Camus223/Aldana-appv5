@@ -1,39 +1,39 @@
 <div class="px-4 py-2 sm:px-6 lg:px-12 xl:px-16 2xl:px-24 inline-flex justify-between items-center w-full">
   <button type="button" (click)="toggleFilters()"
-    class="inline-flex text-xs aldyFont gap-2 items-center border cursor-pointer border-black px-6 py-3 tracking-widest font-medium uppercase transition-all duration-300 ease-in-out hover:bg-black hover:text-white">
+    class="inline-flex text-xs aldyFont gap-2 items-center border cursor-pointer border-aldy-medium-2 px-6 py-3 tracking-widest font-medium uppercase transition-all duration-300 ease-in-out hover:bg-aldy-medium-2 hover:text-white">
     <lucide-icon name="Funnel" class="h-4 w-4"></lucide-icon>
     <span>{{ showFilters ? 'Ocultar filtros' : 'Mostrar filtros' }}</span>
     <lucide-icon [name]="showFilters ? 'ChevronUp' : 'ChevronDown'" class="h-4 w-4"></lucide-icon>
   </button>
 
   <div class="w-40 h-auto justify-end gap-2 hidden lg:flex">
-    <button type="button" (click)="setProductColumns(2)" [ngClass]="productColumns === 2 ? 'bg-black' : ''"
-      class="group py-[7px] px-2 hover:bg-black transition-all duration-300 ease-in-out cursor-pointer border border-black">
+    <button type="button" (click)="setProductColumns(2)" [ngClass]="productColumns === 2 ? 'bg-aldy-medium-2' : ''"
+      class="group py-[7px] px-2 hover:bg-aldy-medium-2 transition-all duration-300 ease-in-out cursor-pointer border border-aldy-medium-2">
       <div class="grid grid-cols-2 gap-[2px] grid-rows-2">
         <span *ngFor="let n of [1,2,3,4]" class="h-[12px] w-[12px] transition-all duration-300 ease-in-out"
-          [ngClass]="productColumns === 2 ? 'bg-white' : 'bg-gray-900 group-hover:bg-white'"></span>
+          [ngClass]="productColumns === 2 ? 'bg-white' : 'bg-aldy-medium-2 group-hover:bg-white'"></span>
       </div>
     </button>
 
-    <button type="button" (click)="setProductColumns(3)" [ngClass]="productColumns === 3 ? 'bg-black' : ''"
-      class="group py-[7px] px-2 hover:bg-black transition-all duration-300 ease-in-out cursor-pointer border border-black">
+    <button type="button" (click)="setProductColumns(3)" [ngClass]="productColumns === 3 ? 'bg-aldy-medium-2' : ''"
+      class="group py-[7px] px-2 hover:bg-aldy-medium-2 transition-all duration-300 ease-in-out cursor-pointer border border-aldy-medium-2">
       <div class="grid grid-cols-3 gap-[2px] grid-rows-3">
         <span *ngFor="let n of [1,2,3,4,5,6,7,8,9]" class="h-[8px] w-[8px] transition-all duration-300 ease-in-out"
-          [ngClass]="productColumns === 3 ? 'bg-white' : 'bg-gray-900 group-hover:bg-white'"></span>
+          [ngClass]="productColumns === 3 ? 'bg-white' : 'bg-aldy-medium-2 group-hover:bg-white'"></span>
       </div>
     </button>
 
-    <button type="button" (click)="setProductColumns(4)" [ngClass]="productColumns === 4 ? 'bg-black' : ''"
-      class="group py-[7px] px-2 hover:bg-black transition-all duration-300 ease-in-out cursor-pointer border border-black">
+    <button type="button" (click)="setProductColumns(4)" [ngClass]="productColumns === 4 ? 'bg-aldy-medium-2' : ''"
+      class="group py-[7px] px-2 hover:bg-aldy-medium-2 transition-all duration-300 ease-in-out cursor-pointer border border-aldy-medium-2">
       <div class="grid grid-cols-4 gap-[2px] grid-rows-4">
         <span *ngFor="let n of [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]"
           class="h-[5px] w-[5px] transition-all duration-300 ease-in-out"
-          [ngClass]="productColumns === 4 ? 'bg-white' : 'bg-gray-900 group-hover:bg-white'"></span>
+          [ngClass]="productColumns === 4 ? 'bg-white' : 'bg-aldy-medium-2 group-hover:bg-white'"></span>
       </div>
     </button>
   </div>
 </div>
-<div class="w-full border-b border-gray-200 mb-2 relative">
+<div class="w-full border-b border-[#d9e2d8] mb-2 relative">
   <app-loadingbar [loading]="loading"></app-loadingbar>
 </div>
 <div class="px-4 sm:px-6 lg:px-12 xl:px-16 2xl:px-24 py-2 w-full">
@@ -58,9 +58,9 @@
                   class="flex items-center gap-2 py-2 px-3 text-sm font-main cursor-pointer w-full hover:bg-gray-50 rounded-md">
                   <input appAldyRadio type="radio" name="subcategory" [checked]="normalize(sub.value) === selectedSubcategory"
                     (change)="navigateToSubcategory(category.value, sub.value)"
-                    class="form-radio scale-90 text-aldy-primary-600 focus:ring-aldy-primary-500" />
+                    class="form-radio scale-90 text-aldy-medium focus:ring-aldy-medium-2" />
                   <span [ngClass]="{
-                      'text-aldy-primary-600 font-semibold': selectedSubcategory === normalize(sub.value),
+                      'text-aldy-medium font-semibold': selectedSubcategory === normalize(sub.value),
                       'text-gray-600': selectedSubcategory !== normalize(sub.value)
                     }">
                     {{ sub.label }}
@@ -113,7 +113,7 @@
 
     <div class="sticky top-0 bg-white border-b border-gray-200 p-4 z-10">
       <div class="flex items-center justify-between">
-        <h3 class="text-lg font-semibold text-gray-900">Filtros</h3>
+        <h3 class="text-lg font-semibold text-aldy-medium-2">Filtros</h3>
         <button class="p-2 hover:bg-gray-100 rounded-full transition-colors" (click)="toggleFilters()">
           <lucide-icon name="ChevronUp" class="h-5 w-5 text-gray-500 rotate-45"></lucide-icon>
         </button>
@@ -123,11 +123,11 @@
     <div class="p-4">
       <div class="flex flex-wrap gap-2 mb-4" *ngIf="selectedCategory || selectedSubcategory">
         <div *ngIf="selectedCategory"
-          class="bg-black text-white px-3 py-1 rounded-full text-xs uppercase tracking-wide">
+          class="bg-aldy-medium-2 text-white px-3 py-1 rounded-full text-xs uppercase tracking-wide">
           {{ selectedCategory }}
         </div>
         <div *ngIf="selectedSubcategory"
-          class="bg-black text-white px-3 py-1 rounded-full text-xs uppercase tracking-wide">
+          class="bg-aldy-medium-2 text-white px-3 py-1 rounded-full text-xs uppercase tracking-wide">
           {{ selectedSubcategory }}
         </div>
       </div>
@@ -142,7 +142,7 @@
                 (change)="onSubcategorySelected(category.value, sub.value)"
                 />
               <span [ngClass]="{
-                      'text-aldy-primary-600 font-semibold': selectedSubcategory === normalize(sub.value),
+                      'text-aldy-medium font-semibold': selectedSubcategory === normalize(sub.value),
                       'text-gray-600': selectedSubcategory !== normalize(sub.value)
                     }">
                 {{ sub.label }}
@@ -155,7 +155,7 @@
 
     <div class="sticky bottom-0 bg-white border-t border-gray-200 p-4">
       <button (click)="applyFiltersMobile()"
-        class="w-full bg-black text-white py-3 px-4 rounded-lg font-medium hover:bg-gray-800 transition-colors">
+        class="w-full bg-aldy-light text-white py-3 px-4 rounded-lg font-medium hover:bg-aldy-medium-2 transition-colors">
         Aplicar filtros
       </button>
     </div>

@@ -1,9 +1,9 @@
 <div class="border-b border-gray-200">
   <button
     (click)="onToggle()"
-    class="w-full flex justify-between cursor-pointer items-center py-4 px-3 text-left hover:text-aldy-primary-400 transition-colors duration-200 font-medium text-sm lg:text-base"
+    class="w-full flex justify-between cursor-pointer items-center py-4 px-3 text-left hover:text-aldy-medium transition-colors duration-200 font-medium text-sm lg:text-base"
     [ngClass]="{
-      'text-aldy-primary-600 font-semibold': isOpen(),
+      'text-aldy-medium font-semibold': isOpen(),
       'text-gray-600': !isOpen()
     }"
   >

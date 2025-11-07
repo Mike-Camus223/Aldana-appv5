@@ -1,28 +1,28 @@
 <div
-  class="inline-flex justify-end sm:px-6 lg:px-12 xl:px-16 2xl:px-24 items-center py-2 border-b border-gray-200 w-full h-auto">
+  class="inline-flex justify-end sm:px-6 lg:px-12 xl:px-16 2xl:px-24 items-center py-2 border-b-1 border-[#d9e2d8] w-full h-auto">
   <div class="w-40 h-auto justify-end gap-2 hidden lg:flex">
-    <button type="button" (click)="setProductColumns(2)" [ngClass]="productColumns === 2 ? 'bg-aldy-new-bold' : ''"
-      class="group py-[7px] px-2 hover:bg-aldy-new-bold transition-all duration-300 ease-in-out cursor-pointer border border-aldy-new-bold">
+    <button type="button" (click)="setProductColumns(2)" [ngClass]="productColumns === 2 ? 'bg-aldy-medium-2' : ''"
+      class="group py-[7px] px-2 hover:bg-aldy-medium-2 transition-all duration-300 ease-in-out cursor-pointer border border-aldy-medium">
       <div class="grid grid-cols-2 gap-[2px] grid-rows-2">
         <span *ngFor="let n of [1,2,3,4]" class="h-[12px] w-[12px] transition-all duration-300 ease-in-out"
-          [ngClass]="productColumns === 2 ? 'bg-white' : 'bg-aldy-new-bold group-hover:bg-white'"></span>
+          [ngClass]="productColumns === 2 ? 'bg-white' : 'bg-aldy-medium-2 group-hover:bg-white'"></span>
       </div>
     </button>
 
-    <button type="button" (click)="setProductColumns(3)" [ngClass]="productColumns === 3 ? 'bg-aldy-new-bold' : ''"
-      class="group py-[7px] px-2 hover:bg-aldy-new-bold transition-all duration-300 ease-in-out cursor-pointer border border-aldy-new-bold">
+    <button type="button" (click)="setProductColumns(3)" [ngClass]="productColumns === 3 ? 'bg-aldy-medium-2' : ''"
+      class="group py-[7px] px-2 hover:bg-aldy-medium-2 transition-all duration-300 ease-in-out cursor-pointer border border-aldy-medium">
       <div class="grid grid-cols-3 gap-[2px] grid-rows-3">
         <span *ngFor="let n of [1,2,3,4,5,6,7,8,9]" class="h-[8px] w-[8px] transition-all duration-300 ease-in-out"
-          [ngClass]="productColumns === 3 ? 'bg-white' : 'bg-aldy-new-bold group-hover:bg-white'"></span>
+          [ngClass]="productColumns === 3 ? 'bg-white' : 'bg-aldy-medium-2 group-hover:bg-white'"></span>
       </div>
     </button>
 
-    <button type="button" (click)="setProductColumns(4)" [ngClass]="productColumns === 4 ? 'bg-aldy-new-bold' : ''"
-      class="group py-[7px] px-2 hover:bg-aldy-new-bold transition-all duration-300 ease-in-out cursor-pointer border border-aldy-new-bold">
+    <button type="button" (click)="setProductColumns(4)" [ngClass]="productColumns === 4 ? 'bg-aldy-medium-2' : ''"
+      class="group py-[7px] px-2 hover:bg-aldy-medium-2 transition-all duration-300 ease-in-out cursor-pointer border border-aldy-medium">
       <div class="grid grid-cols-4 gap-[2px] grid-rows-4">
         <span *ngFor="let n of [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]"
           class="h-[5px] w-[5px] transition-all duration-300 ease-in-out"
-          [ngClass]="productColumns === 4 ? 'bg-white' : 'bg-aldy-new-bold group-hover:bg-white'"></span>
+          [ngClass]="productColumns === 4 ? 'bg-white' : 'bg-aldy-medium-2 group-hover:bg-white'"></span>
       </div>
     </button>
   </div>

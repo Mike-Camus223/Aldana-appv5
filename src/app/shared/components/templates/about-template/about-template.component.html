@@ -1,17 +1,18 @@
-<div class="px-4 sm:px-6 lg:px-12 xl:px-16 2xl:px-24 w-full">
+<div class="w-full">
   <div class="max-w-screen-3xl mx-auto">
-    <div #animatedSection class="min-h-[70vh] md:min-h-[80vh] lg:min-h-[90vh] bg-white relative">
+    <div #animatedSection
+      class="min-h-[70vh] px-4 sm:px-6 lg:px-12 xl:px-16 2xl:px-24 md:min-h-[80vh] lg:min-h-[90vh] relative">
       <div class="relative flex flex-col items-start justify-start w-full container mx-auto px-4 pt-8 pb-8 lg:pb-4">
         <div
           class="text-container absolute top-0 left-0 w-full flex flex-col text-end lg:w-3/4 xl:w-1/2 mt-[7rem] lg:mt-20 h-fit self-start z-10 transition-all duration-300 ease-out px-4">
-          <app-dinamic-titles [isParagraph]="false" [text]="'Preámbulo de historia'"
-            [stylesTitle]="'text-[28px] md:text-[48px] lg:text-[80px] text-center lg:text-start uppercase aldyFont'"
+          <app-dinamic-titles [isParagraph]="false" [text]="'Del Juego a la Pasión'"
+            [stylesTitle]="'text-[28px] md:text-[48px] lg:text-[80px] xl:lg:text-[88px] text-center lg:text-start uppercase NewAldyFontType2'"
             [weight]="'bold'" [textColor]="'text-black'">
           </app-dinamic-titles>
           <app-dinamic-titles class="relative z-10" [isParagraph]="true"
-            [text]="'Aquí va un párrafo introductorio que enmarque el relato, anticipe el tono y brinde el contexto general. Su propósito es preparar al lector para la historia completa que sigue.'"
+            [text]="'Desde mis primeros diseños para muñecas, transformando retazos de tela en vestuarios imaginativos, hasta la creación de piezas exclusivas y a medida para mis clientas de hoy, una constante innegable ha marcado mi camino: la inquebrantable pasión por hacer.'"
             [weight]="'normal'" [stylestext]="'text-sm lg:text-lg text-center lg:text-start'"
-            [textColor]="'text-gray-700'">
+            [textColor]="'text-gray-700 leading-8'">
           </app-dinamic-titles>
         </div>
         <div class="w-full justify-end flex mt-[260px] sm:mt-[250px] lg:mt-[390px]">
@@ -40,114 +41,147 @@
               <div class="card aspect-[3/5] md:aspect-[4/5] lg:aspect-[4.1/4] w-auto overflow-hidden">
                 <img
                   src="https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/multimedia/about%20me/section-photos/preview/preview_7.jpg"
-                  alt="Camisa Petunia"
-                  class="w-full h-full object-cover border-3 object-bottom border-white" />
+                  alt="Camisa Petunia" class="w-full h-full object-cover border-3 object-bottom border-white" />
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div> 
+    </div>
     <div class="w-full h-auto space-y-6 mt-8 mb-0">
       <div class="pb-6">
-        <div class="flex flex-col md:flex-row mx-auto justify-center w-full gap-6 pb-8 px-4 md:px-8">
+        <div
+          class="flex bg-aldy-medium flex-col relative md:flex-row mx-auto justify-center w-full gap-6 pt-8 pb-8 px-4 md:px-8">
+          <div
+            class="absolute md:block hidden top-15 lg:top-30 xl:top-20 left-0 aspect-[3/2] w-[190px] sm:w-[190px] md:w-[190px] lg:w-[390px] xl:w-[500px] opacity-20 z-0 pointer-events-none select-none">
+            <img src="../../../../../assets/svg/logos-03.svg" alt="Aldana Vilcabana"
+              class="w-full h-full object-contain" draggable="false" />
+          </div>
           <div class="overflow-hidden relative order-1 md:order-2 w-full md:w-[51%]" style="aspect-ratio: 5 / 4;">
             <img appCardInitAnimation="down" class="object-cover object-top w-full h-full"
               src="https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/multimedia/about%20me/section-photos/preview/preview_1.jpg"
               alt="Imagen sobre mí" loading="lazy" />
           </div>
-          <div class="w-full flex items-center justify-center order-2 md:order-1 md:w-[40%]">
+          <div class="w-full relative flex items-center justify-center order-2 md:order-1 md:w-[40%]">
+            <div
+              class="absolute md:hidden inset-0 flex justify-center items-center pointer-events-none select-none z-0">
+              <img src="../../../../../assets/svg/logos-03.svg" alt="Aldana Vilcabana"
+                class="w-[270px] sm:w-[280px] opacity-20 object-contain" draggable="false" />
+            </div>
             <div class="text-gray-600 max-w-xl text-center md:text-left">
-              <h2 appWordReveal class="pb-4 aldyFont uppercase tracking-widest text-2xl font-bold text-gray-700">
-                Primer Titulo
+              <h2 appWordReveal
+                class="pb-4 NewAldyFontType2  uppercase tracking-widest text-2xl lg:text-5xl font-bold text-white">
+                Raíces y Evolución
               </h2>
-              <p appFadeUpLetter class="text-sm leading-relaxed whitespace-pre-wrap break-words">
-                Desde mis primeros juegos con telas hasta la creación de piezas exclusivas, mi camino en la moda ha
-                estado guiado por una pasión constante. Me formé en Industria del Vestido en Villa El Salvador, Lima, y
-                luego me perfeccioné en Buenos Aires, donde adquirí experiencia trabajando con marcas locales.
-
-                En 2006 emprendí mi marca propia, y en 2010 abrí mi estudio, un espacio dedicado al diseño integral y
-                personalizado, desde la idea hasta la producción. Colaboro con diseñadores independientes y me
-                especializo en confección a medida, especialmente para novias.
-
-                Después de años de preparación, en 2025 lancé mi primera colección formal: Jardín Secreto, una propuesta
-                íntima y detallista que refleja mi trayectoria y visión estética. ¡Los invito a descubrirla!
+              <p appFadeUpLetter
+                class="text-sm lg:text-base text-white  font-sans first-letter:text-3xl leading-8 whitespace-pre-wrap break-words">
+                Esta fascinación por el arte de la moda no solo guio mis manos infantiles en la modistería, sino que, de
+                forma natural, evolucionó hacia el diseño, marcando cada paso de mi trayectoria.
+                Mi formación técnica en Industria del Vestido comenzó en mi ciudad natal, Villa El Salvador, Lima, Perú,
+                donde adquirí las bases esenciales de la confección y el diseño. Sin embargo, mi espíritu inquieto me
+                impulsó a buscar nuevos horizontes. Me trasladé a Buenos Aires, Argentina, una metrópoli que me acogió y
+                donde pude perfeccionar mis técnicas, absorber la cultura local de la moda y ganar valiosa experiencia
+                trabajando para diversas marcas.
+                En 2006, decidí emprender mi propia marca, combinando mi creatividad y conocimientos. Durante un tiempo
+                colaboré con otras firmas mientras desarrollaba mis propios diseños, consolidando mi estilo y propuesta.
+                Finalmente, en 2010, di el salto hacia la independencia total, haciendo realidad el sueño de tener mi
+                propio espacio creativo.
               </p>
             </div>
           </div>
         </div>
-        <div class="flex flex-col md:flex-row mx-auto justify-center w-full gap-6 py-8 px-4 md:px-8">
+        <div class="flex flex-col relative md:flex-row mx-auto justify-center w-full gap-6 py-8 pt-8 px-4 md:px-8">
+          <div
+            class="absolute md:block hidden top-15 lg:top-30 xl:top-20 right-0 aspect-[3/2] w-[190px] sm:w-[190px] md:w-[190px] lg:w-[390px] xl:w-[500px] opacity-20 z-0 pointer-events-none select-none">
+            <img src="../../../../../assets/svg/logos-03.svg" alt="Aldana Vilcabana"
+              class="w-full h-full object-contain" draggable="false" />
+          </div>
           <div class="overflow-hidden relative order-1 md:order-1 w-full md:w-[51%]" style="aspect-ratio: 5 / 4;">
             <img appCardInitAnimation="up" class="object-cover object-top w-full h-full"
               src="https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/multimedia/about%20me/section-photos/preview/preview_2.jpg"
               alt="Segunda imagen sobre mí" loading="lazy" />
           </div>
           <div class="w-full flex items-center justify-center order-2 md:order-2 md:w-[40%]">
-            <div class="text-gray-600 max-w-xl text-center md:text-left">
-              <h2 appWordReveal class="pb-4 aldyFont uppercase tracking-widest text-2xl font-bold text-gray-700">
-                Segundo Titulo
+            <div class="text-gray-600 relative max-w-xl text-center md:text-left">
+              <div
+                class="absolute md:hidden inset-0 flex justify-center items-center pointer-events-none select-none z-0">
+                <img src="../../../../../assets/svg/logos-03.svg" alt="Aldana Vilcabana"
+                  class="w-[270px] sm:w-[280px] opacity-20 object-contain" draggable="false" />
+              </div>
+              <h2 appWordReveal
+                class="pb-4 NewAldyFontType2  uppercase tracking-widest text-2xl lg:text-5xl font-bold text-black">
+                El Florecer de mi Marca
               </h2>
-              <p appFadeUpLetter class="text-sm leading-relaxed whitespace-pre-wrap break-words">
-                Desde mis primeros juegos con telas hasta la creación de piezas exclusivas, mi camino en la moda ha
-                estado guiado por una pasión constante. Me formé en Industria del Vestido en Villa El Salvador, Lima, y
-                luego me perfeccioné en Buenos Aires, donde adquirí experiencia trabajando con marcas locales.
+              <p appFadeUpLetter
+                class="text-sm lg:text-base text-gray-700  font-sans first-letter:text-3xl leading-8 whitespace-pre-wrap break-words">
+                Así nació mi estudio, un espacio creado para el desarrollo integral de producto. Ofrezco un servicio
+                completo que abarca cada etapa del proceso creativo: desde el diseño conceptual y la creación de
+                prototipos, hasta la elaboración de moldería y la supervisión de la producción final. Me enorgullece
+                colaborar con marcas y diseñadores independientes, aportando mi experiencia para materializar sus
+                visiones.
 
-                En 2006 emprendí mi marca propia, y en 2010 abrí mi estudio, un espacio dedicado al diseño integral y
-                personalizado, desde la idea hasta la producción. Colaboro con diseñadores independientes y me
-                especializo en confección a medida, especialmente para novias.
+                Al observar las dinámicas del mercado, identifiqué una creciente demanda de confección a medida, donde
+                la personalización y la exclusividad son esenciales. Por ello, incorporé este rubro, especializándome en
+                el área de Novias. En este campo, cada pieza se convierte en un sueño confeccionado con dedicación y
+                detalle para un momento único en la vida de una mujer.
 
-                Después de años de preparación, en 2025 lancé mi primera colección formal: Jardín Secreto, una propuesta
-                íntima y detallista que refleja mi trayectoria y visión estética. ¡Los invito a descubrirla!
+                Tras un largo proceso de planificación, lleno de ideas y mejoras continuas, estoy inmensamente
+                emocionada de anunciar que en 2025 lancé mi primera colección formal: "Jardín Secreto". Esta colección
+                representa la culminación de años de trabajo, aprendizaje y pasión, un reflejo íntimo de mi visión
+                estética. ¡Los invito a descubrir la esencia de este proyecto tan personal y a sumergirse en mi "Jardín
+                Secreto"!
               </p>
             </div>
           </div>
         </div>
       </div>
-      <div class="bg-white pb-6 my-6" #valuesSection>
+    </div>
+    <div class="bg-aldy-medium" #valuesSection>
+      <div class="pb-6 my-6 px-4 sm:px-6 lg:px-12 xl:px-16 2xl:px-24">
         <div class="max-w-7xl mx-auto">
-          <h2 class="text-4xl lg:text-5xl font-bold text-center mb-16 text-gray-800">
-            <span appWordReveal class="text-black aldyFont">Nuestros Valores</span>
+          <h2 class="text-4xl lg:text-5xl font-bold pt-5 text-center mb-16 text-gray-800">
+            <span appWordReveal
+              class="NewAldyFontType2  uppercase tracking-widest text-3xl lg:text-4xl font-bold text-white">Nuestros
+              Valores</span>
           </h2>
           <div class="block lg:hidden">
             <div class="w-full aspect-[3/4] md:aspect-[6/4] overflow-hidden flex justify-center items-start mb-12">
-              <img
-              appCardInitAnimation="up"
+              <img appCardInitAnimation="up"
                 src="https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/products/tapados/tapado_alamo/1752714060096.jpg"
-                alt="Modelo con abrigo" class="w-full h-full object-top object-cover"
-                [draggable]="false">
+                alt="Modelo con abrigo" class="w-full h-full object-top object-cover" [draggable]="false">
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-12 text-center">
               <div class="flex flex-col items-center value-item">
-                <lucide-icon name="leaf" [size]="60" [strokeWidth]="1.75"></lucide-icon>
-                <h3 class="text-2xl font-bold mt-2 text-gray-600 aldyFont">SOSTENIBILIDAD</h3>
-                <p class="text-gray-600 mt-2 text-base max-w-xs">
+                <lucide-icon class="text-white" name="leaf" [size]="60" [strokeWidth]="1.75"></lucide-icon>
+                <h3 class="text-2xl font-bold mt-2 text-white aldyFont">SOSTENIBILIDAD</h3>
+                <p class="text-white mt-2 text-base max-w-xs">
                   Estamos comprometidos con la moda responsable. Desde el abastecimiento consciente hasta la producción
                   ecológica, priorizamos prácticas sostenibles que respeten a las personas y al planeta.
                 </p>
               </div>
 
               <div class="flex flex-col items-center value-item">
-                <lucide-icon name="star" [size]="60" [strokeWidth]="1.75"></lucide-icon>
-                <h3 class="text-2xl font-bold mt-2 text-gray-600 aldyFont">INNOVACIÓN</h3>
-                <p class="text-gray-600 mt-2 text-base max-w-xs">
+                <lucide-icon class="text-white" name="star" [size]="60" [strokeWidth]="1.75"></lucide-icon>
+                <h3 class="text-2xl font-bold mt-2 text-white aldyFont">INNOVACIÓN</h3>
+                <p class="text-white mt-2 text-base max-w-xs">
                   La creatividad nos impulsa hacia adelante. Adoptamos nuevas ideas, tecnologías y tendencias para
                   evolucionar constantemente y ofrecer diseños innovadores.
                 </p>
               </div>
 
               <div class="flex flex-col items-center value-item">
-                <lucide-icon name="award" [size]="60" [strokeWidth]="1.75"></lucide-icon>
-                <h3 class="text-2xl font-bold mt-2 text-gray-600 aldyFont">CALIDAD</h3>
-                <p class="text-gray-600 mt-2 text-base max-w-xs">
+                <lucide-icon class="text-white" name="award" [size]="60" [strokeWidth]="1.75"></lucide-icon>
+                <h3 class="text-2xl font-bold mt-2 text-white aldyFont">CALIDAD</h3>
+                <p class="text-white mt-2 text-base max-w-xs">
                   La excelencia no es negociable. Cada prenda está creada con precisión, utilizando materiales de
                   primera calidad para garantizar durabilidad, comodidad y estilo duradero.
                 </p>
               </div>
 
               <div class="flex flex-col items-center value-item">
-                <lucide-icon name="users-round" [size]="60" [strokeWidth]="1.75"></lucide-icon>
-                <h3 class="text-2xl font-bold mt-2 text-gray-600 aldyFont">ENFOQUE EN EL CLIENTE</h3>
-                <p class="text-gray-600 mt-2 text-base max-w-xs">
+                <lucide-icon class="text-white" name="users-round" [size]="60" [strokeWidth]="1.75"></lucide-icon>
+                <h3 class="text-2xl font-bold mt-2 text-white aldyFont">ENFOQUE EN EL CLIENTE</h3>
+                <p class="text-white mt-2 text-base max-w-xs">
                   Nuestros clientes están en el centro de todo lo que hacemos. Escuchamos, nos adaptamos y nos
                   esforzamos por ofrecer experiencias excepcionales en cada punto de contacto.
                 </p>
@@ -157,17 +191,17 @@
           <div class="hidden lg:grid grid-cols-1 lg:grid-cols-3 gap-8 items-center relative">
             <div class="space-y-16 text-center" #leftColumn>
               <div class="flex flex-col items-center value-item">
-                <lucide-icon name="leaf" [size]="60" [strokeWidth]="1.75"></lucide-icon>
-                <h3 class="text-2xl font-bold mt-2 text-gray-600 aldyFont">SOSTENIBILIDAD</h3>
-                <p class="text-gray-600 mt-2 text-base max-w-xs">
+                <lucide-icon class="text-white" name="leaf" [size]="60" [strokeWidth]="1.75"></lucide-icon>
+                <h3 class="text-2xl font-bold mt-2 text-white aldyFont">SOSTENIBILIDAD</h3>
+                <p class="text-white mt-2 text-base max-w-xs">
                   Estamos comprometidos con la moda responsable. Desde el abastecimiento consciente hasta la producción
                   ecológica, priorizamos prácticas sostenibles que respeten a las personas y al planeta.
                 </p>
               </div>
               <div class="flex flex-col items-center value-item">
-                <lucide-icon name="star" [size]="60" [strokeWidth]="1.75"></lucide-icon>
-                <h3 class="text-2xl font-bold mt-2 text-gray-600 aldyFont">INNOVACIÓN</h3>
-                <p class="text-gray-600 mt-2 text-base max-w-xs">
+                <lucide-icon class="text-white" name="star" [size]="60" [strokeWidth]="1.75"></lucide-icon>
+                <h3 class="text-2xl font-bold mt-2 text-white aldyFont">INNOVACIÓN</h3>
+                <p class="text-white mt-2 text-base max-w-xs">
                   La creatividad nos impulsa hacia adelante. Adoptamos nuevas ideas, tecnologías y tendencias para
                   evolucionar constantemente y ofrecer diseños innovadores.
                 </p>
@@ -175,27 +209,24 @@
             </div>
             <div
               class="w-full aspect-[3/4] min-h-[500px] overflow-hidden flex justify-center items-center relative z-10">
-              <img
-              appCardInitAnimation="up"
+              <img appCardInitAnimation="up"
                 src="https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/products/tapados/tapado_alamo/1752714060096.jpg"
-                alt="Modelo con abrigo"
-                class="h-full w-full object-top object-cover"
-                [draggable]="false">
+                alt="Modelo con abrigo" class="h-full w-full object-top object-cover" [draggable]="false">
             </div>
 
             <div class="space-y-16 text-center" #rightColumn>
               <div class="flex flex-col items-center value-item">
-                <lucide-icon name="award" [size]="60" [strokeWidth]="1.75"></lucide-icon>
-                <h3 class="text-2xl font-bold mt-2 text-gray-600 aldyFont">CALIDAD</h3>
-                <p class="text-gray-600 mt-2 text-base max-w-xs">
+                <lucide-icon class="text-white" name="award" [size]="60" [strokeWidth]="1.75"></lucide-icon>
+                <h3 class="text-2xl font-bold mt-2 text-white aldyFont">CALIDAD</h3>
+                <p class="text-white mt-2 text-base max-w-xs">
                   La excelencia no es negociable. Cada prenda está creada con precisión, utilizando materiales de
                   primera calidad para garantizar durabilidad, comodidad y estilo duradero.
                 </p>
               </div>
               <div class="flex flex-col items-center value-item">
-                <lucide-icon name="users-round" [size]="60" [strokeWidth]="1.75"></lucide-icon>
-                <h3 class="text-2xl font-bold mt-2 text-gray-600 aldyFont">ENFOQUE EN EL CLIENTE</h3>
-                <p class="text-gray-600 mt-2 text-base max-w-xs">
+                <lucide-icon class="text-white" name="users-round" [size]="60" [strokeWidth]="1.75"></lucide-icon>
+                <h3 class="text-2xl font-bold mt-2 text-white aldyFont">ENFOQUE EN EL CLIENTE</h3>
+                <p class="text-white mt-2 text-base max-w-xs">
                   Nuestros clientes están en el centro de todo lo que hacemos. Escuchamos, nos adaptamos y nos
                   esforzamos por ofrecer experiencias excepcionales en cada punto de contacto.
                 </p>
@@ -204,13 +235,13 @@
           </div>
         </div>
       </div>
+    </div>
 
-      <div class="my-2">
-        <app-dinamic-titles [text]="'Siguenos en @Aldana Vilcabana'" [level]="2" [stylesTitle]="'text-2xl text-center'"
-          [weight]="'medium'" [italic]="false" [textColor]="'text-gray-700'"
-          [responsiveClasses]="'text-xl sm:text-xl md:text-2xl lg:text-2xl timesRoman'">
-        </app-dinamic-titles>
-      </div>
+    <div class="my-2 px-4 sm:px-6 lg:px-12 xl:px-16 2xl:px-24">
+      <app-dinamic-titles [text]="'Siguenos en @Aldana Vilcabana'" [level]="2" [stylesTitle]="'text-2xl text-center'"
+        [weight]="'medium'" [italic]="false" [textColor]="'text-gray-700'"
+        [responsiveClasses]="'text-xl sm:text-xl md:text-2xl lg:text-2xl timesRoman'">
+      </app-dinamic-titles>
     </div>
   </div>
   <div class="my-2">

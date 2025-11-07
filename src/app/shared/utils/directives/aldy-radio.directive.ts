@@ -60,8 +60,8 @@ export class AldyRadioDirective {
 
   private applyCheckedStyles(): void {
     const radio = this.el.nativeElement;
-    this.renderer.setStyle(radio, 'background-color', 'var(--color-aldy-primary-600)');
-    this.renderer.setStyle(radio, 'box-shadow', '0 0 0 2px var(--color-aldy-primary-600)');
+    this.renderer.setStyle(radio, 'background-color', 'var(--color-aldy-medium)');
+    this.renderer.setStyle(radio, 'box-shadow', '0 0 0 2px var(--color-aldy-medium)');
     this.renderer.setStyle(radio, 'border', '2px solid #ffffff');
 
     if (!this.checkmarkIcon) {
