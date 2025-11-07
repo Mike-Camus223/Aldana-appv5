@@ -12,12 +12,12 @@
   <div class="relative z-10 max-w-[95%] mx-auto flex items-center justify-between h-20 px-6">
 
     <!-- IZQUIERDA: LINKS -->
-    <div class="flex items-center space-x-10 font-semibold uppercase">
+    <div class="flex items-center space-x-10  uppercase">
       <a *ngFor="let link of leftLinks" appLinkHoverUnderline [routerLink]="link.link"
         (mouseenter)="onInteractiveEnter()" [ngClass]="{
           'text-white hover:text-gray-300 border-white': isHomePage && !MoverScroll && !hoverNavbar,
           'text-aldy-medium hover:text-aldy-medium-2 border-aldy-medium hover:border-aldy-medium-2': !isHomePage || MoverScroll || hoverNavbar
-        }" class="transition-colors titles text-md tracking-widest border-transparent pb-1">
+        }" class="transition-colors font-light NewAldyTitle text-md tracking-widest border-transparent pb-1">
         {{ link.label }}
       </a>
 
@@ -28,7 +28,7 @@
             (mouseenter)="onInteractiveEnter()" [ngClass]="{
               'text-white hover:text-gray-300 border-white': isHomePage && !MoverScroll && !hoverNavbar,
               'text-aldy-medium hover:text-aldy-medium-2 border-aldy-medium hover:border-aldy-medium-2': !isHomePage || MoverScroll || hoverNavbar
-            }" class="transition-colors text-md titles tracking-widest pb-1">
+            }" class="transition-colors text-md font-light NewAldyTitle tracking-widest pb-1">
             TIENDA
           </a>
           <lucide-icon name="chevron-down" [ngClass]="{
@@ -43,7 +43,7 @@
           <div class="flex">
             <!-- CATEGORÍAS A LA IZQUIERDA -->
             <div class="w-1/3 bg-gray-50 p-8">
-              <h3 class="font-bold mb-8 text-2xl text-gray-800 uppercase titles tracking-wider">
+              <h3 class="mb-8 text-2xl text-gray-800 uppercase font-light NewAldyTitle tracking-wider">
                 categorias
               </h3>
               <ul class="space-y-4">
@@ -51,7 +51,7 @@
                   <div class="flex gap-3 items-center">
                     <div class="h-2 w-2 bg-gray-200 rounded-full"></div>
                     <a (click)="goToCategory(item)"
-                      class="block transition-all font-medium duration-200 cursor-pointer text-gray-700 hover:text-aldy-medium-2 hover:translate-x-1 text-sm">
+                      class="block transition-all font-light NewAldyTitle duration-200 cursor-pointer text-gray-700 hover:text-aldy-medium-2 hover:translate-x-1 text-sm">
                       {{ item }}
                     </a>
                   </div>
@@ -70,7 +70,7 @@
                       alt="Vestidos"
                       class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
                   </div>
-                  <h4 class="font-semibold text-sm mb-1">VESTIDOS</h4>
+                  <h4 class="font-light NewAldyTitle tracking-widest text-sm mb-1">VESTIDOS</h4>
                   <p class="text-xs text-gray-600 leading-relaxed">Elegantes diseños para ocasiones especiales</p>
                 </div>
 
@@ -82,7 +82,7 @@
                       alt="Abrigos"
                       class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
                   </div>
-                  <h4 class="font-semibold text-sm mb-1">ABRIGOS</h4>
+                  <h4 class="font-light NewAldyTitle tracking-widest text-sm mb-1">ABRIGOS</h4>
                   <p class="text-xs text-gray-600 leading-relaxed">Comodidad y estilo para looks urbanos</p>
                 </div>
 
@@ -94,7 +94,7 @@
                       alt="Pantalones"
                       class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
                   </div>
-                  <h4 class="font-semibold text-sm mb-1">PANTALONES</h4>
+                  <h4 class="font-light NewAldyTitle tracking-widest text-sm mb-1">PANTALONES</h4>
                   <p class="text-xs text-gray-600 leading-relaxed">Corte perfecto y versatilidad diaria</p>
                 </div>
               </div>
@@ -124,12 +124,12 @@
 
     <!-- DERECHA: LINKS + ICONOS -->
     <div class="flex items-center space-x-10">
-      <div class="flex items-center space-x-10 font-semibold uppercase">
+      <div class="flex items-center space-x-10  uppercase">
         <a *ngFor="let link of rightLinks" appLinkHoverUnderline [routerLink]="link.link"
           (mouseenter)="onInteractiveEnter()" [ngClass]="{
             'text-white hover:text-gray-300 border-white': isHomePage && !MoverScroll && !hoverNavbar,
             'text-aldy-medium hover:text-aldy-medium-2 border-aldy-medium hover:border-aldy-medium-2': !isHomePage || MoverScroll || hoverNavbar
-          }" class="transition-colors titles text-md tracking-widest border-transparent pb-1">
+          }" class="transition-colors font-light NewAldyTitle text-md tracking-widest border-transparent pb-1">
           {{ link.label }}
         </a>
       </div>
@@ -173,7 +173,7 @@
     '-translate-y-full': !showNavbar,
     'bg-white shadow-md': menuOpen || !isHomePage || MoverScroll || hoverNavbar,
     '': !menuOpen && isHomePage && !MoverScroll && !hoverNavbar
-  }" class="block lg:hidden w-full fixed top-0 z-50 font-titles transform transition-all duration-300 ease-in-out">
+  }" class="block lg:hidden w-full fixed top-0 z-50 font-font-light NewAldyTitle transform transition-all duration-300 ease-in-out">
   <div class="flex items-center justify-between h-16 px-[5%] relative">
 
     <!-- ICONOS IZQUIERDA -->
@@ -257,43 +257,43 @@
   <div class="p-6 space-y-6 h-full">
 
     <div class="flex justify-between items-center pb-4 border-b border-gray-200">
-      <h2 class="text-xl font-bold text-gray-800 titles tracking-wider">MENÚ</h2>
+      <h2 class="text-xl text-gray-800 font-light NewAldyTitle tracking-wider">MENÚ</h2>
     </div>
 
     <div class="space-y-4">
       <a routerLink="/acerca-de-mi" (click)="onMenuLinkClick()"
-        class="block text-gray-700 hover:text-aldy-primary-500 tracking-widest uppercase titles text-base font-semibold transition-colors duration-200 py-3">
+        class="block text-gray-700 hover:text-aldy-primary-500 tracking-widest uppercase font-light NewAldyTitle text-base  transition-colors duration-200 py-3">
         Acerca de mí
       </a>
 
       <a routerLink="/novias-colecciones" (click)="onMenuLinkClick()"
-        class="block text-gray-700 hover:text-aldy-primary-500 tracking-widest uppercase titles text-base font-semibold transition-colors duration-200 py-3">
+        class="block text-gray-700 hover:text-aldy-primary-500 tracking-widest uppercase font-light NewAldyTitle text-base  transition-colors duration-200 py-3">
         Novias
       </a>
 
       <!-- DROPDOWN TIENDA MOBILE -->
       <div>
         <button (click)="toggleMobileDropdown()"
-          class="w-full flex items-center justify-between text-gray-700 hover:text-aldy-primary-500 tracking-widest uppercase titles text-base font-semibold transition-colors duration-200 py-3">
+          class="w-full flex items-center justify-between text-gray-700 hover:text-aldy-primary-500 tracking-widest uppercase font-light NewAldyTitle text-base  transition-colors duration-200 py-3">
           <span>Tienda</span>
           <lucide-icon name="chevron-down" class="w-5 h-5 transition-transform duration-200 text-gray-700"
             [ngClass]="{ 'rotate-180': mobileDropdownOpen }"></lucide-icon>
         </button>
         <div *ngIf="mobileDropdownOpen" @expandDropdown class="pl-4 mt-2 space-y-3 border-l-2 border-aldy-medium hover:border-aldy-medium-2">
           <a *ngFor="let item of tiendaItems" (click)="goToCategory(item)"
-            class="block cursor-pointer text-md text-gray-600 hover:text-aldy-primary-500 titles transition-colors duration-200 py-2">
+            class="block cursor-pointer text-md text-gray-600 hover:text-aldy-primary-500 font-light NewAldyTitle transition-colors duration-200 py-2">
             {{ item }}
           </a>
         </div>
       </div>
 
       <a routerLink="/colecciones" (click)="onMenuLinkClick()"
-        class="block text-gray-700 hover:text-aldy-primary-500 tracking-widest uppercase titles text-base font-semibold transition-colors duration-200 py-3">
+        class="block text-gray-700 hover:text-aldy-primary-500 tracking-widest uppercase font-light NewAldyTitle text-base  transition-colors duration-200 py-3">
         Colecciones
       </a>
 
       <a routerLink="/contacto" (click)="onMenuLinkClick()"
-        class="block text-gray-700 hover:text-aldy-primary-500 tracking-widest uppercase titles text-base font-semibold transition-colors duration-200 py-3">
+        class="block text-gray-700 hover:text-aldy-primary-500 tracking-widest uppercase font-light NewAldyTitle text-base  transition-colors duration-200 py-3">
         Contacto
       </a>
     </div>

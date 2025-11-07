@@ -6,7 +6,7 @@
         <div
           class="text-container absolute top-0 left-0 w-full flex flex-col text-end lg:w-3/4 xl:w-1/2 mt-[7rem] lg:mt-20 h-fit self-start z-10 transition-all duration-300 ease-out px-4">
           <app-dinamic-titles [isParagraph]="false" [text]="'Del Juego a la Pasión'"
-            [stylesTitle]="'text-[28px] md:text-[48px] lg:text-[80px] xl:lg:text-[88px] text-center lg:text-start uppercase NewAldyFontType2'"
+            [stylesTitle]="'text-[28px] md:text-[48px] lg:text-[80px] xl:lg:text-[88px] text-center lg:text-start font-light NewAldyTitle'"
             [weight]="'bold'" [textColor]="'text-black'">
           </app-dinamic-titles>
           <app-dinamic-titles class="relative z-10" [isParagraph]="true"
@@ -58,8 +58,8 @@
               class="w-full h-full object-contain" draggable="false" />
           </div>
           <div class="overflow-hidden relative order-1 md:order-2 w-full md:w-[51%]" style="aspect-ratio: 5 / 4;">
-            <img appCardInitAnimation="down" class="object-cover object-top w-full h-full"
-              src="https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/multimedia/about%20me/section-photos/preview/preview_1.jpg"
+            <img appCardInitAnimation="down" class="object-contain object-top w-full h-full"
+              src="https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/multimedia/about%20me/about%20AV/about4.webp"
               alt="Imagen sobre mí" loading="lazy" />
           </div>
           <div class="w-full relative flex items-center justify-center order-2 md:order-1 md:w-[40%]">
@@ -70,8 +70,8 @@
             </div>
             <div class="text-gray-600 max-w-xl text-center md:text-left">
               <h2 appWordReveal
-                class="pb-4 NewAldyFontType2  uppercase tracking-widest text-2xl lg:text-5xl font-bold text-white">
-                Raíces y Evolución
+                class="pb-4 NewAldyTitle font-light  uppercase tracking-widest text-2xl lg:text-5xl text-white">
+                De la Aguja al Arte
               </h2>
               <p appFadeUpLetter
                 class="text-sm lg:text-base text-white  font-sans first-letter:text-3xl leading-8 whitespace-pre-wrap break-words">
@@ -97,8 +97,8 @@
               class="w-full h-full object-contain" draggable="false" />
           </div>
           <div class="overflow-hidden relative order-1 md:order-1 w-full md:w-[51%]" style="aspect-ratio: 5 / 4;">
-            <img appCardInitAnimation="up" class="object-cover object-top w-full h-full"
-              src="https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/multimedia/about%20me/section-photos/preview/preview_2.jpg"
+            <img appCardInitAnimation="up" class="object-cover object-center w-full h-full"
+              src="https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/multimedia/about%20me/about%20AV/about5.webp"
               alt="Segunda imagen sobre mí" loading="lazy" />
           </div>
           <div class="w-full flex items-center justify-center order-2 md:order-2 md:w-[40%]">
@@ -109,7 +109,7 @@
                   class="w-[270px] sm:w-[280px] opacity-20 object-contain" draggable="false" />
               </div>
               <h2 appWordReveal
-                class="pb-4 NewAldyFontType2  uppercase tracking-widest text-2xl lg:text-5xl font-bold text-black">
+                class="pb-4 NewAldyTitle font-normal  uppercase tracking-widest text-2xl lg:text-5xl text-black">
                 El Florecer de mi Marca
               </h2>
               <p appFadeUpLetter
@@ -139,9 +139,9 @@
     <div class="bg-aldy-medium" #valuesSection>
       <div class="pb-6 my-6 px-4 sm:px-6 lg:px-12 xl:px-16 2xl:px-24">
         <div class="max-w-7xl mx-auto">
-          <h2 class="text-4xl lg:text-5xl font-bold pt-5 text-center mb-16 text-gray-800">
+          <h2 class="text-4xl lg:text-5xl pt-5 text-center mb-16">
             <span appWordReveal
-              class="NewAldyFontType2  uppercase tracking-widest text-3xl lg:text-4xl font-bold text-white">Nuestros
+              class="NewAldyTitle uppercase tracking-widest text-3xl lg:text-4xl font-light text-white">Nuestros
               Valores</span>
           </h2>
           <div class="block lg:hidden">
@@ -153,7 +153,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-12 text-center">
               <div class="flex flex-col items-center value-item">
                 <lucide-icon class="text-white" name="leaf" [size]="60" [strokeWidth]="1.75"></lucide-icon>
-                <h3 class="text-2xl font-bold mt-2 text-white aldyFont">SOSTENIBILIDAD</h3>
+                <h3 class="text-2xl font-light mt-2 text-white NewAldyTitle">SOSTENIBILIDAD</h3>
                 <p class="text-white mt-2 text-base max-w-xs">
                   Estamos comprometidos con la moda responsable. Desde el abastecimiento consciente hasta la producción
                   ecológica, priorizamos prácticas sostenibles que respeten a las personas y al planeta.
@@ -162,7 +162,7 @@
 
               <div class="flex flex-col items-center value-item">
                 <lucide-icon class="text-white" name="star" [size]="60" [strokeWidth]="1.75"></lucide-icon>
-                <h3 class="text-2xl font-bold mt-2 text-white aldyFont">INNOVACIÓN</h3>
+                <h3 class="text-2xl font-light mt-2 text-white NewAldyTitle">INNOVACIÓN</h3>
                 <p class="text-white mt-2 text-base max-w-xs">
                   La creatividad nos impulsa hacia adelante. Adoptamos nuevas ideas, tecnologías y tendencias para
                   evolucionar constantemente y ofrecer diseños innovadores.
@@ -171,7 +171,7 @@
 
               <div class="flex flex-col items-center value-item">
                 <lucide-icon class="text-white" name="award" [size]="60" [strokeWidth]="1.75"></lucide-icon>
-                <h3 class="text-2xl font-bold mt-2 text-white aldyFont">CALIDAD</h3>
+                <h3 class="text-2xl font-light mt-2 text-white NewAldyTitle">CALIDAD</h3>
                 <p class="text-white mt-2 text-base max-w-xs">
                   La excelencia no es negociable. Cada prenda está creada con precisión, utilizando materiales de
                   primera calidad para garantizar durabilidad, comodidad y estilo duradero.
@@ -180,7 +180,7 @@
 
               <div class="flex flex-col items-center value-item">
                 <lucide-icon class="text-white" name="users-round" [size]="60" [strokeWidth]="1.75"></lucide-icon>
-                <h3 class="text-2xl font-bold mt-2 text-white aldyFont">ENFOQUE EN EL CLIENTE</h3>
+                <h3 class="text-2xl font-light mt-2 text-white NewAldyTitle">ENFOQUE EN EL CLIENTE</h3>
                 <p class="text-white mt-2 text-base max-w-xs">
                   Nuestros clientes están en el centro de todo lo que hacemos. Escuchamos, nos adaptamos y nos
                   esforzamos por ofrecer experiencias excepcionales en cada punto de contacto.
@@ -192,7 +192,7 @@
             <div class="space-y-16 text-center" #leftColumn>
               <div class="flex flex-col items-center value-item">
                 <lucide-icon class="text-white" name="leaf" [size]="60" [strokeWidth]="1.75"></lucide-icon>
-                <h3 class="text-2xl font-bold mt-2 text-white aldyFont">SOSTENIBILIDAD</h3>
+                <h3 class="text-2xl font-light mt-2 text-white NewAldyTitle">SOSTENIBILIDAD</h3>
                 <p class="text-white mt-2 text-base max-w-xs">
                   Estamos comprometidos con la moda responsable. Desde el abastecimiento consciente hasta la producción
                   ecológica, priorizamos prácticas sostenibles que respeten a las personas y al planeta.
@@ -200,7 +200,7 @@
               </div>
               <div class="flex flex-col items-center value-item">
                 <lucide-icon class="text-white" name="star" [size]="60" [strokeWidth]="1.75"></lucide-icon>
-                <h3 class="text-2xl font-bold mt-2 text-white aldyFont">INNOVACIÓN</h3>
+                <h3 class="text-2xl font-light mt-2 text-white NewAldyTitle">INNOVACIÓN</h3>
                 <p class="text-white mt-2 text-base max-w-xs">
                   La creatividad nos impulsa hacia adelante. Adoptamos nuevas ideas, tecnologías y tendencias para
                   evolucionar constantemente y ofrecer diseños innovadores.
@@ -217,7 +217,7 @@
             <div class="space-y-16 text-center" #rightColumn>
               <div class="flex flex-col items-center value-item">
                 <lucide-icon class="text-white" name="award" [size]="60" [strokeWidth]="1.75"></lucide-icon>
-                <h3 class="text-2xl font-bold mt-2 text-white aldyFont">CALIDAD</h3>
+                <h3 class="text-2xl font-light mt-2 text-white NewAldyTitle">CALIDAD</h3>
                 <p class="text-white mt-2 text-base max-w-xs">
                   La excelencia no es negociable. Cada prenda está creada con precisión, utilizando materiales de
                   primera calidad para garantizar durabilidad, comodidad y estilo duradero.
@@ -225,7 +225,7 @@
               </div>
               <div class="flex flex-col items-center value-item">
                 <lucide-icon class="text-white" name="users-round" [size]="60" [strokeWidth]="1.75"></lucide-icon>
-                <h3 class="text-2xl font-bold mt-2 text-white aldyFont">ENFOQUE EN EL CLIENTE</h3>
+                <h3 class="text-2xl font-light mt-2 text-white NewAldyTitle">ENFOQUE EN EL CLIENTE</h3>
                 <p class="text-white mt-2 text-base max-w-xs">
                   Nuestros clientes están en el centro de todo lo que hacemos. Escuchamos, nos adaptamos y nos
                   esforzamos por ofrecer experiencias excepcionales en cada punto de contacto.
@@ -239,8 +239,8 @@
 
     <div class="my-2 px-4 sm:px-6 lg:px-12 xl:px-16 2xl:px-24">
       <app-dinamic-titles [text]="'Siguenos en @Aldana Vilcabana'" [level]="2" [stylesTitle]="'text-2xl text-center'"
-        [weight]="'medium'" [italic]="false" [textColor]="'text-gray-700'"
-        [responsiveClasses]="'text-xl sm:text-xl md:text-2xl lg:text-2xl timesRoman'">
+        [weight]="'light'" [italic]="false" [textColor]="'text-gray-700'"
+        [responsiveClasses]="'text-xl sm:text-xl md:text-2xl lg:text-2xl NewAldyTitle'">
       </app-dinamic-titles>
     </div>
   </div>
