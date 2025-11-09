@@ -38,7 +38,7 @@
         <ul class="space-y-1.5 sm:space-y-2 font-main text-sm min-[320px]:text-base sm:text-base md:text-lg">
           <li *ngFor="let item of tiendaItems">
             <a [routerLink]="['/tienda']" [queryParams]="{ categoria: normalizeCategory(item) }"
-              class="hover:text-aldy-medium text-aldy-light transition">
+              class="hover:text-aldy-medium NewAldyFontType4 text-sm tracking-wide text-white transition">
               {{ item }}
             </a>
           </li>
@@ -52,8 +52,8 @@
           Conócenos
         </h3>
         <ul class="space-y-1.5 sm:space-y-2 font-main text-sm min-[320px]:text-base sm:text-base md:text-lg">
-          <li><a routerLink="/acerca-de" class="hover:text-aldy-medium text-aldy-light transition">Acerca de mí</a></li>
-          <li><a routerLink="/galeria" class="hover:text-aldy-medium text-aldy-light transition">Galería</a></li>
+          <li><a routerLink="/acerca-de-mi" class="hover:text-aldy-medium NewAldyFontType4 text-sm tracking-wide text-white transition">Acerca de mí</a></li>
+          <li><a routerLink="/colecciones" class="hover:text-aldy-medium NewAldyFontType4 text-sm tracking-wide text-white transition">Galería</a></li>
         </ul>
       </div>
 
@@ -64,7 +64,7 @@
           Novias
         </h3>
         <ul class="space-y-1.5 sm:space-y-2 font-main text-sm min-[320px]:text-base sm:text-base md:text-lg">
-          <li><a routerLink="/novias" class="hover:text-aldy-medium text-aldy-light transition">Jardin secreto</a></li>
+          <li><a routerLink="/novias-colecciones/jardin-secreto" class="hover:text-aldy-medium NewAldyFontType4 text-sm tracking-wide text-white transition">Jardin secreto</a></li>
         </ul>
       </div>
     </div>
