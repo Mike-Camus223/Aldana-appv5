@@ -43,8 +43,8 @@
       [ngClass]="{ 'gap-4': showFilters && !isMobileView, 'gap-0': !showFilters || isMobileView }">
 
       <aside *ngIf="!isMobileView" class="transition-all duration-500 ease-in-out overflow-hidden" [ngStyle]="{
-          flexBasis: showFilters ? '16.666667%' : '0%',
-          maxWidth: showFilters ? '16.666667%' : '0%',
+          flexBasis: showFilters ? '16%' : '0%',
+          maxWidth: showFilters ? '16%' : '0%',
           minWidth: showFilters ? '200px' : '0px',
           opacity: showFilters ? '1' : '0',
           pointerEvents: showFilters ? 'auto' : 'none'
@@ -75,7 +75,7 @@
       <div class="transition-all duration-500 ease-in-out flex-1 min-h-[300px]">
 
         <p *ngIf="!loading && filteredProducts.length === 0"
-          class="text-center font-main text-xl py-12 text-gray-700 flex justify-center items-center h-full">
+          class="text-center NewAldyFontType4 text-sm py-12 text-gray-700 flex justify-center items-center h-full">
           No hay productos para mostrar.
         </p>
 
