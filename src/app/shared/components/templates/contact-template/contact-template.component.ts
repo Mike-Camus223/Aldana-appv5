@@ -5,6 +5,10 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { InputComponent } from '../../generic/forms/input/input.component';
 import { TextareaComponent } from '../../generic/forms/textarea/textarea.component';
 import { SelectsComponent } from '../../generic/forms/selects/selects.component';
+import { WordRevealDirective } from '../../../utils/directives/word-reveal.directive';
+import { FadeUpLetterDirective } from '../../../utils/directives/fadeupletter.directive';
+
+
 
 @Component({
   selector: 'app-contact-template',
@@ -14,7 +18,9 @@ import { SelectsComponent } from '../../generic/forms/selects/selects.component'
     ReactiveFormsModule,
     InputComponent,
     TextareaComponent,
-    SelectsComponent
+    SelectsComponent,
+    WordRevealDirective,
+    FadeUpLetterDirective
   ],
   templateUrl: './contact-template.component.html',
 })

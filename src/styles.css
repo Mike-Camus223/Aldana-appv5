@@ -98,6 +98,11 @@
   src: url('./assets/fonts/Fontspring-DEMO-bsd76-iF66826cf1f0050.otf') format('truetype');
 }
 
+@font-face {
+  font-family: 'NewAldyFont-type4';
+  src:url('./assets/fonts/fonnts.com-Runda_Light.otf') format('truetype');
+}
+
 .aldyFont {
   font-family: 'aldyfont', sans-serif;
 } 
@@ -128,6 +133,10 @@
 
 .NewAldyFontType3 {
   font-family: 'NewAldyFont-type3';
+}
+
+.NewAldyFontType4 {
+  font-family: 'NewAldyFont-type4';
 }
 
 .temporally{
