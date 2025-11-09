@@ -3,18 +3,19 @@
     <div class="w-full py-20 px-2 flex flex-col items-center">
       <div class="max-w-6xl w-full grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
         <div class="space-y-8 px-4 lg:px-0">
-          <p appWordReveal class="text-xs text-center lg:text-start uppercase tracking-widest text-aldy-medium font-semibold">
+          <p appWordReveal
+            class="text-xs text-center lg:text-start uppercase tracking-widest text-aldy-medium font-semibold">
             Atención al cliente
           </p>
           <h1 appWordReveal
             class="uppercase tracking-widest text-3xl text-center lg:text-start lg:text-5xl NewAldyTitle font-light text-gray-900">
-            Contactanos
+            Contáctanos
           </h1>
           <p appFadeUpLetter
             class="text-base lg:text-base text-center lg:text-start text-gray-700 NewAldyFontType4 leading-8 whitespace-pre-wrap break-words">
             Gracias por confiar en nosotras. Es un honor poder acompañarte en este momento único.
             Si necesitás ayuda o querés hablar con alguien de nuestro equipo, podés enviarnos un mensaje a
-            <strong>aldanavilcabana{{"@"}}gmail.com</strong> o completar el formulario que dejamos aquí.
+            <strong>aldanavilcabana{{"@"}}gmail.com</strong> o completar el formulario que encontrarás aquí.
           </p>
         </div>
         <!-- Formulario -->
@@ -88,33 +89,24 @@
   <div class="grid grid-cols-1 md:grid-cols-7 xl:grid-cols-4 items-center">
     <!-- Imagen -->
     <div class="w-full overflow-hidden md:col-span-4 xl:col-span-3 order-1">
-      <img 
-        src="../../../../../assets/images/about.webp" 
-        alt="asesoramiento personalizado"
-        class="w-full h-52 md:h-[400px] object-cover object-[50%_15%]"
-        draggable="false"
-      />
+      <img appCardInitAnimation="up" src="../../../../../assets/images/about.webp" alt="asesoramiento personalizado"
+        class="w-full h-52 md:h-[400px] object-cover object-[50%_15%]" draggable="false" />
     </div>
     <!-- Texto -->
     <div class="flex flex-col items-center text-center space-y-3 w-full md:col-span-3 xl:col-span-1 p-6 order-2">
-      <h2 
-        appWordReveal 
-        class="text-lg lg:text-xl uppercase tracking-widest NewAldyTitle font-light text-gray-900"
-      >
+      <h2 appWordReveal class="text-lg lg:text-xl uppercase tracking-widest NewAldyTitle font-light text-gray-900">
         Asesoramiento
       </h2>
-      <p 
-        appFadeUpLetter 
-        class="text-base NewAldyFontType4 lg:text-base text-gray-900 leading-7 max-w-md"
-      >
-        En Aldana Vilcabana brindamos asesoría exclusiva para realzar tu estilo personal y destacar tu esencia con elegancia.
+      <p appFadeUpLetter class="text-base NewAldyFontType4 lg:text-base text-gray-900 leading-7 max-w-md">
+        En Aldana Vilcabana brindamos una asesoría exclusiva para realzar tu estilo personal y resaltar tu esencia con
+        elegancia.
       </p>
-      <button
-        appFadeUpLetter 
-        class="bg-aldy-medium text-white text-xs tracking-widest py-2.5 px-5 uppercase hover:bg-aldy-medium-2 transition-colors duration-200 ease-in-out cursor-pointer"
-      >
-        Reservar Ahora
-      </button>
+      <a appFadeUpLetter
+        href="https://wa.me/5491164082659?text=Hola%2C%20vengo%20por%20una%20asesor%C3%ADa%20personalizada.%20%C2%BFPodr%C3%ADas%20pasarme%20los%20detalles%3F"
+        target="_blank" rel="noopener noreferrer"
+        class="bg-aldy-medium text-white text-xs tracking-widest py-2.5 px-5 uppercase hover:bg-aldy-medium-2 transition-colors duration-200 ease-in-out cursor-pointer inline-block">
+        Reservar por WhatsApp
+      </a>
     </div>
   </div>
 </div>

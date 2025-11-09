@@ -5,14 +5,14 @@
         <ng-container *ngIf="item.route; else elseBlock">
           <a [routerLink]="item.route"
              routerLinkActive="active-breadcrumb"
-             class="p-breadcrumb-item-link flex items-center tracking-widest NewAldyTitle font-light gap-2 text-sm sm:text-base md:text-base lg:text-lg xl:text-base transition-colors">
+             class="p-breadcrumb-item-link flex items-center tracking-widest NewAldyFontType4 font-light gap-2 text-xs sm:text-xs md:text-xs lg:text-xs xl:text-xs transition-colors">
             <span *ngIf="item.icon" [ngClass]="item.icon" class="text-md pb-1"></span>
             <span *ngIf="item.label" class="truncate">{{ item.label }}</span>
           </a>
         </ng-container>
         <ng-template #elseBlock>
           <a [href]="item.url"
-             class="p-breadcrumb-item-link flex items-center gap-2 tracking-widest NewAldyTitle font-light text-sm sm:text-base md:text-base lg:text-lg xl:text-base">
+             class="p-breadcrumb-item-link flex items-center gap-2 tracking-widest NewAldyFontType4 font-light text-xs sm:text-xs md:text-xs lg:text-xs xl:text-xs">
             <span *ngIf="item.icon" [ngClass]="item.icon" class="text-md pb-1"></span>
             <span *ngIf="item.label" class="truncate">{{ item.label }}</span>
           </a>

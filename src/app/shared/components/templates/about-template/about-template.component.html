@@ -52,29 +52,35 @@
       <div class="pb-6">
         <div
           class="flex bg-aldy-medium flex-col relative md:flex-row mx-auto justify-center w-full gap-6 pt-8 pb-8 px-4 md:px-8">
+
+          <!-- Logo decorativo (solo en desktop) -->
           <div
             class="absolute md:block hidden top-15 lg:top-30 xl:top-20 left-0 aspect-[3/2] w-[190px] sm:w-[190px] md:w-[190px] lg:w-[390px] xl:w-[500px] opacity-20 z-0 pointer-events-none select-none">
             <img src="../../../../../assets/svg/logos-03.svg" alt="Aldana Vilcabana"
               class="w-full h-full object-contain" draggable="false" />
           </div>
+
+          <!-- Imagen principal -->
           <div class="overflow-hidden relative order-1 md:order-2 w-full md:w-[51%]" style="aspect-ratio: 5 / 4;">
-            <img appCardInitAnimation="down" class="object-contain object-top w-full h-full"
+            <img appCardInitAnimation="down" class="object-contain object-[50%_10%] w-full h-full"
               src="https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/multimedia/about%20me/about%20AV/about4.webp"
-              alt="Imagen sobre mí" loading="lazy" />
+              alt="Imagen sobre mí" loading="lazy" draggable="false" />
           </div>
+
+          <!-- Texto -->
           <div class="w-full relative flex items-center justify-center order-2 md:order-1 md:w-[40%]">
             <div
               class="absolute md:hidden inset-0 flex justify-center items-center pointer-events-none select-none z-0">
               <img src="../../../../../assets/svg/logos-03.svg" alt="Aldana Vilcabana"
-                class="w-[270px] sm:w-[280px] opacity-20 object-contain" draggable="false" />
+                class="w-[270px] sm:w-[280px] opacity-20 object-cover" draggable="false" />
             </div>
             <div class="text-gray-600 max-w-xl text-center md:text-left">
               <h2 appWordReveal
-                class="pb-4 NewAldyTitle font-light  uppercase tracking-widest text-2xl lg:text-5xl text-white">
+                class="pb-4 NewAldyTitle font-light uppercase tracking-widest text-2xl lg:text-5xl text-white">
                 De la Aguja al Arte
               </h2>
               <p appFadeUpLetter
-                class="text-base lg:text-base text-white  NewAldyFontType4 first-letter:text-3xl leading-8 whitespace-pre-wrap break-words">
+                class="text-base lg:text-base text-white NewAldyFontType4 first-letter:text-3xl leading-8 whitespace-pre-wrap break-words">
                 Esta fascinación por el arte de la moda no solo guio mis manos infantiles en la modistería, sino que, de
                 forma natural, evolucionó hacia el diseño, marcando cada paso de mi trayectoria.
                 Mi formación técnica en Industria del Vestido comenzó en mi ciudad natal, Villa El Salvador, Lima, Perú,
@@ -90,6 +96,7 @@
             </div>
           </div>
         </div>
+
         <div class="flex flex-col relative md:flex-row mx-auto justify-center w-full gap-6 py-8 pt-8 px-4 md:px-8">
           <div
             class="absolute md:block hidden top-15 lg:top-30 xl:top-20 right-0 aspect-[3/2] w-[190px] sm:w-[190px] md:w-[190px] lg:w-[390px] xl:w-[500px] opacity-20 z-0 pointer-events-none select-none">

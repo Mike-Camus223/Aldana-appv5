@@ -7,6 +7,7 @@ import { TextareaComponent } from '../../generic/forms/textarea/textarea.compone
 import { SelectsComponent } from '../../generic/forms/selects/selects.component';
 import { WordRevealDirective } from '../../../utils/directives/word-reveal.directive';
 import { FadeUpLetterDirective } from '../../../utils/directives/fadeupletter.directive';
+import { CardInitAnimationDirective } from '../../../utils/directives/card-init-animation.directive';
 
 
 
@@ -20,7 +21,8 @@ import { FadeUpLetterDirective } from '../../../utils/directives/fadeupletter.di
     TextareaComponent,
     SelectsComponent,
     WordRevealDirective,
-    FadeUpLetterDirective
+    FadeUpLetterDirective,
+    CardInitAnimationDirective
   ],
   templateUrl: './contact-template.component.html',
 })
@@ -29,7 +31,8 @@ export class ContactTemplateComponent {
   departments = [
     { label: 'Ventas', value: 'sales' },
     { label: 'Atención al cliente', value: 'support' },
-    { label: 'Prensa', value: 'press' }
+    { label: 'Envios', value: 'delivery' },
+    { label: 'Otros', value: 'other' }
   ];
 
   constructor(private fb: FormBuilder) {
@@ -45,7 +48,6 @@ export class ContactTemplateComponent {
   onSubmit(): void {
     if (this.contactForm.valid) {
       const formData = this.contactForm.value;
-      console.log('Form submitted:', formData);
       this.contactForm.reset();
     }
   }
