@@ -12,6 +12,7 @@ export class AcordiongenericComponent implements AfterViewInit, OnChanges {
   @Input() title = '';
   @Input() value = '';
   @Input() selected: string | null = null;
+  @Input() selectedMultiple: string[] = [];
   @Output() toggled = new EventEmitter<string>();
 
   @ViewChild('contentWrapper') contentWrapper!: ElementRef<HTMLDivElement>;
@@ -23,7 +24,9 @@ export class AcordiongenericComponent implements AfterViewInit, OnChanges {
   }
 
   isOpen(): boolean {
-    return this.selected === this.value;
+    const single = this.selected === this.value;
+    const multi = Array.isArray(this.selectedMultiple) && this.selectedMultiple.includes(this.value);
+    return single || multi;
   }
 
   ngAfterViewInit() {
@@ -31,7 +34,7 @@ export class AcordiongenericComponent implements AfterViewInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if ('selected' in changes) {
+    if ('selected' in changes || 'selectedMultiple' in changes) {
       this.updateContentHeight();
     }
   }

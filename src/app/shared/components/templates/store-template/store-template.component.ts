@@ -14,6 +14,7 @@ import { trigger, transition, style, animate, state } from '@angular/animations'
 import { AcordiongenericComponent } from '../../generic/acordiongeneric/acordiongeneric.component';
 import { LoadingbarComponent } from '../../system/loadingbar/loadingbar.component';
 import { AldyRadioDirective } from '../../../utils/directives/aldy-radio.directive';
+import { AldyCheckboxV1Directive } from '../../../utils/directives/aldy-checkbox-v1.directive';
 import { Location } from '@angular/common';
 
 
@@ -30,7 +31,7 @@ import { Location } from '@angular/common';
     LucideAngularModule,
     AcordiongenericComponent,
     LoadingbarComponent,
-    AldyRadioDirective,
+    AldyCheckboxV1Directive,
   ],
   templateUrl: './store-template.component.html',
   styleUrls: ['./store-template.component.css'],
@@ -67,15 +68,74 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
   allProducts: Product[] = [];
   filteredProducts: Product[] = [];
   selectedColors: Record<string, string> = {};
-  selectedCategory: string | null = null;
-  selectedSubcategory: string | null = null;
+  // Estado nuevo para selección múltiple
+  selectedCategory: string | null = null; // mantenido por compatibilidad, no usado para filtrar
+  selectedSubcategory: string | null = null; // mantenido por compatibilidad, no usado para filtrar
+  selectedCategories: string[] = [];
+  selectedSubcategoriesMap: Record<string, string[]> = {};
   private wishlistKey = 'wishlistProducts';
   loading = true;
   activeAccordion: number = 0;
   showFilters = false;
   productColumns: number = 4;
   isMobileView = false;
-  selectedAccordion: string | null = null;
+  selectedAccordion: string | null = null; // mantenido por compatibilidad, no usado para abrir
+  openAccordions: Set<string> = new Set(['categorias']);
+  get openAccordionsArray(): string[] { return Array.from(this.openAccordions); }
+
+  // categories = [
+  //   {
+  //     label: 'Camisas', value: 'camisas', subsections: [
+  //       { label: 'Camisas 1', value: 'camisas 1' },
+  //       { label: 'Camisas 2', value: 'camisas 2' },
+  //       { label: 'Camisas 3', value: 'camisas 3' }
+  //     ]
+  //   },
+  //   {
+  //     label: 'Blusas', value: 'blusas', subsections: [
+  //       { label: 'Blusas 1', value: 'blusas 1' },
+  //       { label: 'Blusas 2', value: 'blusas 2' },
+  //       { label: 'Blusas 3', value: 'blusas 3' }
+  //     ]
+  //   },
+  //   {
+  //     label: 'Faldas', value: 'faldas', subsections: [
+  //       { label: 'Faldas 1', value: 'faldas 1' },
+  //       { label: 'Faldas 2', value: 'faldas 2' },
+  //       { label: 'Faldas 3', value: 'faldas 3' }
+  //     ]
+  //   },
+  //   {
+  //     label: 'Pantalón', value: 'pantalon', subsections: [
+  //       { label: 'Pantalón 1', value: 'pantalon 1' },
+  //       { label: 'Pantalón 2', value: 'pantalon 2' },
+  //       { label: 'Pantalón 3', value: 'pantalon 3' }
+  //     ]
+  //   },
+  //   {
+  //     label: 'Abrigos', value: 'abrigos', subsections: [
+  //       { label: 'Campera', value: 'campera' },
+  //       { label: 'Buzos', value: 'buzos' },
+  //       { label: 'Chalecos', value: 'chalecos' },
+  //       { label: 'Blazers', value: 'blazers' },
+  //       { label: 'Tapados', value: 'tapados' }
+  //     ]
+  //   },
+  //   {
+  //     label: 'Vestidos', value: 'vestidos', subsections: [
+  //       { label: 'Vestidos 1', value: 'vestidos 1' },
+  //       { label: 'Vestidos 2', value: 'vestidos 2' },
+  //       { label: 'Vestidos 3', value: 'vestidos 3' }
+  //     ]
+  //   },
+  //   {
+  //     label: 'Remeras', value: 'remeras', subsections: [
+  //       { label: 'Remeras 1', value: 'remeras 1' },
+  //       { label: 'Remeras 2', value: 'remeras 2' },
+  //       { label: 'Remeras 3', value: 'remeras 3' }
+  //     ]
+  //   }
+  // ];
 
   categories = [
     {
@@ -180,9 +240,57 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
             });
           }
         }
-        this.selectedCategory = categoriaParam ? ProductUtils.normalize(categoriaParam) : null;
-        this.selectedSubcategory = subcategoriaParam ? ProductUtils.normalize(subcategoriaParam) : null;
-        this.selectedAccordion = this.selectedCategory;
+        // Inicializar selección múltiple desde path y query params
+        this.selectedCategories = [];
+        if (categoriaParam) {
+          this.selectedCategories = [ProductUtils.normalize(categoriaParam)];
+        }
+
+        // Leer query params híbridos
+        const qp = this.route.snapshot.queryParamMap;
+        const qpCats = qp.get('categorias');
+        const qpSubs = qp.get('subcategorias');
+
+        if (qpCats) {
+          const extraCats = qpCats.split(',').map(c => ProductUtils.normalize(c)).filter(Boolean);
+          this.selectedCategories = Array.from(new Set([...(this.selectedCategories || []), ...extraCats]));
+        }
+
+        // Resetear subcategorías seleccionadas
+        this.selectedSubcategoriesMap = {};
+
+        const addSubToMap = (subNorm: string) => {
+          const parent = this.findParentCategoryForSub(subNorm);
+          if (parent) {
+            if (!this.selectedCategories.includes(parent)) {
+              this.selectedCategories.push(parent);
+            }
+            const arr = this.selectedSubcategoriesMap[parent] || [];
+            if (!arr.includes(subNorm)) {
+              arr.push(subNorm);
+            }
+            this.selectedSubcategoriesMap[parent] = arr;
+          }
+        };
+
+        if (qpSubs) {
+          qpSubs.split(',').map(s => ProductUtils.normalize(s)).filter(Boolean).forEach(addSubToMap);
+        }
+
+        if (subcategoriaParam) {
+          const subNorm = ProductUtils.normalize(subcategoriaParam);
+          addSubToMap(subNorm);
+        }
+
+        // Abrir acordeón acorde al estado
+        // Abrir acordeones iniciales: Categorías siempre, Subcategorías si hay selección
+        this.openAccordions.clear();
+        this.openAccordions.add('categorias');
+        if (this.selectedCategories.length) {
+          this.openAccordions.add('subcategorias');
+        }
+
+        // Aplicar filtros en memoria y cargar wishlist
         this.applyFiltersSync();
         this.loadWishlistFromStorage();
 
@@ -262,61 +370,135 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
     }
   }
 
-  filterByMainCategory(categoryValue: string): void {
-    const normalized = ProductUtils.normalize(categoryValue);
-    if (this.selectedCategory === normalized) return;
-    this.selectedCategory = normalized;
-    this.selectedSubcategory = null;
-    this.selectedAccordion = normalized;
-    this.applyFiltersSync();
-    this.router.navigate(['/tienda/categoria', normalized]);
+  // --- NUEVA LÓGICA DE SELECCIÓN ---
+  toggleCategory(categoryValue: string): void {
+    const cat = ProductUtils.normalize(categoryValue);
+    const idx = this.selectedCategories.indexOf(cat);
+    if (idx >= 0) {
+      this.selectedCategories.splice(idx, 1);
+      delete this.selectedSubcategoriesMap[cat];
+    } else {
+      this.selectedCategories.push(cat);
+    }
+    // Mantener Categorías abierto y abrir Subcategorías si hay selección
+    this.openAccordions.add('categorias');
+    if (this.selectedCategories.length) {
+      this.openAccordions.add('subcategorias');
+    } else {
+      this.openAccordions.delete('subcategorias');
+    }
   }
 
-  navigateToSubcategory(category: string, subcategory: string): void {
-    this.loading = true;
+  isCategorySelected(categoryValue: string): boolean {
+    const cat = ProductUtils.normalize(categoryValue);
+    return this.selectedCategories.includes(cat);
+  }
 
-    const normalizedCategory = ProductUtils.normalize(category);
-    const normalizedSubcategory = ProductUtils.normalize(subcategory);
+  getSubcategoriesForCategory(categoryValue: string): { label: string; value: string }[] {
+    const catNorm = ProductUtils.normalize(categoryValue);
+    const catObj = this.categories.find(c => ProductUtils.normalize(c.value) === catNorm);
+    return catObj?.subsections ?? [];
+  }
 
-    if (this.selectedCategory === normalizedCategory && this.selectedSubcategory === normalizedSubcategory) {
-      this.loading = false;
-      return;
+  toggleSubcategory(categoryValue: string, subValue: string): void {
+    const cat = ProductUtils.normalize(categoryValue);
+    const sub = ProductUtils.normalize(subValue);
+    const arr = this.selectedSubcategoriesMap[cat] || [];
+    const idx = arr.indexOf(sub);
+    if (idx >= 0) {
+      arr.splice(idx, 1);
+    } else {
+      arr.push(sub);
     }
+    if (arr.length) {
+      this.selectedSubcategoriesMap[cat] = arr;
+    } else {
+      delete this.selectedSubcategoriesMap[cat];
+    }
+  }
 
-    this.selectedCategory = normalizedCategory;
-    this.selectedSubcategory = normalizedSubcategory;
-    this.selectedAccordion = normalizedCategory;
+  isSubcategorySelected(categoryValue: string, subValue: string): boolean {
+    const cat = ProductUtils.normalize(categoryValue);
+    const sub = ProductUtils.normalize(subValue);
+    const arr = this.selectedSubcategoriesMap[cat] || [];
+    return arr.includes(sub);
+  }
 
+  getSelectedSubcategoriesFlat(): { category: string; subcategory: string }[] {
+    const out: { category: string; subcategory: string }[] = [];
+    this.selectedCategories.forEach(cat => {
+      const subs = this.selectedSubcategoriesMap[cat] || [];
+      subs.forEach(sub => out.push({ category: cat, subcategory: sub }));
+    });
+    return out;
+  }
+
+  removeCategory(categoryValue: string): void {
+    const cat = ProductUtils.normalize(categoryValue);
+    const idx = this.selectedCategories.indexOf(cat);
+    if (idx >= 0) {
+      this.selectedCategories.splice(idx, 1);
+    }
+    delete this.selectedSubcategoriesMap[cat];
+  }
+
+  removeSubcategory(categoryValue: string, subValue: string): void {
+    const cat = ProductUtils.normalize(categoryValue);
+    const sub = ProductUtils.normalize(subValue);
+    const arr = this.selectedSubcategoriesMap[cat] || [];
+    const idx = arr.indexOf(sub);
+    if (idx >= 0) {
+      arr.splice(idx, 1);
+      if (arr.length) {
+        this.selectedSubcategoriesMap[cat] = arr;
+      } else {
+        delete this.selectedSubcategoriesMap[cat];
+      }
+    }
+  }
+
+  clearFilters(): void {
+    this.selectedCategories = [];
+    this.selectedSubcategoriesMap = {};
+    this.selectedCategory = null;
+    this.selectedSubcategory = null;
+    this.openAccordions.clear();
+    this.openAccordions.add('categorias');
+    this.applyFiltersSync();
+    // Mantener SPA sin recarga total; navegación limpia opcional
+    this.router.navigate(['/tienda'], { queryParams: {}, replaceUrl: true });
+  }
+
+  applyFiltersAction(isMobile: boolean = false): void {
     this.applyFilters().then(() => {
-      this.router.navigate(['/tienda/categoria', normalizedCategory, 'subcategoria', normalizedSubcategory]);
+      const { path, queryParams } = this.buildPathAndQuery();
+      this.router.navigate(path, { queryParams });
+      if (isMobile) {
+        this.toggleFilters();
+      }
     });
   }
 
-  onSubcategorySelected(category: string, subcategory: string): void {
-    const normalizedCategory = ProductUtils.normalize(category);
-    const normalizedSubcategory = ProductUtils.normalize(subcategory);
-    this.selectedCategory = normalizedCategory;
-    this.selectedSubcategory = normalizedSubcategory;
-    this.selectedAccordion = normalizedCategory;
+  private buildPathAndQuery(): { path: string[]; queryParams: Record<string, any> } {
+    const path = this.selectedCategories.length === 1
+      ? ['/tienda', 'categoria', this.selectedCategories[0]]
+      : ['/tienda'];
+    const queryParams: Record<string, any> = {};
+    if (this.selectedCategories.length > 1) {
+      queryParams['categorias'] = this.selectedCategories.join(',');
+    }
+    const subUnion = Object.values(this.selectedSubcategoriesMap).flat();
+    if (subUnion.length > 0) {
+      queryParams['subcategorias'] = subUnion.join(',');
+    }
+    return { path, queryParams };
   }
 
   applyFiltersMobile(): void {
-    this.applyFilters().then(() => {
-      this.toggleFilters();
-      this.router.navigate(this.buildFilterRoute());
-    });
+    this.applyFiltersAction(true);
   }
 
-  private buildFilterRoute(): string[] {
-    if (!this.selectedCategory) return ['/tienda'];
-
-    const route = ['/tienda/categoria', this.selectedCategory];
-    if (this.selectedSubcategory) {
-      route.push('subcategoria', this.selectedSubcategory);
-    }
-
-    return route;
-  }
+  // buildFilterRoute ya no se usa con la navegación híbrida
 
   onOverlayClick(event: MouseEvent): void {
     this.toggleFilters();
@@ -326,6 +508,7 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
     event.stopPropagation();
   }
   private applyFiltersSync(): void {
+    const selectedSubUnion = Object.values(this.selectedSubcategoriesMap).flat();
     this.filteredProducts = this.allProducts.filter(p => {
       const productCategory = ProductUtils.normalize(
         typeof p.category === 'string' ? p.category : (p.category?.name ?? '')
@@ -333,8 +516,8 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
       const productSubcategory = ProductUtils.normalize(
         typeof p.subcategory === 'string' ? p.subcategory : (p.subcategory?.name ?? '')
       );
-      const categoryMatch = !this.selectedCategory || productCategory === this.selectedCategory;
-      const subcategoryMatch = !this.selectedSubcategory || productSubcategory === this.selectedSubcategory;
+      const categoryMatch = this.selectedCategories.length === 0 || this.selectedCategories.includes(productCategory);
+      const subcategoryMatch = selectedSubUnion.length === 0 || selectedSubUnion.includes(productSubcategory);
       const colorMatch = !this.selectedColors[p.id] || p.variants.some(v => v.color_name === this.selectedColors[p.id]);
       return categoryMatch && subcategoryMatch && colorMatch;
     });
@@ -363,17 +546,20 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
   }
 
   onAccordionToggled(value: string): void {
-    const normalizedCategory = ProductUtils.normalize(value);
-
-    if (this.selectedAccordion === normalizedCategory) {
-      this.selectedAccordion = null;
+    const normalized = ProductUtils.normalize(value);
+    if (this.openAccordions.has(normalized)) {
+      this.openAccordions.delete(normalized);
     } else {
-      this.selectedAccordion = normalizedCategory;
-      this.selectedCategory = normalizedCategory;
-      this.selectedSubcategory = null;
-      this.applyFiltersSync();
-      this.applyFilters();
-      this.location.replaceState(`/tienda/categoria/${normalizedCategory}`);
+      this.openAccordions.add(normalized);
     }
+  }
+
+  private findParentCategoryForSub(subNormalized: string): string | null {
+    for (const cat of this.categories) {
+      const catNorm = ProductUtils.normalize(cat.value);
+      const match = cat.subsections?.some(s => ProductUtils.normalize(s.value) === subNormalized || ProductUtils.normalize(s.label) === subNormalized);
+      if (match) return catNorm;
+    }
+    return null;
   }
 }

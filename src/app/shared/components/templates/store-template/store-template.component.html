@@ -45,30 +45,66 @@
       <aside *ngIf="!isMobileView" class="transition-all duration-500 ease-in-out overflow-hidden" [ngStyle]="{
           flexBasis: showFilters ? '16%' : '0%',
           maxWidth: showFilters ? '16%' : '0%',
-          minWidth: showFilters ? '200px' : '0px',
+          minWidth: showFilters ? '220px' : '0px',
           opacity: showFilters ? '1' : '0',
           pointerEvents: showFilters ? 'auto' : 'none'
         }">
         <div class="sticky top-4">
-          <app-acordiongeneric *ngFor="let category of categories" [title]="category.label" [value]="category.value"
-            [selected]="selectedAccordion" (toggled)="onAccordionToggled($event)">
+          <!-- Pills seleccionadas -->
+          <div class="px-3 pb-2" *ngIf="selectedCategories.length || getSelectedSubcategoriesFlat().length">
+            <div class="flex flex-wrap gap-2">
+              <span *ngFor="let cat of selectedCategories" class="inline-flex items-center gap-2 bg-aldy-medium-2 text-white px-3 py-1 rounded-full text-xs uppercase tracking-wide">
+                {{ cat }}
+                <button type="button" class="ml-1 text-white/90 hover:text-white" (click)="removeCategory(cat)">×</button>
+              </span>
+              <span *ngFor="let pair of getSelectedSubcategoriesFlat()" class="inline-flex items-center gap-2 bg-aldy-medium-2 text-white px-3 py-1 rounded-full text-xs uppercase tracking-wide">
+                {{ pair.subcategory }}
+                <button type="button" class="ml-1 text-white/90 hover:text-white" (click)="removeSubcategory(pair.category, pair.subcategory)">×</button>
+              </span>
+            </div>
+          </div>
+
+          <!-- Acordeón: Categorías -->
+          <app-acordiongeneric [title]="'Categorías'" [value]="'categorias'" [selectedMultiple]="openAccordionsArray" (toggled)="onAccordionToggled($event)">
             <div class="space-y-1">
-              <div *ngFor="let sub of category.subsections">
-                <label
-                  class="flex items-center gap-2 py-2 px-3 text-sm font-main cursor-pointer w-full hover:bg-gray-50 rounded-md">
-                  <input appAldyRadio type="radio" name="subcategory" [checked]="normalize(sub.value) === selectedSubcategory"
-                    (change)="navigateToSubcategory(category.value, sub.value)"
-                    class="form-radio scale-90 text-aldy-medium focus:ring-aldy-medium-2" />
-                  <span [ngClass]="{
-                      'text-aldy-medium font-semibold': selectedSubcategory === normalize(sub.value),
-                      'text-gray-600': selectedSubcategory !== normalize(sub.value)
-                    }">
-                    {{ sub.label }}
-                  </span>
-                </label>
+              <label *ngFor="let category of categories" class="flex items-center gap-2 py-2 px-3 text-sm font-main cursor-pointer w-full hover:bg-gray-50 rounded-md">
+                <input type="checkbox" [checked]="isCategorySelected(category.value)" (change)="toggleCategory(category.value)" AldyCheckboxV1 />
+                <span [ngClass]="isCategorySelected(category.value) ? 'text-aldy-medium font-semibold' : 'text-gray-600'">{{ category.label }}</span>
+              </label>
+            </div>
+          </app-acordiongeneric>
+
+          <!-- Acordeón: Subcategorías -->
+          <app-acordiongeneric [title]="'Subcategorías'" [value]="'subcategorias'" [selectedMultiple]="openAccordionsArray" (toggled)="onAccordionToggled($event)">
+            <div class="space-y-2">
+              <div *ngIf="selectedCategories.length === 0" class="px-3 py-2 text-xs text-gray-500">Selecciona una categoría para ver subcategorías.</div>
+              <div *ngFor="let cat of selectedCategories" class="px-1">
+                <div class="px-3 pb-1 text-xs uppercase tracking-wider text-gray-500">{{ cat }}</div>
+                <div class="space-y-1">
+                  <label *ngFor="let sub of getSubcategoriesForCategory(cat)" class="flex items-center gap-2 py-2 px-3 text-sm font-main cursor-pointer w-full hover:bg-gray-50 rounded-md">
+                    <input type="checkbox" [checked]="isSubcategorySelected(cat, sub.value)" (change)="toggleSubcategory(cat, sub.value)" AldyCheckboxV1 />
+                    <span [ngClass]="isSubcategorySelected(cat, sub.value) ? 'text-aldy-medium font-semibold' : 'text-gray-600'">{{ sub.label }}</span>
+                  </label>
+                </div>
               </div>
             </div>
           </app-acordiongeneric>
+
+          <!-- Acordeón: Tamaños (placeholder futuro) -->
+          <app-acordiongeneric [title]="'Tamaños'" [value]="'tamanos'" [selectedMultiple]="openAccordionsArray" (toggled)="onAccordionToggled($event)">
+            <div class="px-3 py-2 text-xs text-gray-500">Próximamente.</div>
+          </app-acordiongeneric>
+
+          <!-- Acordeón: Precio (placeholder futuro) -->
+          <app-acordiongeneric [title]="'Precio'" [value]="'precio'" [selectedMultiple]="openAccordionsArray" (toggled)="onAccordionToggled($event)">
+            <div class="px-3 py-2 text-xs text-gray-500">Próximamente.</div>
+          </app-acordiongeneric>
+
+          <!-- Acciones: Borrar y Buscar -->
+          <div class="px-3 pt-3 flex gap-2">
+            <button type="button" (click)="clearFilters()" class="flex-1 border border-aldy-medium-2 text-aldy-medium-2 px-3 py-2 rounded-lg font-medium hover:bg-gray-50 transition-colors text-xs uppercase tracking-widest">Borrar filtros</button>
+            <button type="button" (click)="applyFiltersAction(false)" class="flex-1 bg-aldy-light text-white px-3 py-2 rounded-lg font-medium hover:bg-aldy-medium-2 transition-colors text-xs uppercase tracking-widest">Buscar</button>
+          </div>
         </div>
       </aside>
 
@@ -121,43 +157,59 @@
     </div>
 
     <div class="p-4">
-      <div class="flex flex-wrap gap-2 mb-4" *ngIf="selectedCategory || selectedSubcategory">
-        <div *ngIf="selectedCategory"
-          class="bg-aldy-medium-2 text-white px-3 py-1 rounded-full text-xs uppercase tracking-wide">
-          {{ selectedCategory }}
-        </div>
-        <div *ngIf="selectedSubcategory"
-          class="bg-aldy-medium-2 text-white px-3 py-1 rounded-full text-xs uppercase tracking-wide">
-          {{ selectedSubcategory }}
-        </div>
+      <div class="flex flex-wrap gap-2 mb-4" *ngIf="selectedCategories.length || getSelectedSubcategoriesFlat().length">
+        <span *ngFor="let cat of selectedCategories" class="inline-flex items-center gap-2 bg-aldy-medium-2 text-white px-3 py-1 rounded-full text-xs uppercase tracking-wide">
+          {{ cat }}
+          <button type="button" class="ml-1 text-white/90 hover:text-white" (click)="removeCategory(cat)">×</button>
+        </span>
+        <span *ngFor="let pair of getSelectedSubcategoriesFlat()" class="inline-flex items-center gap-2 bg-aldy-medium-2 text-white px-3 py-1 rounded-full text-xs uppercase tracking-wide">
+          {{ pair.subcategory }}
+          <button type="button" class="ml-1 text-white/90 hover:text-white" (click)="removeSubcategory(pair.category, pair.subcategory)">×</button>
+        </span>
       </div>
 
-      <app-acordiongeneric *ngFor="let category of categories" [title]="category.label" [value]="category.value"
-        [selected]="selectedAccordion" (toggled)="onAccordionToggled($event)">
+      <!-- Móvil: Categorías -->
+      <app-acordiongeneric [title]="'Categorías'" [value]="'categorias'" [selectedMultiple]="openAccordionsArray" (toggled)="onAccordionToggled($event)">
         <div class="space-y-1">
-          <div *ngFor="let sub of category.subsections">
-            <label
-              class="flex items-center gap-2 py-2 px-3 text-sm font-main cursor-pointer w-full hover:bg-gray-50 rounded-md">
-              <input appAldyRadio type="radio" name="subcategory" [checked]="normalize(sub.value) === selectedSubcategory"
-                (change)="onSubcategorySelected(category.value, sub.value)"
-                />
-              <span [ngClass]="{
-                      'text-aldy-medium font-semibold': selectedSubcategory === normalize(sub.value),
-                      'text-gray-600': selectedSubcategory !== normalize(sub.value)
-                    }">
-                {{ sub.label }}
-              </span>
-            </label>
+          <label *ngFor="let category of categories" class="flex items-center gap-2 py-2 px-3 text-sm font-main cursor-pointer w-full hover:bg-gray-50 rounded-md">
+            <input type="checkbox" [checked]="isCategorySelected(category.value)" (change)="toggleCategory(category.value)" AldyCheckboxV1 />
+            <span [ngClass]="isCategorySelected(category.value) ? 'text-aldy-medium font-semibold' : 'text-gray-600'">{{ category.label }}</span>
+          </label>
+        </div>
+      </app-acordiongeneric>
+
+      <!-- Móvil: Subcategorías -->
+      <app-acordiongeneric [title]="'Subcategorías'" [value]="'subcategorias'" [selectedMultiple]="openAccordionsArray" (toggled)="onAccordionToggled($event)">
+        <div class="space-y-2">
+          <div *ngIf="selectedCategories.length === 0" class="px-3 py-2 text-xs text-gray-500">Selecciona una categoría para ver subcategorías.</div>
+          <div *ngFor="let cat of selectedCategories" class="px-1">
+            <div class="px-3 pb-1 text-xs uppercase tracking-wider text-gray-500">{{ cat }}</div>
+            <div class="space-y-1">
+              <label *ngFor="let sub of getSubcategoriesForCategory(cat)" class="flex items-center gap-2 py-2 px-3 text-sm font-main cursor-pointer w-full hover:bg-gray-50 rounded-md">
+                <input type="checkbox" [checked]="isSubcategorySelected(cat, sub.value)" (change)="toggleSubcategory(cat, sub.value)" AldyCheckboxV1 />
+                <span [ngClass]="isSubcategorySelected(cat, sub.value) ? 'text-aldy-medium font-semibold' : 'text-gray-600'">{{ sub.label }}</span>
+              </label>
+            </div>
           </div>
         </div>
+      </app-acordiongeneric>
+
+      <!-- Móvil: Tamaños (placeholder futuro) -->
+      <app-acordiongeneric [title]="'Tamaños'" [value]="'tamanos'" [selectedMultiple]="openAccordionsArray" (toggled)="onAccordionToggled($event)">
+        <div class="px-3 py-2 text-xs text-gray-500">Próximamente.</div>
+      </app-acordiongeneric>
+
+      <!-- Móvil: Precio (placeholder futuro) -->
+      <app-acordiongeneric [title]="'Precio'" [value]="'precio'" [selectedMultiple]="openAccordionsArray" (toggled)="onAccordionToggled($event)">
+        <div class="px-3 py-2 text-xs text-gray-500">Próximamente.</div>
       </app-acordiongeneric>
     </div>
 
     <div class="sticky bottom-0 bg-white border-t border-gray-200 p-4">
-      <button (click)="applyFiltersMobile()"
-        class="w-full bg-aldy-light text-white py-3 px-4 rounded-lg font-medium hover:bg-aldy-medium-2 transition-colors">
-        Aplicar filtros
-      </button>
+      <div class="flex gap-2">
+        <button (click)="clearFilters()" class="flex-1 border border-aldy-medium-2 text-aldy-medium-2 py-3 px-4 rounded-lg font-medium hover:bg-gray-50 transition-colors">Borrar filtros</button>
+        <button (click)="applyFiltersMobile()" class="flex-1 bg-aldy-light text-white py-3 px-4 rounded-lg font-medium hover:bg-aldy-medium-2 transition-colors">Buscar</button>
+      </div>
     </div>
   </div>
 </div>

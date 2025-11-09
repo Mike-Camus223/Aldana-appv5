@@ -1,7 +1,8 @@
 import { Directive, ElementRef, Renderer2, HostListener } from '@angular/core';
 
 @Directive({
-  selector: '[AldyCheckboxV1]'
+  selector: '[AldyCheckboxV1]',
+  standalone: true
 })
 export class AldyCheckboxV1Directive {
   private checkmarkIcon: HTMLElement | null = null;
