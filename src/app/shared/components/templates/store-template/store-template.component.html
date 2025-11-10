@@ -67,7 +67,7 @@
           <!-- Acordeón: Categorías -->
           <app-acordiongeneric [title]="'Categorías'" [value]="'categorias'" [selectedMultiple]="openAccordionsArray" (toggled)="onAccordionToggled($event)">
             <div class="space-y-1">
-              <label *ngFor="let category of categories" class="flex items-center gap-2 py-2 px-3 text-sm font-main cursor-pointer w-full hover:bg-gray-50 rounded-md">
+              <label *ngFor="let category of categories" class="flex items-center gap-2 py-2 px-3 text-xs tracking-wider NewAldyFontType4 cursor-pointer w-full hover:bg-gray-50 rounded-md">
                 <input type="checkbox" [checked]="isCategorySelected(category.value)" (change)="toggleCategory(category.value)" AldyCheckboxV1 />
                 <span [ngClass]="isCategorySelected(category.value) ? 'text-aldy-medium font-semibold' : 'text-gray-600'">{{ category.label }}</span>
               </label>
@@ -77,11 +77,11 @@
           <!-- Acordeón: Subcategorías -->
           <app-acordiongeneric [title]="'Subcategorías'" [value]="'subcategorias'" [selectedMultiple]="openAccordionsArray" (toggled)="onAccordionToggled($event)">
             <div class="space-y-2 max-h-72 overflow-y-auto pr-2">
-              <div *ngIf="selectedCategories.length === 0" class="px-3 py-2 text-xs text-gray-500">Selecciona una categoría para ver subcategorías.</div>
+              <div *ngIf="selectedCategories.length === 0" class="px-3 py-2 text-xs text-gray-500">Selecciona una categoría primero.</div>
               <div *ngFor="let cat of selectedCategories" class="px-1">
                 <div class="px-3 pb-1 text-xs uppercase tracking-wider text-gray-500">{{ cat }}</div>
                 <div class="space-y-1">
-                  <label *ngFor="let sub of getSubcategoriesForCategory(cat)" class="flex items-center gap-2 py-2 px-3 text-sm font-main cursor-pointer w-full hover:bg-gray-50 rounded-md">
+                  <label *ngFor="let sub of getSubcategoriesForCategory(cat)" class="flex items-center gap-2 py-2 px-3 text-xs tracking-wider NewAldyFontType4 cursor-pointer w-full hover:bg-gray-50 rounded-md">
                     <input type="checkbox" [checked]="isSubcategorySelected(cat, sub.value)" (change)="toggleSubcategory(cat, sub.value)" AldyCheckboxV1 />
                     <span [ngClass]="isSubcategorySelected(cat, sub.value) ? 'text-aldy-medium font-semibold' : 'text-gray-600'">{{ sub.label }}</span>
                   </label>
@@ -102,8 +102,8 @@
 
           <!-- Acciones: Borrar y Buscar -->
           <div class="px-3 pt-3 flex gap-2">
-            <button type="button" (click)="clearFilters()" class="flex-1 border border-aldy-medium-2 text-aldy-medium-2 px-3 py-2 rounded-lg font-medium hover:bg-gray-50 transition-colors text-xs uppercase tracking-widest">Borrar filtros</button>
-            <button type="button" (click)="applyFiltersAction(false)" class="flex-1 bg-aldy-light text-white px-3 py-2 rounded-lg font-medium hover:bg-aldy-medium-2 transition-colors text-xs uppercase tracking-widest">Buscar</button>
+            <button type="button" (click)="clearFilters()" class="flex-1 border border-aldy-medium text-aldy-medium px-3 py-2 font-light hover:border-aldy-medium-2 hover:text-aldy-medium-2 NewAldyFontType4 cursor-pointer transition-colors text-xs uppercase tracking-widest">Borrar filtros</button>
+            <button type="button" (click)="applyFiltersAction(false)" class="flex-1 text-white px-3 py-2 font-light bg-aldy-medium hover:bg-aldy-medium-2 NewAldyFontType4 cursor-pointer transition-colors text-xs uppercase tracking-wider">Buscar</button>
           </div>
         </div>
       </aside>
@@ -208,9 +208,9 @@
       <!-- Móvil: Categorías -->
       <app-acordiongeneric [title]="'Categorías'" [value]="'categorias'" [selectedMultiple]="openAccordionsArray" (toggled)="onAccordionToggled($event)">
         <div class="space-y-1">
-          <label *ngFor="let category of categories" class="flex items-center gap-2 py-2 px-3 text-sm font-main cursor-pointer w-full hover:bg-gray-50 rounded-md">
+          <label *ngFor="let category of categories" class="flex items-center gap-2 py-2 px-3 text-sm NewAldyFontType4 tracking-wider cursor-pointer w-full hover:bg-gray-50 rounded-md">
             <input type="checkbox" [checked]="isCategorySelected(category.value)" (change)="toggleCategory(category.value)" AldyCheckboxV1 />
-            <span [ngClass]="isCategorySelected(category.value) ? 'text-aldy-medium font-semibold' : 'text-gray-600'">{{ category.label }}</span>
+            <span [ngClass]="isCategorySelected(category.value) ? 'text-aldy-medium font-light' : 'text-gray-900'">{{ category.label }}</span>
           </label>
         </div>
       </app-acordiongeneric>
@@ -218,11 +218,11 @@
       <!-- Móvil: Subcategorías -->
       <app-acordiongeneric [title]="'Subcategorías'" [value]="'subcategorias'" [selectedMultiple]="openAccordionsArray" (toggled)="onAccordionToggled($event)">
         <div class="space-y-2 max-h-72 overflow-y-auto pr-2">
-          <div *ngIf="selectedCategories.length === 0" class="px-3 py-2 text-xs text-gray-500">Selecciona una categoría para ver subcategorías.</div>
+          <div *ngIf="selectedCategories.length === 0" class="px-3 py-2 text-xs text-gray-500">Selecciona una categoría primero.</div>
           <div *ngFor="let cat of selectedCategories" class="px-1">
             <div class="px-3 pb-1 text-xs uppercase tracking-wider text-gray-500">{{ cat }}</div>
             <div class="space-y-1">
-              <label *ngFor="let sub of getSubcategoriesForCategory(cat)" class="flex items-center gap-2 py-2 px-3 text-sm font-main cursor-pointer w-full hover:bg-gray-50 rounded-md">
+              <label *ngFor="let sub of getSubcategoriesForCategory(cat)" class="flex items-center gap-2 py-2 px-3 text-sm NewAldyFontType4 cursor-pointer w-full hover:bg-gray-50 rounded-md">
                 <input type="checkbox" [checked]="isSubcategorySelected(cat, sub.value)" (change)="toggleSubcategory(cat, sub.value)" AldyCheckboxV1 />
                 <span [ngClass]="isSubcategorySelected(cat, sub.value) ? 'text-aldy-medium font-semibold' : 'text-gray-600'">{{ sub.label }}</span>
               </label>
