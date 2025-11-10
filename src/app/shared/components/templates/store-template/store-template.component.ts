@@ -78,6 +78,12 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
   activeAccordion: number = 0;
   showFilters = false;
   productColumns: number = 4;
+  // Paginación
+  itemsPerPage: number = 4;
+  readonly maxPages: number = 16; // no cambiable
+  currentPage: number = 1;
+  pagedProducts: Product[] = [];
+  pagesArray: number[] = [];
   isMobileView = false;
   selectedAccordion: string | null = null; // mantenido por compatibilidad, no usado para abrir
   openAccordions: Set<string> = new Set(['categorias']);
@@ -85,6 +91,11 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
 
   @ViewChild('productsTop') productsTopRef?: ElementRef<HTMLDivElement>;
   @ViewChild('productsControls') productsControlsRef?: ElementRef<HTMLDivElement>;
+  @ViewChild('productsContainer') productsContainerRef?: ElementRef<HTMLDivElement>;
+
+  // Control de altura para evitar saltos de scroll al actualizar filtros
+  private containerLocked = false;
+  private lockedHeight = 0;
 
   // categories = [
   //   {
@@ -290,11 +301,8 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
         this.openAccordions.clear();
         this.openAccordions.add('categorias');
 
-        // Aplicar filtros en memoria y cargar wishlist
-        this.applyFiltersSync();
-        this.loadWishlistFromStorage();
-
-        this.loading = false;
+        // Aplicar con animación similar a filtrar
+        await this.applyFilters();
 
       } catch (error) {
         console.error('Error in initializeRoute:', error);
@@ -535,6 +543,8 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
     event.stopPropagation();
   }
   private applyFiltersSync(): void {
+    // Bloquear altura para evitar salto de scroll durante recalculo
+    this.lockProductsContainer();
     const selectedSubUnion = Object.values(this.selectedSubcategoriesMap).flat();
     const hasAnyCategory = this.selectedCategories.length > 0;
     const hasAnySub = selectedSubUnion.length > 0;
@@ -547,7 +557,8 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
         typeof p.subcategory === 'string' ? p.subcategory : (p.subcategory?.name ?? '')
       );
 
-      let include = false;
+      // Si no hay ningún filtro seleccionado, incluir todos
+      let include = !(hasAnyCategory || hasAnySub);
 
       if (hasAnyCategory) {
         if (this.selectedCategories.includes(productCategory)) {
@@ -569,15 +580,21 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
       const colorMatch = !this.selectedColors[p.id] || p.variants.some(v => v.color_name === this.selectedColors[p.id]);
       return include && colorMatch;
     });
+
+    this.updatePagination();
+    // Desbloquear altura tras recalculo
+    this.unlockProductsContainer();
   }
 
   public async applyFilters(): Promise<void> {
+    this.lockProductsContainer();
     this.loading = true;
     this.filteredProducts = [];
     await this.delay(500);
     this.applyFiltersSync();
     this.loadWishlistFromStorage();
     this.loading = false;
+    this.unlockProductsContainer();
   }
 
   private scrollToProductsTop(): void {
@@ -600,6 +617,63 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
 
   private delay(ms: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  // --- Helpers: Paginación ---
+  get totalPages(): number {
+    const total = Math.ceil((this.filteredProducts.length || 0) / this.itemsPerPage);
+    return Math.min(this.maxPages, Math.max(1, total));
+  }
+
+  private updatePagination(): void {
+    // clamp current page
+    if (this.currentPage > this.totalPages) this.currentPage = this.totalPages;
+    if (this.currentPage < 1) this.currentPage = 1;
+    // build pages array
+    this.pagesArray = Array.from({ length: this.totalPages }, (_, i) => i + 1);
+    // slice products
+    const start = (this.currentPage - 1) * this.itemsPerPage;
+    const end = start + this.itemsPerPage;
+    this.pagedProducts = this.filteredProducts.slice(start, end);
+  }
+
+  goToPage(page: number): void {
+    if (page < 1 || page > this.totalPages) return;
+    this.currentPage = page;
+    this.updatePagination();
+    this.scrollToProductsTop();
+  }
+
+  prevPage(): void {
+    this.goToPage(this.currentPage - 1);
+  }
+
+  nextPage(): void {
+    this.goToPage(this.currentPage + 1);
+  }
+
+  // --- Helpers: Lock altura contenedor para evitar salto de scroll ---
+  private lockProductsContainer(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    const el = this.productsContainerRef?.nativeElement;
+    if (!el) return;
+    // Solo bloquear si no está ya bloqueado
+    if (!this.containerLocked) {
+      this.lockedHeight = el.offsetHeight;
+      el.style.minHeight = this.lockedHeight ? `${this.lockedHeight}px` : el.style.minHeight;
+      this.containerLocked = true;
+    }
+  }
+
+  private unlockProductsContainer(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    const el = this.productsContainerRef?.nativeElement;
+    if (!el) return;
+    if (this.containerLocked) {
+      el.style.minHeight = '300px';
+      this.containerLocked = false;
+      this.lockedHeight = 0;
+    }
   }
 
 

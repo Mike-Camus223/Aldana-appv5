@@ -108,7 +108,7 @@
         </div>
       </aside>
 
-      <div class="transition-all duration-500 ease-in-out flex-1 min-h-[300px]">
+      <div #productsContainer class="transition-all duration-500 ease-in-out flex-1  min-h-[300px]">
         <div #productsTop id="productsTop" class="h-0"></div>
 
         <p *ngIf="!loading && filteredProducts.length === 0"
@@ -124,11 +124,47 @@
             productColumns === 3 ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 mx-0' : '',
             productColumns === 4 ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 mx-0' : ''
           ]">
-          <app-cardproduct *ngFor="let product of filteredProducts; trackBy: trackByProductId" [product]="product"
+          <app-cardproduct *ngFor="let product of pagedProducts; trackBy: trackByProductId" [product]="product"
             [selectedColor]="selectedColors[product.id]" [displayImage]="product.main_image" [mobileMode]="'ismobile'"
             [desktopMode]="'isdesktop'" (colorSelected)="selectColor($event)"
             (wishlistToggled)="toggleWishlist($event)">
           </app-cardproduct>
+        </div>
+
+        <!-- Paginador -->
+        <div *ngIf="!loading && filteredProducts.length > 0 && totalPages > 1" class="flex justify-center items-center gap-2 mt-6 select-none">
+          <!-- Flecha izquierda -->
+          <button type="button" (click)="prevPage()" [disabled]="currentPage === 1"
+            class="w-10 h-10 border border-aldy-medium-2 rounded-none flex items-center justify-center NewAldyFontType4 text-sm hover:bg-gray-50 disabled:opacity-40"
+            aria-label="Página anterior">‹</button>
+
+          <!-- Números de página -->
+          <ng-container *ngIf="pagesArray.length <= 8; else manyPages">
+            <button *ngFor="let p of pagesArray" type="button" (click)="goToPage(p)"
+              class="w-10 h-10 border border-aldy-medium-2 rounded-none flex items-center justify-center NewAldyFontType4 text-sm hover:bg-gray-50"
+              [ngClass]="p === currentPage ? 'bg-gray-100' : ''">{{ p }}</button>
+          </ng-container>
+          <ng-template #manyPages>
+            <button type="button" (click)="goToPage(1)"
+              class="w-10 h-10 border border-aldy-medium-2 rounded-none flex items-center justify-center NewAldyFontType4 text-sm hover:bg-gray-50"
+              [ngClass]="currentPage === 1 ? 'bg-gray-100' : ''">1</button>
+            <span class="px-2 NewAldyFontType4 text-sm">...</span>
+            <button *ngIf="currentPage > 2" type="button" (click)="goToPage(currentPage - 1)"
+              class="w-10 h-10 border border-aldy-medium-2 rounded-none flex items-center justify-center NewAldyFontType4 text-sm hover:bg-gray-50">{{ currentPage - 1 }}</button>
+            <button type="button" (click)="goToPage(currentPage)"
+              class="w-10 h-10 border border-aldy-medium-2 rounded-none flex items-center justify-center NewAldyFontType4 text-sm hover:bg-gray-50 bg-gray-100">{{ currentPage }}</button>
+            <button *ngIf="currentPage < totalPages - 1" type="button" (click)="goToPage(currentPage + 1)"
+              class="w-10 h-10 border border-aldy-medium-2 rounded-none flex items-center justify-center NewAldyFontType4 text-sm hover:bg-gray-50">{{ currentPage + 1 }}</button>
+            <span class="px-2 NewAldyFontType4 text-sm">...</span>
+            <button type="button" (click)="goToPage(totalPages)"
+              class="w-10 h-10 border border-aldy-medium-2 rounded-none flex items-center justify-center NewAldyFontType4 text-sm hover:bg-gray-50"
+              [ngClass]="currentPage === totalPages ? 'bg-gray-100' : ''">{{ totalPages }}</button>
+          </ng-template>
+
+          <!-- Flecha derecha -->
+          <button type="button" (click)="nextPage()" [disabled]="currentPage === totalPages"
+            class="w-10 h-10 border border-aldy-medium-2 rounded-none flex items-center justify-center NewAldyFontType4 text-sm hover:bg-gray-50 disabled:opacity-40"
+            aria-label="Página siguiente">›</button>
         </div>
       </div>
     </div>
