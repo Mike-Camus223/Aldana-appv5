@@ -15,7 +15,6 @@ export class AcordiongenericComponent implements AfterViewInit, OnChanges, OnDes
   @Input() selectedMultiple: string[] = [];
   @Input() disableTransition: boolean = false;
   @Output() toggled = new EventEmitter<string>();
-
   @ViewChild('contentWrapper') contentWrapper!: ElementRef<HTMLDivElement>;
 
   contentHeight = 0;

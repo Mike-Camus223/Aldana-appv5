@@ -92,64 +92,8 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
   @ViewChild('productsTop') productsTopRef?: ElementRef<HTMLDivElement>;
   @ViewChild('productsControls') productsControlsRef?: ElementRef<HTMLDivElement>;
   @ViewChild('productsContainer') productsContainerRef?: ElementRef<HTMLDivElement>;
-
-  // Control de altura para evitar saltos de scroll al actualizar filtros
   private containerLocked = false;
   private lockedHeight = 0;
-
-  // categories = [
-  //   {
-  //     label: 'Camisas', value: 'camisas', subsections: [
-  //       { label: 'Camisas 1', value: 'camisas 1' },
-  //       { label: 'Camisas 2', value: 'camisas 2' },
-  //       { label: 'Camisas 3', value: 'camisas 3' }
-  //     ]
-  //   },
-  //   {
-  //     label: 'Blusas', value: 'blusas', subsections: [
-  //       { label: 'Blusas 1', value: 'blusas 1' },
-  //       { label: 'Blusas 2', value: 'blusas 2' },
-  //       { label: 'Blusas 3', value: 'blusas 3' }
-  //     ]
-  //   },
-  //   {
-  //     label: 'Faldas', value: 'faldas', subsections: [
-  //       { label: 'Faldas 1', value: 'faldas 1' },
-  //       { label: 'Faldas 2', value: 'faldas 2' },
-  //       { label: 'Faldas 3', value: 'faldas 3' }
-  //     ]
-  //   },
-  //   {
-  //     label: 'Pantalón', value: 'pantalon', subsections: [
-  //       { label: 'Pantalón 1', value: 'pantalon 1' },
-  //       { label: 'Pantalón 2', value: 'pantalon 2' },
-  //       { label: 'Pantalón 3', value: 'pantalon 3' }
-  //     ]
-  //   },
-  //   {
-  //     label: 'Abrigos', value: 'abrigos', subsections: [
-  //       { label: 'Campera', value: 'campera' },
-  //       { label: 'Buzos', value: 'buzos' },
-  //       { label: 'Chalecos', value: 'chalecos' },
-  //       { label: 'Blazers', value: 'blazers' },
-  //       { label: 'Tapados', value: 'tapados' }
-  //     ]
-  //   },
-  //   {
-  //     label: 'Vestidos', value: 'vestidos', subsections: [
-  //       { label: 'Vestidos 1', value: 'vestidos 1' },
-  //       { label: 'Vestidos 2', value: 'vestidos 2' },
-  //       { label: 'Vestidos 3', value: 'vestidos 3' }
-  //     ]
-  //   },
-  //   {
-  //     label: 'Remeras', value: 'remeras', subsections: [
-  //       { label: 'Remeras 1', value: 'remeras 1' },
-  //       { label: 'Remeras 2', value: 'remeras 2' },
-  //       { label: 'Remeras 3', value: 'remeras 3' }
-  //     ]
-  //   }
-  // ];
 
   categories = [
     {
