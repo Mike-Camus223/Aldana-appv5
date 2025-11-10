@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, Output, EventEmitter, ViewChild, ElementRef, AfterViewInit, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ViewChild, ElementRef, AfterViewInit, OnChanges, SimpleChanges, OnDestroy } from '@angular/core';
 
 @Component({
   selector: 'app-acordiongeneric',
@@ -8,16 +8,18 @@ import { Component, Input, Output, EventEmitter, ViewChild, ElementRef, AfterVie
   templateUrl: './acordiongeneric.component.html',
   styleUrls: ['./acordiongeneric.component.css'],
 })
-export class AcordiongenericComponent implements AfterViewInit, OnChanges {
+export class AcordiongenericComponent implements AfterViewInit, OnChanges, OnDestroy {
   @Input() title = '';
   @Input() value = '';
   @Input() selected: string | null = null;
   @Input() selectedMultiple: string[] = [];
+  @Input() disableTransition: boolean = false;
   @Output() toggled = new EventEmitter<string>();
 
   @ViewChild('contentWrapper') contentWrapper!: ElementRef<HTMLDivElement>;
 
   contentHeight = 0;
+  private mutationObserver: MutationObserver | null = null;
 
   onToggle(): void {
     this.toggled.emit(this.value);
@@ -31,6 +33,7 @@ export class AcordiongenericComponent implements AfterViewInit, OnChanges {
 
   ngAfterViewInit() {
     this.updateContentHeight();
+    this.setupMutationObserver();
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -48,6 +51,25 @@ export class AcordiongenericComponent implements AfterViewInit, OnChanges {
     } else {
       // Si está cerrado, maxHeight = 0
       this.contentHeight = 0;
+    }
+  }
+
+  private setupMutationObserver() {
+    if (!this.contentWrapper) return;
+    // Observa cambios dentro del contenido para recalcular altura en tiempo real
+    this.mutationObserver = new MutationObserver(() => {
+      this.updateContentHeight();
+    });
+    this.mutationObserver.observe(this.contentWrapper.nativeElement, {
+      childList: true,
+      subtree: true,
+    });
+  }
+
+  ngOnDestroy(): void {
+    if (this.mutationObserver) {
+      this.mutationObserver.disconnect();
+      this.mutationObserver = null;
     }
   }
 }

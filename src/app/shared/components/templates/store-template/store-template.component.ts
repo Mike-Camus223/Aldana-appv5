@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, HostListener, Inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener, Inject, ElementRef, ViewChild } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { PLATFORM_ID } from '@angular/core';
 import { CheckboxModule } from 'primeng/checkbox';
@@ -82,6 +82,9 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
   selectedAccordion: string | null = null; // mantenido por compatibilidad, no usado para abrir
   openAccordions: Set<string> = new Set(['categorias']);
   get openAccordionsArray(): string[] { return Array.from(this.openAccordions); }
+
+  @ViewChild('productsTop') productsTopRef?: ElementRef<HTMLDivElement>;
+  @ViewChild('productsControls') productsControlsRef?: ElementRef<HTMLDivElement>;
 
   // categories = [
   //   {
@@ -283,12 +286,9 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
         }
 
         // Abrir acordeón acorde al estado
-        // Abrir acordeones iniciales: Categorías siempre, Subcategorías si hay selección
+        // Abrir acordeones iniciales: Categorías siempre. Subcategorías NO automáticamente
         this.openAccordions.clear();
         this.openAccordions.add('categorias');
-        if (this.selectedCategories.length) {
-          this.openAccordions.add('subcategorias');
-        }
 
         // Aplicar filtros en memoria y cargar wishlist
         this.applyFiltersSync();
@@ -380,13 +380,8 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
     } else {
       this.selectedCategories.push(cat);
     }
-    // Mantener Categorías abierto y abrir Subcategorías si hay selección
+    // Mantener Categorías abierto. NO abrir Subcategorías automáticamente
     this.openAccordions.add('categorias');
-    if (this.selectedCategories.length) {
-      this.openAccordions.add('subcategorias');
-    } else {
-      this.openAccordions.delete('subcategorias');
-    }
   }
 
   isCategorySelected(categoryValue: string): boolean {
@@ -465,14 +460,18 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
     this.openAccordions.clear();
     this.openAccordions.add('categorias');
     this.applyFiltersSync();
-    // Mantener SPA sin recarga total; navegación limpia opcional
-    this.router.navigate(['/tienda'], { queryParams: {}, replaceUrl: true });
+    // Mantener SPA sin recarga total; actualizar solo URL sin navegación
+    this.location.replaceState('/tienda');
+    this.scrollToProductsTop();
   }
 
   applyFiltersAction(isMobile: boolean = false): void {
     this.applyFilters().then(() => {
-      const { path, queryParams } = this.buildPathAndQuery();
-      this.router.navigate(path, { queryParams });
+      const url = this.buildUrlString();
+      // Actualiza la URL sin disparar navegación ni loaders genéricos
+      const [base, query] = url.split('?');
+      this.location.replaceState(base, query ?? '');
+      this.scrollToProductsTop();
       if (isMobile) {
         this.toggleFilters();
       }
@@ -480,18 +479,46 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
   }
 
   private buildPathAndQuery(): { path: string[]; queryParams: Record<string, any> } {
-    const path = this.selectedCategories.length === 1
-      ? ['/tienda', 'categoria', this.selectedCategories[0]]
-      : ['/tienda'];
+    const subUnion = Object.values(this.selectedSubcategoriesMap).flat();
+
+    // SEO-friendly rutas híbridas: preferir path params cuando hay selección única
+    let path: string[] = ['/tienda'];
+    if (this.selectedCategories.length === 1 && subUnion.length === 1) {
+      // /tienda/categoria/:categoria/subcategoria/:subcategoria
+      path = ['/tienda', 'categoria', this.selectedCategories[0], 'subcategoria', subUnion[0]];
+    } else if (this.selectedCategories.length === 1) {
+      // /tienda/categoria/:categoria
+      path = ['/tienda', 'categoria', this.selectedCategories[0]];
+    } else if (this.selectedCategories.length === 0 && subUnion.length === 1) {
+      // /tienda/subcategoria/:subcategoria
+      path = ['/tienda', 'subcategoria', subUnion[0]];
+    }
+
     const queryParams: Record<string, any> = {};
     if (this.selectedCategories.length > 1) {
+      // múltiples categorías como query param legible
       queryParams['categorias'] = this.selectedCategories.join(',');
     }
-    const subUnion = Object.values(this.selectedSubcategoriesMap).flat();
-    if (subUnion.length > 0) {
+    if (subUnion.length > 1 || (this.selectedCategories.length !== 1 && subUnion.length === 1)) {
+      // múltiples subcategorías o única sin categoría única
       queryParams['subcategorias'] = subUnion.join(',');
     }
     return { path, queryParams };
+  }
+
+  private buildUrlString(): string {
+    const { path, queryParams } = this.buildPathAndQuery();
+    let base = path.join('/');
+    if (!base.startsWith('/')) base = '/' + base;
+    // Construir query string de manera robusta
+    const params = new URLSearchParams();
+    Object.entries(queryParams).forEach(([k, v]) => {
+      if (v !== undefined && v !== null && String(v).length > 0) {
+        params.set(k, String(v));
+      }
+    });
+    const qs = params.toString();
+    return qs ? `${base}?${qs}` : base;
   }
 
   applyFiltersMobile(): void {
@@ -530,6 +557,24 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
     this.applyFiltersSync();
     this.loadWishlistFromStorage();
     this.loading = false;
+  }
+
+  private scrollToProductsTop(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      try {
+        const targetEl = this.productsControlsRef?.nativeElement
+          || this.productsTopRef?.nativeElement
+          || document.getElementById('productsTop');
+        if (targetEl) {
+          targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } else {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      } catch (e) {
+        // fallback: scroll to top of page
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
   }
 
   private delay(ms: number): Promise<void> {
