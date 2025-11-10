@@ -100,27 +100,29 @@
             </div>
           </app-acordiongeneric>
 
-          <!-- Acordeón: Precio (slider custom sin PrimeNG) -->
+          <!-- Acordeón: Precio (PrimeNG Slider ranged) -->
           <app-acordiongeneric [title]="'Precio'" [value]="'precio'" [selectedMultiple]="openAccordionsArray" (toggled)="onAccordionToggled($event)">
             <div class="px-3 py-2">
-              <!-- Barra de rango -->
-              <div class="relative h-2 bg-[#d9e2d8] rounded">
-                <div class="absolute top-0 h-2 bg-aldy-medium rounded" [style.left.%]="lowerPercent" [style.width.%]="upperPercent - lowerPercent"></div>
-                <!-- Inputs range superpuestos -->
-                <input type="range" class="range-input" [min]="0" [max]="500000" [step]="100" [ngModel]="priceMin" (ngModelChange)="onPriceInputChange('min', $event)" />
-                <input type="range" class="range-input" [min]="0" [max]="500000" [step]="100" [ngModel]="priceMax" (ngModelChange)="onPriceInputChange('max', $event)" />
-              </div>
+              <p-slider
+                [range]="true"
+                [min]="0"
+                [max]="500000"
+                [step]="100"
+                class="w-full"
+                [(ngModel)]="priceRange"
+                (ngModelChange)="onPriceRangeChange($event)"
+              ></p-slider>
               <!-- Inputs numéricos ajustados y alineados -->
               <div class="flex items-center gap-3 mt-3 flex-wrap">
-                <div class="flex items-center gap-1 border border-aldy-medium-2 px-2 py-1">
+                <div class="flex items-center gap-1 border border-aldy-medium-2 px-1 py-1">
                   <span class="text-aldy-medium-2">$</span>
-                  <input type="number" class="w-20 outline-none text-sm" [min]="0" [max]="500000" [step]="100" [(ngModel)]="priceMin" (ngModelChange)="onPriceInputChange('min', $event)" />
+                  <input type="number" class="w-16 outline-none text-sm" [min]="0" [max]="500000" [step]="100" [(ngModel)]="priceMin" (ngModelChange)="onPriceInputChange('min', $event)" />
                   <span class="text-gray-500 text-xs">0</span>
                 </div>
                 <span class="text-gray-600 text-sm">—</span>
-                <div class="flex items-center gap-1 border border-aldy-medium-2 px-2 py-1">
+                <div class="flex items-center gap-1 border border-aldy-medium-2 px-1 py-1">
                   <span class="text-aldy-medium-2">$</span>
-                  <input type="number" class="w-20 outline-none text-sm" [min]="0" [max]="500000" [step]="100" [(ngModel)]="priceMax" (ngModelChange)="onPriceInputChange('max', $event)" />
+                  <input type="number" class="w-16 outline-none text-sm" [min]="0" [max]="500000" [step]="100" [(ngModel)]="priceMax" (ngModelChange)="onPriceInputChange('max', $event)" />
                   <span class="text-gray-500 text-xs">500.000</span>
                 </div>
               </div>
@@ -325,21 +327,25 @@
 
       <app-acordiongeneric [title]="'Precio'" [value]="'precio'" [selectedMultiple]="openAccordionsArray" (toggled)="onAccordionToggled($event)">
         <div class="px-3 py-2">
-          <div class="relative h-2 bg-[#d9e2d8] rounded">
-            <div class="absolute top-0 h-2 bg-aldy-medium rounded" [style.left.%]="lowerPercent" [style.width.%]="upperPercent - lowerPercent"></div>
-            <input type="range" class="range-input" [min]="0" [max]="500000" [step]="100" [ngModel]="priceMin" (ngModelChange)="onPriceInputChange('min', $event)" />
-            <input type="range" class="range-input" [min]="0" [max]="500000" [step]="100" [ngModel]="priceMax" (ngModelChange)="onPriceInputChange('max', $event)" />
-          </div>
+          <p-slider
+            [range]="true"
+            [min]="0"
+            [max]="500000"
+            [step]="100"
+            class="w-full"
+            [(ngModel)]="priceRange"
+            (ngModelChange)="onPriceRangeChange($event)"
+          ></p-slider>
           <div class="flex items-center gap-3 mt-3 flex-wrap">
-            <div class="flex items-center gap-1 border border-aldy-medium-2 px-2 py-1">
+            <div class="flex items-center gap-1 border border-aldy-medium-2 px-1 py-1">
               <span class="text-aldy-medium-2">$</span>
-              <input type="number" class="w-20 outline-none text-sm" [min]="0" [max]="500000" [step]="100" [(ngModel)]="priceMin" (ngModelChange)="onPriceInputChange('min', $event)" />
+              <input type="number" class="w-16 outline-none text-sm" [min]="0" [max]="500000" [step]="100" [(ngModel)]="priceMin" (ngModelChange)="onPriceInputChange('min', $event)" />
               <span class="text-gray-500 text-xs">0</span>
             </div>
             <span class="text-gray-600 text-sm">—</span>
-            <div class="flex items-center gap-1 border border-aldy-medium-2 px-2 py-1">
+            <div class="flex items-center gap-1 border border-aldy-medium-2 px-1 py-1">
               <span class="text-aldy-medium-2">$</span>
-              <input type="number" class="w-20 outline-none text-sm" [min]="0" [max]="500000" [step]="100" [(ngModel)]="priceMax" (ngModelChange)="onPriceInputChange('max', $event)" />
+              <input type="number" class="w-16 outline-none text-sm" [min]="0" [max]="500000" [step]="100" [(ngModel)]="priceMax" (ngModelChange)="onPriceInputChange('max', $event)" />
               <span class="text-gray-500 text-xs">500.000</span>
             </div>
           </div>

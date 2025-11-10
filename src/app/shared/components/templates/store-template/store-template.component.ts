@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy, HostListener, Inject, ElementRef, ViewChi
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { PLATFORM_ID } from '@angular/core';
 import { CheckboxModule } from 'primeng/checkbox';
+import { SliderModule } from 'primeng/slider';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { SupabaseService } from '../../../../core/services/data-access/supabase.service';
@@ -23,6 +24,7 @@ import { Location } from '@angular/common';
   imports: [
     CommonModule,
     CheckboxModule,
+    SliderModule,
     FormsModule,
     RouterModule,
     CardproductComponent,
