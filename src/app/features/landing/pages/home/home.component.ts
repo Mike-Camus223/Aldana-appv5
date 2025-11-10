@@ -46,7 +46,7 @@ export class HomeComponent {
       textOrderDesktop: 'md:order-1',
       buttonText: 'VER MÁS',
       buttonUrl: '/acerca-de-mi',
-      maxWidthTittle: 'lg:min-w-xl xl:min-w-2xl min-w-full',
+      maxWidthTittle: 'lg:min-w-xl xl:min-w-xl min-w-full',
       titleOffsetClass: 'transition-all duration-500 ease-in-out',
       anotherText: '',
     }

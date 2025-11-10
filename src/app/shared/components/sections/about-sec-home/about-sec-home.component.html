@@ -2,22 +2,22 @@
   <div class="grid grid-cols-1 lg:grid-cols-5 items-stretch w-full min-h-[700px] relative">
     <!-- Columna de texto -->
     <div
-      class="flex items-center w-full lg:ps-5 xl:ps-20 pe-0 lg:pe-5 md:py-0 z-10 lg:col-span-2 relative"
+      class="flex items-center w-full md:py-0 z-10 lg:col-span-2 relative"
       [ngClass]="item.textOrderMobile + ' ' + item.textOrderDesktop"
     >
       <!-- SVG decorativo centrado SOLO en mobile -->
-      <div class="absolute inset-0 flex justify-center items-center lg:hidden pointer-events-none select-none z-0">
+      <div class="absolute inset-0 flex justify-center items-center pointer-events-none select-none z-0">
         <img
           src="../../../../../assets/svg/logos-03.svg"
           alt="Aldana Vilcabana"
-          class="w-[200px] sm:w-[260px] opacity-20 object-contain"
+          class="w-[200px] sm:w-[260px] xl:w-[400px] opacity-20 object-contain"
           draggable="false"
         />
       </div>
       <div class="flex flex-col items-center md:items-start text-center py-7 lg:py-0 lg:text-left w-full relative z-10">
         <h2
           appWordReveal
-          class="text-5xl sm:text-5xl w-full lg:text-[76px] xl:text-[84px] leading-tight NewAldyTitle font-light text-white inline-block"
+          class="text-5xl sm:text-5xl w-full lg:text-[76px] xl:text-[84px] text-center leading-tight NewAldyTitle font-light text-white inline-block"
           [ngClass]="[item.maxWidthTittle, item.titleOffsetClass]"
         >
           {{ item.title }}

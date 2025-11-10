@@ -1,9 +1,9 @@
- <section class="mb-1 hidden md:block">
+ <section class="mb-1">
   <app-dual-section></app-dual-section>
 </section> 
-<section class="mb-1 block md:hidden">
+<!-- <section class="mb-1 block md:hidden">
   <app-carousel-screen [slides]="slides"></app-carousel-screen>
-</section>
+</section> -->
 <!-- <section class="my-7">
   <app-dinamic-titles
     [text]="'Aldana Vilcabana nace del impulso libre y sin límites, creando vestidos nupciales y de alta costura que reinventan el lujo a través del tiempo, fusionando elegancia y autenticidad en cada detalle.'"
@@ -30,7 +30,7 @@
  -->
 
 <section class="relative mx-auto max-w-screen bg-aldy-medium overflow-hidden">
-  <div
+  <!-- <div
     class="absolute top-0 lg:top-30 xl:top-20 left-0 aspect-[3/2] w-[200px] sm:w-[300px] md:w-[360px] lg:w-[390px] xl:w-[500px] opacity-20 z-0 pointer-events-none select-none"
   >
     <img
@@ -39,7 +39,7 @@
       class="w-full h-full object-contain hidden lg:block"
       draggable="false"
     />
-  </div>
+  </div> -->
   <div class="relative z-10">
     <app-about-sec-home [AboutData]="bloquesSobreMi"></app-about-sec-home>
   </div>
@@ -100,9 +100,9 @@
   </div>
 </section> -->
 <section class="py-6">
-  <app-dinamic-titles [text]="'Siguenos en @Aldana Vilcabana'" [level]="2" [stylesTitle]="'text-2xl text-center'"
-    [weight]="'medium'" [italic]="false" [textColor]="'text-gray-700'"
-    [responsiveClasses]="'text-xl sm:text-xl md:text-2xl lg:text-2xl NewAldyTitle'">
+  <app-dinamic-titles [text]="'Siguenos en @aldana_vilcabana'" [level]="2" [stylesTitle]="'text-2xl text-aldy-light NewAldyTitle text-center'"
+    [weight]="'medium'" [italic]="false" [textColor]="'text-aldy-medium'"
+    [responsiveClasses]="'text-xl sm:text-xl md:text-2xl lg:text-2xl'">
   </app-dinamic-titles>
 </section>
 <section class="max-w-screen-3xl mx-auto">
