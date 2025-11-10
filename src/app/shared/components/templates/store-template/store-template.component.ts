@@ -2,7 +2,6 @@ import { Component, OnInit, OnDestroy, HostListener, Inject, ElementRef, ViewChi
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { PLATFORM_ID } from '@angular/core';
 import { CheckboxModule } from 'primeng/checkbox';
-import { SliderModule } from 'primeng/slider';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { SupabaseService } from '../../../../core/services/data-access/supabase.service';
@@ -24,7 +23,6 @@ import { Location } from '@angular/common';
   imports: [
     CommonModule,
     CheckboxModule,
-    SliderModule,
     FormsModule,
     RouterModule,
     CardproductComponent,
@@ -84,6 +82,12 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
   currentPage: number = 1;
   pagedProducts: Product[] = [];
   pagesArray: number[] = [];
+  // Filtros extra: Tamaños y Precio
+  allowedSizes: string[] = ['S', 'M', 'L'];
+  selectedSizes: string[] = [];
+  priceRange: number[] = [0, 500000];
+  priceMin: number = 0;
+  priceMax: number = 500000;
   isMobileView = false;
   selectedAccordion: string | null = null; // mantenido por compatibilidad, no usado para abrir
   openAccordions: Set<string> = new Set(['categorias']);
@@ -240,6 +244,32 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
           addSubToMap(subNorm);
         }
 
+        // Tamaños desde query: tamanos=S,M,L
+        const qpSizes = qp.get('tamanos');
+        if (qpSizes) {
+          this.selectedSizes = qpSizes.split(',')
+            .map(s => String(s).toUpperCase())
+            .filter(s => this.allowedSizes.includes(s));
+        }
+
+        // Precio desde query: precio_min, precio_max
+        const qpMin = qp.get('precio_min');
+        const qpMax = qp.get('precio_max');
+        if (qpMin !== null || qpMax !== null) {
+          const min = Math.max(0, Math.min(500000, Number(qpMin ?? this.priceRange[0])));
+          const max = Math.max(0, Math.min(500000, Number(qpMax ?? this.priceRange[1])));
+          this.priceMin = Math.min(min, max);
+          this.priceMax = Math.max(min, max);
+          this.priceRange = [this.priceMin, this.priceMax];
+        }
+
+        // Página desde query: page
+        const qpPageRaw = qp.get('page');
+        const qpPage = qpPageRaw ? Number(qpPageRaw) : NaN;
+        if (!Number.isNaN(qpPage) && qpPage > 0) {
+          this.currentPage = qpPage;
+        }
+
         // Abrir acordeón acorde al estado
         // Abrir acordeones iniciales: Categorías siempre. Subcategorías NO automáticamente
         this.openAccordions.clear();
@@ -371,6 +401,73 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
     return arr.includes(sub);
   }
 
+  // --- Tamaños ---
+  toggleSize(size: string): void {
+    const s = String(size).toUpperCase();
+    if (!this.allowedSizes.includes(s)) return;
+    const idx = this.selectedSizes.indexOf(s);
+    if (idx >= 0) {
+      this.selectedSizes.splice(idx, 1);
+    } else {
+      this.selectedSizes.push(s);
+    }
+  }
+
+  isSizeSelected(size: string): boolean {
+    return this.selectedSizes.includes(String(size).toUpperCase());
+  }
+
+  // --- Precio ---
+  onPriceRangeChange(range: number[]): void {
+    if (!Array.isArray(range)) return;
+    const min = Math.max(0, Math.min(500000, Number(range[0] ?? 0)));
+    const max = Math.max(0, Math.min(500000, Number(range[1] ?? 500000)));
+    this.priceMin = Math.min(min, max);
+    this.priceMax = Math.max(min, max);
+    this.priceRange = [this.priceMin, this.priceMax];
+  }
+
+  onPriceInputChange(which: 'min' | 'max', value: number): void {
+    const num = Math.max(0, Math.min(500000, Number(value ?? 0)));
+    if (which === 'min') {
+      this.priceMin = Math.min(num, this.priceMax);
+    } else {
+      this.priceMax = Math.max(num, this.priceMin);
+    }
+    this.priceRange = [this.priceMin, this.priceMax];
+  }
+
+  private getProductPrice(p: Product): number {
+    const anyP: any = p as any;
+    const candidates = [anyP.price, anyP.price_ars, anyP.price_value, anyP.priceUsd];
+    const found = candidates.find(v => typeof v === 'number');
+    if (typeof found === 'number') return found;
+    if (Array.isArray(anyP.variants)) {
+      const vFound = anyP.variants.find((v: any) => typeof v?.price === 'number');
+      if (vFound) return Number(vFound.price);
+    }
+    return 0;
+  }
+
+  private productHasSize(p: Product, size: string): boolean {
+    const sUp = String(size).toUpperCase();
+    const anyP: any = p as any;
+    // Producto: campo único o array
+    if (typeof anyP.size === 'string' && String(anyP.size).toUpperCase() === sUp) return true;
+    if (Array.isArray(anyP.sizes) && anyP.sizes.map((x: any) => String(x).toUpperCase()).includes(sUp)) return true;
+    // Variantes: size, size_name, talla, tamanos
+    if (Array.isArray(anyP.variants)) {
+      return anyP.variants.some((v: any) => {
+        const vSize = [v?.size, v?.size_name, v?.talla, v?.tamano, v?.tamanos]
+          .flat()
+          .filter(Boolean)
+          .map((x: any) => String(x).toUpperCase());
+        return vSize.includes(sUp);
+      });
+    }
+    return false;
+  }
+
   getSelectedSubcategoriesFlat(): { category: string; subcategory: string }[] {
     const out: { category: string; subcategory: string }[] = [];
     this.selectedCategories.forEach(cat => {
@@ -409,6 +506,11 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
     this.selectedSubcategoriesMap = {};
     this.selectedCategory = null;
     this.selectedSubcategory = null;
+    this.selectedSizes = [];
+    this.priceMin = 0;
+    this.priceMax = 500000;
+    this.priceRange = [0, 500000];
+    this.currentPage = 1;
     this.openAccordions.clear();
     this.openAccordions.add('categorias');
     this.applyFiltersSync();
@@ -455,6 +557,21 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
       // múltiples subcategorías o única sin categoría única
       queryParams['subcategorias'] = subUnion.join(',');
     }
+    // Tamaños como query param
+    if (this.selectedSizes.length > 0) {
+      queryParams['tamanos'] = this.selectedSizes.join(',');
+    }
+    // Precio como query param (evitar defaults para SEO limpio)
+    if (this.priceRange[0] !== 0) {
+      queryParams['precio_min'] = this.priceRange[0];
+    }
+    if (this.priceRange[1] !== 500000) {
+      queryParams['precio_max'] = this.priceRange[1];
+    }
+    // Página del paginator solo si > 1
+    if (this.currentPage > 1) {
+      queryParams['page'] = this.currentPage;
+    }
     return { path, queryParams };
   }
 
@@ -492,6 +609,7 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
     const selectedSubUnion = Object.values(this.selectedSubcategoriesMap).flat();
     const hasAnyCategory = this.selectedCategories.length > 0;
     const hasAnySub = selectedSubUnion.length > 0;
+    const hasAnySize = this.selectedSizes.length > 0;
 
     this.filteredProducts = this.allProducts.filter(p => {
       const productCategory = ProductUtils.normalize(
@@ -521,8 +639,11 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
         include = selectedSubUnion.includes(productSubcategory);
       }
 
+      const sizeMatch = !hasAnySize || this.selectedSizes.some(s => this.productHasSize(p, s));
+      const price = this.getProductPrice(p);
+      const priceMatch = price >= this.priceRange[0] && price <= this.priceRange[1];
       const colorMatch = !this.selectedColors[p.id] || p.variants.some(v => v.color_name === this.selectedColors[p.id]);
-      return include && colorMatch;
+      return include && sizeMatch && priceMatch && colorMatch;
     });
 
     this.updatePagination();
@@ -534,6 +655,7 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
     this.lockProductsContainer();
     this.loading = true;
     this.filteredProducts = [];
+    this.currentPage = 1;
     await this.delay(500);
     this.applyFiltersSync();
     this.loadWishlistFromStorage();
@@ -569,6 +691,14 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
     return Math.min(this.maxPages, Math.max(1, total));
   }
 
+  // --- Helpers: Porcentajes para slider custom ---
+  get lowerPercent(): number {
+    return Math.round((this.priceMin / 500000) * 100);
+  }
+  get upperPercent(): number {
+    return Math.round((this.priceMax / 500000) * 100);
+  }
+
   private updatePagination(): void {
     // clamp current page
     if (this.currentPage > this.totalPages) this.currentPage = this.totalPages;
@@ -585,6 +715,9 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
     if (page < 1 || page > this.totalPages) return;
     this.currentPage = page;
     this.updatePagination();
+    const url = this.buildUrlString();
+    const [base, query] = url.split('?');
+    this.location.replaceState(base, query ?? '');
     this.scrollToProductsTop();
   }
 

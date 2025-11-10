@@ -90,14 +90,41 @@
             </div>
           </app-acordiongeneric>
 
-          <!-- Acordeón: Tamaños (placeholder futuro) -->
+          <!-- Acordeón: Tamaños -->
           <app-acordiongeneric [title]="'Tamaños'" [value]="'tamanos'" [selectedMultiple]="openAccordionsArray" (toggled)="onAccordionToggled($event)">
-            <div class="px-3 py-2 text-xs text-gray-500">Próximamente.</div>
+            <div class="space-y-1">
+              <label *ngFor="let s of allowedSizes" class="flex items-center gap-2 py-2 px-3 text-xs tracking-wider NewAldyFontType4 cursor-pointer w-full hover:bg-gray-50 rounded-md">
+                <input type="checkbox" [checked]="isSizeSelected(s)" (change)="toggleSize(s)" AldyCheckboxV1 />
+                <span [ngClass]="isSizeSelected(s) ? 'text-aldy-medium font-semibold' : 'text-gray-600'">{{ s }}</span>
+              </label>
+            </div>
           </app-acordiongeneric>
 
-          <!-- Acordeón: Precio (placeholder futuro) -->
+          <!-- Acordeón: Precio (slider custom sin PrimeNG) -->
           <app-acordiongeneric [title]="'Precio'" [value]="'precio'" [selectedMultiple]="openAccordionsArray" (toggled)="onAccordionToggled($event)">
-            <div class="px-3 py-2 text-xs text-gray-500">Próximamente.</div>
+            <div class="px-3 py-2">
+              <!-- Barra de rango -->
+              <div class="relative h-2 bg-[#d9e2d8] rounded">
+                <div class="absolute top-0 h-2 bg-aldy-medium rounded" [style.left.%]="lowerPercent" [style.width.%]="upperPercent - lowerPercent"></div>
+                <!-- Inputs range superpuestos -->
+                <input type="range" class="range-input" [min]="0" [max]="500000" [step]="100" [ngModel]="priceMin" (ngModelChange)="onPriceInputChange('min', $event)" />
+                <input type="range" class="range-input" [min]="0" [max]="500000" [step]="100" [ngModel]="priceMax" (ngModelChange)="onPriceInputChange('max', $event)" />
+              </div>
+              <!-- Inputs numéricos ajustados y alineados -->
+              <div class="flex items-center gap-3 mt-3 flex-wrap">
+                <div class="flex items-center gap-1 border border-aldy-medium-2 px-2 py-1">
+                  <span class="text-aldy-medium-2">$</span>
+                  <input type="number" class="w-20 outline-none text-sm" [min]="0" [max]="500000" [step]="100" [(ngModel)]="priceMin" (ngModelChange)="onPriceInputChange('min', $event)" />
+                  <span class="text-gray-500 text-xs">0</span>
+                </div>
+                <span class="text-gray-600 text-sm">—</span>
+                <div class="flex items-center gap-1 border border-aldy-medium-2 px-2 py-1">
+                  <span class="text-aldy-medium-2">$</span>
+                  <input type="number" class="w-20 outline-none text-sm" [min]="0" [max]="500000" [step]="100" [(ngModel)]="priceMax" (ngModelChange)="onPriceInputChange('max', $event)" />
+                  <span class="text-gray-500 text-xs">500.000</span>
+                </div>
+              </div>
+            </div>
           </app-acordiongeneric>
 
           <!-- Acciones: Borrar y Buscar -->
@@ -288,11 +315,35 @@
       </app-acordiongeneric>
 
       <app-acordiongeneric [title]="'Tamaños'" [value]="'tamanos'" [selectedMultiple]="openAccordionsArray" (toggled)="onAccordionToggled($event)">
-        <div class="px-3 py-2 text-xs text-gray-500">Próximamente.</div>
+        <div class="space-y-1">
+          <label *ngFor="let s of allowedSizes" class="flex items-center gap-2 py-2 px-3 text-sm NewAldyFontType4 cursor-pointer w-full hover:bg-gray-50 rounded-md">
+            <input type="checkbox" [checked]="isSizeSelected(s)" (change)="toggleSize(s)" AldyCheckboxV1 />
+            <span [ngClass]="isSizeSelected(s) ? 'text-aldy-medium font-semibold' : 'text-gray-600'">{{ s }}</span>
+          </label>
+        </div>
       </app-acordiongeneric>
 
       <app-acordiongeneric [title]="'Precio'" [value]="'precio'" [selectedMultiple]="openAccordionsArray" (toggled)="onAccordionToggled($event)">
-        <div class="px-3 py-2 text-xs text-gray-500">Próximamente.</div>
+        <div class="px-3 py-2">
+          <div class="relative h-2 bg-[#d9e2d8] rounded">
+            <div class="absolute top-0 h-2 bg-aldy-medium rounded" [style.left.%]="lowerPercent" [style.width.%]="upperPercent - lowerPercent"></div>
+            <input type="range" class="range-input" [min]="0" [max]="500000" [step]="100" [ngModel]="priceMin" (ngModelChange)="onPriceInputChange('min', $event)" />
+            <input type="range" class="range-input" [min]="0" [max]="500000" [step]="100" [ngModel]="priceMax" (ngModelChange)="onPriceInputChange('max', $event)" />
+          </div>
+          <div class="flex items-center gap-3 mt-3 flex-wrap">
+            <div class="flex items-center gap-1 border border-aldy-medium-2 px-2 py-1">
+              <span class="text-aldy-medium-2">$</span>
+              <input type="number" class="w-20 outline-none text-sm" [min]="0" [max]="500000" [step]="100" [(ngModel)]="priceMin" (ngModelChange)="onPriceInputChange('min', $event)" />
+              <span class="text-gray-500 text-xs">0</span>
+            </div>
+            <span class="text-gray-600 text-sm">—</span>
+            <div class="flex items-center gap-1 border border-aldy-medium-2 px-2 py-1">
+              <span class="text-aldy-medium-2">$</span>
+              <input type="number" class="w-20 outline-none text-sm" [min]="0" [max]="500000" [step]="100" [(ngModel)]="priceMax" (ngModelChange)="onPriceInputChange('max', $event)" />
+              <span class="text-gray-500 text-xs">500.000</span>
+            </div>
+          </div>
+        </div>
       </app-acordiongeneric>
     </div>
 
