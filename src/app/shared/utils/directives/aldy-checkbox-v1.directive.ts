@@ -1,16 +1,21 @@
-import { Directive, ElementRef, Renderer2, HostListener } from '@angular/core';
+import { Directive, ElementRef, Renderer2, HostListener, DoCheck } from '@angular/core';
 
 @Directive({
   selector: '[AldyCheckboxV1]',
   standalone: true
 })
-export class AldyCheckboxV1Directive {
+export class AldyCheckboxV1Directive implements DoCheck {
   private checkmarkIcon: HTMLElement | null = null;
+  private lastChecked: boolean | null = null;
 
   constructor(private el: ElementRef, private renderer: Renderer2) {
     this.setBaseStyles();
-    if ((this.el.nativeElement as HTMLInputElement).checked) {
+    const initial = (this.el.nativeElement as HTMLInputElement).checked;
+    this.lastChecked = initial;
+    if (initial) {
       this.applyCheckedStyles();
+    } else {
+      this.removeCheckedStyles();
     }
   }
 
@@ -40,6 +45,21 @@ export class AldyCheckboxV1Directive {
       this.applyCheckedStyles();
     } else {
       this.removeCheckedStyles();
+    }
+    this.lastChecked = checkbox.checked;
+  }
+
+  // Mantener estilos sincronizados cuando 'checked' cambia de forma programática
+  ngDoCheck(): void {
+    const checkbox = this.el.nativeElement as HTMLInputElement;
+    const current = !!checkbox.checked;
+    if (this.lastChecked !== current) {
+      this.lastChecked = current;
+      if (current) {
+        this.applyCheckedStyles();
+      } else {
+        this.removeCheckedStyles();
+      }
     }
   }
 

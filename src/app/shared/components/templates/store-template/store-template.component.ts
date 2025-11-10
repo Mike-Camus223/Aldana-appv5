@@ -536,6 +536,9 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
   }
   private applyFiltersSync(): void {
     const selectedSubUnion = Object.values(this.selectedSubcategoriesMap).flat();
+    const hasAnyCategory = this.selectedCategories.length > 0;
+    const hasAnySub = selectedSubUnion.length > 0;
+
     this.filteredProducts = this.allProducts.filter(p => {
       const productCategory = ProductUtils.normalize(
         typeof p.category === 'string' ? p.category : (p.category?.name ?? '')
@@ -543,10 +546,28 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
       const productSubcategory = ProductUtils.normalize(
         typeof p.subcategory === 'string' ? p.subcategory : (p.subcategory?.name ?? '')
       );
-      const categoryMatch = this.selectedCategories.length === 0 || this.selectedCategories.includes(productCategory);
-      const subcategoryMatch = selectedSubUnion.length === 0 || selectedSubUnion.includes(productSubcategory);
+
+      let include = false;
+
+      if (hasAnyCategory) {
+        if (this.selectedCategories.includes(productCategory)) {
+          const subsForCat = this.selectedSubcategoriesMap[productCategory];
+          if (subsForCat && subsForCat.length > 0) {
+            include = subsForCat.includes(productSubcategory);
+          } else {
+            // Categoría seleccionada sin subcategorías específicas: incluir todas
+            include = true;
+          }
+        }
+      }
+
+      if (!include && hasAnySub) {
+        // Permitir mezclar: incluir si la subcategoría está seleccionada a nivel global
+        include = selectedSubUnion.includes(productSubcategory);
+      }
+
       const colorMatch = !this.selectedColors[p.id] || p.variants.some(v => v.color_name === this.selectedColors[p.id]);
-      return categoryMatch && subcategoryMatch && colorMatch;
+      return include && colorMatch;
     });
   }
 
