@@ -1,20 +1,19 @@
-<div class="px-4 sm:px-6 lg:px-12 xl:px-16 2xl:px-24 w-full">
+<div class="px-4 bg-aldy-white sm:px-6 lg:px-12 xl:px-16 2xl:px-24 w-full">
   <div class="max-w-screen-3xl mx-auto">
     <div class="w-full py-20 px-2 flex flex-col items-center">
       <div class="max-w-6xl w-full grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
         <div class="space-y-8 px-4 lg:px-0">
           <h1 appWordReveal
-            class="uppercase tracking-widest text-3xl text-center lg:text-start lg:text-5xl NewAldyTitle font-light text-gray-900">
-            Contáctanos
+            class="uppercase tracking-widest relative text-3xl text-center lg:text-start lg:text-5xl NewAldyTitle font-light text-aldy-green-gray-bold leading-relaxed">
+            Cont<span class="text-[49px] NewAldyFontTypeAccent relative -top-[1px]">á</span>ctanos
           </h1>
           <p appFadeUpLetter
-            class="text-base lg:text-base text-center lg:text-start text-gray-700 NewAldyFontType4 leading-8 whitespace-pre-wrap break-words">
+            class="text-base lg:text-base text-center lg:text-start text-aldy-green-gray NewAldyFontType4 leading-8 whitespace-pre-wrap break-words">
             Gracias por confiar en nosotras. Es un honor poder acompañarte en este momento único.
             Si necesitás ayuda o querés hablar con alguien de nuestro equipo, podés enviarnos un mensaje a
             aldanavilcabana{{"@"}}gmail.com o completar el formulario que encontrarás aquí.
           </p>
         </div>
-        <!-- Formulario -->
         <div class="bg-white shadow-md p-4 lg:p-8 space-y-6">
           <form appFadeUpLetter [formGroup]="contactForm" class="flex flex-col gap-4 w-full" (ngSubmit)="onSubmit()">
             <app-input id="name" label="Nombre completo" formControlName="name"></app-input>
@@ -36,26 +35,26 @@
           <!-- Columna Correo -->
           <div class="flex flex-col items-center space-y-2">
             <h2 appWordReveal
-              class="text-lg lg:text-xl uppercase tracking-widest NewAldyTitle font-light text-gray-900">
+              class="text-lg lg:text-xl uppercase tracking-widest NewAldyTitle font-light text-aldy-green-gray-bold">
               Correo
             </h2>
-            <p appFadeUpLetter class="text-base NewAldyFontType4 lg:text-base">
+            <p appFadeUpLetter class="text-base text-aldy-green-gray NewAldyFontType4 lg:text-base">
               aldanavilcabana{{"@"}}gmail.com
             </p>
           </div>
           <!-- Columna Teléfono -->
           <div class="flex flex-col items-center space-y-2">
             <h2 appWordReveal
-              class="text-lg lg:text-xl uppercase tracking-widest NewAldyTitle font-light text-gray-900">
-              Teléfono
+              class="text-lg lg:text-xl leading-relaxed uppercase tracking-widest NewAldyTitle font-light text-aldy-green-gray-bold">
+              Tel<span class="text-[21px] lg:text-[22px] NewAldyFontTypeAccent relative -top-[0.5px]">é</span>fono
             </h2>
-            <p appFadeUpLetter class="text-base NewAldyFontType4 lg:text-base">+54 9 11 6408-2659</p>
+            <p appFadeUpLetter class="text-base NewAldyFontType4 text-aldy-green-gray lg:text-base">+54 9 11 6408-2659</p>
           </div>
           <!-- Columna Síguenos -->
           <div class="flex flex-col items-center space-y-3">
             <h2 appWordReveal
-              class="text-lg lg:text-xl uppercase tracking-widest NewAldyTitle font-light text-gray-900">
-              Síguenos
+              class="text-lg lg:text-xl uppercase tracking-widest NewAldyTitle font-light text-aldy-green-gray-bold">
+              S<span class="text-[21px] lg:text-[22px] NewAldyFontTypeAccent relative -top-[0.5px]">í</span>guenos
             </h2>
             <div appFadeUpLetter class="flex items-center justify-center space-x-5 text-2xl text-aldy-medium">
               <a href="#" aria-label="Instagram"
@@ -70,10 +69,6 @@
                 class="hover:text-aldy-medium-2 transition-all duration-300 hover:-translate-y-1">
                 <i class="fab fa-pinterest-p"></i>
               </a>
-              <a href="#" aria-label="Twitter"
-                class="hover:text-aldy-medium-2 transition-all duration-300 hover:-translate-y-1">
-                <i class="fab fa-twitter"></i>
-              </a>
             </div>
           </div>
         </div>
@@ -81,19 +76,17 @@
     </div>
   </div>
 </div>
-<div class="w-full pb-8 md:pb-10">
+<div class="w-full bg-aldy-white pb-8 md:pb-10">
   <div class="grid grid-cols-1 md:grid-cols-7 xl:grid-cols-4 items-center">
-    <!-- Imagen -->
     <div class="w-full overflow-hidden md:col-span-4 xl:col-span-3 order-1">
       <img appCardInitAnimation="up" src="../../../../../assets/images/about.webp" alt="asesoramiento personalizado"
         class="w-full h-52 md:h-[400px] object-cover object-[50%_15%]" draggable="false" />
     </div>
-    <!-- Texto -->
     <div class="flex flex-col items-center text-center space-y-3 w-full md:col-span-3 xl:col-span-1 p-6 order-2">
-      <h2 appWordReveal class="text-lg lg:text-xl uppercase tracking-widest NewAldyTitle font-light text-gray-900">
+      <h2 appWordReveal class="text-lg lg:text-xl uppercase tracking-widest NewAldyTitle font-light text-aldy-green-gray-bold">
         Asesoramiento
       </h2>
-      <p appFadeUpLetter class="text-base NewAldyFontType4 lg:text-base text-gray-900 leading-7 max-w-md">
+      <p appFadeUpLetter class="text-base NewAldyFontType4 lg:text-base text-aldy-green-gray leading-7 max-w-md">
         En Aldana Vilcabana brindamos una asesoría exclusiva para realzar tu estilo personal y resaltar tu esencia con
         elegancia.
       </p>

@@ -1,9 +1,14 @@
+import { FavoritesService } from './../../../../core/services/favorites/favorites.service';
 import {
   Component,
   ElementRef,
   ViewChild,
   AfterViewInit,
-  OnDestroy
+  OnDestroy,
+  Inject,
+  PLATFORM_ID,
+  Input,
+  CUSTOM_ELEMENTS_SCHEMA
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SupabaseService } from '../../../../core/services/data-access/supabase.service';
@@ -20,13 +25,26 @@ import {
   Product,
   ProductVariant
 } from '../../../../shared/utils/models/Products-supabase.interface';
+import { AuthService } from '../../../../core/services/auth/auth.service';
+import { Heart, HeartPlus, LUCIDE_ICONS, LucideAngularModule, LucideIconProvider } from 'lucide-angular';
 
 @Component({
   selector: 'app-search-page',
   standalone: true,
-  imports: [CommonModule, ProgressSpinnerModule, RouterModule],
+  imports: [CommonModule, ProgressSpinnerModule, RouterModule, LucideAngularModule],
   templateUrl: './search-page.component.html',
-  styleUrls: ['./search-page.component.css']
+  styleUrls: ['./search-page.component.css'],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  providers: [
+    {
+      provide: LUCIDE_ICONS,
+      multi: true,
+      useValue: new LucideIconProvider({
+        Heart,
+        HeartPlus
+      })
+    }
+  ]
 })
 export class SearchPageComponent implements AfterViewInit, OnDestroy {
   chars: string[] = [];
@@ -36,6 +54,7 @@ export class SearchPageComponent implements AfterViewInit, OnDestroy {
   loading: boolean = false;
   products: Product[] = [];
   noResults: boolean = false;
+  @Input() product!: Product;
   selectedCategory: string | null = null;
   selectedSubcategory: string | null = null;
   private wishlistKey = 'wishlistProducts';
@@ -51,7 +70,10 @@ export class SearchPageComponent implements AfterViewInit, OnDestroy {
   constructor(
     private supabase: SupabaseService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private authService: AuthService,
+    private favoritesService: FavoritesService,
+    @Inject(PLATFORM_ID) private platformId: Object
   ) { }
 
   ngAfterViewInit() {
@@ -188,9 +210,23 @@ export class SearchPageComponent implements AfterViewInit, OnDestroy {
     this.updateQueryParamsWithoutReload();
   }
 
-  toggleWishlist(product: Product): void {
-    product.wishlisted = !product.wishlisted;
-    this.saveWishlistToStorage();
+  async toggleWishlist(event: Event) {
+    event.stopPropagation();
+    
+    if (!this.authService.isAuthenticated()) {
+      alert('Por favor inicia sesión para añadir a favoritos');
+      return;
+    }
+
+    try {
+      const result = await this.favoritesService.toggleFavorite(this.product.id);
+      alert(result.message);
+      // Update the local state to reflect the change
+      this.product.wishlisted = !this.product.wishlisted;
+    } catch (error) {
+      console.error('Error toggling wishlist:', error);
+      alert('Ocurrió un error al actualizar favoritos');
+    }
   }
 
   private updateQueryParamsWithoutReload(): void {

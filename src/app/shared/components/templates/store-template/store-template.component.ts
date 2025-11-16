@@ -68,9 +68,8 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
   allProducts: Product[] = [];
   filteredProducts: Product[] = [];
   selectedColors: Record<string, string> = {};
-  // Estado nuevo para selección múltiple
-  selectedCategory: string | null = null; // mantenido por compatibilidad, no usado para filtrar
-  selectedSubcategory: string | null = null; // mantenido por compatibilidad, no usado para filtrar
+  selectedCategory: string | null = null; 
+  selectedSubcategory: string | null = null; 
   selectedCategories: string[] = [];
   selectedSubcategoriesMap: Record<string, string[]> = {};
   private wishlistKey = 'wishlistProducts';
@@ -78,20 +77,18 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
   activeAccordion: number = 0;
   showFilters = false;
   productColumns: number = 4;
-  // Paginación
   itemsPerPage: number = 4;
-  readonly maxPages: number = 16; // no cambiable
+  readonly maxPages: number = 16; 
   currentPage: number = 1;
   pagedProducts: Product[] = [];
   pagesArray: number[] = [];
-  // Filtros extra: Tamaños y Precio
   allowedSizes: string[] = ['S', 'M', 'L'];
   selectedSizes: string[] = [];
   priceRange: number[] = [0, 500000];
   priceMin: number = 0;
   priceMax: number = 500000;
   isMobileView = false;
-  selectedAccordion: string | null = null; // mantenido por compatibilidad, no usado para abrir
+  selectedAccordion: string | null = null;
   openAccordions: Set<string> = new Set(['categorias']);
   get openAccordionsArray(): string[] { return Array.from(this.openAccordions); }
 

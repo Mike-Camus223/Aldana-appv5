@@ -5,7 +5,7 @@
       class="group py-[7px] px-2 hover:bg-aldy-medium-2 transition-all duration-300 ease-in-out cursor-pointer border border-aldy-medium">
       <div class="grid grid-cols-2 gap-[2px] grid-rows-2">
         <span *ngFor="let n of [1,2,3,4]" class="h-[12px] w-[12px] transition-all duration-300 ease-in-out"
-          [ngClass]="productColumns === 2 ? 'bg-white' : 'bg-aldy-medium-2 group-hover:bg-white'"></span>
+          [ngClass]="productColumns === 2 ? 'bg-aldy-white' : 'bg-aldy-medium-2 group-hover:bg-aldy-white'"></span>
       </div>
     </button>
 
@@ -13,7 +13,7 @@
       class="group py-[7px] px-2 hover:bg-aldy-medium-2 transition-all duration-300 ease-in-out cursor-pointer border border-aldy-medium">
       <div class="grid grid-cols-3 gap-[2px] grid-rows-3">
         <span *ngFor="let n of [1,2,3,4,5,6,7,8,9]" class="h-[8px] w-[8px] transition-all duration-300 ease-in-out"
-          [ngClass]="productColumns === 3 ? 'bg-white' : 'bg-aldy-medium-2 group-hover:bg-white'"></span>
+          [ngClass]="productColumns === 3 ? 'bg-aldy-white' : 'bg-aldy-medium-2 group-hover:bg-aldy-white'"></span>
       </div>
     </button>
 
@@ -22,14 +22,15 @@
       <div class="grid grid-cols-4 gap-[2px] grid-rows-4">
         <span *ngFor="let n of [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]"
           class="h-[5px] w-[5px] transition-all duration-300 ease-in-out"
-          [ngClass]="productColumns === 4 ? 'bg-white' : 'bg-aldy-medium-2 group-hover:bg-white'"></span>
+          [ngClass]="productColumns === 4 ? 'bg-aldy-white' : 'bg-aldy-medium-2 group-hover:bg-aldy-white'"></span>
       </div>
     </button>
   </div>
 </div>
 <div class="px-4 sm:px-6 lg:px-12 xl:px-16 2xl:px-24 py-12 w-full">
   <div class="max-w-screen-3xl mx-auto">
-    <div *ngIf="CollectionBrides.length === 0" class="text-center text-gray-500 py-16">
+    <div *ngIf="CollectionBrides.length === 0"
+      class="text-center NewAldyFontType4 tracking-wider text-sm lg:text-sm text-aldy-green-gray py-16">
       No hay colecciones disponibles en este momento.
     </div>
     <div [@gridAnimation]="productColumns" class="grid gap-5 transition-all duration-500 ease-in-out" [ngClass]="[
@@ -42,17 +43,16 @@
       <ng-container *ngFor="let collectionB of CollectionBrides">
         <div (click)="goToCollection(collectionB.slug)" class="flex flex-col items-center w-full">
           <div class="group block relative w-full cursor-pointer">
-            <div class="aspect-[3/4] overflow-hidden w-full bg-gray-100 relative">
+            <div class="aspect-[3/4] overflow-hidden w-full bg-aldy-white relative">
               <img appCardInitAnimation="up" [src]="collectionB.cover_image_url" [alt]="collectionB.name"
                 class="object-cover object-top w-full h-full" />
             </div>
           </div>
-          <div class="flex-col cursor-pointer flex items-center w-full">
-            <div class="flex items-center gap-4">
-              <h3 appWordReveal class="text-gray-800 text-3xl py-3 titles2 leading-none font-normal scale-y-110 uppercase drop-shadow mb-1">
-                {{ collectionB.name }}
-              </h3>
-            </div>
+          <div class="w-full flex justify-center pt-5 cursor-pointer">
+            <h3 appWordReveal
+              class="text-aldy-green-gray-bold text-3xl tracking-wider NewAldyTitle leading-none font-light scale-y-110 uppercase drop-shadow text-center">
+              Novias - {{ collectionB.name }}
+            </h3>
           </div>
         </div>
       </ng-container>

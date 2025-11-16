@@ -7,7 +7,6 @@ import {
   PLATFORM_ID
 } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { DinamicTitlesComponent } from '../../generic/dinamic-titles/dinamic-titles.component';
 import gsap from 'gsap';
 import ScrollTrigger from 'gsap/ScrollTrigger';
 import { ReelsSectionComponent } from "../../sections/reels-section/reels-section.component";
@@ -22,7 +21,7 @@ if (typeof window !== 'undefined') {
 @Component({
   selector: 'app-about-template',
   standalone: true,
-  imports: [CommonModule, DinamicTitlesComponent, CardInitAnimationDirective, LucideAngularModule, ReelsSectionComponent,WordRevealDirective, FadeUpLetterDirective],
+  imports: [CommonModule, CardInitAnimationDirective, LucideAngularModule, ReelsSectionComponent,WordRevealDirective, FadeUpLetterDirective],
   templateUrl: './about-template.component.html',
   providers: [
     {

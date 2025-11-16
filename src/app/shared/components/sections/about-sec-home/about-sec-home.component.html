@@ -1,58 +1,58 @@
-<section *ngFor="let item of AboutData" class="w-full px-4 max-w-screen-2xl mx-auto mt-6 md:mt-0">
+<section class="w-full px-4 max-w-screen-2xl mx-auto mt-6 md:mt-0">
   <div class="grid grid-cols-1 lg:grid-cols-5 items-stretch w-full min-h-[700px] relative">
-    <!-- Columna de texto -->
+
+    <!-- Texto -->
     <div
-      class="flex items-center w-full md:py-0 z-10 lg:col-span-2 relative"
-      [ngClass]="item.textOrderMobile + ' ' + item.textOrderDesktop"
+      class="relative flex flex-col justify-center items-center lg:items-start w-full py-10 z-10 lg:col-span-2 text-center lg:text-left order-1 md:order-1"
     >
-      <!-- SVG decorativo centrado SOLO en mobile -->
-      <div class="absolute inset-0 flex justify-center items-center pointer-events-none select-none z-0">
+      <!-- SVG decorativo VISIBLE EN MOBILE Y PC -->
+      <div
+        class="absolute inset-0 flex justify-center items-center pointer-events-none select-none z-0"
+      >
         <img
-          src="../../../../../assets/svg/logos-03.svg"
+          src="assets/svg/logos-03.svg"
           alt="Aldana Vilcabana"
           class="w-[200px] sm:w-[260px] xl:w-[400px] opacity-20 object-contain"
           draggable="false"
         />
       </div>
-      <div class="flex flex-col items-center md:items-start text-center py-7 lg:py-0 lg:text-left w-full relative z-10">
+
+      <!-- Contenido -->
+      <div class="relative z-10 flex flex-col items-center lg:items-start w-full">
+
         <h2
           appWordReveal
-          class="text-5xl sm:text-5xl w-full lg:text-[76px] xl:text-[84px] text-center leading-tight NewAldyTitle font-light text-white inline-block"
-          [ngClass]="[item.maxWidthTittle, item.titleOffsetClass]"
+          class="text-3xl sm:text-4xl lg:text-[48px] xl:text-[68px] text-center leading-tight NewAldyTitle font-light text-white w-full transition-all duration-500 ease-in-out"
         >
-          {{ item.title }}
+          Del Juego a la Pasi<span class="NewAldyFontTypeAccent relative -top-[1px]">ó</span>n
         </h2>
 
-        <p appFadeUpLetter class="text-white NewAldyFontType4 w-full text-base md:text-base leading-relaxed mt-6">
-          {{ item.text }}
+        <p
+          appFadeUpLetter
+          class="text-white first-letter:text-3xl NewAldyFontType4 text-base leading-8 mt-6 w-full"
+        >
+          Desde mis primeros diseños para muñecas, transformando retazos de tela en vestuarios imaginativos, hasta la creación de piezas exclusivas y a medida para mis clientas de hoy, una constante innegable ha marcado mi camino...
         </p>
 
-        <ng-container *ngIf="item.useAnotherText">
-          <p appFadeUpLetter class="text-white italic w-full text-base md:text-lg leading-relaxed mt-6">
-            {{ item.anotherText }}
-          </p>
-        </ng-container>
-        <ng-container *ngIf="item.buttonText && item.buttonUrl">
-          <a
-            [href]="item.buttonUrl"
-            class="mt-8 w-3/4 md:w-full flex justify-center border-2 text-white border-white py-4 px-5 sm:px-7 sm:py-5 text-sm tracking-widest font-medium uppercase transition-colors NewAldyFontType4 hover:bg-aldy-green-gray hover:border-aldy-green-gray hover:text-white"
-          >
-            {{ item.buttonText }}
-          </a>
-        </ng-container>
+        <a
+          href="/acerca-de-mi"
+          class="mt-8 w-1/2 sm:w-1/3 flex justify-center border border-white text-white py-3 px-5 text-xs tracking-widest font-medium uppercase transition-colors NewAldyFontType4 hover:bg-aldy-green-gray hover:border-aldy-green-gray hover:text-white mx-auto"
+        >
+          VER MÁS
+        </a>
       </div>
     </div>
+
     <!-- Imagen -->
     <div
-      class="relative w-full pb-7 lg:pb-0 z-4 lg:ms-8 xl:ms-7 aspect-[5/4] md:aspect-[4/3] lg:aspect-[4/2] lg:col-span-3"
-      [ngClass]="item.imageOrderMobile + ' ' + item.imageOrderDesktop"
+      class="relative flex justify-center items-center w-full z-4 lg:ms-8 xl:ms-7 aspect-[5/4] md:aspect-[4/3] lg:aspect-[4/2] lg:col-span-3 order-2 md:order-2"
     >
       <img
         #aboutImage
         [draggable]="false"
-        [src]="item.image"
+        src="assets/images/loadingIMG/loading1.jpg"
         alt="About image"
-        class="w-full z-4 h-full object-contain"
+        class="w-full h-full object-contain"
       />
     </div>
 

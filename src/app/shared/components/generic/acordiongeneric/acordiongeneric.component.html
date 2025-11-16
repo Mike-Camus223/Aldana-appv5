@@ -4,14 +4,11 @@
     class="w-full flex NewAldyFontType4 justify-between cursor-pointer items-center py-4 px-3 text-left hover:text-aldy-medium transition-colors duration-200 font-light tracking-wider text-sm"
     [ngClass]="{
       'text-aldy-medium font-light': isOpen(),
-      'text-gray-900': !isOpen()
+      'text-aldy-green-gray-bold': !isOpen()
     }"
   >
     {{ title }}
-
-    <!-- Ícono contenedor con posición relativa para hacer crossfade -->
     <span class="relative w-5 h-5 flex items-center justify-center">
-      <!-- Ícono PLUS -->
       <svg
         xmlns="http://www.w3.org/2000/svg"
         width="16"
@@ -31,8 +28,6 @@
         <path d="M5 12h14" />
         <path d="M12 5v14" />
       </svg>
-
-      <!-- Ícono MINUS -->
       <svg
         xmlns="http://www.w3.org/2000/svg"
         width="16"

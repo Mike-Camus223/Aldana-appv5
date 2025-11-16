@@ -19,6 +19,7 @@
   /* --color-aldy-new:#D2E4CC;
   --color-aldy-bg-new: #AEC2A9;
   --color-aldy-new-bold: #889287; */
+  --color-aldy-white: #FEF5EC;
   --color-aldy-light:#D2E4CC;
   --color-aldy-light-2: #A6B9A2;
   --color-aldy-medium:#AEC2A9;
@@ -26,12 +27,14 @@
   --color-aldy-bold: #778a72;
   --color-aldy-bold-2:#5f6e5b;
   --color-aldy-green-gray:#889287;
+  --color-aldy-green-gray-bold:#7e887d;
   --color-aldy-prueba: #D2E4CC;
 }
 
 .font-main {
   font-family: "PT Sans Narrow", sans-serif;
-  color: #c3cfc2;
+  color: #797e78;
+  color: #7e887d; 
 }
 
 .font-number {
@@ -104,6 +107,11 @@
   src:url('./assets/fonts/fonnts.com-Runda_Light.otf') format('truetype');
 }
 
+@font-face {
+  font-family: 'accent-aldy';
+  src: url('./assets/fonts/freight-big-pro-light-regular.ttf') format('truetype');
+}
+
 .aldyFont {
   font-family: 'aldyfont', sans-serif;
 } 
@@ -138,6 +146,10 @@
 
 .NewAldyFontType4 {
   font-family: 'NewAldyFont-type4';
+}
+
+.NewAldyFontTypeAccent {
+  font-family: 'accent-aldy';
 }
 
 .temporally{

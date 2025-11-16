@@ -3,9 +3,7 @@ import { Subject, takeUntil } from 'rxjs';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { LoaderService } from '../../../core/services/utils/loader.service';
-import { isPlatformBrowser } from '@angular/common';
 
-// Solo registrar plugins en el navegador
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger);
 }
@@ -24,6 +22,7 @@ export class CardInitAnimationDirective implements AfterViewInit, OnDestroy {
   private destroy$ = new Subject<void>();
   private stylesInitialized = false;
   @Input() animationDelay: number = 0;
+  @Input() gray: boolean = false;
 
   constructor(private el: ElementRef, private renderer: Renderer2, private loaderService: LoaderService) {}
 
@@ -57,7 +56,12 @@ export class CardInitAnimationDirective implements AfterViewInit, OnDestroy {
   private setupInitialStyles(element: HTMLElement): void {
     if (this.stylesInitialized) return;
     this.renderer.setStyle(element, 'transform', 'scale(1.5)');
-    this.renderer.setStyle(element, 'filter', 'blur(4px)');
+    this.renderer.setStyle(
+  element,
+  'filter',
+  this.gray ? 'blur(4px) grayscale(100%)' : 'blur(4px)'
+);
+
     this.renderer.setStyle(element, 'opacity', '0.7');
     this.renderer.setStyle(element, 'will-change', 'transform, filter, opacity, clip-path');
         
@@ -129,7 +133,8 @@ export class CardInitAnimationDirective implements AfterViewInit, OnDestroy {
     }, 0);
     this.animation!.to(element, {
       scale: 1,
-      filter: 'blur(0px)',
+      filter: this.gray ? 'blur(0px) grayscale(100%)' : 'blur(0px)',
+
       opacity: 1,
       duration: 2.6,
       ease: 'power2.out',
@@ -148,7 +153,8 @@ export class CardInitAnimationDirective implements AfterViewInit, OnDestroy {
     }, 0);
     this.animation!.to(element, {
       scale: 1,
-      filter: 'blur(0px)',
+      filter: this.gray ? 'blur(0px) grayscale(100%)' : 'blur(0px)',
+
       opacity: 1,
       duration: 2.6,
       ease: 'power2.out',
@@ -166,7 +172,8 @@ export class CardInitAnimationDirective implements AfterViewInit, OnDestroy {
     }, 0);
     this.animation!.to(element, {
       scale: 1,
-      filter: 'blur(0px)',
+      filter: this.gray ? 'blur(0px) grayscale(100%)' : 'blur(0px)',
+
       opacity: 1,
       duration: 2.6,
       ease: 'power2.out',
@@ -184,7 +191,8 @@ export class CardInitAnimationDirective implements AfterViewInit, OnDestroy {
     }, 0);
     this.animation!.to(element, {
       scale: 1,
-      filter: 'blur(0px)',
+      filter: this.gray ? 'blur(0px) grayscale(100%)' : 'blur(0px)',
+
       opacity: 1,
       duration: 2.6,
       ease: 'power2.out',

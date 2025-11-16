@@ -1,4 +1,4 @@
- <section class="mb-1">
+ <section>
   <app-dual-section></app-dual-section>
 </section> 
 <!-- <section class="mb-1 block md:hidden">
@@ -41,7 +41,7 @@
     />
   </div> -->
   <div class="relative z-10">
-    <app-about-sec-home [AboutData]="bloquesSobreMi"></app-about-sec-home>
+    <app-about-sec-home></app-about-sec-home>
   </div>
 </section>
 <!-- <section class="max-w-screen-2xl px-4 sm:px-0 mx-auto">
@@ -100,10 +100,11 @@
   </div>
 </section> -->
 <section class="py-6">
-  <app-dinamic-titles [text]="'Siguenos en @aldana_vilcabana'" [level]="2" [stylesTitle]="'text-2xl text-aldy-light NewAldyTitle text-center'"
-    [weight]="'medium'" [italic]="false" [textColor]="'text-aldy-medium'"
-    [responsiveClasses]="'text-xl sm:text-xl md:text-2xl lg:text-2xl'">
-  </app-dinamic-titles>
+ <div class="px-4 sm:px-6 lg:px-12 xl:px-16 2xl:px-24">
+      <p appWordReveal class="text-aldy-green-gray-bold NewAldyTitle text-center font-light text-xl sm:text-xl md:text-2xl lg:text-2xl">
+        Sig<span class="NewAldyFontTypeAccent relative -top-[1px]">ú</span>enos en {{"@"}}aldana_vilcabana
+      </p>  
+    </div>
 </section>
 <section class="max-w-screen-3xl mx-auto">
   <div>

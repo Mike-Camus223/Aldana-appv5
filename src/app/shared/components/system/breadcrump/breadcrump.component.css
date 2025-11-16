@@ -1,9 +1,14 @@
 ::ng-deep .p-breadcrumb-item-link:hover {
-  color: var(--color-aldy-medium);
+  color: var(--color-aldy-medium) !important;
 }
 
 ::ng-deep .p-breadcrumb {
     padding: 16px 0 !important;
+    background-color: var(--color-aldy-white) !important;
+}
+
+::ng-deep .p-breadcrumb-item-link {
+  color: var(--color-aldy-green-gray) !important;
 }
 
 ::ng-deep .p-iconwrapper  {

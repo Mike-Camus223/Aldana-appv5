@@ -77,11 +77,7 @@ export class WordRevealDirective implements AfterViewInit, OnDestroy {
           return;
         }
         
-        if (nativeElement.innerHTML && nativeElement.innerHTML.includes('<span')) {
-          this.setupAnimationWithHTML();
-        } else {
-          this.setupAnimationWithText();
-        }
+        this.setupAnimationWithHTML();
 
       } catch (error) {
         console.error('Error setting up word reveal animation:', error);
@@ -91,7 +87,7 @@ export class WordRevealDirective implements AfterViewInit, OnDestroy {
   }
 
   private createWordRevealAnimation(element: HTMLElement): void {
-    const allWordSpans = element.querySelectorAll('span > span');
+    const allWordSpans = element.querySelectorAll('.word-reveal-animated');
 
     if (allWordSpans.length > 0) {
       this.animationTween = gsap.to(allWordSpans, {
@@ -127,89 +123,103 @@ export class WordRevealDirective implements AfterViewInit, OnDestroy {
     this.renderer.setStyle(wrapper, 'overflow', 'hidden');
     this.renderer.setStyle(wrapper, 'width', '100%');
 
-    const tempDiv = this.renderer.createElement('div');
+    const tempDiv = document.createElement('div');
     tempDiv.innerHTML = this.originalContent;
     
-    const childNodes = Array.from(tempDiv.childNodes);
+    this.processNode(tempDiv, wrapper);
+
+    nativeElement.innerHTML = '';
+    this.renderer.appendChild(nativeElement, wrapper);
+    this.createWordRevealAnimation(nativeElement);
+  }
+
+  private processNode(node: Node, parent: HTMLElement): void {
+    const segments: Array<{type: 'text' | 'element', content: string | HTMLElement}> = [];
     
-    childNodes.forEach((node: any) => {
-      if (node.nodeType === Node.TEXT_NODE) {
-        this.processTextNode(node, wrapper);
+    // Recolectar todos los segmentos (texto y elementos)
+    node.childNodes.forEach((child: Node) => {
+      if (child.nodeType === Node.TEXT_NODE) {
+        const text = child.textContent || '';
+        segments.push({type: 'text', content: text});
+      } else if (child.nodeType === Node.ELEMENT_NODE) {
+        segments.push({type: 'element', content: child as HTMLElement});
+      }
+    });
+
+    // Procesar segmentos agrupándolos en palabras
+    let currentWord: Array<{type: 'text' | 'element', content: string | HTMLElement}> = [];
+    
+    segments.forEach((segment, index) => {
+      if (segment.type === 'text') {
+        const text = segment.content as string;
+        const parts = text.split(/(\s+)/);
+        
+        parts.forEach((part) => {
+          if (part.trim()) {
+            // Es parte de una palabra
+            currentWord.push({type: 'text', content: part});
+          } else if (part) {
+            // Es un espacio - finalizar palabra actual si existe
+            if (currentWord.length > 0) {
+              this.createWordFromSegments(currentWord, parent);
+              currentWord = [];
+            }
+            // Agregar el espacio
+            const spaceSpan = this.renderer.createElement('span');
+            spaceSpan.textContent = part;
+            this.renderer.appendChild(parent, spaceSpan);
+          }
+        });
       } else {
-        const clonedNode = node.cloneNode(true);
-        this.renderer.appendChild(wrapper, clonedNode);
+        // Es un elemento - agregarlo a la palabra actual
+        currentWord.push(segment);
       }
     });
-
-    nativeElement.innerHTML = '';
-    this.renderer.appendChild(nativeElement, wrapper);
-    this.createWordRevealAnimation(nativeElement);
-  }
-
-  private setupAnimationWithText(): void {
-    const nativeElement = this.el.nativeElement;
-    const text = nativeElement.textContent?.trim() || '';
     
-    if (!text) {
-      this.renderer.setStyle(nativeElement, 'opacity', '1');
-      return;
+    // Procesar última palabra si existe
+    if (currentWord.length > 0) {
+      this.createWordFromSegments(currentWord, parent);
     }
-    
-    nativeElement.innerHTML = '';
-
-    const wrapper = this.renderer.createElement('div');
-    this.renderer.setStyle(wrapper, 'display', 'block');
-    this.renderer.setStyle(wrapper, 'overflow', 'hidden');
-    this.renderer.setStyle(wrapper, 'width', '100%');
-
-    const words = text.split(/(\s+)/);
-    
-    words.forEach((word: string) => {
-      if (word.trim()) {
-        this.createWordElement(word, wrapper);
-      } else if (word) {
-        const spaceSpan = this.renderer.createElement('span');
-        spaceSpan.textContent = word;
-        this.renderer.appendChild(wrapper, spaceSpan);
-      }
-    });
-
-    this.renderer.appendChild(nativeElement, wrapper);
-    this.createWordRevealAnimation(nativeElement);
   }
 
-  private processTextNode(node: any, wrapper: HTMLElement): void {
-    const text = node.textContent || '';
-    const words = text.split(/(\s+)/);
-    
-    words.forEach((word: string) => {
-      if (word.trim()) {
-        this.createWordElement(word, wrapper);
-      } else if (word) {
-        const spaceSpan = this.renderer.createElement('span');
-        spaceSpan.textContent = word;
-        this.renderer.appendChild(wrapper, spaceSpan);
-      }
-    });
-  }
-
-  private createWordElement(word: string, wrapper: HTMLElement): void {
+  private createWordFromSegments(
+    segments: Array<{type: 'text' | 'element', content: string | HTMLElement}>, 
+    parent: HTMLElement
+  ): void {
     const wordContainer = this.renderer.createElement('span');
     const wordSpan = this.renderer.createElement('span');
 
     this.renderer.setStyle(wordContainer, 'display', 'inline-block');
     this.renderer.setStyle(wordContainer, 'overflow', 'hidden');
-    this.renderer.setStyle(wordContainer, 'marginRight', '0.3em');
-    this.renderer.setStyle(wordContainer, 'verticalAlign', 'top');
 
     this.renderer.setStyle(wordSpan, 'display', 'inline-block');
     this.renderer.setStyle(wordSpan, 'transform', 'translateY(100%)');
     this.renderer.setStyle(wordSpan, 'willChange', 'transform');
+    this.renderer.addClass(wordSpan, 'word-reveal-animated');
 
-    const textNode = this.renderer.createText(word);
-    this.renderer.appendChild(wordSpan, textNode);
+    // Agregar todos los segmentos dentro del mismo span animado
+    segments.forEach(segment => {
+      if (segment.type === 'text') {
+        const textNode = this.renderer.createText(segment.content as string);
+        this.renderer.appendChild(wordSpan, textNode);
+      } else {
+        const element = segment.content as HTMLElement;
+        const clonedElement = this.renderer.createElement(element.tagName.toLowerCase());
+        
+        // Copiar todos los atributos
+        Array.from(element.attributes).forEach(attr => {
+          this.renderer.setAttribute(clonedElement, attr.name, attr.value);
+        });
+        
+        // Copiar el contenido
+        clonedElement.innerHTML = element.innerHTML;
+        
+        this.renderer.appendChild(wordSpan, clonedElement);
+      }
+    });
+
     this.renderer.appendChild(wordContainer, wordSpan);
-    this.renderer.appendChild(wrapper, wordContainer);
+    this.renderer.appendChild(parent, wordContainer);
   }
 
   ngOnDestroy(): void {

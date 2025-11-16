@@ -1,4 +1,4 @@
-<div class="px-4 py-2 sm:px-6 lg:px-12 xl:px-16 2xl:px-24 inline-flex justify-between items-center w-full">
+<div class="px-4 py-2 sm:px-6 bg-aldy-white lg:px-12 xl:px-16 2xl:px-24 inline-flex justify-between items-center w-full">
   <button type="button" (click)="toggleFilters()"
     class="inline-flex text-xs aldyFont gap-2 items-center border cursor-pointer border-aldy-medium-2 px-6 py-3 tracking-widest font-medium uppercase transition-all duration-300 ease-in-out hover:bg-aldy-medium-2 hover:text-white">
     <lucide-icon name="Funnel" class="h-4 w-4"></lucide-icon>
@@ -11,7 +11,7 @@
       class="group py-[7px] px-2 hover:bg-aldy-medium-2 transition-all duration-300 ease-in-out cursor-pointer border border-aldy-medium-2">
       <div class="grid grid-cols-2 gap-[2px] grid-rows-2">
         <span *ngFor="let n of [1,2,3,4]" class="h-[12px] w-[12px] transition-all duration-300 ease-in-out"
-          [ngClass]="productColumns === 2 ? 'bg-white' : 'bg-aldy-medium-2 group-hover:bg-white'"></span>
+          [ngClass]="productColumns === 2 ? 'bg-aldy-white' : 'bg-aldy-medium-2 group-hover:bg-aldy-white'"></span>
       </div>
     </button>
 
@@ -19,7 +19,7 @@
       class="group py-[7px] px-2 hover:bg-aldy-medium-2 transition-all duration-300 ease-in-out cursor-pointer border border-aldy-medium-2">
       <div class="grid grid-cols-3 gap-[2px] grid-rows-3">
         <span *ngFor="let n of [1,2,3,4,5,6,7,8,9]" class="h-[8px] w-[8px] transition-all duration-300 ease-in-out"
-          [ngClass]="productColumns === 3 ? 'bg-white' : 'bg-aldy-medium-2 group-hover:bg-white'"></span>
+          [ngClass]="productColumns === 3 ? 'bg-aldy-white' : 'bg-aldy-medium-2 group-hover:bg-aldy-white'"></span>
       </div>
     </button>
 
@@ -28,24 +28,24 @@
       <div class="grid grid-cols-4 gap-[2px] grid-rows-4">
         <span *ngFor="let n of [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]"
           class="h-[5px] w-[5px] transition-all duration-300 ease-in-out"
-          [ngClass]="productColumns === 4 ? 'bg-white' : 'bg-aldy-medium-2 group-hover:bg-white'"></span>
+          [ngClass]="productColumns === 4 ? 'bg-aldy-white' : 'bg-aldy-medium-2 group-hover:bg-aldy-white'"></span>
       </div>
     </button>
   </div>
 </div>
-<div class="w-full border-b border-[#d9e2d8] mb-2 relative">
+<div class="w-full border-b bg-aldy-white border-[#d9e2d8] mb-2 relative">
   <app-loadingbar [loading]="loading"></app-loadingbar>
 </div>
-<div class="px-4 sm:px-6 lg:px-12 xl:px-16 2xl:px-24 py-2 w-full">
+<div class="px-4 bg-aldy-white sm:px-6 lg:px-12 xl:px-16 2xl:px-24 py-2 w-full">
   <div class="max-w-screen-3xl mx-auto">
 
     <div class="flex flex-col lg:flex-row transition-all duration-500 ease-in-out"
       [ngClass]="{ 'gap-4': showFilters && !isMobileView, 'gap-0': !showFilters || isMobileView }">
 
       <aside *ngIf="!isMobileView" class="transition-all duration-500 ease-in-out overflow-hidden" [ngStyle]="{
-          flexBasis: showFilters ? '16%' : '0%',
-          maxWidth: showFilters ? '16%' : '0%',
-          minWidth: showFilters ? '220px' : '0px',
+          flexBasis: showFilters ? '17%' : '0%',
+          maxWidth: showFilters ? '17%' : '0%',
+          minWidth: showFilters ? '260px' : '0px',
           opacity: showFilters ? '1' : '0',
           pointerEvents: showFilters ? 'auto' : 'none'
         }">
@@ -53,37 +53,52 @@
           <!-- Pills seleccionadas -->
           <div class="px-3 pb-2" *ngIf="selectedCategories.length || getSelectedSubcategoriesFlat().length">
             <div class="flex flex-wrap gap-2">
-              <span *ngFor="let cat of selectedCategories" class="inline-flex items-center gap-2 bg-aldy-medium-2 text-white px-3 py-1 rounded-full text-xs uppercase tracking-wide">
+              <span *ngFor="let cat of selectedCategories"
+                class="inline-flex items-center gap-2 bg-aldy-medium-2 text-white px-3 py-1 rounded-full text-xs uppercase tracking-wide">
                 {{ cat }}
-                <button type="button" class="ml-1 text-white/90 hover:text-white cursor-pointer" (click)="removeCategory(cat)">×</button>
+                <button type="button" class="ml-1 text-white/90 hover:text-white cursor-pointer"
+                  (click)="removeCategory(cat)">×</button>
               </span>
-              <span *ngFor="let pair of getSelectedSubcategoriesFlat()" class="inline-flex items-center gap-2 bg-aldy-medium-2 text-white px-3 py-1 rounded-full text-xs uppercase tracking-wide">
+              <span *ngFor="let pair of getSelectedSubcategoriesFlat()"
+                class="inline-flex items-center gap-2 bg-aldy-medium-2 text-white px-3 py-1 rounded-full text-xs uppercase tracking-wide">
                 {{ pair.subcategory }}
-                <button type="button" class="ml-1 text-white/90 hover:text-white cursor-pointer" (click)="removeSubcategory(pair.category, pair.subcategory)">×</button>
+                <button type="button" class="ml-1 text-white/90 hover:text-white cursor-pointer"
+                  (click)="removeSubcategory(pair.category, pair.subcategory)">×</button>
               </span>
             </div>
           </div>
 
           <!-- Acordeón: Categorías -->
-          <app-acordiongeneric [title]="'Categorías'" [value]="'categorias'" [selectedMultiple]="openAccordionsArray" (toggled)="onAccordionToggled($event)">
+          <app-acordiongeneric [title]="'Categorías'" [value]="'categorias'" [selectedMultiple]="openAccordionsArray"
+            (toggled)="onAccordionToggled($event)">
             <div class="space-y-1">
-              <label *ngFor="let category of categories" class="flex items-center gap-2 py-2 px-3 text-xs tracking-wider NewAldyFontType4 cursor-pointer w-full hover:bg-gray-50 rounded-md">
-                <input type="checkbox" [checked]="isCategorySelected(category.value)" (change)="toggleCategory(category.value)" AldyCheckboxV1 />
-                <span [ngClass]="isCategorySelected(category.value) ? 'text-aldy-medium font-semibold' : 'text-gray-600'">{{ category.label }}</span>
+              <label *ngFor="let category of categories"
+                class="flex items-center gap-2 py-2 px-3 text-xs tracking-wider NewAldyFontType4 cursor-pointer w-full  rounded-md">
+                <input type="checkbox" [checked]="isCategorySelected(category.value)"
+                  (change)="toggleCategory(category.value)" AldyCheckboxV1 />
+                <span
+                  [ngClass]="isCategorySelected(category.value) ? 'text-aldy-medium font-semibold' : 'text-aldy-green-gray'">{{
+                  category.label }}</span>
               </label>
             </div>
           </app-acordiongeneric>
 
           <!-- Acordeón: Subcategorías -->
-          <app-acordiongeneric [title]="'Subcategorías'" [value]="'subcategorias'" [selectedMultiple]="openAccordionsArray" (toggled)="onAccordionToggled($event)">
+          <app-acordiongeneric [title]="'Subcategorías'" [value]="'subcategorias'"
+            [selectedMultiple]="openAccordionsArray" (toggled)="onAccordionToggled($event)">
             <div class="space-y-2 max-h-72 overflow-y-auto pr-2">
-              <div *ngIf="selectedCategories.length === 0" class="px-3 py-2 text-xs text-gray-500">Selecciona una categoría primero.</div>
+              <div *ngIf="selectedCategories.length === 0" class="px-3 py-2 text-xs text-gray-500">Selecciona una
+                categoría primero.</div>
               <div *ngFor="let cat of selectedCategories" class="px-1">
                 <div class="px-3 pb-1 text-xs uppercase tracking-wider text-gray-500">{{ cat }}</div>
                 <div class="space-y-1">
-                  <label *ngFor="let sub of getSubcategoriesForCategory(cat)" class="flex items-center gap-2 py-2 px-3 text-xs tracking-wider NewAldyFontType4 cursor-pointer w-full hover:bg-gray-50 rounded-md">
-                    <input type="checkbox" [checked]="isSubcategorySelected(cat, sub.value)" (change)="toggleSubcategory(cat, sub.value)" AldyCheckboxV1 />
-                    <span [ngClass]="isSubcategorySelected(cat, sub.value) ? 'text-aldy-medium font-semibold' : 'text-gray-600'">{{ sub.label }}</span>
+                  <label *ngFor="let sub of getSubcategoriesForCategory(cat)"
+                    class="flex items-center gap-2 py-2 px-3 text-xs tracking-wider NewAldyFontType4 cursor-pointer w-full  rounded-md">
+                    <input type="checkbox" [checked]="isSubcategorySelected(cat, sub.value)"
+                      (change)="toggleSubcategory(cat, sub.value)" AldyCheckboxV1 />
+                    <span
+                      [ngClass]="isSubcategorySelected(cat, sub.value) ? 'text-aldy-medium font-semibold' : 'text-aldy-green-gray'">{{
+                      sub.label }}</span>
                   </label>
                 </div>
               </div>
@@ -91,60 +106,51 @@
           </app-acordiongeneric>
 
           <!-- Acordeón: Tamaños -->
-          <app-acordiongeneric [title]="'Tamaños'" [value]="'tamanos'" [selectedMultiple]="openAccordionsArray" (toggled)="onAccordionToggled($event)">
+          <app-acordiongeneric [title]="'Tamaños'" [value]="'tamanos'" [selectedMultiple]="openAccordionsArray"
+            (toggled)="onAccordionToggled($event)">
             <div class="space-y-1">
-              <label *ngFor="let s of allowedSizes" class="flex items-center gap-2 py-2 px-3 text-xs tracking-wider NewAldyFontType4 cursor-pointer w-full hover:bg-gray-50 rounded-md">
+              <label *ngFor="let s of allowedSizes"
+                class="flex items-center gap-2 py-2 px-3 text-xs tracking-wider NewAldyFontType4 cursor-pointer w-full  rounded-md">
                 <input type="checkbox" [checked]="isSizeSelected(s)" (change)="toggleSize(s)" AldyCheckboxV1 />
-                <span [ngClass]="isSizeSelected(s) ? 'text-aldy-medium font-semibold' : 'text-gray-600'">{{ s }}</span>
+                <span [ngClass]="isSizeSelected(s) ? 'text-aldy-medium font-semibold' : 'text-aldy-green-gray'">{{ s }}</span>
               </label>
             </div>
           </app-acordiongeneric>
-
-          <!-- Acordeón: Precio (PrimeNG Slider ranged) -->
-          <app-acordiongeneric [title]="'Precio'" [value]="'precio'" [selectedMultiple]="openAccordionsArray" (toggled)="onAccordionToggled($event)">
+          <app-acordiongeneric [title]="'Precio'" [value]="'precio'" [selectedMultiple]="openAccordionsArray"
+            (toggled)="onAccordionToggled($event)">
             <div class="px-3 py-2">
-              <p-slider
-                [range]="true"
-                [min]="0"
-                [max]="500000"
-                [step]="100"
-                class="w-full"
-                [(ngModel)]="priceRange"
-                (ngModelChange)="onPriceRangeChange($event)"
-              ></p-slider>
-              <!-- Inputs numéricos ajustados y alineados -->
-              <div class="flex items-center gap-3 mt-3 flex-wrap">
-                <div class="flex items-center gap-1 border border-aldy-medium-2 px-1 py-1">
-                  <span class="text-aldy-medium-2">$</span>
-                  <input type="number" class="w-16 outline-none text-sm" [min]="0" [max]="500000" [step]="100" [(ngModel)]="priceMin" (ngModelChange)="onPriceInputChange('min', $event)" />
-                  <span class="text-gray-500 text-xs">0</span>
+              <p-slider [range]="true" [min]="0" [max]="500000" [step]="100" class="w-full pb-6"
+                [(ngModel)]="priceRange" (ngModelChange)="onPriceRangeChange($event)"></p-slider>
+              <div class="flex mx-auto items-center gap-3 mt-6">
+                <div class="flex items-center gap-1 border border-aldy-medium-2 p-[2px]">
+                  <span class="text-aldy-medium-2 text-xs">$</span>
+                  <input type="number" class="w-auto outline-none text-xs" [min]="0" [max]="500000" [step]="100"
+                    [(ngModel)]="priceMin" (ngModelChange)="onPriceInputChange('min', $event)" />
                 </div>
-                <span class="text-gray-600 text-sm">—</span>
-                <div class="flex items-center gap-1 border border-aldy-medium-2 px-1 py-1">
-                  <span class="text-aldy-medium-2">$</span>
-                  <input type="number" class="w-16 outline-none text-sm" [min]="0" [max]="500000" [step]="100" [(ngModel)]="priceMax" (ngModelChange)="onPriceInputChange('max', $event)" />
-                  <span class="text-gray-500 text-xs">500.000</span>
+                <span class="text-aldy-green-gray text-xs">-</span>
+                <div class="flex items-center gap-1 border border-aldy-medium-2 p-[2px]">
+                  <span class="text-aldy-medium-2 text-xs">$</span>
+                  <input type="number" class="w-auto outline-none text-xs" [min]="0" [max]="500000" [step]="100"
+                    [(ngModel)]="priceMax" (ngModelChange)="onPriceInputChange('max', $event)" />
                 </div>
               </div>
             </div>
           </app-acordiongeneric>
-
-          <!-- Acciones: Borrar y Buscar -->
           <div class="px-3 pt-3 flex gap-2">
-            <button type="button" (click)="clearFilters()" class="flex-1 border border-aldy-medium text-aldy-medium px-3 py-2 font-light hover:border-aldy-medium-2 hover:text-aldy-medium-2 NewAldyFontType4 cursor-pointer transition-colors text-xs uppercase tracking-widest">Borrar filtros</button>
-            <button type="button" (click)="applyFiltersAction(false)" class="flex-1 text-white px-3 py-2 font-light bg-aldy-medium hover:bg-aldy-medium-2 NewAldyFontType4 cursor-pointer transition-colors text-xs uppercase tracking-wider">Buscar</button>
+            <button type="button" (click)="clearFilters()"
+              class="flex-1 border border-aldy-medium text-aldy-medium px-3 py-2 font-light hover:border-aldy-medium-2 hover:text-aldy-medium-2 NewAldyFontType4 cursor-pointer transition-colors text-xs uppercase tracking-widest">Borrar
+              filtros</button>
+            <button type="button" (click)="applyFiltersAction(false)"
+              class="flex-1 text-white px-3 py-2 font-light bg-aldy-medium hover:bg-aldy-medium-2 NewAldyFontType4 cursor-pointer transition-colors text-xs uppercase tracking-wider">Buscar</button>
           </div>
         </div>
       </aside>
-
       <div #productsContainer class="transition-all duration-500 ease-in-out flex-1  min-h-[300px]">
         <div #productsTop id="productsTop" class="h-0"></div>
-
         <p *ngIf="!loading && filteredProducts.length === 0"
           class="text-center NewAldyFontType4 text-sm py-12 text-gray-700 flex justify-center items-center h-full">
           No hay productos para mostrar.
         </p>
-
         <div *ngIf="!loading && filteredProducts.length > 0" [@gridAnimation]="productColumns"
           class="grid gap-5 transition-all duration-500 ease-in-out" [ngClass]="[
             productColumns === 2
@@ -159,104 +165,57 @@
             (wishlistToggled)="toggleWishlist($event)">
           </app-cardproduct>
         </div>
-
-        <!-- Paginador -->
-        <div
-  *ngIf="!loading && filteredProducts.length > 0 && totalPages > 1"
-  class="flex justify-center items-center gap-2 mt-6 select-none text-aldy-medium-2"
->
-  <!-- Flecha izquierda -->
-  <button
-    type="button"
-    (click)="prevPage()"
-    [disabled]="currentPage === 1"
-    class="w-10 h-10 border border-aldy-medium-2 text-aldy-medium-2 rounded-none flex items-center justify-center NewAldyFontType4 text-sm cursor-pointer disabled:opacity-40 disabled:cursor-default"
-    aria-label="Página anterior"
-  >
-    ‹
-  </button>
-
-  <!-- Números de página -->
-  <ng-container *ngIf="pagesArray.length <= 8; else manyPages">
-    <button
-      *ngFor="let p of pagesArray"
-      type="button"
-      (click)="goToPage(p)"
-      class="w-10 h-10 border border-aldy-medium-2 text-aldy-medium-2 rounded-none flex items-center justify-center NewAldyFontType4 text-sm cursor-pointer disabled:opacity-40 disabled:cursor-default"
-      [ngClass]="p === currentPage ? 'font-semibold' : ''"
-    >
-      {{ p }}
-    </button>
-  </ng-container>
-
-  <ng-template #manyPages>
-    <button
-      type="button"
-      (click)="goToPage(1)"
-      class="w-10 h-10 border border-aldy-medium-2 text-aldy-medium-2 rounded-none flex items-center justify-center NewAldyFontType4 text-sm cursor-pointer disabled:opacity-40 disabled:cursor-default"
-      [ngClass]="currentPage === 1 ? 'font-semibold' : ''"
-    >
-      1
-    </button>
-
-    <span class="px-2 NewAldyFontType4 text-sm text-aldy-medium-2">...</span>
-
-    <button
-      *ngIf="currentPage > 2"
-      type="button"
-      (click)="goToPage(currentPage - 1)"
-      class="w-10 h-10 border border-aldy-medium-2 text-aldy-medium-2 rounded-none flex items-center justify-center NewAldyFontType4 text-sm cursor-pointer disabled:opacity-40 disabled:cursor-default"
-    >
-      {{ currentPage - 1 }}
-    </button>
-
-    <button
-      type="button"
-      (click)="goToPage(currentPage)"
-      class="w-10 h-10 border border-aldy-medium-2 text-aldy-medium-2 rounded-none flex items-center justify-center NewAldyFontType4 text-sm cursor-pointer font-semibold disabled:opacity-40 disabled:cursor-default"
-    >
-      {{ currentPage }}
-    </button>
-
-    <button
-      *ngIf="currentPage < totalPages - 1"
-      type="button"
-      (click)="goToPage(currentPage + 1)"
-      class="w-10 h-10 border border-aldy-medium-2 text-aldy-medium-2 rounded-none flex items-center justify-center NewAldyFontType4 text-sm cursor-pointer disabled:opacity-40 disabled:cursor-default"
-    >
-      {{ currentPage + 1 }}
-    </button>
-
-    <span class="px-2 NewAldyFontType4 text-sm text-aldy-medium-2">...</span>
-
-    <button
-      type="button"
-      (click)="goToPage(totalPages)"
-      class="w-10 h-10 border border-aldy-medium-2 text-aldy-medium-2 rounded-none flex items-center justify-center NewAldyFontType4 text-sm cursor-pointer disabled:opacity-40 disabled:cursor-default"
-      [ngClass]="currentPage === totalPages ? 'font-semibold' : ''"
-    >
-      {{ totalPages }}
-    </button>
-  </ng-template>
-
-  <!-- Flecha derecha -->
-  <button
-    type="button"
-    (click)="nextPage()"
-    [disabled]="currentPage === totalPages"
-    class="w-10 h-10 border border-aldy-medium-2 text-aldy-medium-2 rounded-none flex items-center justify-center NewAldyFontType4 text-sm cursor-pointer disabled:opacity-40 disabled:cursor-default"
-    aria-label="Página siguiente"
-  >
-    ›
-  </button>
-</div>
-
+        <div *ngIf="!loading && filteredProducts.length > 0 && totalPages > 1"
+          class="flex justify-center items-center gap-2 mt-6 select-none text-aldy-medium-2">
+          <button type="button" (click)="prevPage()" [disabled]="currentPage === 1"
+            class="w-10 h-10 border border-aldy-medium-2 text-aldy-medium-2 rounded-none flex items-center justify-center NewAldyFontType4 text-sm cursor-pointer disabled:opacity-40 disabled:cursor-default"
+            aria-label="Página anterior">
+            ‹
+          </button>
+          <ng-container *ngIf="pagesArray.length <= 8; else manyPages">
+            <button *ngFor="let p of pagesArray" type="button" (click)="goToPage(p)"
+              class="w-10 h-10 border border-aldy-medium-2 text-aldy-medium-2 rounded-none flex items-center justify-center NewAldyFontType4 text-sm cursor-pointer disabled:opacity-40 disabled:cursor-default"
+              [ngClass]="p === currentPage ? 'font-semibold' : ''">
+              {{ p }}
+            </button>
+          </ng-container>
+          <ng-template #manyPages>
+            <button type="button" (click)="goToPage(1)"
+              class="w-10 h-10 border border-aldy-medium-2 text-aldy-medium-2 rounded-none flex items-center justify-center NewAldyFontType4 text-sm cursor-pointer disabled:opacity-40 disabled:cursor-default"
+              [ngClass]="currentPage === 1 ? 'font-semibold' : ''">
+              1
+            </button>
+            <span class="px-2 NewAldyFontType4 text-sm text-aldy-medium-2">...</span>
+            <button *ngIf="currentPage > 2" type="button" (click)="goToPage(currentPage - 1)"
+              class="w-10 h-10 border border-aldy-medium-2 text-aldy-medium-2 rounded-none flex items-center justify-center NewAldyFontType4 text-sm cursor-pointer disabled:opacity-40 disabled:cursor-default">
+              {{ currentPage - 1 }}
+            </button>
+            <button type="button" (click)="goToPage(currentPage)"
+              class="w-10 h-10 border border-aldy-medium-2 text-aldy-medium-2 rounded-none flex items-center justify-center NewAldyFontType4 text-sm cursor-pointer font-semibold disabled:opacity-40 disabled:cursor-default">
+              {{ currentPage }}
+            </button>
+            <button *ngIf="currentPage < totalPages - 1" type="button" (click)="goToPage(currentPage + 1)"
+              class="w-10 h-10 border border-aldy-medium-2 text-aldy-medium-2 rounded-none flex items-center justify-center NewAldyFontType4 text-sm cursor-pointer disabled:opacity-40 disabled:cursor-default">
+              {{ currentPage + 1 }}
+            </button>
+            <span class="px-2 NewAldyFontType4 text-sm text-aldy-medium-2">...</span>
+            <button type="button" (click)="goToPage(totalPages)"
+              class="w-10 h-10 border border-aldy-medium-2 text-aldy-medium-2 rounded-none flex items-center justify-center NewAldyFontType4 text-sm cursor-pointer disabled:opacity-40 disabled:cursor-default"
+              [ngClass]="currentPage === totalPages ? 'font-semibold' : ''">
+              {{ totalPages }}
+            </button>
+          </ng-template>
+          <button type="button" (click)="nextPage()" [disabled]="currentPage === totalPages"
+            class="w-10 h-10 border border-aldy-medium-2 text-aldy-medium-2 rounded-none flex items-center justify-center NewAldyFontType4 text-sm cursor-pointer disabled:opacity-40 disabled:cursor-default"
+            aria-label="Página siguiente">
+            ›
+          </button>
+        </div>
       </div>
     </div>
   </div>
 </div>
-
-<div *ngIf="isMobileView" class="fixed inset-0 z-50 flex" [ngClass]="{
+<div *ngIf="isMobileView" bg-aldy-white class="fixed inset-0 z-50 flex" [ngClass]="{
        'opacity-100 pointer-events-auto': showFilters,
        'opacity-0 pointer-events-none': !showFilters
      }" [style.transition]="'opacity 300ms ease-in-out'">
@@ -264,12 +223,10 @@
   <div class="absolute inset-0 bg-white/10 backdrop-blur-sm transition-all duration-300 ease-in-out"
     [ngClass]="showFilters ? 'pointer-events-auto' : 'pointer-events-none'" (click)="onOverlayClick($event)">
   </div>
-
   <div
-    class="relative w-80 max-w-[85vw] bg-white h-full shadow-2xl overflow-auto transform transition-transform duration-300 ease-in-out"
+    class="relative w-80 max-w-[85vw] bg-aldy-white h-full shadow-2xl overflow-auto transform transition-transform duration-300 ease-in-out"
     [ngClass]="showFilters ? 'translate-x-0' : '-translate-x-full'" (click)="$event.stopPropagation()">
-
-    <div class="sticky top-0 bg-white border-b border-gray-200 p-4 z-10">
+    <div class="sticky top-0 bg-aldy-white border-b border-gray-200 p-4 z-10">
       <div class="flex items-center justify-between">
         <h3 class="text-lg font-semibold text-aldy-medium-2">Filtros</h3>
         <button class="p-2 hover:bg-gray-100 rounded-full transition-colors" (click)="toggleFilters()">
@@ -277,86 +234,93 @@
         </button>
       </div>
     </div>
-
     <div class="p-4">
       <div class="flex flex-wrap gap-2 mb-4" *ngIf="selectedCategories.length || getSelectedSubcategoriesFlat().length">
-        <span *ngFor="let cat of selectedCategories" class="inline-flex items-center gap-2 bg-aldy-medium-2 text-white px-3 py-1 rounded-full text-xs uppercase tracking-wide">
+        <span *ngFor="let cat of selectedCategories"
+          class="inline-flex items-center gap-2 bg-aldy-medium-2 text-white px-3 py-1 rounded-full text-xs uppercase tracking-wide">
           {{ cat }}
           <button type="button" class="ml-1 text-white/90 hover:text-white" (click)="removeCategory(cat)">×</button>
         </span>
-        <span *ngFor="let pair of getSelectedSubcategoriesFlat()" class="inline-flex items-center gap-2 bg-aldy-medium-2 text-white px-3 py-1 rounded-full text-xs uppercase tracking-wide">
+        <span *ngFor="let pair of getSelectedSubcategoriesFlat()"
+          class="inline-flex items-center gap-2 bg-aldy-medium-2 text-white px-3 py-1 rounded-full text-xs uppercase tracking-wide">
           {{ pair.subcategory }}
-          <button type="button" class="ml-1 text-white/90 hover:text-white" (click)="removeSubcategory(pair.category, pair.subcategory)">×</button>
+          <button type="button" class="ml-1 text-white/90 hover:text-white"
+            (click)="removeSubcategory(pair.category, pair.subcategory)">×</button>
         </span>
       </div>
-
-      <!-- Móvil: Categorías -->
-      <app-acordiongeneric [title]="'Categorías'" [value]="'categorias'" [selectedMultiple]="openAccordionsArray" (toggled)="onAccordionToggled($event)">
+      <app-acordiongeneric [title]="'Categorías'" [value]="'categorias'" [selectedMultiple]="openAccordionsArray"
+        (toggled)="onAccordionToggled($event)">
         <div class="space-y-1">
-          <label *ngFor="let category of categories" class="flex items-center gap-2 py-2 px-3 text-sm NewAldyFontType4 tracking-wider cursor-pointer w-full hover:bg-gray-50 rounded-md">
-            <input type="checkbox" [checked]="isCategorySelected(category.value)" (change)="toggleCategory(category.value)" AldyCheckboxV1 />
-            <span [ngClass]="isCategorySelected(category.value) ? 'text-aldy-medium font-light' : 'text-gray-900'">{{ category.label }}</span>
+          <label *ngFor="let category of categories"
+            class="flex items-center gap-2 py-2 px-3 text-sm NewAldyFontType4 tracking-wider cursor-pointer w-full  rounded-md">
+            <input type="checkbox" [checked]="isCategorySelected(category.value)"
+              (change)="toggleCategory(category.value)" AldyCheckboxV1 />
+            <span [ngClass]="isCategorySelected(category.value) ? 'text-aldy-medium font-light' : 'text-gray-900'">{{
+              category.label }}</span>
           </label>
         </div>
       </app-acordiongeneric>
-
-      <!-- Móvil: Subcategorías -->
-      <app-acordiongeneric [title]="'Subcategorías'" [value]="'subcategorias'" [selectedMultiple]="openAccordionsArray" (toggled)="onAccordionToggled($event)">
+      <app-acordiongeneric [title]="'Subcategorías'" [value]="'subcategorias'" [selectedMultiple]="openAccordionsArray"
+        (toggled)="onAccordionToggled($event)">
         <div class="space-y-2 max-h-72 overflow-y-auto pr-2">
-          <div *ngIf="selectedCategories.length === 0" class="px-3 py-2 text-xs text-gray-500">Selecciona una categoría primero.</div>
+          <div *ngIf="selectedCategories.length === 0" class="px-3 py-2 text-xs text-aldy-green-gray">Selecciona una categoría
+            primero.</div>
           <div *ngFor="let cat of selectedCategories" class="px-1">
-            <div class="px-3 pb-1 text-xs uppercase tracking-wider text-gray-500">{{ cat }}</div>
+            <div class="px-3 pb-1 text-xs uppercase tracking-wider text-aldy-green-gray-bold">{{ cat }}</div>
             <div class="space-y-1">
-              <label *ngFor="let sub of getSubcategoriesForCategory(cat)" class="flex items-center gap-2 py-2 px-3 text-sm NewAldyFontType4 cursor-pointer w-full hover:bg-gray-50 rounded-md">
-                <input type="checkbox" [checked]="isSubcategorySelected(cat, sub.value)" (change)="toggleSubcategory(cat, sub.value)" AldyCheckboxV1 />
-                <span [ngClass]="isSubcategorySelected(cat, sub.value) ? 'text-aldy-medium font-semibold' : 'text-gray-600'">{{ sub.label }}</span>
+              <label *ngFor="let sub of getSubcategoriesForCategory(cat)"
+                class="flex items-center gap-2 py-2 px-3 text-sm NewAldyFontType4 cursor-pointer w-full  rounded-md">
+                <input type="checkbox" [checked]="isSubcategorySelected(cat, sub.value)"
+                  (change)="toggleSubcategory(cat, sub.value)" AldyCheckboxV1 />
+                <span
+                  [ngClass]="isSubcategorySelected(cat, sub.value) ? 'text-aldy-medium font-semibold' : 'text-aldy-green-gray'">{{
+                  sub.label }}</span>
               </label>
             </div>
           </div>
         </div>
       </app-acordiongeneric>
 
-      <app-acordiongeneric [title]="'Tamaños'" [value]="'tamanos'" [selectedMultiple]="openAccordionsArray" (toggled)="onAccordionToggled($event)">
+      <app-acordiongeneric [title]="'Tamaños'" [value]="'tamanos'" [selectedMultiple]="openAccordionsArray"
+        (toggled)="onAccordionToggled($event)">
         <div class="space-y-1">
-          <label *ngFor="let s of allowedSizes" class="flex items-center gap-2 py-2 px-3 text-sm NewAldyFontType4 cursor-pointer w-full hover:bg-gray-50 rounded-md">
+          <label *ngFor="let s of allowedSizes"
+            class="flex items-center gap-2 py-2 px-3 text-sm NewAldyFontType4 cursor-pointer w-full  rounded-md">
             <input type="checkbox" [checked]="isSizeSelected(s)" (change)="toggleSize(s)" AldyCheckboxV1 />
-            <span [ngClass]="isSizeSelected(s) ? 'text-aldy-medium font-semibold' : 'text-gray-600'">{{ s }}</span>
+            <span [ngClass]="isSizeSelected(s) ? 'text-aldy-medium font-semibold' : 'text-aldy-green-gray'">{{ s }}</span>
           </label>
         </div>
       </app-acordiongeneric>
 
-      <app-acordiongeneric [title]="'Precio'" [value]="'precio'" [selectedMultiple]="openAccordionsArray" (toggled)="onAccordionToggled($event)">
+      <app-acordiongeneric [title]="'Precio'" [value]="'precio'" [selectedMultiple]="openAccordionsArray"
+        (toggled)="onAccordionToggled($event)">
         <div class="px-3 py-2">
-          <p-slider
-            [range]="true"
-            [min]="0"
-            [max]="500000"
-            [step]="100"
-            class="w-full"
-            [(ngModel)]="priceRange"
-            (ngModelChange)="onPriceRangeChange($event)"
-          ></p-slider>
-          <div class="flex items-center gap-3 mt-3 flex-wrap">
-            <div class="flex items-center gap-1 border border-aldy-medium-2 px-1 py-1">
-              <span class="text-aldy-medium-2">$</span>
-              <input type="number" class="w-16 outline-none text-sm" [min]="0" [max]="500000" [step]="100" [(ngModel)]="priceMin" (ngModelChange)="onPriceInputChange('min', $event)" />
-              <span class="text-gray-500 text-xs">0</span>
+          <p-slider [range]="true" [min]="0" [max]="500000" [step]="100" class="w-full pb-6" [(ngModel)]="priceRange"
+            (ngModelChange)="onPriceRangeChange($event)"></p-slider>
+          <div class="flex mx-auto items-center gap-3 mt-6">
+            <div class="flex items-center gap-1 border border-aldy-medium-2 p-[2px]">
+              <span class="text-aldy-medium-2 text-xs">$</span>
+              <input type="number" class="w-auto outline-none text-xs" [min]="0" [max]="500000" [step]="100"
+                [(ngModel)]="priceMin" (ngModelChange)="onPriceInputChange('min', $event)" />
             </div>
-            <span class="text-gray-600 text-sm">—</span>
-            <div class="flex items-center gap-1 border border-aldy-medium-2 px-1 py-1">
-              <span class="text-aldy-medium-2">$</span>
-              <input type="number" class="w-16 outline-none text-sm" [min]="0" [max]="500000" [step]="100" [(ngModel)]="priceMax" (ngModelChange)="onPriceInputChange('max', $event)" />
-              <span class="text-gray-500 text-xs">500.000</span>
+            <span class="text-aldy-green-gray text-xs">-</span>
+            <div class="flex items-center gap-1 border border-aldy-medium-2 p-[2px]">
+              <span class="text-aldy-medium-2 text-xs">$</span>
+              <input type="number" class="w-auto outline-none text-xs" [min]="0" [max]="500000" [step]="100"
+                [(ngModel)]="priceMax" (ngModelChange)="onPriceInputChange('max', $event)" />
             </div>
           </div>
         </div>
       </app-acordiongeneric>
     </div>
 
-    <div class="sticky bottom-0 bg-white border-t border-gray-200 p-4">
-      <div class="flex gap-2">
-        <button (click)="clearFilters()" class="flex-1 border border-aldy-medium-2 text-aldy-medium-2 py-3 px-4 rounded-lg font-medium hover:bg-gray-50 transition-colors">Borrar filtros</button>
-        <button (click)="applyFiltersMobile()" class="flex-1 bg-aldy-light text-white py-3 px-4 rounded-lg font-medium hover:bg-aldy-medium-2 transition-colors">Buscar</button>
+    <div class="sticky bottom-0 bg-aldy-white border-t border-gray-200 p-4">
+      <div class="px-3 pt-3 flex gap-2">
+        <button type="button" (click)="clearFilters()"
+          class="flex-1 border border-aldy-medium text-aldy-medium px-3 py-2 font-light hover:border-aldy-medium-2 hover:text-aldy-medium-2 NewAldyFontType4 cursor-pointer transition-colors text-xs uppercase tracking-widest">Borrar
+          filtros</button>
+        <button type="button" (click)="applyFiltersAction(false)"
+          class="flex-1 text-white px-3 py-2 font-light bg-aldy-medium hover:bg-aldy-medium-2 NewAldyFontType4 cursor-pointer transition-colors text-xs uppercase tracking-wider">Buscar</button>
       </div>
     </div>
   </div>

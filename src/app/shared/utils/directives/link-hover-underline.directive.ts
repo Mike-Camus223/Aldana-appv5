@@ -1,15 +1,19 @@
 import { Directive, ElementRef, Renderer2, HostListener, Input, OnInit } from '@angular/core';
 
 @Directive({
-  selector: '[appLinkHoverUnderline]'
+  selector: '[appLinkHoverUnderline]',
+  standalone: true
 })
 export class LinkHoverUnderlineDirective implements OnInit {
   @Input() underlineColor?: string;
   @Input() underlineHeight: string = '1px';
   @Input() underlineTransition: string = 'width 0.5s ease';
   @Input() dynamicColor?: string;
+  @Input() defaultColor?: string; // Color cuando no hay hover
+  @Input() hoverColor?: string;   // Color cuando hay hover
 
   private underline!: HTMLElement;
+  private baseColor!: string;
 
   constructor(private el: ElementRef, private renderer: Renderer2) {}
 
@@ -26,9 +30,11 @@ export class LinkHoverUnderlineDirective implements OnInit {
     this.renderer.setStyle(this.underline, 'width', '0');
     this.renderer.setStyle(this.underline, 'transition', this.underlineTransition);
     this.renderer.setStyle(this.underline, 'pointerEvents', 'none');
+    this.renderer.setStyle(this.underline, 'zIndex', '2');
 
-    const finalColor = this.dynamicColor ?? this.underlineColor ?? 'currentColor';
-    this.renderer.setStyle(this.underline, 'backgroundColor', finalColor);
+    // Color base: primero defaultColor, luego underlineColor, luego currentColor
+    this.baseColor = this.defaultColor ?? this.underlineColor ?? 'currentColor';
+    this.renderer.setStyle(this.underline, 'backgroundColor', this.baseColor);
 
     const parent = this.el.nativeElement;
     this.renderer.setStyle(parent, 'position', 'relative');
@@ -37,9 +43,12 @@ export class LinkHoverUnderlineDirective implements OnInit {
 
   @HostListener('mouseenter') onMouseEnter() {
     this.renderer.setStyle(this.underline, 'width', '100%');
+    const hover = this.hoverColor ?? this.dynamicColor ?? this.baseColor;
+    this.renderer.setStyle(this.underline, 'backgroundColor', hover);
   }
 
   @HostListener('mouseleave') onMouseLeave() {
     this.renderer.setStyle(this.underline, 'width', '0');
+    this.renderer.setStyle(this.underline, 'backgroundColor', this.baseColor);
   }
 }

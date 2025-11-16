@@ -70,7 +70,6 @@ export class CardproductComponent implements OnInit {
 
 
   constructor(
-    // ... existing injections
     private favoritesService: FavoritesService,
     private authService: AuthService,
     @Inject(PLATFORM_ID) private platformId: Object
@@ -94,9 +93,6 @@ export class CardproductComponent implements OnInit {
   onResize(): void {
     this.updateView();
   }
-
-
-  
 
   private updateView(): void {
     if (!isPlatformBrowser(this.platformId)) return;
