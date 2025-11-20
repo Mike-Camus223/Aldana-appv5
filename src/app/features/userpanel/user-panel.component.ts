@@ -5,14 +5,14 @@ import { AuthService } from '../../core/services/auth/auth.service';
 import { User } from '@supabase/supabase-js';
 import { filter } from 'rxjs/operators';
 import { AppMenuItem } from '../../shared/utils/models/app-menu-item.model';
-import { NavbarPublicv2Component } from "../../shared/components/system/navbar-publicv2/navbar-publicv2.component";
 import { Heart, LogOut, LUCIDE_ICONS, LucideAngularModule, LucideIconProvider, Package, Settings, UserRound } from 'lucide-angular';
 import { LoaderService } from '../../core/services/utils/loader.service';
+import { NavbarPublicv3Component } from '../../shared/components/system/navbar-publicv3/navbar-publicv3.component';
 
 @Component({
   selector: 'app-user-panel',
   standalone: true,
-  imports: [CommonModule, RouterModule, NavbarPublicv2Component,LucideAngularModule],
+  imports: [CommonModule, RouterModule,LucideAngularModule,NavbarPublicv3Component],
   templateUrl: './user-panel.component.html',
   providers: [
       {

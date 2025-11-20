@@ -29,11 +29,11 @@ export class ControlPanelComponent {
   user = this.authService.currentUser$;
 
   Gotofav() {
-    this.router.navigate(['/favoritos']);
+    this.router.navigate(['/panel/favoritos']);
   }
 
   GotoAccountInfo() {
-    this.router.navigate(['/informacion-cuenta']);
+    this.router.navigate(['/panel/informacion-cuenta']);
   }
 }
 

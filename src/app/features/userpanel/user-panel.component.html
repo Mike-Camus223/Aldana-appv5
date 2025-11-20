@@ -1,13 +1,13 @@
-<app-navbar-publicv2></app-navbar-publicv2>
+<app-navbar-publicv3></app-navbar-publicv3>
 <div class="h-[0px] lg:h-[88px]"></div>
-<div class="min-h-screen w-full bg-gray-50 overflow-x-hidden">
-  <div class="max-w-screen w-full bg-gray-100 mx-auto">
+<div class="min-h-screen w-full bg-aldy-white overflow-x-hidden">
+  <div class="max-w-screen w-full bg-aldy-white mx-auto">
     <div class="relative w-full h-80 flex items-center justify-center text-center overflow-hidden">
       <img class="absolute inset-0 w-full h-full object-cover object-[65%_35%]"
         src="https://www.untouchedworld.com/cdn/shop/articles/build-the-perfect-capsule-wardrobe_banner_web.jpg?v=1702433268&width=1920"
         alt="wardrobe">
       <div class="absolute inset-0 bg-black/20"></div>
-      <h1 class="relative text-5xl text-white aldyFont font-bold z-10">
+      <h1 class="relative text-5xl NewAldyTitle tracking-widest uppercase text-white  font-light z-10">
         Mi cuenta
       </h1>
     </div>
@@ -17,22 +17,22 @@
       <nav class="mt-6">
         <div class="px-3 space-y-1">
           <a *ngFor="let item of navItems" [routerLink]="item.route"
-            routerLinkActive="bg-aldy-primary-100 text-gray-600"
-            class="w-full flex items-center px-3 py-4 text-sm font-medium">
-            <lucide-icon [size]="22" [strokeWidth]="1.75" [name]="item.icon" class="mr-1.5 text-aldy-primary-500"></lucide-icon>
+            routerLinkActive="bg-[#d3eeca] text-aldy-green-gray-bold"
+            class="w-full flex items-center text-aldy-green-gray px-3 tracking-wider font-light py-4 text-sm NewAldyFontType4">
+            <lucide-icon [size]="22" [strokeWidth]="1.75" [name]="item.icon" class="mr-1.5 text-aldy-green-gray"></lucide-icon>
             {{ item.title }}
           </a>
         </div>
         <div class="px-3 space-y-1 mt-8">
           <button (click)="onSignOut()"
-            class="w-full cursor-pointer flex items-center hover:bg-aldy-primary-100 transition-colors duration-300 ease-in-out px-3 py-4 text-sm font-medium">
-            <lucide-icon [size]="22" [strokeWidth]="1.75" name="log-out" class="mr-1.5 text-aldy-primary-500"></lucide-icon>
+            class="w-full cursor-pointer text-aldy-green-gray flex items-center hover:bg-[#d3eeca] transition-colors duration-300 ease-in-out px-3 py-4 text-sm NewAldyFontType4">
+            <lucide-icon [size]="22" [strokeWidth]="1.75" name="log-out" class="mr-1.5 text-aldy-green-gray"></lucide-icon>
             Cerrar Sesión
           </button>
         </div>
       </nav>
     </div>
-    <div class="flex-1 p-8 relative">
+    <div class="flex-1 bg-aldy-white p-8 relative">
       <div *ngIf="isLoading" class="loading-overlay">
         <div class="spinner"></div>
       </div>

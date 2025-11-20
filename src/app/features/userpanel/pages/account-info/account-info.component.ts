@@ -47,7 +47,7 @@ export class AccountInfoComponent implements OnInit {
     this.accountForm = this.fb.group({
       firstName: ['', [Validators.required]],
       lastName: ['', [Validators.required]],
-      email: [{ value: '', disabled: true }, [Validators.required, Validators.email]],
+      email: ['', [Validators.required, Validators.email]],
       phone: ['', [Validators.required]],
       gender: ['', [Validators.required]]
     });

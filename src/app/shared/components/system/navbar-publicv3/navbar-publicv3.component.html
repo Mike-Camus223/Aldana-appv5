@@ -132,7 +132,7 @@
           <lucide-icon name="search" class="w-6 h-6 transition-colors duration-200 ease-in-out" [ngClass]="iconColorClass"></lucide-icon>
         </a>
 
-        <a *ngIf="isAuthenticated" routerLink="/favoritos" class="cursor-pointer" (mouseenter)="onInteractiveEnter()">
+        <a *ngIf="isAuthenticated" routerLink="/panel/favoritos" class="cursor-pointer" (mouseenter)="onInteractiveEnter()">
           <lucide-icon name="heart" class="w-6 h-6 transition-colors duration-200 ease-in-out" [ngClass]="iconColorClass"></lucide-icon>
         </a>
 
@@ -176,7 +176,7 @@
             'text-aldy-medium hover:text-aldy-primary-500': menuOpen || !isHomePage || MoverScroll || hoverNavbar
           }"></lucide-icon>
       </a>
-      <a *ngIf="isAuthenticated" routerLink="/favoritos" class="cursor-pointer">
+      <a *ngIf="isAuthenticated" routerLink="/panel/favoritos" class="cursor-pointer">
         <lucide-icon name="heart" class="w-6 h-6" [ngClass]="{
             'text-white': !menuOpen && isHomePage && !MoverScroll && !hoverNavbar,
             'text-aldy-medium hover:text-aldy-primary-500': menuOpen || !isHomePage || MoverScroll || hoverNavbar

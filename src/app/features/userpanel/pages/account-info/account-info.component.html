@@ -1,4 +1,5 @@
-<div class="w-full max-w-xl mx-auto space-y-6">
+<div class="w-full mx-auto px-4 py-4 space-y-8">
+  <h1 class="text-2xl NewAldyTitle tracking-widest text-aldy-green-gray-bold font-light mb-6">Mi informaci<span class="NewAldyFontTypeAccent relative -top-[1px]">ó</span>n</h1>
   <div class="relative w-24 h-24">
     <img 
   [src]="userAvatarUrl || 'https://via.placeholder.com/150/ef4444/ffffff?text=A'" 
@@ -6,7 +7,7 @@
   class="w-full h-full object-cover rounded-full border border-gray-200"
 />
     <button type="button"
-      class="absolute bottom-0 right-0 flex items-center justify-center w-8 h-8 bg-aldy-primary-500 hover:bg-aldy-primary-600 text-white rounded-full transition-colors duration-500 ease-in-out">
+      class="absolute bottom-0 right-0 flex items-center justify-center w-8 h-8 bg-aldy-medium hover:bg-aldy-medium-2 cursor-pointer text-white rounded-full transition-colors duration-500 ease-in-out">
       <lucide-icon name="pencil" [size]="17" [strokeWidth]="1.75"></lucide-icon>
     </button>
   </div>
@@ -14,35 +15,37 @@
     <div class="grid grid-cols-2 gap-6 mb-6">
       <div>
         <app-input id="firstName" label="Nombre*" [formControlName]="'firstName'"></app-input>
-        <div *ngIf="accountForm.get('firstName')?.invalid && accountForm.get('firstName')?.touched" class="text-red-400 text-sm mt-1">
+        <div *ngIf="accountForm.get('firstName')?.invalid && accountForm.get('firstName')?.touched" class="text-red-400 NewAldyFontType4 text-xs tracking-wider mt-1">
           El nombre es obligatorio
         </div>
       </div>
       <div>
         <app-input id="lastName" label="Apellido" [formControlName]="'lastName'"></app-input>
-        <div *ngIf="accountForm.get('lastName')?.invalid && accountForm.get('lastName')?.touched" class="text-red-400 text-sm mt-1">
+        <div *ngIf="accountForm.get('lastName')?.invalid && accountForm.get('lastName')?.touched" class="text-red-400 NewAldyFontType4 text-xs tracking-wider mt-1">
           El apellido es obligatorio
         </div>
       </div>
     </div>
-    <div class="grid grid-cols-1 gap-6 mb-6">
+    <div class="grid grid-cols-2 gap-6 mb-6">
       <div>
         <app-input id="email" type="email" label="Correo" [formControlName]="'email'"></app-input>
-        <div *ngIf="accountForm.get('email')?.invalid && accountForm.get('email')?.touched" class="text-red-400 text-sm mt-1">
+        <div *ngIf="accountForm.get('email')?.invalid && accountForm.get('email')?.touched" class="text-red-400 NewAldyFontType4 text-xs tracking-wider mt-1">
           <span *ngIf="accountForm.get('email')?.errors?.['required']">El correo es obligatorio</span>
           <span *ngIf="accountForm.get('email')?.errors?.['email']">El formato de correo es incorrecto</span>
         </div>
       </div>
       <div>
         <app-input id="phone" label="Telefono" [formControlName]="'phone'" [numericMax11]="true"></app-input>
-        <div *ngIf="accountForm.get('phone')?.invalid && accountForm.get('phone')?.touched" class="text-red-400 text-sm mt-1">
+        <div *ngIf="accountForm.get('phone')?.invalid && accountForm.get('phone')?.touched" class="text-red-400 NewAldyFontType4 text-xs tracking-wider mt-1">
           El teléfono es obligatorio
         </div>
       </div>
+    </div>
+    <div class="grid grid-cols-1 gap-6 mb-6">
       <div>
         <app-selects id="gender" label="Género" formControlName="gender" [options]="genderOptions" optionLabel="label" optionValue="value">
         </app-selects>
-        <div *ngIf="accountForm.get('gender')?.invalid && accountForm.get('gender')?.touched" class="text-red-400 text-sm mt-1">
+        <div *ngIf="accountForm.get('gender')?.invalid && accountForm.get('gender')?.touched" class="text-red-400 NewAldyFontType4 text-xs tracking-wider mt-1">
           Elegí una opción
         </div>
       </div>

@@ -1,14 +1,14 @@
-<div class="w-full max-w-screen mx-auto p-6 space-y-8">
+<div class="w-full max-w-screen mx-auto p-4 space-y-8">
   <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
     <div
       class="p-6 shadow-md lg:shadow-none lg:hover:shadow-md transition-all duration-400 ease-in-out space-y-4">
       <div class="flex items-center space-x-3">
-        <lucide-icon name="send" class="text-aldy-primary-500" [size]="24" [strokeWidth]="1.75"></lucide-icon>
-        <h2 class="text-lg font-semibold">Newsletter</h2>
+        <lucide-icon name="send" class="text-aldy-medium" [size]="24" [strokeWidth]="1.75"></lucide-icon>
+        <h2 class="text-md sm:text-lg NewAldyTitle uppercase font-light tracking-widest text-aldy-green-gray-bold">Newsletter</h2>
       </div>
-      <p class="text-sm text-gray-600">Suscríbete y recibe novedades y promociones exclusivas.</p>
+      <p class="text-sm text-aldy-green-gray NewAldyFontType4 tracking-wider">Suscríbete y recibe novedades y promociones exclusivas.</p>
       <button
-        class="px-5 py-2 bg-aldy-primary-500 text-white hover:bg-aldy-primary-600 transition-colors duration-500 ease-in-out">
+        class="px-5 py-2 bg-aldy-medium cursor-pointer text-white NewAldyFontType4 text-sm tracking-wider hover:bg-aldy-medium-2 transition-colors duration-500 ease-in-out">
         Suscribirme
       </button>
     </div>
@@ -16,15 +16,15 @@
     <div
       class="p-6 shadow-md lg:shadow-none lg:hover:shadow-md transition-all duration-400 ease-in-out space-y-4">
       <div class="flex items-center space-x-3">
-        <lucide-icon name="user" class="text-aldy-primary-500" [size]="24" [strokeWidth]="1.75"></lucide-icon>
-        <h2 class="text-lg font-semibold">Mis Datos Personales</h2>
+        <lucide-icon name="user" class="text-aldy-medium" [size]="24" [strokeWidth]="1.75"></lucide-icon>
+        <h2 class="text-md sm:text-lg NewAldyTitle uppercase font-light tracking-widest text-aldy-green-gray-bold">Mis Datos Personales</h2>
       </div>
-      <div class="text-sm text-gray-700" *ngIf="user | async as userData">
-        <p class="font-medium">{{ userData.user_metadata['full_name'] || userData.user_metadata['name'] || 'Usuario' }}</p>
-        <p>{{ userData.email || 'usuario@ejemplo.com' }}</p>
+      <div class="text-sm text-aldy-green-gray NewAldyFontType4 tracking-wider" *ngIf="user | async as userData">
+        <p class="font-light">{{ userData.user_metadata['full_name'] || userData.user_metadata['name'] || 'Usuario' }}</p>
+        <p>{{ userData.email || 'agregar correo' }}</p>
       </div>
       <button (click)="GotoAccountInfo()"
-        class="px-5 py-2 bg-aldy-primary-500 text-white hover:bg-aldy-primary-600 transition-colors duration-500 ease-in-out">
+        class="px-5 py-2 bg-aldy-medium cursor-pointer text-white NewAldyFontType4 text-sm tracking-wider hover:bg-aldy-medium-2 transition-colors duration-500 ease-in-out">
         Modificar
       </button>
     </div>
@@ -32,12 +32,12 @@
     <div
       class="p-6 shadow-md lg:shadow-none lg:hover:shadow-md transition-all duration-400 ease-in-out space-y-4">
       <div class="flex items-center space-x-3">
-        <lucide-icon name="heart" class="text-aldy-primary-500" [size]="24" [strokeWidth]="1.75"></lucide-icon>
-        <h2 class="text-lg font-semibold">Lista de favoritos</h2>
+        <lucide-icon name="heart" class="text-aldy-medium" [size]="24" [strokeWidth]="1.75"></lucide-icon>
+        <h2 class="text-md sm:text-lg NewAldyTitle uppercase font-light tracking-widest text-aldy-green-gray-bold">Lista de favoritos</h2>
       </div>
-      <p class="text-sm text-gray-600">Guarda aquí los productos que te gustan para comprarlos más adelante.</p>
+      <p class="text-sm text-aldy-green-gray NewAldyFontType4 tracking-wider">Guarda aquí los productos que te gustan para comprarlos más adelante.</p>
       <button (click)="Gotofav()"
-        class="mt-2 px-5 py-2 bg-aldy-primary-500 text-white hover:bg-aldy-primary-600 transition-colors duration-500 ease-in-out">
+        class="mt-2 px-5 py-2 bg-aldy-medium cursor-pointer text-white NewAldyFontType4 text-sm tracking-wider hover:bg-aldy-medium-2 transition-colors duration-500 ease-in-out">
         Ver lista
       </button>
     </div>

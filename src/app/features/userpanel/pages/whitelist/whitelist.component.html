@@ -1,12 +1,12 @@
-<div class="container mx-auto px-4 py-8">
-  <h1 class="text-2xl font-bold mb-6">Mis Favoritos</h1>
+<div class="container mx-auto px-4 py-4">
+  <h1 class="text-2xl NewAldyTitle tracking-widest text-aldy-green-gray-bold font-light mb-6">Mis Favoritos</h1>
 
   <div *ngIf="isLoading" class="text-center py-12">
     <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-900 mx-auto"></div>
     <p class="mt-4">Cargando favoritos...</p>
   </div>
 
-  <div *ngIf="!isLoading && favorites.length === 0" class="text-center py-12">
+  <div *ngIf="!isLoading && favorites.length === 0" class="text-center text-aldy-green-gray NewAldyFontType4 font-light tracking-wider text-sm py-12">
     <p>No tienes productos favoritos aún</p>
   </div>
 
