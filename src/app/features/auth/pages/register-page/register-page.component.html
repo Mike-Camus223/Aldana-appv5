@@ -1,154 +1,182 @@
-<div
-  class="w-full min-h-screen flex flex-col items-center justify-center md:justify-start py-2 sm:py-6 overflow-y-auto">
-  <!-- Card con max-width responsive -->
-  <div class="w-full max-w-sx sm:max-w-xl px-4 sm:px-0 md:max-w-md lg:max-w-md xl:max-w-md">
-    <!-- Contenido principal -->
-    <div class="py-0 sm:py-4">
-      <!-- Main Card -->
-      <div class="w-full">
-        <!-- Logo AV -->
+<div class="w-full flex bg-aldy-white flex-col items-center justify-start md:px-0">
+  <!-- Card -->
+  <div class="w-full max-w-sx sm:max-w-xl px-4 sm:px-0 md:max-w-md lg:max-w-md xl:max-w-md flex flex-col justify-between sm:min-h-0">
+
+    <div class="flex flex-col justify-center pt-4 pb-4 sm:py-6 md:pb-2 md:pt-4">
+      <div class="w-full h-full">
+
+        <!-- Logo -->
         <div class="w-full flex justify-center">
-          <a routerLink="/" class="flex w-[16rem] h-[6rem] items-center justify-center mb-8 sm:mb-6 md:mb-8 lg:mb-10">
-            <div class="flex justify-center items-center">
-              <img src="../../../../../assets/svg/logo_full.svg" alt="Aldana vilcabana"
-                class="w-full h-full object-contain">
-            </div>
+          <a routerLink="/" class="flex w-[17rem] h-[6rem] items-center justify-center mb-8 sm:mb-6 md:mb-8 lg:mb-10">
+            <img src="../../../../../assets/svg/logo_full.svg" alt="Aldana vilcabana"
+              class="w-full h-full object-contain">
           </a>
         </div>
-        <!-- Register Form -->
-        <div class="mb-4 sm:mb-6">
-          <h2
-            class="font-semibold aldyFont text-[18px] min-[360px]:text-[18px] sm:text-[20px] tracking-tight text-gray-600 text-left mb-4 sm:mb-6">
-            Crear una Cuenta
-          </h2>
-        </div>
 
+        <!-- REGISTER FORM -->
         <form class="w-full" [formGroup]="form" (ngSubmit)="onSubmit()">
-          <!-- Nombre y Apellido -->
-          <div class="mb-4 min-[360px]:mb-5 sm:mb-6 grid grid-cols-2 gap-3">
-            <app-input label="Nombre" formControlName="nombre"></app-input>
-            <app-input label="Apellido" formControlName="apellido"></app-input>
+
+          <!-- Título -->
+          <div class="mb-4 sm:mb-6 md:mb-6">
+            <h2
+              class="font-light NewAldyTitle text-[18px] sm:text-[20px] tracking-wider text-aldy-green-gray-bold text-left mb-4 sm:mb-6">
+              Crear una Cuen<span class="NewAldyFontTypeAccent relative -top-[1px]">t</span>a
+            </h2>
+          </div>
+
+          <!-- Nombre / Apellido -->
+          <div class="mb-4 sm:mb-6 grid grid-cols-2 gap-3">
+
+            <!-- Nombre -->
+            <div>
+              <app-input label="Nombre" formControlName="nombre"></app-input>
+
+              <div class="text-red-400 NewAldyFontType4 text-xs tracking-wider mt-1"
+                *ngIf="form.get('nombre')?.touched && form.get('nombre')?.errors?.['required']">
+                El nombre es obligatorio
+              </div>
+            </div>
+
+            <!-- Apellido -->
+            <div>
+              <app-input label="Apellido" formControlName="apellido"></app-input>
+
+              <div class="text-red-400 NewAldyFontType4 text-xs tracking-wider mt-1"
+                *ngIf="form.get('apellido')?.touched && form.get('apellido')?.errors?.['required']">
+                El apellido es obligatorio
+              </div>
+            </div>
+
           </div>
 
           <!-- Email -->
-          <div class="mb-4 min-[360px]:mb-5 sm:mb-6">
+          <div class="mb-4 sm:mb-6">
             <app-input label="Correo electrónico" formControlName="email"></app-input>
+
+            <div class="text-red-400 NewAldyFontType4 text-xs tracking-wider mt-1"
+              *ngIf="form.get('email')?.touched && form.get('email')?.invalid">
+              El correo electrónico es obligatorio y debe ser válido
+            </div>
           </div>
 
           <!-- Password -->
-          <div class="mb-4 min-[360px]:mb-5 sm:mb-6">
+          <div class="mb-4 sm:mb-6">
             <app-inputpassword label="Contraseña" formControlName="password"></app-inputpassword>
-            <p *ngIf="form.get('password')?.touched && form.get('password')?.invalid"
-              class="text-red-500 text-xs min-[360px]:text-sm mt-1.5">
+
+            <div class="text-red-400 NewAldyFontType4 text-xs tracking-wider mt-1.5"
+              *ngIf="form.get('password')?.touched && form.get('password')?.invalid">
               {{ passwordErrorMessage }}
-            </p>
+            </div>
           </div>
 
           <!-- Repeat Password -->
-          <div class="mb-4 min-[360px]:mb-5 sm:mb-6">
+          <div class="mb-4 sm:mb-6">
             <app-inputpassword label="Repetir Contraseña" formControlName="repeatPassword"></app-inputpassword>
-            <p *ngIf="(form.get('repeatPassword')?.touched && form.get('repeatPassword')?.invalid) || (form.errors?.['passwordNotMatch'] && form.get('repeatPassword')?.touched)"
-              class="text-red-500 text-xs min-[360px]:text-sm mt-1.5">
+
+            <div class="text-red-400 NewAldyFontType4 text-xs tracking-wider mt-1.5"
+              *ngIf="(form.get('repeatPassword')?.touched && form.get('repeatPassword')?.invalid) ||
+                      (form.errors?.['passwordNotMatch'] && form.get('repeatPassword')?.touched)">
               {{ repeatPasswordErrorMessage }}
-            </p>
+            </div>
           </div>
 
-          <!-- Fecha de Nacimiento -->
-          <div class="mb-4 min-[360px]:mb-5 sm:mb-6">
-            <label class="block text-sm min-[360px]:text-base font-medium text-gray-700 mb-2">
+          <!-- Fecha -->
+          <div class="mb-4 sm:mb-6">
+            <label class="block text-sm font-medium text-aldy-green-gray-bold mb-2 tracking-wider NewAldyFontType4">
               Fecha de Nacimiento
             </label>
+
+            <!-- Inputs (3 columnas) -->
             <div class="grid grid-cols-3 gap-2">
-              <input type="number" formControlName="birthDay" placeholder="Dia" min="1" max="31"
-                class="w-full px-2 py-2 border-b border-gray-300 text-center text-sm sm:text-base transition-all duration-400 ease-in-out focus:outline-none focus:border-aldy-primary-400" />
-              <input type="number" formControlName="birthMonth" placeholder="Mes" min="1" max="12"
-                class="w-full px-2 py-2 border-b border-gray-300 text-center text-sm sm:text-base transition-all duration-400 ease-in-out focus:outline-none focus:border-aldy-primary-400" />
-              <input type="number" formControlName="birthYear" placeholder="Año" min="1900" max="2100"
-                class="w-full px-2 py-2 border-b border-gray-300 text-center text-sm sm:text-base transition-all duration-400 ease-in-out focus:outline-none focus:border-aldy-primary-400" />
+              <!-- Día -->
+              <div class="flex flex-col">
+                <input type="number" formControlName="birthDay" placeholder="Día" min="1" max="31"
+                  class="w-full px-2 py-2 border-b border-gray-300 text-center text-xs tracking-wider NewAldyFontType4 transition-all duration-300 focus:outline-none focus:border-aldy-medium" />
+                <!-- Error alineado bajo el input Día -->
+                <div class="mt-2 text-xs text-red-400 tracking-wider NewAldyFontType4 text-center"
+                  *ngIf="form.get('birthDay')?.touched && form.get('birthDay')?.invalid">
+                  Día inválido
+                </div>
+              </div>
+
+              <!-- Mes -->
+              <div class="flex flex-col">
+                <input type="number" formControlName="birthMonth" placeholder="Mes" min="1" max="12"
+                  class="w-full px-2 py-2 border-b border-gray-300 text-center text-xs tracking-wider NewAldyFontType4 transition-all duration-300 focus:outline-none focus:border-aldy-medium" />
+                <!-- Error alineado bajo el input Mes -->
+                <div class="mt-2 text-xs text-red-400 tracking-wider NewAldyFontType4 text-center"
+                  *ngIf="form.get('birthMonth')?.touched && form.get('birthMonth')?.invalid">
+                  Mes inválido
+                </div>
+              </div>
+
+              <!-- Año -->
+              <div class="flex flex-col">
+                <input type="number" formControlName="birthYear" placeholder="Año" min="1900" max="2100"
+                  class="w-full px-2 py-2 border-b border-gray-300 text-center text-xs tracking-wider NewAldyFontType4 transition-all duration-300 focus:outline-none focus:border-aldy-medium" />
+                <!-- Error alineado bajo el input Año -->
+                <div class="mt-2 text-xs text-red-400 tracking-wider NewAldyFontType4 text-center"
+                  *ngIf="form.get('birthYear')?.touched && form.get('birthYear')?.invalid">
+                  Año inválido
+                </div>
+              </div>
             </div>
 
-            <!-- AGREGA ESTOS MENSAJES DE ERROR PARA FECHA -->
-            <div class="mt-2 text-xs text-red-500">
-              <!-- Errores de día -->
-              <div *ngIf="form.get('birthDay')?.touched && form.get('birthDay')?.errors?.['required']">
-                El día es requerido
-              </div>
-              <div *ngIf="form.get('birthDay')?.touched && form.get('birthDay')?.errors?.['pattern']">
-                El día debe ser entre 1 y 31
-              </div>
-
-              <!-- Errores de mes -->
-              <div *ngIf="form.get('birthMonth')?.touched && form.get('birthMonth')?.errors?.['required']">
-                El mes es requerido
-              </div>
-              <div *ngIf="form.get('birthMonth')?.touched && form.get('birthMonth')?.errors?.['pattern']">
-                El mes debe ser entre 1 y 12
-              </div>
-
-              <!-- Errores de año -->
-              <div *ngIf="form.get('birthYear')?.touched && form.get('birthYear')?.errors?.['required']">
-                El año es requerido
-              </div>
-              <div *ngIf="form.get('birthYear')?.touched && form.get('birthYear')?.errors?.['pattern']">
-                El año debe ser entre 1900 y 2099
-              </div>
-            </div>
           </div>
 
           <!-- Newsletter -->
-          <div class="mb-4 min-[360px]:mb-5 sm:mb-6">
-            <p class="text-[14px] min-[360px]:text-[14px] text-gray-700 mb-3">
-              *Quiero ser la primera en recibir las newsletters de Aldana Vilcabana
+          <div class="mb-4 sm:mb-6">
+            <p class="text-sm text-aldy-green-gray tracking-wider NewAldyFontType4 mb-3">
+              *Quiero recibir newsletters
             </p>
+
             <div class="flex gap-4">
               <label class="flex items-center cursor-pointer">
                 <input type="radio" [value]="true" formControlName="newsletter"
-                  class="peer h-3 w-3 shrink-0 appearance-none rounded-[2px] border border-gray-400 cursor-pointer
-                               flex items-center justify-center transition-all duration-200
-                               checked:bg-aldy-primary-600 checked:border-white checked:shadow-[0_0_0_2px_var(--color-aldy-primary-600)]" />
-                <span class="ml-2 text-sm text-gray-700">Sí</span>
+                  class="peer h-3 w-3 appearance-none rounded-[2px] border border-gray-400 cursor-pointer checked:bg-aldy-medium checked:border-white checked:shadow-[0_0_0_2px_var(--color-aldy-medium)]" />
+                <span class="ml-2 text-xs text-aldy-green-gray NewAldyFontType4 tracking-wider">Sí</span>
               </label>
 
               <label class="flex items-center cursor-pointer">
                 <input type="radio" [value]="false" formControlName="newsletter"
-                  class="peer h-3 w-3 shrink-0 appearance-none rounded-[2px] border border-gray-400 cursor-pointer
-                               flex items-center justify-center transition-all duration-200
-                               checked:bg-aldy-primary-600 checked:border-white checked:shadow-[0_0_0_2px_var(--color-aldy-primary-600)]" />
-                <span class="ml-2 text-sm text-gray-700">No</span>
+                  class="peer h-3 w-3 appearance-none rounded-[2px] border border-gray-400 cursor-pointer checked:bg-aldy-medium checked:border-white checked:shadow-[0_0_0_2px_var(--color-aldy-medium)]" />
+                <span class="ml-2 text-xs text-aldy-green-gray NewAldyFontType4 tracking-wider">No</span>
               </label>
             </div>
           </div>
 
-          <!-- Terms -->
-          <div class="mb-4 min-[360px]:mb-5 sm:mb-6">
+          <!-- Términos -->
+          <div class="mb-4 sm:mb-6">
             <label class="flex items-center cursor-pointer">
               <input type="checkbox" formControlName="termsAccepted"
-                class="peer h-3 w-3 shrink-0 appearance-none rounded-[2px] border border-gray-400 cursor-pointer 
-                                     flex items-center justify-center transition-all duration-200
-                                     checked:bg-aldy-primary-600 checked:border-white checked:shadow-[0_0_0_2px_var(--color-aldy-primary-600)]" />
-              <span class="ml-2 text-[14px] text-gray-700 select-none italic leading-[1.4]">
-                He leído y acepto explícitamente las
-                <a href="#" class="text-aldy-primary-600 hover:text-aldy-primary-700 underline">Condiciones Generales
-                  de Venta</a>
+                class="peer h-3 w-3 appearance-none rounded-[2px] border border-gray-400 cursor-pointer checked:bg-aldy-medium checked:border-white checked:shadow-[0_0_0_2px_var(--color-aldy-medium)]" />
+
+              <span
+                class="ml-2 text-[12px] sm:text-xs NewAldyFontType4 text-aldy-green-gray italic tracking-wider leading-[1.4] select-none">
+                He leído y acepto las
+                <a href="#" class="text-aldy-medium underline">Condiciones Generales de Venta</a>
                 y la
-                <a href="#" class="text-aldy-primary-600 hover:text-aldy-primary-700 underline">Política de
-                  Privacidad</a>.
+                <a href="#" class="text-aldy-medium underline">Política de Privacidad</a>.
               </span>
             </label>
-            <!-- Error -->
+
             <p *ngIf="form.get('termsAccepted')?.touched && form.get('termsAccepted')?.invalid"
-              class="text-red-500 text-xs min-[360px]:text-sm mt-1.5">
+              class="text-red-400 text-xs tracking-wider mt-1.5 NewAldyFontType4">
               Debes aceptar los términos y condiciones
             </p>
           </div>
 
           <!-- Submit -->
-          <div class="mb-4 min-[360px]:mb-5 sm:mb-3">
-            <button type="submit" [disabled]="isSubmitting" [ngClass]="{
-      'bg-aldy-primary-600 hover:bg-aldy-primary-700 text-aldy-bg cursor-pointer': !isSubmitting,
-      'bg-aldy-primary-400 text-white cursor-not-allowed': isSubmitting
-    }" class="w-full px-4 py-3 text-sm min-[360px]:text-base font-semibold text-center transition duration-200 ease-in-out focus:outline-none focus:ring-4 focus:ring-aldy-primary-200 disabled:opacity-50">
-              {{ isSubmitting ? 'Registrando...' : 'Registrate' }}
+          <div class="mb-5 sm:mb-6 md:mb-7">
+            <button type="submit" [ngClass]="{
+                'bg-aldy-medium hover:bg-aldy-medium-2 cursor-pointer': !isSubmitting,
+                'bg-aldy-medium-2 cursor-wait': isSubmitting
+              }"
+              class="w-full px-5 py-3 text-sm font-light text-center transition ring-aldy-light focus:outline-none focus:ring-4"
+              style="color: #ffffff !important;">
+              <span class="NewAldyFontType4 uppercase text-sm tracking-wider">
+                {{ isSubmitting ? 'Registrando...' : 'Crear Cuenta' }}
+              </span>
             </button>
           </div>
 
@@ -161,24 +189,29 @@
           </div>
 
           <!-- Login link -->
-          <div class="items-center flex justify-center gap-2 w-full mb-4">
-            <p class="text-[14px] text-aldy-primary-600 text-center">
-              ¿Ya tienes cuenta?
+          <div class="items-center flex justify-center gap-2 w-full">
+            <p class="text-[12px] NewAldyFontType4 tracking-wider text-aldy-green-gray">
+              ¿Ya tenés cuenta?
             </p>
             <a routerLink="/cuenta/iniciar-sesion"
-              class="text-[14px] font-medium text-aldy-primary-600 hover:text-aldy-primary-700 hover:underline transition-colors duration-300">
-              Inicia sesión aquí
+              class="text-[12px] NewAldyFontType4 tracking-wider text-aldy-green-gray hover:underline transition">
+              Iniciar sesión
             </a>
           </div>
+
         </form>
+
       </div>
     </div>
-    <div class="text-center pb-2 sm:pb-4 flex justify-center">
-      <p class="text-[10px] min-[360px]:text-xs sm:text-xs text-gray-400 max-w-[280px] leading-relaxed">
+
+    <!-- Footer -->
+    <div class="text-center pb-6 sm:pb-8 md:pb-10 flex justify-center mt-6 sm:mt-8">
+      <p class="NewAldyFontType4 tracking-wider text-[10.5px] text-aldy-green-gray max-w-sm leading-relaxed">
         Al registrarte, aceptas nuestras
-        <a href="#" class="hover:text-gray-600 transition-colors underline">Políticas de Privacidad</a> y
-        <a href="#" class="hover:text-gray-600 transition-colors underline">Términos de Servicio</a>.
+        <a href="#" class="hover:text-gray-600 underline">Políticas de Privacidad</a> y
+        <a href="#" class="hover:text-gray-600 underline">Términos de Servicio</a>.
       </p>
     </div>
+
   </div>
 </div>

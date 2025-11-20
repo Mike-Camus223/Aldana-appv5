@@ -7,41 +7,41 @@
         <app-fancy-carousel [images]="carouselImages" [id]="'carousel-' + product.id"></app-fancy-carousel>
       </div>
 
-      <div class="relative space-y-6 font-main">
-        <h1 class="text-md sm:text-xl">{{ product.name }}</h1>
-        <p class="text-sm sm:text-lg text-gray-600">{{ product.description }}</p>
-        <p class="text-sm sm:text-lg mt-1">
+      <div class="relative space-y-5">
+        <h1 class="text-md sm:text-3xl NewAldyTitle text-aldy-green-gray-bold ">{{ product.name }}</h1>
+        <p class="text-sm sm:text-sm font-light NewAldyFontType4 text-aldy-green-gray">{{ product.description }}</p>
+        <p class="text-sm sm:text-sm font-light NewAldyFontType4 text-aldy-green-gray mt-1">
           {{ product.price | currency: 'ARS':'symbol-narrow':'1.2-2':'es-AR' }}
         </p>
 
         <div class="flex items-center gap-3">
-          <span class="text-sm sm:text-lg text-gray-600 me-3">Colores:</span>
+          <span class="text-sm sm:text-sm font-light text-aldy-green-gray NewAldyFontType4 tracking-wider me-3">Colores:</span>
           <button *ngFor="let variant of product.variants" (click)="selectColor(variant.color_name)"
-            [ngStyle]="{ backgroundColor: variant.color_hex }" class="w-5 h-5 rounded-sm transition-all border"
+            [ngStyle]="{ backgroundColor: variant.color_hex }" class="w-4 h-4 rounded-sm transition-all border"
             [ngClass]="{
-    'border-white border-2 ring-2 ring-gray-800 cursor-default': isColorSelected(variant.color_name),
+    'border-white border-2 ring-2 ring-aldy-green-gray cursor-default': isColorSelected(variant.color_name),
     'border-transparent cursor-pointer': !isColorSelected(variant.color_name)
   }" aria-label="Elegir color"></button>
 
         </div>
 
         <div class="flex items-center flex-wrap gap-2">
-          <span class="text-sm sm:text-lg text-gray-600 me-3">Tallas:</span>
+          <span class="text-sm sm:text-sm font-light text-aldy-green-gray NewAldyFontType4 tracking-wider me-3">Tallas:</span>
           <ng-container *ngFor="let size of product.sizes">
             <button (click)="selectSize(size)"
-              class="text-sm sm:text-lg px-3 py-1 border-b-2 transition-all cursor-pointer" [ngClass]="{
+              class="text-sm sm:text-sm font-light px-3 py-1 border-b-2 transition-all cursor-pointer" [ngClass]="{
                 'border-aldy-medium text-aldy-medium font-semibold': selectedSize === size,
-                'border-transparent text-gray-600 hover:border-gray-400': selectedSize !== size
+                'border-transparent text-aldy-green-gray tracking-wider hover:border-gray-400': selectedSize !== size
               }">
               {{ size }}
             </button>
           </ng-container>
         </div>
 
-        <div class="flex items-center mt-4">
+        <div class="flex items-center cursor-pointer mt-4">
           <div class="relative">
             <select [(ngModel)]="quantitySelected"
-              class="appearance-none rounded-l-md border border-aldy-medium py-3 pl-3 pr-8 text-sm focus:outline-none">
+              class="appearance-none border border-aldy-medium py-3 pl-3 pr-8 text-sm focus:outline-none">
               <option *ngFor="let qty of [1, 2, 3, 4, 5]" [value]="qty">{{ qty }}</option>
             </select>
             <div
@@ -51,20 +51,29 @@
           </div>
 
           <button
-            class="flex-1 cursor-pointer flex items-center justify-center gap-3 rounded-r-md bg-aldy-medium border border-aldy-medium text-white uppercase tracking-wide text-sm sm:text-md font-bold py-3 px-4 text-center transition-colors hover:bg-aldy-medium-2 hover:border-aldy-medium-2"
+            class="flex-1 cursor-pointer flex items-center justify-center gap-3 bg-aldy-medium border border-aldy-medium text-white uppercase  py-3 px-4 text-center transition-colors hover:bg-aldy-medium-2 hover:border-aldy-medium-2"
             (click)="addToCartItems()">
-            <span>Añadir al carrito</span>
-            <i class="fa-solid fa-bag-shopping text-white text-lg"></i>
+            <span class="tracking-wider NewAldyFontType4 text-sm lg:text-sm font-light">Añadir al carrito</span>
+            <lucide-icon [size]="20" [strokeWidth]="1.5" name="shopping-bag" class="text-white relative -top-[0.7px]"></lucide-icon>
           </button>
         </div>
 
-        <p-accordion id="acordionItem" class="w-full mt-4">
-          <p-accordion-tab header="Detalles" class="text-sm sm:text-lg text-gray-600">
+        <app-acordiongeneric [title]="'Detalles'" [value]="'detalles'" [selected]="openAccordion"
+          (toggled)="toggleAccordion($event)">
+          <div class="space-y-1">
+            <p class="flex items-center gap-2 py-2 px-3 text-xs tracking-wider NewAldyFontType4 w-full rounded-md">
+              {{ product.details }}
+            </p>
+          </div>
+        </app-acordiongeneric>
+
+        <!-- <p-accordion id="acordionItem" class="w-full mt-4">
+          <p-accordion-tab header="Detalles" class="text-sm sm:text-sm font-light text-aldy-green-gray tracking-wider">
             <p>{{ product.details }}</p>
           </p-accordion-tab>
-        </p-accordion>
+        </p-accordion> -->
 
-        <div class="text-md sm:text-lg text-gray-600 mt-4">
+        <div class="text-sm sm:text-sm text-aldy-green-gray NewAldyFontType4 tracking-wider mt-4">
           <p>
             Para más detalles sobre métodos de pago haz clic
             <a href="#" class="underline hover:text-aldy-medium transition-colors duration-300">aquí</a>.
@@ -78,6 +87,6 @@
     </div>
   </div>
 </div>
-<div class="flex w-full h-auto items-center justify-center py-4">
+<!-- <div class="flex w-full h-auto items-center justify-center py-4">
   <h2 class="text-xl font-light NewAldyFontType4 tracking-wider text-gray-800"> Puede que también te guste </h2>
-</div>
+</div> -->

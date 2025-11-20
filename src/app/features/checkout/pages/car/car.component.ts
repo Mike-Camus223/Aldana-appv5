@@ -4,13 +4,21 @@ import { CartItem } from '../../../../shared/utils/models/cartItems-model';
 import { CartService } from '../../../../core/services/cart.service';
 import { Router } from '@angular/router';
 import { CheckoutStepperProgressService } from '../../../../core/services/checkout-stepper-progress.service';
+import { LUCIDE_ICONS, LucideAngularModule, LucideIconProvider, Trash } from 'lucide-angular';
 
 @Component({
   selector: 'app-cartship',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule,LucideAngularModule],
   templateUrl: './car.component.html',
-  styleUrls: ['./car.component.css']
+  styleUrls: ['./car.component.css'],
+  providers: [
+      {
+        provide: LUCIDE_ICONS,
+        multi: true,
+        useValue: new LucideIconProvider({ Trash })
+      }
+  ],
 })
 export class CarComponent implements OnInit {
   cartItems: CartItem[] = [];

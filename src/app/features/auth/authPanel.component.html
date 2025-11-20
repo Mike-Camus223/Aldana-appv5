@@ -1,17 +1,25 @@
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[6fr_4fr] w-full h-screen">
-    <div class="relative hidden md:block h-full w-full overflow-hidden">
-      <img [draggable]="false"
-           src="https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/multimedia/about%20me/section-photos/preview/preview_6.jpg"
-           alt="Login background"
-           class="w-full h-full object-cover object-top-left xl:[clip-path:circle(70%_at_20%_50%)] lg:[clip-path:circle(70%_at_8%_50%)]" />
-    </div>
-        <div class="h-full overflow-x-hidden px-4 sm:px-8 lg:px-5 xl:px-6 flex justify-center md:justify-start items-center">
-      <div class="w-full max-w-md flex flex-col justify-center items-center h-full">
-        <router-outlet></router-outlet>
-      </div>
-    </div>
+<div class="grid grid-cols-1 bg-aldy-white md:grid-cols-2 lg:grid-cols-[6fr_4fr] w-full h-screen">
+
+  <!-- Imagen izquierda con clip-path -->
+  <div class="relative hidden md:block h-full w-full overflow-hidden">
+    <img
+      [draggable]="false"
+      src="https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/multimedia/about%20me/section-photos/preview/preview_6.jpg"
+      alt="Login background"
+      class="w-full h-full object-cover object-top-left
+             xl:[clip-path:circle(70%_at_20%_50%)]
+             lg:[clip-path:circle(70%_at_8%_50%)]"
+    />
+  </div>
+
+  <!-- Panel derecho con scroll interno -->
+  <div class="relative w-full flex justify-center md:justify-start items-start overflow-y-auto px-4 sm:px-8 lg:px-5 xl:px-6">
+  <div class="w-full max-w-md flex flex-col justify-center items-center">
+    <router-outlet></router-outlet>
+  </div>
 </div>
 
-  <app-newsletter></app-newsletter>
-  <app-footerv2></app-footerv2>
-  
+</div>
+
+<app-newsletter></app-newsletter>
+<app-footerv2></app-footerv2>

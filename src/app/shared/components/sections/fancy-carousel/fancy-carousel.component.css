@@ -26,7 +26,7 @@
 .indicator-line {
   width: 2px;
   height: 45px;
-  background-color: var(--color-aldy-primary-400, #3b82f6);
+  background-color: var(--color-aldy-medium, #3b82f6);
   border-radius: 2px 0 0 2px;
   transition: all 0.3s ease;
 }

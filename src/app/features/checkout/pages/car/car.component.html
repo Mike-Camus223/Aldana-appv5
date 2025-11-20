@@ -1,31 +1,31 @@
-<div class="flex flex-col md:flex-row justify-center gap-6" *ngIf="cartItems.length > 0; else emptyCart">
+<div class="min-h-[87vh] h-full w-full flex flex-col md:flex-row justify-center gap-6" *ngIf="cartItems.length > 0; else emptyCart">
   <div class="w-full md:w-2xl justify-center flex">
     <div class="relative w-full p-4 md:p-8">
       <div class="space-y-6">
         <ng-container *ngFor="let item of cartItems">
-          <div class="flex gap-0 bg-white px-2 py-5 border-y border-gray-200">
+          <div class="flex gap-0  px-2 py-5 border-y border-[#d9e2d8]">
             <div class="flex gap-3 sm:gap-4 w-full">
               <img [src]="item.variantMainImage || item.image" alt="Producto"
                 class="w-20 min-w-[80px] max-w-[80px] h-full object-cover rounded-md" />
     
               <div class="flex flex-col justify-between w-full">
                 <div>
-                  <h3 class="text-xs sm:text-sm font-normal font-main uppercase text-slate-900">
+                  <h3 class="text-xs sm:text-lg NewAldyTitle tracking-wider font-light uppercase text-aldy-green-gray-bold">
                     {{ item.name }}
                   </h3>
     
-                  <p class="text-[11px] text-slate-500 mt-1 flex items-center gap-2">
-                    Color: <span class="inline-block w-3 h-3 rounded-xs border"
+                  <p class="text-[11px] sm:text-sm text-aldy-green-gray NewAldyFontType4 mt-1 flex items-center gap-2">
+                    Color: <span class="inline-block w-3 h-3 rounded-xs ring-2 ring-aldy-green-gray"
                       [ngStyle]="{'background-color': item.color}"></span>
                   </p>
     
-                  <p class="text-[11px] text-slate-500 flex items-center gap-2 mt-1">
-                    Talle: <span class="bg-gray-100 px-2 py-0.5 text-[10px]">{{ item.size }}</span>
+                  <p class="text-[11px] sm:text-sm text-aldy-green-gray flex items-center gap-2 NewAldyFontType4 mt-1">
+                    Talle: <span class="bg-gray-100 px-2 py-0.5 text-[10px] NewAldyFontType4">{{ item.size }}</span>
                   </p>
                 </div>
     
                 <div class="mt-2">
-                  <h3 class="text-sm font-semibold text-slate-900">
+                  <h3 class="text-sm font-light uppercase tracking-wider text-aldy-green-gray NewAldyFontType4">
                     {{ item.price | currency:'ARS':'symbol-narrow':'1.2-2':'es-AR' }}
                   </h3>
                 </div>
@@ -33,19 +33,19 @@
     
               <div class="ml-auto flex flex-col items-end justify-between">
                 <button (click)="removeItem(item.id)" title="Eliminar" class="hover:text-red-600 cursor-pointer">
-                  <i class="fa-solid fa-trash text-gray-600"></i>
+                  <lucide-icon name="trash" class="text-aldy-green-gray" [size]="20" [strokeWidth]="2"></lucide-icon>
                 </button>
     
                 <div class="flex items-center gap-2 mt-4">
                   <button (click)="changeQuantity(item.id, -1)"
-                    class="w-7 h-7 bg-aldy-primary-400 text-white cursor-pointer hover:bg-aldy-primary-500 flex items-center justify-center rounded">
+                    class="w-7 h-7 bg-aldy-medium text-white cursor-pointer hover:bg-aldy-medium-2 flex items-center justify-center  transition-colors ease-in-out">
                     <i class="fa-solid fa-minus text-[10px]"></i>
                   </button>
     
-                  <span class="text-sm font-medium w-6 text-center">{{ item.quantity }}</span>
+                  <span class="tracking-wider text-sm text-aldy-green-gray NewAldyFontType4 w-6 text-center">{{ item.quantity }}</span>
     
                   <button (click)="changeQuantity(item.id, 1)"
-                    class="w-7 h-7 bg-aldy-primary-400 text-white cursor-pointer hover:bg-aldy-primary-500 flex items-center justify-center rounded">
+                    class="w-7 h-7 bg-aldy-medium text-white cursor-pointer hover:bg-aldy-medium-2 flex items-center justify-center  transition-colors ease-in-out">
                     <i class="fa-solid fa-plus text-[10px]"></i>
                   </button>
                 </div>
@@ -53,44 +53,44 @@
             </div>
           </div>
         </ng-container>
-        <div class="mt-5 flex items-center font-semibold justify-end gap-2 text-xs text-gray-400 cursor-pointer"
+        <div class="mt-5 flex items-center font-light tracking-wider justify-end gap-2 text-xs NewAldyFontType4  text-aldy-green-gray cursor-pointer"
           (click)="clearCart()">
-          <i class="fa-solid fa-trash text-xs"></i> Vaciar carrito
+          <lucide-icon name="trash" class="text-aldy-green-gray" [size]="16" [strokeWidth]="2"></lucide-icon> Vaciar carrito
         </div>
       </div>
     </div>
   </div>
-  <div class="w-full md:w-1/4 p-3 py-5 rounded-md bg-white text-slate-900">
-    <div class="flex py-4 border-b border-gray-200 justify-between text-sm text-gray-700">
+  <div class="w-full md:w-1/4 p-3 py-5 rounded-md  text-slate-900">
+    <div class="flex py-4 border-b font-light uppercase tracking-wider text-sm border-[#d9e2d8] justify-between text-aldy-green-gray NewAldyFontType4">
       <span>Subtotal</span>
       <span>
         {{ getSubtotal() | currency:'ARS':'symbol-narrow':'1.2-2':'es-AR' }}
       </span>
     </div>
 
-    <div class="flex my-4 justify-between font-semibold text-sm text-gray-800">
+    <div class="flex my-4 justify-between font-light uppercase tracking-wider text-sm text-aldy-green-gray NewAldyFontType4">
       <span>Total</span>
       <span>
         {{ getSubtotal() | currency:'ARS':'symbol-narrow':'1.2-2':'es-AR' }}
       </span>
     </div>
 
-    <button (click)="goToShipping()" class="w-full cursor-pointer mb-3 py-3 bg-aldy-primary-400 text-white text-xs font-semibold rounded shadow">
+    <button (click)="goToShipping()" class="w-full cursor-pointer mb-3 py-3 bg-aldy-medium hover:bg-aldy-medium-2 NewAldyFontType4 text-white font-light transition-colors text-sm tracking-wider">
       Continuar al checkout
     </button>
-    <button (click)="goToReturn()" class="w-full cursor-pointer py-3 border border-gray-300 text-gray-800 text-xs font-medium rounded">
+    <button (click)="goToReturn()" class="w-full mb-3 py-3 border border-aldy-medium text-aldy-medium font-light hover:border-aldy-medium-2 hover:text-aldy-medium-2 NewAldyFontType4 cursor-pointer transition-colors text-sm tracking-wider">
       Continuar comprando
     </button>
   </div>
 </div>
 
 <ng-template #emptyCart>
-  <div class="flex flex-col items-center justify-center text-center py-20 gap-6 bg-white rounded-md shadow-sm">
-    <i class="fa-solid fa-cart-shopping text-4xl text-gray-300"></i>
-    <p class="text-lg font-semibold text-gray-700">Tu carrito está vacío</p>
+  <div class="min-h-[87vh] flex flex-col items-center justify-center text-center py-20 gap-6">
+    <i class="fa-solid fa-cart-shopping text-4xl text-aldy-light"></i>
+    <p class="tracking-wider NewAldyFontType4 text-sm lg:text-sm font-bold text-aldy-green-gray">Tu carrito está vacío</p>
     <button
       (click)="goToReturn()"
-      class="px-6 py-3 bg-aldy-primary-400 text-white text-sm rounded shadow hover:bg-aldy-primary-500">
+      class="cursor-pointer tracking-wider NewAldyFontType4 text-sm lg:text-sm font-light flex items-center justify-center gap-3 bg-aldy-medium border border-aldy-medium text-white uppercase  py-3 px-6 text-center transition-colors hover:bg-aldy-medium-2 hover:border-aldy-medium-2">
       Seguir comprando
     </button>
   </div>

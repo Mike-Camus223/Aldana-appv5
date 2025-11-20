@@ -11,6 +11,8 @@ import { CartService } from '../../../../core/services/cart.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { FormsModule } from '@angular/forms';
 import { ProductUtils } from '../../../utils/dataEx/products-utils';
+import { AcordiongenericComponent } from '../../generic/acordiongeneric/acordiongeneric.component';
+import { LUCIDE_ICONS, LucideAngularModule, LucideIconProvider, ShoppingBag } from 'lucide-angular';
 
 @Component({
   selector: 'app-items-purchase',
@@ -23,7 +25,16 @@ import { ProductUtils } from '../../../utils/dataEx/products-utils';
     FancyCarouselComponent,
     RouterModule,
     ToastModule,
-    FormsModule
+    FormsModule,
+    AcordiongenericComponent,
+    LucideAngularModule
+  ],
+  providers: [
+    {
+      provide: LUCIDE_ICONS,
+      multi: true,
+      useValue: new LucideIconProvider({ShoppingBag})
+    }
   ]
 })
 export class ItemsPurchaseComponent implements OnInit {
@@ -32,6 +43,7 @@ export class ItemsPurchaseComponent implements OnInit {
   selectedSize: string | null = null;
   carouselImages: { src: string; thumb: string }[] = [];
   quantitySelected: number = 1;
+  openAccordion: string | null = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -39,7 +51,7 @@ export class ItemsPurchaseComponent implements OnInit {
     private cartService: CartService,
     private router: Router,
     private notificationService: NotificationService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('slug');
@@ -47,85 +59,87 @@ export class ItemsPurchaseComponent implements OnInit {
   }
 
   async loadProduct(slug: string) {
-  const { data, error } = await this.supabaseService.getProducts(slug);
-  if (!error && data) {
-    const productArray = Array.isArray(data) ? data : [data];
-    const products = ProductUtils.mapProducts(productArray);
-    this.product = products[0];
-    
-    if (!this.product) return;
+    const { data, error } = await this.supabaseService.getProducts(slug);
+    if (!error && data) {
+      const productArray = Array.isArray(data) ? data : [data];
+      const products = ProductUtils.mapProducts(productArray);
+      this.product = products[0];
 
-    this.carouselImages = [
-      { src: this.product.main_image, thumb: this.product.main_image },
-      ...this.product.additional_images.map(img => ({ src: img, thumb: img }))
-    ];
+      if (!this.product) return;
 
-    if (this.product.variants.length > 0) {
-      this.selectColor(this.product.variants[0].color_name);
+      this.carouselImages = [
+        { src: this.product.main_image, thumb: this.product.main_image },
+        ...this.product.additional_images.map(img => ({ src: img, thumb: img }))
+      ];
+
+      if (this.product.variants.length > 0) {
+        this.selectColor(this.product.variants[0].color_name);
+      }
     }
   }
-}
 
-selectColor(color: string) {
-  if (!this.product || this.selectedVariant?.color_name === color) return;
+  selectColor(color: string) {
+    if (!this.product || this.selectedVariant?.color_name === color) return;
 
-  const newVariant = this.product.variants.find(v => v.color_name === color);
-  if (!newVariant) return;
+    const newVariant = this.product.variants.find(v => v.color_name === color);
+    if (!newVariant) return;
 
-  this.selectedVariant = newVariant;
-  this.selectedSize = null;
+    this.selectedVariant = newVariant;
+    this.selectedSize = null;
 
-  const cleanMainImage = newVariant.main_image?.trim() || null;
-  const hasAdditionalImages = newVariant.additional_images && newVariant.additional_images.length > 0;
-  if (!cleanMainImage && !hasAdditionalImages) {
+    const cleanMainImage = newVariant.main_image?.trim() || null;
+    const hasAdditionalImages = newVariant.additional_images && newVariant.additional_images.length > 0;
+    if (!cleanMainImage && !hasAdditionalImages) {
+      this.carouselImages = [];
+      return;
+    }
     this.carouselImages = [];
-    return;
+
+    if (cleanMainImage) {
+      this.carouselImages.push({ src: cleanMainImage, thumb: cleanMainImage });
+    }
+
+    if (hasAdditionalImages) {
+      this.carouselImages.push(...(newVariant.additional_images ?? []).map(img => ({ src: img, thumb: img })));
+    }
   }
-  this.carouselImages = [];
 
-  if (cleanMainImage) {
-    this.carouselImages.push({ src: cleanMainImage, thumb: cleanMainImage });
+  toggleAccordion(value: string) {
+    this.openAccordion = this.openAccordion === value ? null : value;
   }
-
-  if (hasAdditionalImages) {
-    this.carouselImages.push(...(newVariant.additional_images ?? []).map(img => ({ src: img, thumb: img })));
-  }
-}
-
-
 
   addToCartItems() {
-  if (!this.product || !this.selectedVariant || !this.selectedSize) {
-    this.notificationService.showWarn(
-      'Talla requerida',
-      'Por favor, seleccione una talla antes de añadir al carrito.'
+    if (!this.product || !this.selectedVariant || !this.selectedSize) {
+      this.notificationService.showWarn(
+        'Talla requerida',
+        'Por favor, seleccione una talla antes de añadir al carrito.'
+      );
+      return;
+    }
+
+    const cleanVariantImage = this.selectedVariant.main_image?.trim();
+    const variantImage = cleanVariantImage && cleanVariantImage !== '' ? cleanVariantImage : null;
+
+    const cartItem: CartItem = {
+      id: `${this.product.id}-${this.selectedVariant.color_name}-${this.selectedSize}`,
+      name: this.product.name,
+      price: this.product.price,
+      image: this.product.main_image,
+      variantMainImage: variantImage ?? undefined,
+      color: this.selectedVariant.color_name,
+      size: this.selectedSize,
+      quantity: this.quantitySelected
+    };
+
+    this.cartService.addToCart(cartItem);
+
+    this.notificationService.showSuccess(
+      'Producto añadido',
+      `Se añadieron ${this.quantitySelected} unidad(es) al carrito.`
     );
-    return;
+
+    this.router.navigate(['/checkout/carrito']);
   }
-
-  const cleanVariantImage = this.selectedVariant.main_image?.trim();
-  const variantImage = cleanVariantImage && cleanVariantImage !== '' ? cleanVariantImage : null;
-
-  const cartItem: CartItem = {
-    id: `${this.product.id}-${this.selectedVariant.color_name}-${this.selectedSize}`,
-    name: this.product.name,
-    price: this.product.price,
-    image: this.product.main_image, 
-    variantMainImage: variantImage ?? undefined,
-    color: this.selectedVariant.color_name,
-    size: this.selectedSize,
-    quantity: this.quantitySelected
-  };
-
-  this.cartService.addToCart(cartItem);
-
-  this.notificationService.showSuccess(
-    'Producto añadido',
-    `Se añadieron ${this.quantitySelected} unidad(es) al carrito.`
-  );
-
-  this.router.navigate(['/checkout/carrito']);
-}
 
 
   selectSize(size: string) {

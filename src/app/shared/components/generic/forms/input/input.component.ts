@@ -27,8 +27,9 @@ export class InputComponent implements ControlValueAccessor {
   }
 
   get invalid(): boolean {
-    return !!(this.ngControl?.control?.invalid && this.ngControl?.control?.dirty);
-  }
+  const c = this.ngControl?.control;
+  return !!(c && c.invalid && (c.touched || c.dirty));
+}
 
   writeValue(value: any): void {
     this.value = value ?? '';

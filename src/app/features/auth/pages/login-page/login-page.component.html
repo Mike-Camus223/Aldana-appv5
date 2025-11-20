@@ -1,167 +1,185 @@
-<div class="w-full flex flex-col items-center justify-start sm:py-4 md:px-0">
-  <!-- Card con max-width responsive pero que se estira dentro de su contenedor -->
+<div class="w-full flex bg-aldy-white flex-col items-center justify-start py-10 md:px-0">
+  <!-- Card -->
   <div
     class="w-full max-w-sx sm:max-w-xl px-4 sm:px-0 md:max-w-md lg:max-w-md xl:max-w-md flex flex-col justify-between sm:min-h-0">
 
-    <!-- Contenido principal -->
     <div class="flex flex-col justify-center py-4 sm:py-6 md:py-8">
-      <!-- Main Card -->
       <div class="w-full h-full">
 
-        <!-- Logo AV centrado -->
+        <!-- Logo -->
         <div class="w-full flex justify-center">
           <a routerLink="/" class="flex w-[17rem] h-[6rem] items-center justify-center mb-8 sm:mb-6 md:mb-8 lg:mb-10">
-            <div class="flex justify-center items-center">
-              <img src="../../../../../assets/svg/logo_full.svg" alt="Aldana vilcabana" class="w-full h-full object-contain">
-            </div>
+            <img src="../../../../../assets/svg/logo_full.svg" alt="Aldana vilcabana"
+              class="w-full h-full object-contain">
           </a>
         </div>
 
         <!-- LOGIN FORM -->
         <form class="w-full" *ngIf="!isForgotPassword" [formGroup]="formLogin" (ngSubmit)="onSubmit()">
 
-          <!-- Título Login -->
+          <!-- Título -->
           <div class="mb-4 sm:mb-6 md:mb-8">
             <h2
-              class="font-semibold aldyFont text-[18px] min-[360px]:text-[18px] sm:text-[20px] tracking-tight text-gray-600 text-left mb-4 sm:mb-6">
-              Iniciar Sesión
+              class="font-light NewAldyTitle text-[18px] sm:text-[20px] tracking-wider text-aldy-green-gray-bold text-left mb-4 sm:mb-6">
+              Iniciar Sesi<span class="NewAldyFontTypeAccent relative -top-[1px]">ó</span>n
             </h2>
           </div>
 
           <!-- Email -->
-          <div class="mb-4 min-[360px]:mb-5 sm:mb-6 md:mb-7">
+          <div class="mb-4 sm:mb-6">
             <app-input label="Correo electrónico" formControlName="email"></app-input>
+
+            <div class="text-red-400 NewAldyFontType4 text-xs tracking-wider mt-1.5"
+              *ngIf="formLogin.get('email')?.touched">
+              <p *ngIf="formLogin.get('email')?.hasError('required')">El correo es obligatorio</p>
+              <p *ngIf="formLogin.get('email')?.hasError('email')">Ingresá un correo válido</p>
+            </div>
           </div>
 
           <!-- Password -->
-          <div class="mb-3 min-[360px]:mb-3 sm:mb-3 md:mb-3">
+          <div class="mb-3 sm:mb-3">
             <app-inputpassword label="Contraseña" formControlName="password"></app-inputpassword>
-            <p *ngIf="authError" class="text-red-500 text-xs min-[360px]:text-sm mt-1.5 min-[360px]:mt-2">
-              {{ authError }}
-            </p>
+
+            <div class="text-red-400 NewAldyFontType4 text-xs tracking-wider mt-1.5"
+              *ngIf="formLogin.get('password')?.touched || authError">
+              <p *ngIf="formLogin.get('password')?.hasError('required')">La contraseña es obligatoria</p>
+              <p *ngIf="formLogin.get('password')?.hasError('minlength')">La contraseña debe tener al menos 6 caracteres
+              </p>
+              <p
+                *ngIf="authError && !formLogin.get('password')?.hasError('required') && !formLogin.get('password')?.hasError('minlength')">
+                {{ authError }}
+              </p>
+            </div>
           </div>
 
-          <!-- Remember & Forgot Password -->
-          <div
-            class="flex flex-col space-y-3 sm:flex-row sm:items-start sm:justify-between sm:space-y-0 pt-1 min-[360px]:pt-2 mb-4 min-[360px]:mb-4 sm:mb-4 md:mb-5">
+          <!-- Forgot -->
+          <div class="flex flex-col space-y-3 sm:flex-row sm:justify-between sm:space-y-0 pt-2 mb-4">
             <a href="#" (click)="showForgotPassword($event)"
-              class="text-[14px] min-[360px] text-aldy-primary-600 hover:text-aldy-primary-700 hover:underline transition-colors duration-200 text-left sm:text-left">
+              class="text-[12px] sm:text-xs NewAldyFontType4 tracking-wider text-aldy-green-gray hover:underline transition">
               ¿Olvidaste tu contraseña?
             </a>
           </div>
 
           <!-- Submit Button -->
-          <div class="min-[360px] mb-4 min-[360px]:mb-5 sm:mb-6 md:mb-7">
-            <button type="submit" [disabled]="isSubmitting || formLogin.invalid" [ngClass]="{
-              'bg-aldy-primary-600 hover:bg-aldy-primary-700 text-aldy-bg cursor-pointer': !(isSubmitting || formLogin.invalid),
-              'bg-aldy-primary-400 text-white cursor-not-allowed': (isSubmitting || formLogin.invalid)
-            }"
-              class="w-full px-4 min-[360px]:px-5 sm:px-6 py-3 min-[360px]:py-3.5 sm:py-4 text-sm min-[360px]:text-base font-semibold text-center transition duration-200 ease-in-out focus:outline-none focus:ring-4 focus:ring-aldy-primary-200 disabled:opacity-50">
-              {{ isSubmitting ? 'Ingresando...' : 'Iniciar Sesión' }}
+          <div class="mb-5 sm:mb-6 md:mb-7">
+            <button type="submit" [ngClass]="{
+    'bg-aldy-medium hover:bg-aldy-medium-2 cursor-pointer': !isSubmitting,
+    'bg-aldy-medium-2 cursor-wait': isSubmitting
+  }" class="w-full px-5 sm:px-6 py-3 sm:py-4 text-sm font-light text-center transition ring-aldy-light focus:outline-none focus:ring-4"
+              style="color: #ffffff !important;">
+              <span class="NewAldyFontType4 uppercase text-sm tracking-wider">
+                {{ isSubmitting ? 'Ingresando...' : 'Iniciar Sesión' }}
+              </span>
             </button>
           </div>
 
-          <!-- Register Link -->
+          <!-- Register -->
           <div class="items-center flex justify-center gap-2 w-full">
-            <p class="text-[14px] text-aldy-primary-600 text-center">
-              ¿No tenés cuenta aún?
+            <p class="text-[12px] sm:text-xs NewAldyFontType4 tracking-wider text-aldy-green-gray">¿No tenés cuenta aún?
             </p>
             <a routerLink="/cuenta/registro"
-              class="text-[14px] font-medium text-aldy-primary-600 hover:text-aldy-primary-700 hover:underline transition-colors duration-300">
+              class="text-[12px] sm:text-xs NewAldyFontType4 tracking-wider text-aldy-green-gray hover:underline transition">
               Crear cuenta
             </a>
           </div>
         </form>
 
         <!-- FORGOT PASSWORD FORM -->
-        <div *ngIf="isForgotPassword" class="w-full h-full flex flex-col  px-4 sm:px-0">
-
-          <form class="max-w-md w-auto h-auto mx-auto flex flex-col my-auto" [formGroup]="formForgotPassword"
+        <div *ngIf="isForgotPassword" class="w-full h-full flex flex-col px-4 sm:px-0">
+          <form class="max-w-md mx-auto flex flex-col my-auto" [formGroup]="formForgotPassword"
             (ngSubmit)="onForgotPasswordSubmit()">
 
-            <!-- Título grande -->
             <h2
-              class="font-semibold aldyFont text-[18px] min-[360px]:text-[18px] sm:text-[20px] tracking-tight text-gray-600 mb-4 text-center  md:text-start">
+              class="font-light NewAldyTitle text-[18px] sm:text-[20px] tracking-wider text-aldy-green-gray-bold mb-4 text-center md:text-start">
               ¿Has olvidado tu contraseña?
             </h2>
 
-            <!-- Input de correo -->
             <div class="mb-2 w-full">
               <app-input label="Email" formControlName="email"></app-input>
+
+              <div class="text-red-400 NewAldyFontType4 text-xs tracking-wider mt-1.5"
+                *ngIf="formForgotPassword.get('email')?.touched">
+
+                <p *ngIf="formForgotPassword.get('email')?.hasError('required')">
+                  El correo es obligatorio
+                </p>
+
+                <p *ngIf="formForgotPassword.get('email')?.hasError('email')">
+                  Ingresá un correo válido
+                </p>
+
+              </div>
             </div>
 
-            <!-- Submit Button -->
             <div class="mt-4 w-full">
-              <button type="submit" [disabled]="isSubmitting || formForgotPassword.invalid" [ngClass]="{
-        'bg-aldy-primary-600 hover:bg-aldy-primary-700 text-aldy-bg cursor-pointer': !(isSubmitting || formForgotPassword.invalid),
-        'bg-aldy-primary-400 text-white cursor-not-allowed': (isSubmitting || formForgotPassword.invalid)
-      }" class="w-full px-4 sm:px-6 py-3 text-sm sm:text-base font-semibold text-center transition duration-200 ease-in-out focus:outline-none focus:ring-4 focus:ring-aldy-primary-200 disabled:opacity-50">
-                {{ isSubmitting ? 'Enviando...' : 'Enviar' }}
+              <button type="submit" [ngClass]="{
+      'bg-aldy-medium hover:bg-aldy-medium-2 cursor-pointer': !isSubmitting,
+      'bg-aldy-medium-2 cursor-wait': isSubmitting
+    }" class="w-full px-4 sm:px-6 py-3 text-sm font-light text-center transition ring-aldy-light focus:outline-none focus:ring-4"
+                style="color: #ffffff !important;">
+                <span class="NewAldyFontType4 uppercase text-sm tracking-wider">
+                  {{ isSubmitting ? 'Enviando...' : 'Enviar' }}
+                </span>
               </button>
             </div>
 
-            <!-- Volver a identificación debajo del input -->
             <div class="text-start w-full mt-3 mb-2">
               <a href="#" (click)="backToLogin($event)"
-                class="text-[14px] min-[360px]:text-[14px] sm:text-[14px] text-aldy-primary-600 hover:text-aldy-primary-700 hover:underline transition-colors duration-200">
+                class="text-[12px] sm:text-xs NewAldyFontType4 tracking-wider text-aldy-green-gray hover:underline transition">
                 « Volver a la identificación
               </a>
             </div>
 
-            <!-- Texto pequeño de instrucciones debajo -->
-            <p class="text-gray-500 text-[14px] min-[360px]:text-[14px] sm:text-[14px] mt-1 px-2 sm:px-0 text-center">
-              Indica tu usuario o email y te enviaremos instrucciones indicando como generar una nueva contraseña.
+            <p class="text-gray-500 text-[14px] mt-1 px-2 sm:px-0 text-center">
+              Indica tu usuario o email y te enviaremos instrucciones para generar una nueva contraseña.
             </p>
-
           </form>
         </div>
 
-        <!-- Divider y Quick Login se ocultan en forgot password -->
-        <div class="relative my-5 min-[360px]:my-6 sm:my-8" *ngIf="!isForgotPassword">
+        <!-- Divider -->
+        <div class="relative my-6 sm:my-8" *ngIf="!isForgotPassword">
           <div class="absolute inset-0 flex items-center">
             <div class="w-full border-t border-gray-300"></div>
           </div>
-          <div class="relative flex justify-center text-xs min-[360px]:text-sm sm:text-base">
-            <span class="px-3 min-[360px]:px-4 sm:px-6 bg-white text-gray-500">O inicia rápido con</span>
+          <div class="relative flex justify-center text-sm sm:text-base">
+            <span class="px-4 sm:px-6 text-base bg-aldy-white text-aldy-green-gray-bold NewAldyTitle">
+              O inicia rápido con
+            </span>
           </div>
         </div>
 
-        <!-- Social Login Section -->
-        <div class="mb-6 min-[360px]:mb-8 sm:mb-10" *ngIf="!isForgotPassword">
-          <div class="flex justify-center gap-3 min-[360px]:gap-4 sm:gap-6">
-            <button 
-              (click)="onFacebookLogin()"
-              type="button"
-              class="w-10 h-10 min-[360px]:w-11 min-[360px]:h-11 sm:w-12 sm:h-12 flex items-center justify-center bg-blue-600 border border-blue-600 rounded-full cursor-pointer hover:bg-blue-700 hover:border-blue-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-300"
-              title="Continuar con Facebook">
-              <i class="fab fa-facebook text-white text-base min-[360px]:text-lg sm:text-xl"></i>
+        <!-- Social -->
+        <div class="mb-8 sm:mb-10" *ngIf="!isForgotPassword">
+          <div class="flex justify-center gap-4 sm:gap-6">
+
+            <button type="button" (click)="onFacebookLogin()"
+              class="w-11 h-11 sm:w-12 sm:h-12 flex items-center cursor-pointer justify-center bg-blue-600 border border-blue-600 rounded-full hover:bg-blue-700 transition">
+              <i class="fab fa-facebook text-white text-lg sm:text-xl"></i>
             </button>
-            <button
-              (click)="onGoogleLogin()" 
-              type="button"
-              class="w-10 h-10 min-[360px]:w-11 min-[360px]:h-11 sm:w-12 sm:h-12 flex items-center justify-center bg-red-500 border border-red-500 rounded-full cursor-pointer hover:bg-red-600 hover:border-red-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-300"
-              title="Continuar con Google">
-              <i class="fab fa-google text-white text-base min-[360px]:text-lg sm:text-xl"></i>
+
+            <button type="button" (click)="onGoogleLogin()"
+              class="w-11 h-11 sm:w-12 sm:h-12 flex items-center cursor-pointer justify-center bg-red-500 border border-red-500 rounded-full hover:bg-red-600 transition">
+              <i class="fab fa-google text-white text-lg sm:text-xl"></i>
             </button>
-            <button type="button"
-              class="w-10 h-10 min-[360px]:w-11 min-[360px]:h-11 sm:w-12 sm:h-12 flex items-center justify-center bg-gray-950 border border-gray-950 rounded-full cursor-pointer hover:bg-gray-800 hover:border-gray-800 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-400"
-              title="Continuar con Apple">
-              <i class="fab fa-apple text-white text-base min-[360px]:text-lg sm:text-xl"></i>
+
+            <button type="button" (click)="onAppleLogin()"
+              class="w-11 h-11 sm:w-12 sm:h-12 flex items-center cursor-pointer justify-center bg-gray-950 border border-gray-950 rounded-full hover:bg-gray-800 transition">
+              <i class="fab fa-apple text-white text-lg sm:text-xl"></i>
             </button>
+
           </div>
         </div>
 
       </div>
     </div>
-
-    <!-- Footer que se pega al fondo -->
-    <div class="text-center pb-4 min-[360px]:pb-6 sm:pb-8 md:pb-10 flex justify-center mt-4 min-[360px]:mt-6 sm:mt-8">
-      <p
-        class="text-[10px] min-[360px]:text-xs sm:text-xs text-gray-400 max-w-[250px] min-[360px]:max-w-xs sm:max-w-sm leading-relaxed px-2 min-[360px]:px-0">
+    <!-- Footer -->
+    <div class="text-center pb-6 sm:pb-8 md:pb-10 flex justify-center mt-6 sm:mt-8">
+      <p class="NewAldyFontType4 tracking-wider text-[11.5px] text-aldy-green-gray max-w-sm leading-relaxed">
         Al iniciar sesión, aceptas nuestras
-        <a href="#" class="hover:text-gray-600 transition-colors underline">Políticas de Privacidad</a> y
-        <a href="#" class="hover:text-gray-600 transition-colors underline">Términos de Servicio</a>.
+        <a href="#" class="hover:text-gray-600 underline">Políticas de Privacidad</a> y
+        <a href="#" class="hover:text-gray-600 underline">Términos de Servicio</a>.
       </p>
     </div>
+
   </div>
 </div>
