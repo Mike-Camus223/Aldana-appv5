@@ -80,13 +80,10 @@ export class ItemsPurchaseComponent implements OnInit {
 
   selectColor(color: string) {
     if (!this.product || this.selectedVariant?.color_name === color) return;
-
     const newVariant = this.product.variants.find(v => v.color_name === color);
     if (!newVariant) return;
-
     this.selectedVariant = newVariant;
     this.selectedSize = null;
-
     const cleanMainImage = newVariant.main_image?.trim() || null;
     const hasAdditionalImages = newVariant.additional_images && newVariant.additional_images.length > 0;
     if (!cleanMainImage && !hasAdditionalImages) {

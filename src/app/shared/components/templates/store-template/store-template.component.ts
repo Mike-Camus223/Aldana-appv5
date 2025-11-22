@@ -13,7 +13,6 @@ import { Funnel, LUCIDE_ICONS, LucideIconProvider, LucideAngularModule, ChevronD
 import { trigger, transition, style, animate, state } from '@angular/animations';
 import { AcordiongenericComponent } from '../../generic/acordiongeneric/acordiongeneric.component';
 import { LoadingbarComponent } from '../../system/loadingbar/loadingbar.component';
-import { AldyRadioDirective } from '../../../utils/directives/aldy-radio.directive';
 import { AldyCheckboxV1Directive } from '../../../utils/directives/aldy-checkbox-v1.directive';
 import { Location } from '@angular/common';
 

@@ -20,8 +20,6 @@ import { takeUntil } from 'rxjs/operators';
 import { InputComponent } from '../../../../shared/components/generic/forms/input/input.component';
 import { SelectsComponent } from '../../../../shared/components/generic/forms/selects/selects.component';
 import { AldyCheckboxV1Directive } from '../../../../shared/utils/directives/aldy-checkbox-v1.directive';
-import { ButtonPrimaryDirective } from '../../../../shared/utils/directives/button-primary.directive';
-
 import { CartService } from '../../../../core/services/cart.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { CartItem } from '../../../../shared/utils/models/cartItems-model';
@@ -50,7 +48,6 @@ import { AuthService } from '../../../../core/services/auth/auth.service';
     FloatLabelModule,
     SelectsComponent,
     AldyCheckboxV1Directive,
-    ButtonPrimaryDirective,
   ],
   animations: [
     trigger('toggleOptions', [
@@ -72,7 +69,6 @@ export class ShippingComponent implements OnInit, OnDestroy {
   showForm = false;
   showAllOptions = false;
   selected: 'estandar' | 'expres' | 'retiro' = 'estandar';
-
   appliedDiscount = 0; 
   discountType: 'percent' | 'fixed' | null = null;
   discountCodeApplied: string | null = null;

@@ -49,6 +49,36 @@
   color: #FF6467 !important;
 }
 
+.radioAldy {
+  border-radius: 2px;
+  -webkit-appearance: none;
+  appearance: none;
+  background-color: #fff;
+  border: 1px solid #646464;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: box-shadow 0.2s ease-in-out, background-color 0.2s ease-in-out;
+  width: 12px;
+  height: 12px;
+  font-size: 12px;
+  color: #ffffff;
+}
+
+.radioAldy:checked {
+  background-color: var(--color-aldy-medium);
+  box-shadow: 0 0 0 2px var(--color-aldy-medium);
+  border: 2px solid #ffffff;
+}
+
+.radioAldy:checked::after {
+  font-weight: 900;
+  position: absolute;
+  font-size: 10px;
+  color: #fff;
+}
 
 
 

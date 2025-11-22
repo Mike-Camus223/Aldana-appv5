@@ -11,10 +11,8 @@ import { CommonModule } from '@angular/common';
 import { AccordionModule } from 'primeng/accordion';
 import { PanelModule } from 'primeng/panel';
 import { ChipModule } from 'primeng/chip';
-import { ButtonPrimaryDirective } from '../../../../shared/utils/directives/button-primary.directive';
 import { CartService } from '../../../../core/services/cart.service';
 import { CartItem } from '../../../../shared/utils/models/cartItems-model';
-import { CheckoutStepperProgressService } from '../../../../core/services/checkout-stepper-progress.service';
 import {
   ShippingService,
   ShippingData,
@@ -22,6 +20,7 @@ import {
 } from '../../../../core/services/shipping.service';
 import { Router } from '@angular/router';
 import { OrdersService } from '../../../../core/services/orders/orders.service';
+import { AcordiongenericComponent } from '../../../../shared/components/generic/acordiongeneric/acordiongeneric.component';
 
 @Component({
   selector: 'app-payment',
@@ -31,7 +30,7 @@ import { OrdersService } from '../../../../core/services/orders/orders.service';
     PanelModule,
     AccordionModule,
     ChipModule,
-    ButtonPrimaryDirective,
+    AcordiongenericComponent
   ],
   templateUrl: './payment.component.html',
   styleUrls: ['./payment.component.css'],
@@ -42,12 +41,11 @@ export class PaymentComponent implements OnInit, AfterViewInit, OnDestroy {
   cartItems: CartItem[] = [];
   discountData: DiscountData | null = null;
   isProcessing = false;
-
   activeAccordionPanels: number[] = [0];
+  accordionActive: string | null = null;
 
   constructor(
     private cartService: CartService,
-    private progress: CheckoutStepperProgressService,
     private shippingService: ShippingService,
     private router: Router,
     private cdr: ChangeDetectorRef,
@@ -78,6 +76,9 @@ export class PaymentComponent implements OnInit, AfterViewInit, OnDestroy {
   });
 }
 
+  toggleAccordion(value: string) {
+    this.accordionActive = this.accordionActive === value ? null : value;
+  }
 
   ngAfterViewInit(): void {}
 
