@@ -70,8 +70,12 @@
         <section class="space-y-4 mt-6">
           <h4 class="text-md NewAldyTitle tracking-widest text-aldy-green-gray-bold font-light uppercase mb-2">Medio de
             pago</h4>
-          <app-acordiongeneric [title]="'Comprar por Mercado Pago'" [value]="'payments_methods'"
-            [selected]="accordionActive" (toggled)="toggleAccordion($event)">
+          <app-acordiongeneric 
+          icon="fa-brands fa-whatsapp text-aldy-green-gray text-lg" 
+          [useIcon]="true" [title]="'Comprar por Mercado Pago'" 
+          [value]="'payments_methods'"
+          [classTitle]="'text-sm NewAldyFontType4 tracking-wider text-aldy-green-gray-bold'"
+          [selected]="accordionActive" (toggled)="toggleAccordion($event)">
             <span>Atun</span>
           </app-acordiongeneric>
           <!-- <div class="card flex justify-center">

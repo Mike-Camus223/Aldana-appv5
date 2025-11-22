@@ -16,7 +16,11 @@ export class AcordiongenericComponent implements AfterViewInit, OnChanges, OnDes
   @Input() disableTransition: boolean = false;
   @Output() toggled = new EventEmitter<string>();
   @ViewChild('contentWrapper') contentWrapper!: ElementRef<HTMLDivElement>;
-
+  @Input() icon: string | null = null;     
+  @Input() iconSvg: string | null = null;   
+  @Input() useIcon: boolean = false;
+  @Input() classTitle: string | null = null;
+  
   contentHeight = 0;
   private mutationObserver: MutationObserver | null = null;
 
