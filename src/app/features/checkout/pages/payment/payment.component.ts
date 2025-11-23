@@ -1,4 +1,4 @@
-﻿import {
+import {
   Component,
   OnInit,
   AfterViewInit,
@@ -21,6 +21,7 @@ import {
 import { Router } from '@angular/router';
 import { OrdersService } from '../../../../core/services/orders/orders.service';
 import { AcordiongenericComponent } from '../../../../shared/components/generic/acordiongeneric/acordiongeneric.component';
+import { environment } from '../../../../../environments/environment';
 
 @Component({
   selector: 'app-payment',
@@ -84,45 +85,103 @@ export class PaymentComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnDestroy(): void {}
 
-  // MERCADOPAGO METHOD - TEMPORARILY COMMENTED OUT
-  // async pagar() {
-  //   if (this.isProcessing) return;
-  //   this.isProcessing = true;
+  async payWithMercadoPago() {
+    if (this.isProcessing) return;
+    if (!this.shippingData || this.cartItems.length === 0) {
+      alert('Error: Datos de envío o carrito vacío');
+      return;
+    }
 
-  //   try {
-  //     const response = await fetch(`${environment.SUPABASE_URL}/functions/v1/dynamic-task`, {
-  //       method: 'POST',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //         apikey: environment.SUPABASE_KEY,
-  //         Authorization: `Bearer ${environment.SUPABASE_KEY}`,
-  //       },
-  //       body: JSON.stringify({
-  //         items: this.cartItems.map((item) => ({
-  //           title: item.name,
-  //           quantity: item.quantity,
-  //           unit_price: this.getDiscountedPrice(item) / item.quantity,
-  //         })),
-  //         payer: {
-  //           email: this.shippingData?.email || '',
-  //         },
-  //         back_urls: {
-  //           success: 'https://aldyapp.web.app/checkout/success',
-  //           failure: 'https://aldyapp.web.app/checkout/failure',
-  //           pending: 'https://aldyapp.web.app/checkout/pending',
-  //         },
-  //         auto_return: 'approved',
-  //       }),
-  //     });
+    this.isProcessing = true;
 
-  //     if (response.ok) {
-  //       const { init_point } = await response.json();
-  //       window.location.href = init_point;
-  //     }
-  //   } finally {
-  //     this.isProcessing = false;
-  //   }
-  // }
+    try {
+      // Preparar los items para Mercado Pago
+      const items = this.cartItems.map(item => ({
+        title: item.name,
+        quantity: item.quantity,
+        unit_price: this.getDiscountedPrice(item) / item.quantity,
+        currency_id: 'ARS', // Moneda argentina
+        description: item.name,
+        category_id: 'others',
+        picture_url: item.variantMainImage || item.image || ''
+      }));
+
+      // Preparar los datos del comprador
+      const payer = {
+        name: this.shippingData.name,
+        surname: this.shippingData.surname,
+        email: this.shippingData.email,
+        phone: {
+          area_code: '11', // Código de área para Buenos Aires
+          number: this.shippingData.phone.replace(/\D/g, '') // Remover caracteres no numéricos
+        },
+        address: {
+          zip_code: this.shippingData.zipCode,
+          street_name: this.shippingData.address,
+          city_name: this.shippingData.city,
+          state_name: this.shippingData.province,
+          neighborhood: this.shippingData.neighborhood || ''
+        }
+      };
+
+      // Crear la preferencia en el backend usando la función dynamic-task (Checkout Pro)
+      const response = await fetch(`${environment.SUPABASE_URL}/functions/v1/dynamic-task`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': environment.SUPABASE_KEY,
+          'Authorization': `Bearer ${environment.SUPABASE_KEY}`,
+        },
+        body: JSON.stringify({
+          items: items,
+          payer: payer,
+          back_urls: {
+            success: 'https://aldyapp.web.app/checkout/success',
+            failure: 'https://aldyapp.web.app/checkout/failure',
+            pending: 'https://aldyapp.web.app/checkout/pending'
+          },
+          auto_return: 'approved'
+        })
+      });
+
+      console.log('Enviando datos a Supabase:', {
+        items,
+        payer,
+        back_urls: {
+          success: 'https://aldyapp.web.app/checkout/success',
+          failure: 'https://aldyapp.web.app/checkout/failure',
+          pending: 'https://aldyapp.web.app/checkout/pending'
+        }
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Error de Supabase:', response.status, errorText);
+        throw new Error(`Error al crear la preferencia de pago: ${response.status} - ${errorText}`);
+      }
+
+      const { init_point, preference_id } = await response.json();
+      
+      // Guardar la información de la orden antes de redirigir
+      await this.ordersService.createOrder(
+        this.cartItems,
+        this.shippingData,
+        this.discountData,
+        this.subtotal,
+        this.total,
+        `Mercado Pago - Preference ID: ${preference_id}`
+      );
+
+      // Redirigir a la pasarela de Mercado Pago
+      window.location.href = init_point;
+
+    } catch (error) {
+      console.error('Error en payWithMercadoPago:', error);
+      alert(`Error al procesar el pago con Mercado Pago: ${(error as Error).message}`);
+    } finally {
+      this.isProcessing = false;
+    }
+  }
 
   async payWithWhatsApp() {
     if (this.isProcessing) return;

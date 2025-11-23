@@ -71,12 +71,27 @@
           <h4 class="text-md NewAldyTitle tracking-widest text-aldy-green-gray-bold font-light uppercase mb-2">Medio de
             pago</h4>
           <app-acordiongeneric 
-          icon="fa-brands fa-whatsapp text-aldy-green-gray text-lg" 
-          [useIcon]="true" [title]="'Comprar por Mercado Pago'" 
+          icon="fa-solid fa-credit-card text-aldy-green-gray text-lg" 
+          [useIcon]="true" [title]="'Pagar con Mercado Pago'" 
           [value]="'payments_methods'"
           [classTitle]="'text-sm NewAldyFontType4 tracking-wider text-aldy-green-gray-bold'"
           [selected]="accordionActive" (toggled)="toggleAccordion($event)">
-            <span>Atun</span>
+            <div class="space-y-3 p-4">
+              <p class="text-sm NewAldyFontType4 tracking-wider text-aldy-green-gray">
+                Paga de forma segura con tarjeta de crédito, débito o en efectivo. Hasta 6 cuotas sin interés.
+              </p>
+              <button 
+                type="button" 
+                (click)="payWithMercadoPago()" 
+                [disabled]="isProcessing"
+                class="px-5 py-2 bg-aldy-medium cursor-pointer text-white NewAldyFontType4 text-sm tracking-wider hover:bg-aldy-medium-2 transition-colors duration-500 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed w-full text-center rounded-md">
+                <i class="fas fa-credit-card mr-2"></i>
+                {{ isProcessing ? 'Procesando...' : 'Pagar con Mercado Pago - ' + (total | currency:'ARS':'symbol':'1.2-2':'es-AR') }}
+              </button>
+              <p class="text-xs NewAldyFontType4 tracking-wider text-aldy-green-gray opacity-75">
+                Serás redirigido a la pasarela de pago segura de Mercado Pago
+              </p>
+            </div>
           </app-acordiongeneric>
           <!-- <div class="card flex justify-center">
             <p-accordion [multiple]="true" [(activeIndex)]="activeAccordionPanels" class="w-full space-y-4">
