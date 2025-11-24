@@ -1,0 +1,50 @@
+<div class="fixed top-5 right-5 z-999 flex flex-col gap-3 pointer-events-none">
+  @for (message of messages; track message.id) {
+  <div
+    [class]="getToastClasses(message)"
+    [ngClass]="getBorderClass(message)"
+    [@toastAnimation]="message.state"
+    (@toastAnimation.done)="onAnimationDone($event, message)"
+    class="relative pointer-events-auto border-t-6"
+  >
+    <div class="shrink-0 w-6 h-6 flex items-center justify-center">
+      @switch (message.severity) { @case ('success') {
+      <i class="fa-solid fa-circle-check text-aldy-medium text-xl"></i>
+      } @case ('error') {
+      <i class="fa-solid fa-circle-xmark text-red-400 text-xl"></i>
+      } @case ('warn') {
+      <i class="fa-solid fa-triangle-exclamation text-amber-400 text-xl"></i>
+      } @case ('info') {
+      <i class="fa-solid fa-circle-info text-blue-400 text-xl"></i>
+      } }
+    </div>
+    <div class="flex-1 min-w-0">
+      @if (message.summary) {
+      <div class="font-light NewAldyFontType4 tracking-wider text-sm mb-1">
+        {{ message.summary }}
+      </div>
+      } @if (message.detail) {
+      <div
+        class="font-light NewAldyFontType4 tracking-wider text-xs opacity-90 leading-relaxed"
+      >
+        {{ message.detail }}
+      </div>
+      } @if (message.customContent) {
+      <div
+        class="font-light NewAldyFontType4 tracking-wider text-xs mt-2"
+        [innerHTML]="message.customContent"
+      ></div>
+      }
+    </div>
+    @if (!message.sticky) {
+    <button
+      class="shrink-0 w-6 h-6 flex cursor-pointer items-center justify-center rounded hover:bg-black/5 transition-colors duration-200"
+      (click)="closeToast(message.id)"
+      aria-label="Close notification"
+    >
+      <i class="fa-solid fa-xmark text-lg"></i>
+    </button>
+    }
+  </div>
+  }
+</div>

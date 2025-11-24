@@ -1,8 +1,15 @@
+export type ToastSeverity = 'success' | 'error' | 'warn' | 'info';
+
 export interface ToastMessage {
   id: string;
-  severity: 'success' | 'info' | 'warn' | 'error';
+  severity: ToastSeverity;
   summary?: string;
   detail?: string;
-  life?: number; 
+  customContent?: string;
+  life?: number;
   sticky?: boolean;
+  state?: string;
+  progressStart?: number;
+  progressElapsed?: number;
 }
+

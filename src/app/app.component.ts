@@ -1,15 +1,22 @@
+
 import { Component, OnInit } from '@angular/core';
 import { Router, NavigationEnd, RouterOutlet } from '@angular/router';
 import { CommonModule, ViewportScroller } from '@angular/common';
 import { filter } from 'rxjs/operators';
-import { ToastModule } from 'primeng/toast';
 import { LoadingScreenGenericComponent } from "./shared/components/system/loading-screen-generic/loading-screen-generic.component";
 import { LoadingScreenComponent } from './shared/components/system/loading-screen/loading-screen.component';
+import { ToastNotificationComponent } from './shared/components/system/toast-notification/toast-notification.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, ToastModule, LoadingScreenGenericComponent, LoadingScreenComponent,CommonModule],
+  imports: [
+    RouterOutlet, 
+    ToastNotificationComponent,
+    LoadingScreenGenericComponent, 
+    LoadingScreenComponent,
+    CommonModule
+  ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })

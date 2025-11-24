@@ -35,7 +35,6 @@ import { ButtonPrimaryDirective } from '../../../../shared/utils/directives/butt
     AccordionModule,
     ChipModule,
     AcordiongenericComponent,
-    ToastModule,
     ButtonPrimaryDirective
   ],
   templateUrl: './payment.component.html',

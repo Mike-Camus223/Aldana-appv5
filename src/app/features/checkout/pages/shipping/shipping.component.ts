@@ -181,7 +181,7 @@ export class ShippingComponent implements OnInit, OnDestroy {
         'Sesión requerida', 
         'Debes iniciar sesión para continuar con la compra.'
       );
-      this.router.navigate(['/auth/login']);
+      this.router.navigate(['/cuenta/iniciar-sesion']);
     }
   }
 

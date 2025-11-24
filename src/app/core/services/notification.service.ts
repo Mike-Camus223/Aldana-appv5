@@ -1,34 +1,20 @@
 import { Injectable } from '@angular/core';
-import { MessageService } from 'primeng/api';
 import { BehaviorSubject, timer, Subscription } from 'rxjs';
-import {ToastMessage} from '../../shared/utils/models/toastOptions.model'
+import { ToastMessage, ToastSeverity } from '../../shared/utils/models/toastOptions.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class NotificationService {
-  private maxVisible = 4;
+   private maxVisible = 4;
   private messages: ToastMessage[] = [];
   private messageTimers = new Map<string, Subscription>();
 
   private messagesSubject = new BehaviorSubject<ToastMessage[]>([]);
   messages$ = this.messagesSubject.asObservable();
 
-  constructor(private messageService: MessageService) {}
-
   private generateId() {
     return Math.random().toString(36).substr(2, 9);
-  }
-
-  private showToast(message: ToastMessage) {
-    this.messageService.add({
-      severity: message.severity,
-      summary: message.summary,
-      detail: message.detail,
-      life: message.sticky ? 0 : message.life ?? 3000,
-      key: 'main',
-      sticky: message.sticky ?? false
-    });
   }
 
   private scheduleRemoval(id: string, life: number) {
@@ -55,7 +41,6 @@ export class NotificationService {
     const newMessage: ToastMessage = { id, ...message };
     this.messages.push(newMessage);
     this.messagesSubject.next([...this.messages]);
-    this.showToast(newMessage);
 
     if (!newMessage.sticky) {
       this.scheduleRemoval(id, newMessage.life ?? 3000);
@@ -66,7 +51,6 @@ export class NotificationService {
     this.messages = this.messages.filter(msg => msg.id !== id);
     this.messagesSubject.next([...this.messages]);
     this.cancelRemoval(id);
-    this.messageService.clear(id);
   }
 
   showSuccess(summary: string, detail: string, life?: number, sticky?: boolean) {
@@ -83,5 +67,9 @@ export class NotificationService {
 
   showInfo(summary: string, detail: string, life?: number, sticky?: boolean) {
     this.addMessage({ severity: 'info', summary, detail, life, sticky });
+  }
+
+  showCustom(severity: ToastSeverity, customContent: string, life?: number, sticky?: boolean) {
+    this.addMessage({ severity, customContent, life, sticky });
   }
 }
