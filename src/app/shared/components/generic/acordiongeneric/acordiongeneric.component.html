@@ -1,16 +1,15 @@
-<div class="border-b border-[#d9e2d8]">
+<div class="border-b border-aldy-medium">
   <button (click)="onToggle()"
     class="w-full flex NewAldyFontType4 justify-between cursor-pointer items-center py-4 px-3 text-left hover:text-aldy-medium transition-colors duration-200 font-light tracking-wider text-sm"
     [ngClass]="{
       'text-aldy-medium font-light': isOpen(),
-      'text-aldy-green-gray-bold': !isOpen()
+      'text-aldy-medium-2': !isOpen()
     }">
-    <div class="flex items-center gap-2">
+    <div class="flex items-center gap-4">
       <ng-container *ngIf="useIcon">
-        <i *ngIf="icon && !iconSvg" [class]="icon" class="text-base leading-none">
+        <i *ngIf="icon" [class]="icon" class="leading-none">
         </i>
-        <span *ngIf="iconSvg" class="w-5 h-5" [innerHTML]="iconSvg">
-        </span>
+        <img *ngIf="iconImg" [src]="iconImg" alt="icon_item" [class]="iconImgStyle">
       </ng-container>
       <div [class]="classTitle">{{ title }}</div>
     </div>

@@ -11,6 +11,7 @@ import { CommonModule } from '@angular/common';
 import { AccordionModule } from 'primeng/accordion';
 import { PanelModule } from 'primeng/panel';
 import { ChipModule } from 'primeng/chip';
+import { ToastModule } from 'primeng/toast';
 import { CartService } from '../../../../core/services/cart.service';
 import { CartItem } from '../../../../shared/utils/models/cartItems-model';
 import {
@@ -22,6 +23,8 @@ import { Router } from '@angular/router';
 import { OrdersService } from '../../../../core/services/orders/orders.service';
 import { AcordiongenericComponent } from '../../../../shared/components/generic/acordiongeneric/acordiongeneric.component';
 import { environment } from '../../../../../environments/environment';
+import { NotificationService } from '../../../../core/services/notification.service';
+import { ButtonPrimaryDirective } from '../../../../shared/utils/directives/button-primary.directive';
 
 @Component({
   selector: 'app-payment',
@@ -31,7 +34,9 @@ import { environment } from '../../../../../environments/environment';
     PanelModule,
     AccordionModule,
     ChipModule,
-    AcordiongenericComponent
+    AcordiongenericComponent,
+    ToastModule,
+    ButtonPrimaryDirective
   ],
   templateUrl: './payment.component.html',
   styleUrls: ['./payment.component.css'],
@@ -44,13 +49,15 @@ export class PaymentComponent implements OnInit, AfterViewInit, OnDestroy {
   isProcessing = false;
   activeAccordionPanels: number[] = [0];
   accordionActive: string | null = null;
+  accordionWspActive: string | null = null;
 
   constructor(
     private cartService: CartService,
     private shippingService: ShippingService,
     private router: Router,
     private cdr: ChangeDetectorRef,
-    private ordersService: OrdersService
+    private ordersService: OrdersService,
+    private notificationService: NotificationService
   ) {}
 
   @HostListener('window:beforeunload')
@@ -81,20 +88,37 @@ export class PaymentComponent implements OnInit, AfterViewInit, OnDestroy {
     this.accordionActive = this.accordionActive === value ? null : value;
   }
 
+  toggleAccordionWsp(value : string) {
+    this.accordionWspActive = this.accordionWspActive === value ? null : value;
+  }
+
   ngAfterViewInit(): void {}
 
   ngOnDestroy(): void {}
 
   async payWithMercadoPago() {
-    if (this.isProcessing) return;
-    if (!this.shippingData || this.cartItems.length === 0) {
-      alert('Error: Datos de envío o carrito vacío');
+    if (this.isProcessing) {
+      this.notificationService.showInfo('Procesando pago', 'Por favor espera mientras procesamos tu pago', 2000);
       return;
     }
 
-    this.isProcessing = true;
-
     try {
+      // Validaciones iniciales
+      if (!this.shippingData) {
+        this.notificationService.showError('Datos incompletos', 'Por favor completa tus datos de envío antes de continuar', 4000);
+        this.router.navigate(['/checkout/shipping']);
+        return;
+      }
+
+      if (!this.cartItems || this.cartItems.length === 0) {
+        this.notificationService.showError('Carrito vacío', 'No hay productos en tu carrito', 4000);
+        this.router.navigate(['/cart']);
+        return;
+      }
+
+      this.isProcessing = true;
+      this.notificationService.showInfo('Procesando', 'Preparando tu pago con Mercado Pago...', 2000);
+
       // Preparar los items para Mercado Pago
       const items = this.cartItems.map(item => ({
         title: item.name,
@@ -106,6 +130,14 @@ export class PaymentComponent implements OnInit, AfterViewInit, OnDestroy {
         picture_url: item.variantMainImage || item.image || ''
       }));
 
+      // Validar datos del comprador
+      const phoneNumber = this.shippingData.phone.replace(/\D/g, '');
+      if (!phoneNumber || phoneNumber.length < 8) {
+        this.notificationService.showError('Teléfono inválido', 'Por favor ingresa un número de teléfono válido', 4000);
+        this.isProcessing = false;
+        return;
+      }
+
       // Preparar los datos del comprador
       const payer = {
         name: this.shippingData.name,
@@ -113,7 +145,7 @@ export class PaymentComponent implements OnInit, AfterViewInit, OnDestroy {
         email: this.shippingData.email,
         phone: {
           area_code: '11', // Código de área para Buenos Aires
-          number: this.shippingData.phone.replace(/\D/g, '') // Remover caracteres no numéricos
+          number: phoneNumber
         },
         address: {
           zip_code: this.shippingData.zipCode,
@@ -144,26 +176,29 @@ export class PaymentComponent implements OnInit, AfterViewInit, OnDestroy {
         })
       });
 
-      console.log('Enviando datos a Supabase:', {
-        items,
-        payer,
-        back_urls: {
-          success: 'https://aldyapp.web.app/checkout/success',
-          failure: 'https://aldyapp.web.app/checkout/failure',
-          pending: 'https://aldyapp.web.app/checkout/pending'
-        }
-      });
-
       if (!response.ok) {
-        const errorText = await response.text();
-        console.error('Error de Supabase:', response.status, errorText);
-        throw new Error(`Error al crear la preferencia de pago: ${response.status} - ${errorText}`);
+        const errorData = await response.json().catch(() => ({ error: 'Error desconocido' }));
+        console.error('Error de Supabase:', errorData);
+        
+        if (response.status === 500) {
+          this.notificationService.showError('Error del servidor', 'Hubo un problema al procesar tu pago. Por favor intenta nuevamente.', 5000);
+        } else if (response.status === 401) {
+          this.notificationService.showError('Autorización inválida', 'Error de autenticación con el servicio de pagos', 4000);
+        } else {
+          this.notificationService.showError('Error de pago', errorData.error || 'No se pudo procesar tu pago', 4000);
+        }
+        throw new Error(`Error ${response.status}: ${errorData.error || 'Error al procesar el pago'}`);
       }
 
       const { init_point, preference_id } = await response.json();
       
+      if (!init_point) {
+        this.notificationService.showError('Error de configuración', 'No se pudo obtener el enlace de pago', 4000);
+        throw new Error('No se recibió el enlace de pago de Mercado Pago');
+      }
+
       // Guardar la información de la orden antes de redirigir
-      await this.ordersService.createOrder(
+      const orderResult = await this.ordersService.createOrder(
         this.cartItems,
         this.shippingData,
         this.discountData,
@@ -172,70 +207,32 @@ export class PaymentComponent implements OnInit, AfterViewInit, OnDestroy {
         `Mercado Pago - Preference ID: ${preference_id}`
       );
 
-      // Redirigir a la pasarela de Mercado Pago
-      window.location.href = init_point;
-
-    } catch (error) {
-      console.error('Error en payWithMercadoPago:', error);
-      alert(`Error al procesar el pago con Mercado Pago: ${(error as Error).message}`);
-    } finally {
-      this.isProcessing = false;
-    }
-  }
-
-  async payWithWhatsApp() {
-    if (this.isProcessing) return;
-    if (!this.shippingData || this.cartItems.length === 0) {
-      alert('Error: Datos de envío o carrito vacío');
-      return;
-    }
-
-    this.isProcessing = true;
-
-    try {
-      // 1. Generar el mensaje de texto para WhatsApp
-      let message = '¡Hola! Quisiera hacer el siguiente pedido:\n\n';
-      this.cartItems.forEach(item => {
-        message += `- ${item.name} (x${item.quantity}) - $${(item.price * item.quantity).toFixed(2)}\n`;
-      });
-      message += `\nSubtotal: $${this.subtotal.toFixed(2)}`;
-      if (this.discountData) {
-        message += `\nDescuento: -$${this.discountData.discountAmount.toFixed(2)}`;
-      }
-      message += `\n*Total: $${this.total.toFixed(2)}*\n\n`;
-      message += `Datos de envío:\n`;
-      message += `${this.shippingData.name} ${this.shippingData.surname}\n`;
-      message += `${this.shippingData.address}, ${this.shippingData.city}\n`;
-
-      // 2. Crear la orden en la base de datos
-      const orderResult = await this.ordersService.createOrder(
-        this.cartItems,
-        this.shippingData,
-        this.discountData,
-        this.subtotal,
-        this.total,
-        message // Guardamos el mensaje en la BD
-      );
-
       if (!orderResult.success) {
-        throw new Error(orderResult.error || 'No se pudo crear la orden.');
+        console.error('Error al crear la orden:', orderResult.error);
+        this.notificationService.showWarn('Aviso', 'El pago fue procesado pero hubo un problema al guardar la orden', 5000);
       }
-      // 3. Redirigir al cliente a WhatsApp
-      const sellerPhoneNumber = '15556080222'; // Reemplaza con el número de WhatsApp del vendedor
-      const encodedMessage = encodeURIComponent(message);
-      const whatsappUrl = `https://wa.me/${sellerPhoneNumber}?text=${encodedMessage}`;
-      
-      window.open(whatsappUrl, '_blank');
 
-      // 4. Limpiar el carrito y redirigir
-      this.cartService.clearCart();
-      this.router.navigate(['/checkout/success']);
+      this.notificationService.showSuccess('¡Excelente!', 'Serás redirigido a Mercado Pago para completar tu compra', 3000);
+      
+      // Redirigir a la pasarela de Mercado Pago después de un breve delay
+      setTimeout(() => {
+        window.location.href = init_point;
+      }, 1500);
 
     } catch (error) {
-      console.error('Error en payWithWhatsApp:', error);
-      alert(`Error al procesar el pedido: ${(error as Error).message}`);
+      console.error('Error crítico en payWithMercadoPago:', error);
+      
+      // Manejo específico de errores de red
+      if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
+        this.notificationService.showError('Sin conexión', 'No se pudo conectar con el servicio de pagos. Verifica tu conexión a internet.', 6000);
+      } else if (error instanceof Error) {
+        this.notificationService.showError('Error de pago', error.message, 5000);
+      } else {
+        this.notificationService.showError('Error inesperado', 'Ocurrió un problema al procesar tu pago. Por favor intenta nuevamente.', 5000);
+      }
     } finally {
       this.isProcessing = false;
+      this.cdr.detectChanges();
     }
   }
 

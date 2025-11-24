@@ -31,28 +31,6 @@
   --color-aldy-prueba: #D2E4CC;
 }
 
-.font-main {
-  font-family: "PT Sans Narrow", sans-serif;
-  color: #797e78;
-  color: #7e887d; 
-  color: #d3eeca;
-}
-
-.font-number {
-  font-family: "PT Sans Narrow", sans-serif;
-  font-weight: 400;
-}
-
-.font-number-bold {
-  font-family: "PT Sans Narrow", sans-serif;
-  font-weight: 700;
-}
-
-.titles {
-  font-family: "PT Sans Narrow", sans-serif;
-  font-weight: 500;
-}
-
 .titles2 {
   font-family: "Cormorant", serif;
   font-optical-sizing: auto;
@@ -61,10 +39,6 @@
 
 .navbarColorBG {
   background-color: #fffffff1;
-}
-
-.tolol {
-  background-color: #ffffffe7;
 }
 
 .timesRoman {
@@ -117,10 +91,6 @@
   font-family: 'aldyfont', sans-serif;
 } 
 
-.bg-frase {
-  background-color: #EFEADE;
-}
-
 .titlev3 {
   font-family: "Lavishly Yours", cursive;
 }
@@ -152,13 +122,3 @@
 .NewAldyFontTypeAccent {
   font-family: 'accent-aldy';
 }
-
-.temporally{
-  background: #778a72; 
-  background: #5f6e5b; 
-  color: #113D3C;
-}
-
-/* // FreightBig Pro Light // */
-
-/* DESCARGALO */

@@ -1,3 +1,4 @@
+<p-toast position="top-right" key="main"></p-toast>
 <div class="flex flex-col md:flex-row justify-center gap-6">
   <div class="w-full md:w-2xl justify-center flex">
     <div class="relative w-full p-4 md:p-8">
@@ -11,179 +12,130 @@
             </div>
           </div>
         </section>
-
         <section class="border-b border-aldy-medium py-4 flex justify-between items-start">
-          <div class="flex items-start gap-4">
-            <i class="fa-solid fa-box text-aldy-green-gray mt-1"></i>
-            <div>
-              <p class="text-md NewAldyTitle tracking-widest text-aldy-green-gray-bold font-light uppercase">
-                Retiras en correo argentino - Gratis
-              </p>
-              <p class="text-sm NewAldyFontType4 tracking-wider text-aldy-green-gray">Correo argentino surcursal 112
-                Ciudad Autónoma de Buenos Aires.</p>
-            </div>
-          </div>
-          <!-- <button pButton label="Cambiar" text class="text-blue-600 text-xs hover:underline"
-            (click)="onChangePickupPoint()">
-            Cambiar
-          </button> -->
-        </section>
+  <div class="flex items-start gap-4">
+    <i class="fa-solid fa-box text-aldy-green-gray mt-1"></i>
+    <div>
+      <p class="text-md NewAldyTitle tracking-widest text-aldy-green-gray-bold font-light uppercase">
+        Retiras en correo argentino - Gratis
+      </p>
+      <p class="text-sm NewAldyFontType4 tracking-wider text-aldy-green-gray">
+        Correo argentino surcursal 112 Ciudad Autónoma de Buenos Aires.
+      </p>
+    </div>
+  </div>
 
+  <!-- BOTÓN CAMBIAR -->
+  <button type="button"
+    class="text-xs cursor-pointer NewAldyFontType4 tracking-wider text-aldy-green-gray hover:underline transition-all duration-300 ease-in-out hover:opacity-80">
+    Cambiar
+  </button>
+</section>
         <section class="border-b border-aldy-medium py-4 flex justify-between items-start">
-          <div class="flex items-start gap-4">
-            <i class="fa-regular  fa-user text-aldy-green-gray mt-1"></i>
-            <div>
-              <p class="text-md NewAldyTitle tracking-widest text-aldy-green-gray-bold font-light uppercase">Datos de
-                cobranza</p>
-              <p class="text-sm NewAldyFontType4 tracking-wider text-aldy-green-gray">{{ shippingData?.name }} {{
-                shippingData?.surname }}</p>
-              <p class="text-sm NewAldyFontType4 tracking-wider text-aldy-green-gray">{{ shippingData?.address }}</p>
-              <p class="text-sm NewAldyFontType4 tracking-wider text-aldy-green-gray">
-                CP {{ shippingData?.zipCode }}
-                <span *ngIf="shippingData?.neighborhood"> - {{ shippingData?.neighborhood }}</span>
-              </p>
-              <p class="text-sm NewAldyFontType4 tracking-wider text-aldy-green-gray">
-                {{ shippingData?.city }}, {{ shippingData?.province}} - {{ shippingData?.phone }}
-              </p>
-              <p class="mt-4 text-md NewAldyTitle tracking-widest text-aldy-green-gray-bold font-light uppercase">
-                Persona que retirará el pedido</p>
-              <p class="text-sm NewAldyFontType4 tracking-wider text-aldy-green-gray">{{ shippingData?.name }} {{
-                shippingData?.surname }}</p>
-            </div>
-          </div>
-          <!-- <button pButton label="Cambiar" text class="text-blue-600 text-xs hover:underline"
-            (click)="onChangeBillingData()">
-            Cambiar
-          </button> -->
-        </section>
+  <div class="flex items-start gap-4">
+    <i class="fa-regular fa-user text-aldy-green-gray mt-1"></i>
+
+    <div>
+      <p class="text-md NewAldyTitle tracking-widest text-aldy-green-gray-bold font-light uppercase">
+        Datos de cobranza
+      </p>
+      <p class="text-sm NewAldyFontType4 tracking-wider text-aldy-green-gray">
+        {{ shippingData?.name }} {{ shippingData?.surname }}
+      </p>
+      <p class="text-sm NewAldyFontType4 tracking-wider text-aldy-green-gray">
+        {{ shippingData?.address }}
+      </p>
+      <p class="text-sm NewAldyFontType4 tracking-wider text-aldy-green-gray">
+        CP {{ shippingData?.zipCode }}
+        <span *ngIf="shippingData?.neighborhood"> - {{ shippingData?.neighborhood }}</span>
+      </p>
+      <p class="text-sm NewAldyFontType4 tracking-wider text-aldy-green-gray">
+        {{ shippingData?.city }}, {{ shippingData?.province }} - {{ shippingData?.phone }}
+      </p>
+
+      <p class="mt-4 text-md NewAldyTitle tracking-widest text-aldy-green-gray-bold font-light uppercase">
+        Persona que retirará el pedido
+      </p>
+      <p class="text-sm NewAldyFontType4 tracking-wider text-aldy-green-gray">
+        {{ shippingData?.name }} {{ shippingData?.surname }}
+      </p>
+    </div>
+  </div>
+
+  <!-- BOTÓN CAMBIAR -->
+  <button type="button"
+    class="text-xs cursor-pointer NewAldyFontType4 tracking-wider text-aldy-green-gray hover:underline transition-all duration-300 ease-in-out hover:opacity-80">
+    Cambiar
+  </button>
+</section>
 
         <section class="border-b border-aldy-medium py-4 flex justify-between items-center">
-          <div class="flex items-center gap-2 text-aldy-green-gray">
-            <i class="fa-regular text-aldy-green-gray fa-comment"></i>
-            <span class="text-sm NewAldyFontType4 tracking-wider text-aldy-green-gray">Notas de pedido</span>
-          </div>
-          <!-- <button appButtonPrimary class="text-blue-600 p-2 text-xs hover:underline">
-            Agregar
-          </button> -->
-        </section>
+  <div class="flex items-center gap-4 text-aldy-green-gray">
+    <i class="fa-regular fa-comment text-aldy-green-gray"></i>
+    <span class="text-sm NewAldyFontType4 relative -top-[-1px] tracking-wider text-aldy-green-gray">
+      Notas de pedido
+    </span>
+  </div>
+
+  <!-- BOTÓN CAMBIAR -->
+  <button type="button"
+    class="text-xs cursor-pointer NewAldyFontType4 tracking-wider text-aldy-green-gray hover:underline transition-all duration-300 ease-in-out hover:opacity-80">
+    Agregar
+  </button>
+</section>
 
         <section class="space-y-4 mt-6">
-          <h4 class="text-md NewAldyTitle tracking-widest text-aldy-green-gray-bold font-light uppercase mb-2">Medio de
-            pago</h4>
-          <app-acordiongeneric 
-          icon="fa-solid fa-credit-card text-aldy-green-gray text-lg" 
-          [useIcon]="true" [title]="'Pagar con Mercado Pago'" 
-          [value]="'payments_methods'"
-          [classTitle]="'text-sm NewAldyFontType4 tracking-wider text-aldy-green-gray-bold'"
-          [selected]="accordionActive" (toggled)="toggleAccordion($event)">
-            <div class="space-y-3 p-4">
+          <h4 class="text-md NewAldyTitle tracking-widest text-aldy-green-gray-bold font-light uppercase mb-2">
+            M<span class="NewAldyFontTypeAccent font-light text-lg">é</span>todos de pago
+          </h4>
+          <app-acordiongeneric [useIcon]="true" [iconImg]="'../../../../../assets/svg/mpIcon.svg'"
+            [iconImgStyle]="'w-7 h-7'" [title]="'Pagar con Mercado Pago'" [value]="'payment_mp'"
+            [classTitle]="'text-sm NewAldyFontType4 tracking-wider text-aldy-green-gray-bold'"
+            [selected]="accordionActive" (toggled)="toggleAccordion($event)">
+            <div class="space-y-3 py-4">
               <p class="text-sm NewAldyFontType4 tracking-wider text-aldy-green-gray">
-                Paga de forma segura con tarjeta de crédito, débito o en efectivo. Hasta 6 cuotas sin interés.
+                Paga de forma segura con tarjeta de crédito, débito o en efectivo.
               </p>
-              <button 
-                type="button" 
-                (click)="payWithMercadoPago()" 
-                [disabled]="isProcessing"
-                class="px-5 py-2 bg-aldy-medium cursor-pointer text-white NewAldyFontType4 text-sm tracking-wider hover:bg-aldy-medium-2 transition-colors duration-500 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed w-full text-center rounded-md">
-                <i class="fas fa-credit-card mr-2"></i>
-                {{ isProcessing ? 'Procesando...' : 'Pagar con Mercado Pago - ' + (total | currency:'ARS':'symbol':'1.2-2':'es-AR') }}
+
+              <!-- BOTÓN USANDO DIRECTIVA -->
+              <button type="button" smartButton (click)="payWithMercadoPago()" [loadingAsync]="isProcessing"
+                [icon]="true" [iconSvg]="'../../../../../assets/svg/mpIcon_white.svg'" [iconStyle]="'w-9 h-9'"
+                class="w-full">
+                Realizar compra con Mercado Pago
               </button>
-              <p class="text-xs NewAldyFontType4 tracking-wider text-aldy-green-gray opacity-75">
+
+              <p class="text-xs NewAldyFontType4 tracking-wider text-aldy-green-gray">
                 Serás redirigido a la pasarela de pago segura de Mercado Pago
               </p>
             </div>
           </app-acordiongeneric>
-          <!-- <div class="card flex justify-center">
-            <p-accordion [multiple]="true" [(activeIndex)]="activeAccordionPanels" class="w-full space-y-4">
-              <p-accordion-panel [value]="0">
-                <p-accordion-header>
-                  <div class="w-full flex px-4 justify-between items-center">
-                    <div class="flex items-center gap-2">
-                      <i class="fa-brands fa-whatsapp text-green-500"></i>
-                      <span class="NewAldyFontType4 tracking-wider">Comprar por WhatsApp</span>
-                    </div>
-                    <p-chip>
-                      <span class="font-medium text-white text-xs">Pago directo</span>
-                    </p-chip>
-                  </div>
-                </p-accordion-header>
-                <p-accordion-content>
-                  <div class="space-y-3">
-                    <p class="text-sm NewAldyFontType4 tracking-wider text-aldy-green-gray">
-                      Te contactaremos por WhatsApp para coordinar el pago y la entrega.
-                    </p>
-                    <button appButtonPrimary type="button" (click)="payWithWhatsApp()" [disabled]="isProcessing"
-                      class="w-full text-white py-3 px-4 rounded-md transition-colors font-medium bg-green-600 hover:bg-green-700 disabled:opacity-50">
-                      <i class="fa-brands fa-whatsapp mr-2"></i>
-                      {{ isProcessing ? 'Procesando...' : 'Comprar por WhatsApp ' + (total | currency:'USD':'symbol':'1.2-2':'en-US') }}
-                    </button>
-                  </div>
-                </p-accordion-content>
-              </p-accordion-panel> -->
-          <!-- MERCADOPAGO OPTION - TEMPORARILY COMMENTED OUT -->
-          <!-- <p-accordion-panel [value]="1">
-                <p-accordion-header>
-                  <div class="w-full flex px-4 justify-between items-center">
-                    <div class="flex items-center gap-2">
-                      <i class="fa-solid fa-credit-card"></i>
-                      <span>Tarjeta de crédito o débito</span>
-                    </div>
-                    <p-chip>
-                      <span class="font-medium text-white text-xs">Hasta 6 cuotas sin interés</span>
-                    </p-chip>
-                  </div>
-                </p-accordion-header>
-                <p-accordion-content>
-                  <button appButtonPrimary type="button" (click)="pagar()"
-                    class="w-full text-white py-3 px-4 rounded-md transition-colors font-medium">
-                    Ir a pagar {{ total | currency:'USD':'symbol':'1.2-2':'en-US' }}
-                  </button>
-                </p-accordion-content>
-              </p-accordion-panel> -->
-          <!-- <p-accordion-panel [value]="1">
-                <p-accordion-header>
-                  <div class="w-full flex px-4 justify-between items-center">
-                    <div class="flex items-center gap-2">
-                      <i class="fa-solid fa-building-columns"></i>
-                      <span>Transferencia bancaria</span>
-                    </div>
-                    <p-chip>
-                      <span class="font-medium text-white text-xs">10% de descuento</span>
-                    </p-chip>
-                  </div>
-                </p-accordion-header>
-                <p-accordion-content>
-                  <p class="text-sm NewAldyFontType4 tracking-wider text-aldy-green-gray text-sm">
-                    Obtén un 10% de descuento pagando por transferencia bancaria.
-                  </p>
-                </p-accordion-content>
-              </p-accordion-panel> -->
-          <!-- <p-accordion-panel [value]="2">
-                <p-accordion-header>
-                  <div class="w-full flex px-4 justify-between items-center">
-                    <div class="flex items-center gap-2">
-                      <i class="fa-brands fa-paypal"></i>
-                      <span>Mercado Pago</span>
-                    </div>
-                  </div>
-                </p-accordion-header>
-                <p-accordion-content>
-                  <p class="text-sm NewAldyFontType4 tracking-wider text-aldy-green-gray text-sm">
-                    Puedes pagar con cualquier aplicación de pago compatible con Mercado Pago.
-                  </p>
-                </p-accordion-content>
-              </p-accordion-panel> 
-             </p-accordion>  
-             </div> -->
+
+          <app-acordiongeneric [useIcon]="true" [title]="'Pagar vía WhatsApp'" [selected]="accordionWspActive"
+            [value]="'payment_wsp'" [classTitle]="'text-sm NewAldyFontType4 tracking-wider text-aldy-green-gray-bold'"
+            [icon]="'fa-brands fa-whatsapp text-aldy-green-gray text-xl'" (toggled)="toggleAccordionWsp($event)">
+            <div class="space-y-3 py-4">
+              <p class="text-sm NewAldyFontType4 tracking-wider text-aldy-green-gray">
+                Paga de forma rápida y directa desde WhatsApp.
+              </p>
+              <button type="button" [disabled]="isProcessing" smartButton [icon]="false"
+                class="disabled:opacity-50 disabled:cursor-not-allowed w-full text-center flex items-center justify-center gap-4">
+                <i class="fa-brands fa-whatsapp text-white text-2xl"></i>
+                {{ isProcessing ? 'Procesando...' : 'Pagar desde WhatsApp' }}
+              </button>
+              <p class="text-xs NewAldyFontType4 tracking-wider text-aldy-green-gray">
+                Serás redirigido al catálogo de WhatsApp con el producto seleccionado.
+              </p>
+            </div>
+          </app-acordiongeneric>
         </section>
         <section class="mt-6"></section>
       </div>
     </div>
   </div>
-  <div class="w-full md:w-1/4 p-3 py-5 rounded-md bg-aldy-white text-aldy-green-gray">
+  <div class="w-full md:w-1/4 p-3 py-5 bg-aldy-white text-aldy-green-gray">
     <div *ngFor="let item of cartItems" class="flex gap-3 sm:gap-4 w-full mb-4">
       <img [src]="item.variantMainImage || item.image" alt="Producto"
-        class="w-20 min-w-[80px] max-w-[80px] h-full object-cover rounded-md" />
+        class="w-20 min-w-[80px] max-w-[80px] h-full object-cover" />
       <div class="flex flex-col justify-between w-full">
         <div>
           <h3 class="text-md NewAldyTitle tracking-widest text-aldy-green-gray-bold font-light uppercase">
@@ -218,25 +170,21 @@
         </div>
       </div>
     </div>
-
     <div class="pt-4 mt-6 border-t border-aldy-medium text-sm space-y-1">
       <div class="flex justify-between">
         <span class="text-sm NewAldyFontType4  tracking-wider text-aldy-green-gray">Subtotal</span>
         <span class="text-sm NewAldyFontType4  tracking-wider text-aldy-green-gray">{{ subtotal |
           currency:'USD':'symbol':'1.2-2':'en-US' }}</span>
       </div>
-
       <div class="flex justify-between">
         <span class="text-sm NewAldyFontType4 tracking-wider text-aldy-green-gray">Envío</span>
         <span class="text-sm NewAldyFontType4 tracking-wider text-aldy-green-gray">Gratis</span>
       </div>
-
       <div class="flex justify-between font-bold text-base pt-2">
         <span class="text-sm NewAldyFontType4  tracking-wider text-aldy-green-gray">Total</span>
         <span class="text-sm NewAldyFontType4  tracking-wider text-aldy-green-gray">{{ total |
           currency:'USD':'symbol':'1.2-2':'en-US' }}</span>
       </div>
-
       <div *ngIf="discountData" class="mt-2 text-sm text-green-700 NewAldyFontType4 tracking-wider">
         Código de descuento aplicado: <strong>{{ discountData.code }}</strong>
       </div>

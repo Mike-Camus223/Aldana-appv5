@@ -17,10 +17,11 @@ export class AcordiongenericComponent implements AfterViewInit, OnChanges, OnDes
   @Output() toggled = new EventEmitter<string>();
   @ViewChild('contentWrapper') contentWrapper!: ElementRef<HTMLDivElement>;
   @Input() icon: string | null = null;     
-  @Input() iconSvg: string | null = null;   
   @Input() useIcon: boolean = false;
   @Input() classTitle: string | null = null;
-  
+  @Input() iconImg: string | null = null;
+  @Input() iconImgStyle: string | null = null;
+
   contentHeight = 0;
   private mutationObserver: MutationObserver | null = null;
 
