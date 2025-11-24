@@ -108,7 +108,7 @@
           <div class="flex items-center gap-4 text-aldy-green-gray">
             <i class="fa-regular fa-comment text-aldy-green-gray"></i>
             <span
-              class="text-sm NewAldyFontType4 tracking-wider text-aldy-green-gray"
+              class="text-sm NewAldyFontType4 relative -top-[-1px] tracking-wider text-aldy-green-gray"
             >
               Notas de pedido
             </span>
@@ -216,6 +216,7 @@
     <div *ngFor="let item of cartItems" class="flex gap-3 sm:gap-4 w-full mb-4">
       <img
         [src]="item.variantMainImage || item.image"
+        draggable="false"
         alt="Producto"
         class="w-20 min-w-[80px] max-w-[80px] h-full object-cover"
       />
