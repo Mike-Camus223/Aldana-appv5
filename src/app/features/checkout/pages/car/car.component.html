@@ -61,9 +61,9 @@
     </div>
   </div>
   <div class="w-full md:w-1/4 p-3 py-5  text-slate-900">
-    <div class="flex py-4 border-b font-light uppercase tracking-wider text-sm border-[#d9e2d8] justify-between text-aldy-green-gray NewAldyFontType4">
-      <span>Subtotal</span>
-      <span>
+    <div class="flex py-4 border-b font-light border-[#d9e2d8] justify-between">
+      <span class="text-xs uppercase NewAldyFontType4 tracking-wider text-aldy-green-gray">Subtotal</span>
+      <span class="text-sm NewAldyFontType4 tracking-wider text-aldy-green-gray">
         {{ getSubtotal() | currency:'ARS':'symbol-narrow':'1.2-2':'es-AR' }}
       </span>
     </div>

@@ -25,6 +25,7 @@ import { AcordiongenericComponent } from '../../../../shared/components/generic/
 import { environment } from '../../../../../environments/environment';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { ButtonPrimaryDirective } from '../../../../shared/utils/directives/button-primary.directive';
+import { Modalv2Component } from '../../../../shared/components/generic/modalv2/modalv2.component';
 
 @Component({
   selector: 'app-payment',
@@ -35,7 +36,8 @@ import { ButtonPrimaryDirective } from '../../../../shared/utils/directives/butt
     AccordionModule,
     ChipModule,
     AcordiongenericComponent,
-    ButtonPrimaryDirective
+    ButtonPrimaryDirective,
+    Modalv2Component
   ],
   templateUrl: './payment.component.html',
   styleUrls: ['./payment.component.css'],
@@ -49,6 +51,14 @@ export class PaymentComponent implements OnInit, AfterViewInit, OnDestroy {
   activeAccordionPanels: number[] = [0];
   accordionActive: string | null = null;
   accordionWspActive: string | null = null;
+
+
+  modalNotesOpen = false;
+modalAddressOpen = false;
+modalPickupOpen = false;
+
+
+
 
   constructor(
     private cartService: CartService,

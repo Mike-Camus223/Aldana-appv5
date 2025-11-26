@@ -1,31 +1,40 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, Output, EventEmitter, OnChanges } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { trigger, transition, style, animate } from '@angular/animations';
 
 @Component({
   selector: 'app-modalv2',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './modalv2.component.html'
+  templateUrl: './modalv2.component.html',
+  animations: [
+    trigger('backdropAnim', [
+      transition(':enter', [
+        style({ opacity: 0 }),
+        animate('200ms ease-out', style({ opacity: 1 }))
+      ]),
+      transition(':leave', [
+        animate('200ms ease-in', style({ opacity: 0 }))
+      ])
+    ]),
+
+    trigger('modalAnim', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'scale(0.95) translateY(10px)' }),
+        animate('250ms ease-out', style({ opacity: 1, transform: 'scale(1) translateY(0)' }))
+      ]),
+      transition(':leave', [
+        animate('200ms ease-in', style({ opacity: 0, transform: 'scale(0.95) translateY(10px)' }))
+      ])
+    ])
+  ]
 })
-export class Modalv2Component implements OnChanges {
+export class Modalv2Component {
   @Input() open = false;
   @Output() openChange = new EventEmitter<boolean>();
 
-  animate = false;
-
-  ngOnChanges() {
-    if (this.open) {
-      setTimeout(() => (this.animate = true), 10);
-    } else {
-      this.animate = false;
-    }
-  }
-
   close() {
-    this.animate = false;
-    setTimeout(() => {
-      this.open = false;
-      this.openChange.emit(false);
-    }, 250);
+    this.open = false;
+    this.openChange.emit(false);
   }
 }
