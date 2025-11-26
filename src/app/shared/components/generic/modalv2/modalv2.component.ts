@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, HostListener, ElementRef, OnChanges, SimpleChanges, OnDestroy } from '@angular/core';
 import { trigger, transition, style, animate } from '@angular/animations';
 
 @Component({
@@ -29,12 +29,21 @@ import { trigger, transition, style, animate } from '@angular/animations';
     ])
   ]
 })
-export class Modalv2Component {
+export class Modalv2Component implements OnChanges {
   @Input() open = false;
   @Output() openChange = new EventEmitter<boolean>();
+
+  ngOnChanges(changes: SimpleChanges) {
+    // No hacer nada con el scroll
+  }
 
   close() {
     this.open = false;
     this.openChange.emit(false);
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscapeKey() {
+    this.close();
   }
 }

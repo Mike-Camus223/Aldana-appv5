@@ -1,4 +1,4 @@
-<div class="min-h-[87vh] h-full w-full flex flex-col md:flex-row justify-center gap-6">
+<div class="min-h-[91vh] h-full w-full flex flex-col md:flex-row justify-center gap-6">
   <div class="w-full md:w-2xl justify-center flex">
     <div class="relative w-full p-4 md:p-8">
       <div class="space-y-6">
@@ -82,12 +82,18 @@
             <span class="text-sm NewAldyFontType4 tracking-wider">Notas de pedido</span>
           </div>
 
+          <div class="flex-1 mx-4 overflow-hidden">
+            <p *ngIf="orderNotes" class="text-sm NewAldyFontType4 tracking-wider text-aldy-green-gray truncate">
+              {{ orderNotes }}
+            </p>
+          </div>
+
           <button
             type="button"
             (click)="modalNotesOpen = true"
             class="text-xs cursor-pointer NewAldyFontType4 tracking-wider text-aldy-green-gray hover:underline"
           >
-            Agregar
+            {{ orderNotes ? 'Editar' : 'Agregar' }}
           </button>
         </section>
         <section class="space-y-4 mt-6">
@@ -243,8 +249,30 @@
 
 <!-- MODAL: NOTAS -->
 <app-modalv2 [(open)]="modalNotesOpen">
-  <h2 class="text-xl font-bold mb-4">Notas del pedido</h2>
-  <textarea class="w-full border p-2 rounded" rows="4"></textarea>
+  <h2 class="text-xl font-bold mb-4">Notas de pedido</h2>
+  <app-textarea
+    [(ngModel)]="orderNotes"
+    [label]="'Escribe tus notas aquí'"
+    [id]="'order-notes'"
+    [rows]="4"
+  ></app-textarea>
+  <div class="flex justify-end gap-3 mt-4">
+    <button
+      type="button"
+      (click)="closeNotesModal()"
+      class="px-4 py-2 text-sm NewAldyFontType4 tracking-wider text-aldy-green-gray cursor-pointer"
+    >
+      Cancelar
+    </button>
+    <button
+      type="button"
+      (click)="saveNotes()"
+      smartButton
+      class="px-4 py-2 cursor-pointer"
+    >
+      Agregar
+    </button>
+  </div>
 </app-modalv2>
 
 <!-- MODAL: DIRECCIÓN -->
@@ -255,6 +283,102 @@
 
 <!-- MODAL: RETIRO -->
 <app-modalv2 [(open)]="modalPickupOpen">
-  <h2 class="text-xl font-bold mb-4">Cambiar método de retiro</h2>
-  <p>Opciones de retiro</p>
+  <div class="space-y-4">
+    <div class="flex justify-between items-center">
+      <h2 class="text-xl font-bold">Entrega</h2>
+    </div>
+    
+    <div class="space-y-3">
+      <div class="border border-aldy-medium rounded-lg p-4 hover:bg-gray-50 cursor-pointer">
+        <div class="flex justify-between items-start">
+          <div>
+            <p class="font-medium NewAldyTitle tracking-wider">Envío a domicilio</p>
+            <p class="text-sm text-aldy-green-gray NewAldyFontType4">Llega entre jueves 27/11 y miércoles 03/12</p>
+          </div>
+          <p class="font-medium">$11.805,00</p>
+        </div>
+      </div>
+      
+      <div class="border border-aldy-medium rounded-lg p-4 hover:bg-gray-50 cursor-pointer">
+        <div class="flex justify-between items-start">
+          <div>
+            <p class="font-medium NewAldyTitle tracking-wider">Envío Nube - Correo Argentino Clásico a domicilio</p>
+            <p class="text-sm text-aldy-green-gray NewAldyFontType4">Llega entre jueves 27/11 y miércoles 03/12</p>
+          </div>
+          <p class="font-medium">$14.156,50</p>
+        </div>
+      </div>
+      
+      <div class="border border-aldy-medium rounded-lg p-4 hover:bg-gray-50 cursor-pointer">
+        <div class="flex justify-between items-start">
+          <div>
+            <p class="font-medium NewAldyTitle tracking-wider">Correo Argentino Expreso - Envio a domicilio</p>
+            <p class="text-sm text-aldy-green-gray NewAldyFontType4">Llega entre miércoles 26/11 y viernes 28/11</p>
+          </div>
+          <p class="font-medium">$12.985,00</p>
+        </div>
+      </div>
+      
+      <div class="border border-aldy-medium rounded-lg p-4 hover:bg-gray-50 cursor-pointer">
+        <div class="flex justify-between items-start">
+          <div>
+            <p class="font-medium NewAldyTitle tracking-wider">Envío Nube - Correo Argentino Expreso a domicilio</p>
+            <p class="text-sm text-aldy-green-gray NewAldyFontType4">Llega entre miércoles 26/11 y lunes 01/12</p>
+          </div>
+          <p class="font-medium">$12.869,36</p>
+        </div>
+      </div>
+      
+      <div class="border border-aldy-medium rounded-lg p-4 hover:bg-gray-50 cursor-pointer">
+        <div class="flex justify-between items-start">
+          <div>
+            <p class="font-medium NewAldyTitle tracking-wider">Correo Argentino Clasico - Envio a domicilio</p>
+            <p class="text-sm text-aldy-green-gray NewAldyFontType4">Llega entre jueves 27/11 y lunes 01/12</p>
+          </div>
+          <p class="font-medium">$12.869,36</p>
+        </div>
+      </div>
+      
+      <div class="border-2 border-aldy-green-gray rounded-lg p-4 hover:bg-gray-50 cursor-pointer bg-aldy-light">
+        <div class="flex justify-between items-start">
+          <div>
+            <p class="font-medium NewAldyTitle tracking-wider">Retirar por</p>
+            <p class="text-sm text-aldy-green-gray NewAldyFontType4">Atelier Molina- MALABIA 1116, CIUDAD AUTONOMA BUENOS AIRES - Villa Crespo</p>
+            <p class="text-xs text-aldy-green-gray NewAldyFontType4 mt-1">Retirás entre el jueves 27/11 y el martes 02/12</p>
+            <p class="text-xs text-aldy-green-gray NewAldyFontType4">lunes a sábado, de 11:00 a 19:00</p>
+          </div>
+          <p class="font-medium text-aldy-green-gray-bold">Gratis</p>
+        </div>
+      </div>
+      
+      <div class="border border-aldy-medium rounded-lg p-4 hover:bg-gray-50 cursor-pointer">
+        <div class="flex justify-between items-start">
+          <div>
+            <p class="font-medium NewAldyTitle tracking-wider">Punto de retiro</p>
+            <p class="text-sm text-aldy-green-gray NewAldyFontType4">Retirás entre el jueves 27/11 y el lunes 01/12</p>
+            <p class="text-xs text-aldy-green-gray NewAldyFontType4">lunes a viernes, de 11:00 a 18:00</p>
+          </div>
+          <p class="font-medium">$8.524,23</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="flex justify-end gap-3 pt-4">
+      <button
+        type="button"
+        (click)="closePickupModal()"
+        class="px-4 py-2 text-sm NewAldyFontType4 tracking-wider text-aldy-green-gray cursor-pointer"
+      >
+        Cancelar
+      </button>
+      <button
+        type="button"
+        (click)="selectPickupOption()"
+        smartButton
+        class="px-4 py-2 cursor-pointer"
+      >
+        Agregar
+      </button>
+    </div>
+  </div>
 </app-modalv2>

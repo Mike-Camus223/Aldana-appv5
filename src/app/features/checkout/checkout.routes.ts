@@ -12,7 +12,6 @@ export const checkoutRoutes: Routes = [
         redirectTo: 'carrito',
         pathMatch: 'full'
       },
-
       {
         path: 'carrito',
         loadComponent: () =>
@@ -30,7 +29,7 @@ export const checkoutRoutes: Routes = [
       },
       {
         path: 'success',
-        canActivate: [paymentsuccesguardGuard],
+        // canActivate: [paymentsuccesguardGuard],
         loadComponent: () =>
           import('../../shared/components/templates/success-pay/success-pay.component').then(c => c.SuccessPayComponent),
       }

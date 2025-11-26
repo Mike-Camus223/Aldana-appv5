@@ -4,73 +4,133 @@ import { CartItem } from '../../../../shared/utils/models/cartItems-model';
 import { CartService } from '../../../../core/services/cart.service';
 import { Router } from '@angular/router';
 import { CheckoutStepperProgressService } from '../../../../core/services/checkout-stepper-progress.service';
-import { LUCIDE_ICONS, LucideAngularModule, LucideIconProvider, Trash } from 'lucide-angular';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-cartship',
   standalone: true,
-  imports: [CommonModule,LucideAngularModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './car.component.html',
   styleUrls: ['./car.component.css'],
-  providers: [
-      {
-        provide: LUCIDE_ICONS,
-        multi: true,
-        useValue: new LucideIconProvider({ Trash })
-      }
-  ],
 })
 export class CarComponent implements OnInit {
   cartItems: CartItem[] = [];
+  isUpdating = false;
+  isClearingCart = false;
+  animateList = false;
+  animateEmpty = false;
 
   constructor(
     private cartService: CartService,
     private router: Router,
     private progress: CheckoutStepperProgressService
-  ) { }
+  ) {}
 
   ngOnInit() {
-  this.cartService.cartItems$.subscribe(items => {
-    this.cartItems = items.map(item => ({
-      ...item,
-      quantity: isNaN(Number(item.quantity)) ? 1 : Number(item.quantity),
-      variantMainImage: item.variantMainImage && item.variantMainImage.trim() !== '' ? item.variantMainImage.trim() : undefined
-    }));
-  });
-}
+    this.cartService.cartItems$.subscribe((items) => {
+      this.cartItems = items.map((item) => ({
+        ...item,
+        quantity: isNaN(Number(item.quantity)) ? 1 : Number(item.quantity),
+        variantMainImage: item.variantMainImage?.trim()
+          ? item.variantMainImage.trim()
+          : undefined,
+      }));
 
+      setTimeout(() => (this.animateList = true), 30);
+    });
+  }
 
+  /* --------------------------- */
+  /* VACÍAR CARRITO              */
+  /* --------------------------- */
   clearCart() {
-    this.cartService.clearCart();
-  }
+    this.isClearingCart = true;
+    this.startUpdating();
+    this.animateList = false;
+    setTimeout(() => {
+      this.cartService.clearCart();
+    }, 600);
 
+    this.finishUpdating(true);
+  }
   removeItem(id: string) {
-    this.cartService.removeItem(id);
-  }
+    const isLastItem = this.cartItems.length === 1;
+    this.startUpdating();
 
-  changeQuantity(id: string, change: number) {
-    const item = this.cartItems.find(item => item.id === id);
-    if (!item) return;
+    if (isLastItem) {
+      this.isClearingCart = true;
+      this.animateList = false;
 
-    if (item.quantity + change <= 0) {
-      this.removeItem(id);
+      setTimeout(() => {
+        this.cartService.removeItem(id);
+      }, 600);
+
+      this.finishUpdating(true);
     } else {
-      this.cartService.updateQuantity(id, change);
+      this.isClearingCart = false;
+      this.cartService.removeItem(id);
+      this.finishUpdating();
     }
   }
 
-  updateQuantityManually(id: string, value: string) {
-    const numericValue = Number(value);
-    const quantity = isNaN(numericValue) || numericValue < 1 ? 1 : Math.floor(numericValue);
-    this.cartService.setQuantity(id, quantity);
+  /* --------------------------- */
+  /* CAMBIAR CANTIDAD            */
+  /* --------------------------- */
+  onSelectQuantity(id: string, value: any) {
+    this.isClearingCart = false;
+    this.startUpdating();
+
+    if (value === '5+') {
+      this.cartService.setQuantity(id, 5);
+      this.finishUpdating();
+      return;
+    }
+
+    const qty = Number(value);
+    if (!isNaN(qty) && qty >= 1) {
+      this.cartService.setQuantity(id, qty);
+    }
+
+    this.finishUpdating();
+  }
+
+  /* --------------------------- */
+  /* ANIMACIONES                 */
+  /* --------------------------- */
+  private startUpdating() {
+    this.isUpdating = true;
+    this.animateEmpty = false;
+  }
+
+  private finishUpdating(isClear = false) {
+    setTimeout(() => {
+      this.isUpdating = false;
+
+      setTimeout(() => {
+        if (
+          (isClear || this.cartItems.length === 0) &&
+          this.cartItems.length === 0
+        ) {
+          this.animateEmpty = true;
+        } else {
+          this.animateList = true;
+        }
+      }, 40);
+    }, 600);
+  }
+  /* --------------------------- */
+  /* UTILIDADES                  */
+  /* --------------------------- */
+  getTotalItems(): number {
+    return this.cartItems.reduce((a, i) => a + i.quantity, 0);
   }
 
   getSubtotal(): number {
-    return this.cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+    return this.cartItems.reduce((a, i) => a + i.price * i.quantity, 0);
   }
 
   goToReturn() {
-    this.router.navigate(['/home']);
+    this.router.navigate(['/']);
   }
 
   goToShipping() {

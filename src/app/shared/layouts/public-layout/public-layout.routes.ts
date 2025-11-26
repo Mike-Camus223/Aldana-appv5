@@ -56,11 +56,11 @@ export const PUBLIC_ROUTES: Routes = [
         loadComponent: () =>
           import('../../../features/landing/pages/about/about.component').then(c => c.AboutComponent),
       },
-      {
-        path: 'checkout',
-        loadChildren: () =>
-          import('../../../features/checkout/checkout.routes').then(m => m.checkoutRoutes),
-      },
+      // {
+      //   path: 'checkout',
+      //   loadChildren: () =>
+      //     import('../../../features/checkout/checkout.routes').then(m => m.checkoutRoutes),
+      // },
       {
         path: 'busqueda',
         loadComponent: () => import('../../../features/landing/pages/search-page/search-page.component').then(c => c.SearchPageComponent),
