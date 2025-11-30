@@ -1,9 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import {
-  FormBuilder,
-  FormGroup,
-  Validators
-} from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FloatLabelModule } from 'primeng/floatlabel';
@@ -12,7 +8,7 @@ import {
   state,
   style,
   animate,
-  transition
+  transition,
 } from '@angular/animations';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -28,12 +24,21 @@ import { provinces_arg } from '../../../../shared/utils/data/provinces';
 import { dniCuitValidator } from '../../../../shared/utils/validators/dniCuit.validator';
 import { argPhoneValidator } from '../../../../shared/utils/validators/argPhone.validator';
 import { CheckoutStepperProgressService } from '../../../../core/services/checkout-stepper-progress.service';
-import { ShippingData, ShippingService } from '../../../../core/services/shipping.service';
-import { Router } from '@angular/router';
+import {
+  ShippingData,
+  ShippingService,
+} from '../../../../core/services/shipping.service';
+import { Router, RouterModule } from '@angular/router';
 import { onlyCuitValidator } from '../../../../shared/utils/validators/onlyCuit.validator';
 import { SupabaseService } from '../../../../core/services/data-access/supabase.service';
 import { DiscountData } from '../../../../core/services/shipping.service';
 import { AuthService } from '../../../../core/services/auth/auth.service';
+import {
+  ShoppingBag,
+  LUCIDE_ICONS,
+  LucideAngularModule,
+  LucideIconProvider,
+} from 'lucide-angular';
 
 @Component({
   selector: 'app-shipping',
@@ -48,6 +53,8 @@ import { AuthService } from '../../../../core/services/auth/auth.service';
     FloatLabelModule,
     SelectsComponent,
     AldyCheckboxV1Directive,
+    LucideAngularModule,
+    RouterModule
   ],
   animations: [
     trigger('toggleOptions', [
@@ -55,13 +62,22 @@ import { AuthService } from '../../../../core/services/auth/auth.service';
       state('*', style({ height: '*', opacity: 1, overflow: 'hidden' })),
       transition(':enter', [
         style({ height: '0', opacity: 0, overflow: 'hidden' }),
-        animate('300ms ease-out')
+        animate('300ms ease-out'),
       ]),
       transition(':leave', [
-        animate('300ms ease-in', style({ height: '0', opacity: 0 }))
-      ])
-    ])
-  ]
+        animate('300ms ease-in', style({ height: '0', opacity: 0 })),
+      ]),
+    ]),
+  ],
+  providers: [
+    {
+      provide: LUCIDE_ICONS,
+      multi: true,
+      useValue: new LucideIconProvider({
+        ShoppingBag,
+      }),
+    },
+  ],
 })
 export class ShippingComponent implements OnInit, OnDestroy {
   form!: FormGroup;
@@ -69,7 +85,7 @@ export class ShippingComponent implements OnInit, OnDestroy {
   showForm = false;
   showAllOptions = false;
   selected: 'estandar' | 'expres' | 'retiro' = 'estandar';
-  appliedDiscount = 0; 
+  appliedDiscount = 0;
   discountType: 'percent' | 'fixed' | null = null;
   discountCodeApplied: string | null = null;
   discountError: string | null = null;
@@ -78,7 +94,7 @@ export class ShippingComponent implements OnInit, OnDestroy {
   readonly ciudades = [
     { id: 1, name: 'Buenos Aires' },
     { id: 2, name: 'Córdoba' },
-    { id: 3, name: 'Rosario' }
+    { id: 3, name: 'Rosario' },
   ];
 
   private destroy$ = new Subject<void>();
@@ -96,15 +112,15 @@ export class ShippingComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.initForm();
-    
+
     // Configurar el email del usuario autenticado
     this.setupUserEmail();
-    
+
     const discountData = this.shippingService.getDiscountData();
     if (discountData) {
       this.form.patchValue({
         discountCode: discountData.code,
-        hasCupon: true
+        hasCupon: true,
       });
       this.discountCodeApplied = discountData.code;
       this.discountType = discountData.discountType;
@@ -115,7 +131,7 @@ export class ShippingComponent implements OnInit, OnDestroy {
 
     this.cartService.cartItems$
       .pipe(takeUntil(this.destroy$))
-      .subscribe(items => {
+      .subscribe((items) => {
         this.cartItems = items;
         if (this.discountCodeApplied) {
           const discountData = this.shippingService.getDiscountData();
@@ -125,17 +141,22 @@ export class ShippingComponent implements OnInit, OnDestroy {
         }
       });
 
-    this.form.get('invoiceToCompany')?.valueChanges
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(isCompany => this.toggleInvoiceValidators(isCompany));
+    this.form
+      .get('invoiceToCompany')
+      ?.valueChanges.pipe(takeUntil(this.destroy$))
+      .subscribe((isCompany) => this.toggleInvoiceValidators(isCompany));
 
-    this.form.get('zipCode')?.valueChanges
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(value => this.form.get('zipCodeDisplay')?.setValue(value || ''));
+    this.form
+      .get('zipCode')
+      ?.valueChanges.pipe(takeUntil(this.destroy$))
+      .subscribe((value) =>
+        this.form.get('zipCodeDisplay')?.setValue(value || '')
+      );
 
-    this.form.get('otherPerson')?.valueChanges
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(val => this.toggleOtherPersonValidators(val));
+    this.form
+      .get('otherPerson')
+      ?.valueChanges.pipe(takeUntil(this.destroy$))
+      .subscribe((val) => this.toggleOtherPersonValidators(val));
 
     this.toggleOtherPersonValidators(this.form.get('otherPerson')?.value);
   }
@@ -145,19 +166,25 @@ export class ShippingComponent implements OnInit, OnDestroy {
     const formDefaults = savedData ? JSON.parse(savedData) : {};
 
     this.form = this.fb.group({
-      email: [{ value: '', disabled: true }, [Validators.required, Validators.email]],
+      email: [
+        { value: '', disabled: true },
+        [Validators.required, Validators.email],
+      ],
       receiveOffers: [formDefaults.receiveOffers || false],
       zipCode: [formDefaults.zipCode || '', [Validators.required, cpaArg]],
       name: [formDefaults.name || '', Validators.required],
       surname: [formDefaults.surname || '', Validators.required],
-      phone: [formDefaults.phone || '', [Validators.required, argPhoneValidator]],
+      phone: [
+        formDefaults.phone || '',
+        [Validators.required, argPhoneValidator],
+      ],
       street: [formDefaults.street || '', Validators.required],
       streetNumber: [formDefaults.streetNumber || '', Validators.required],
       apartment: [formDefaults.apartment || ''],
       neighborhood: [formDefaults.neighborhood || ''],
       city: [formDefaults.city || null, Validators.required],
       invoiceToCompany: [formDefaults.invoiceToCompany || false],
-      hasCupon: [false], 
+      hasCupon: [false],
       discountCode: [''],
       otherPerson: [formDefaults.otherPerson || false],
       province: [formDefaults.province || null, Validators.required],
@@ -178,7 +205,7 @@ export class ShippingComponent implements OnInit, OnDestroy {
     } else {
       // Si no hay usuario autenticado, redirigir al login
       this.notification.showError(
-        'Sesión requerida', 
+        'Sesión requerida',
         'Debes iniciar sesión para continuar con la compra.'
       );
       this.router.navigate(['/cuenta/iniciar-sesion']);
@@ -197,8 +224,10 @@ export class ShippingComponent implements OnInit, OnDestroy {
       socialReason?.setValidators([Validators.required]);
     } else {
       hasDniCuit?.setValidators([Validators.required, dniCuitValidator]);
-      cuit?.clearValidators(); cuit?.reset();
-      socialReason?.clearValidators(); socialReason?.reset();
+      cuit?.clearValidators();
+      cuit?.reset();
+      socialReason?.clearValidators();
+      socialReason?.reset();
     }
 
     hasDniCuit?.updateValueAndValidity();
@@ -214,8 +243,10 @@ export class ShippingComponent implements OnInit, OnDestroy {
       otherName?.setValidators([Validators.required]);
       otherSurname?.setValidators([Validators.required]);
     } else {
-      otherName?.clearValidators(); otherName?.reset();
-      otherSurname?.clearValidators(); otherSurname?.reset();
+      otherName?.clearValidators();
+      otherName?.reset();
+      otherSurname?.clearValidators();
+      otherSurname?.reset();
     }
 
     otherName?.updateValueAndValidity();
@@ -252,7 +283,7 @@ export class ShippingComponent implements OnInit, OnDestroy {
       // Validación de seguridad: verificar usuario autenticado
       if (!currentUser?.email) {
         this.notification.showError(
-          'Error de autenticación', 
+          'Error de autenticación',
           'No se pudo verificar tu identidad. Por favor, inicia sesión nuevamente.'
         );
         this.router.navigate(['/auth/login']);
@@ -261,18 +292,22 @@ export class ShippingComponent implements OnInit, OnDestroy {
 
       // Obtener el email del formulario (está deshabilitado, usar getRawValue)
       const formEmail = this.form.getRawValue().email;
-      
+
       // Validación adicional de seguridad
       if (formEmail !== currentUser.email) {
         this.notification.showError(
-          'Error de seguridad', 
+          'Error de seguridad',
           'El email de la cuenta no coincide. Por favor, inicia sesión nuevamente.'
         );
         this.router.navigate(['/auth/login']);
         return;
       }
-      const nameToUse = formValue.otherPerson ? formValue.otherPersonName : formValue.name;
-      const surnameToUse = formValue.otherPerson ? formValue.otherPersonSurname : formValue.surname;
+      const nameToUse = formValue.otherPerson
+        ? formValue.otherPersonName
+        : formValue.name;
+      const surnameToUse = formValue.otherPerson
+        ? formValue.otherPersonSurname
+        : formValue.surname;
 
       const shippingData: ShippingData = {
         name: nameToUse,
@@ -287,7 +322,7 @@ export class ShippingComponent implements OnInit, OnDestroy {
         invoiceToCompany: formValue.invoiceToCompany,
         dniOrCuit: formValue.cuit || formValue.hasDniCuit,
         razonSocial: formValue.socialReason,
-        email: formEmail // Usar el email del usuario autenticado
+        email: formEmail, // Usar el email del usuario autenticado
       };
 
       const dataToSave = { ...formValue };
@@ -300,9 +335,15 @@ export class ShippingComponent implements OnInit, OnDestroy {
       this.shippingService.setShippingData(shippingData);
       this.router.navigate(['/checkout/pago']);
       this.progress.completeStep('envio');
-      this.notification.showSuccess('Formulario enviado', 'Los datos de envío se procesaron correctamente.');
+      this.notification.showSuccess(
+        'Formulario enviado',
+        'Los datos de envío se procesaron correctamente.'
+      );
     } else {
-      this.notification.showWarn('Campos incompletos', 'Por favor completá todos los campos requeridos.');
+      this.notification.showWarn(
+        'Campos incompletos',
+        'Por favor completá todos los campos requeridos.'
+      );
       this.form.markAllAsTouched();
     }
   }
@@ -316,7 +357,7 @@ export class ShippingComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.supabaseService.validateCoupon(code).then(result => {
+    this.supabaseService.validateCoupon(code).then((result) => {
       if (!result.valid) {
         this.discountError = result.error || 'Cupón inválido.';
         this.appliedDiscount = 0;
@@ -333,7 +374,7 @@ export class ShippingComponent implements OnInit, OnDestroy {
         let appliedDiscount = 0;
 
         if (this.discountType === 'percent') {
-          appliedDiscount = subtotal * (result.discountAmount || 0) / 100;
+          appliedDiscount = (subtotal * (result.discountAmount || 0)) / 100;
         } else {
           appliedDiscount = result.discountAmount || 0;
         }
@@ -347,15 +388,20 @@ export class ShippingComponent implements OnInit, OnDestroy {
         const discountData: DiscountData = {
           code,
           discountAmount: result.discountAmount || 0,
-          discountType: result.discountType || 'fixed'
+          discountType: result.discountType || 'fixed',
         };
 
         this.shippingService.setDiscountData(discountData);
 
         this.form.patchValue({ hasCupon: true });
 
-        this.notification.showSuccess('Cupón aplicado', 
-          `Descuento de ${this.discountType === 'percent' ? result.discountAmount + '%' : '$' + this.appliedDiscount.toFixed(2)}`
+        this.notification.showSuccess(
+          'Cupón aplicado',
+          `Descuento de ${
+            this.discountType === 'percent'
+              ? result.discountAmount + '%'
+              : '$' + this.appliedDiscount.toFixed(2)
+          }`
         );
       }
     });
@@ -375,7 +421,7 @@ export class ShippingComponent implements OnInit, OnDestroy {
     let appliedDiscount = 0;
 
     if (discountData.discountType === 'percent') {
-      appliedDiscount = subtotal * (discountData.discountAmount || 0) / 100;
+      appliedDiscount = (subtotal * (discountData.discountAmount || 0)) / 100;
     } else {
       appliedDiscount = discountData.discountAmount || 0;
     }
@@ -386,7 +432,10 @@ export class ShippingComponent implements OnInit, OnDestroy {
   }
 
   get subtotal(): number {
-    return this.cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
+    return this.cartItems.reduce(
+      (total, item) => total + item.price * item.quantity,
+      0
+    );
   }
 
   get shippingCost(): number {
@@ -394,7 +443,10 @@ export class ShippingComponent implements OnInit, OnDestroy {
   }
 
   get total(): number {
-    return Math.max(0, this.subtotal + this.shippingCost - this.appliedDiscount);
+    return Math.max(
+      0,
+      this.subtotal + this.shippingCost - this.appliedDiscount
+    );
   }
 
   ngOnDestroy(): void {

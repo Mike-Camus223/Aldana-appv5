@@ -5,11 +5,12 @@ import { CartService } from '../../../../core/services/cart.service';
 import { Router } from '@angular/router';
 import { CheckoutStepperProgressService } from '../../../../core/services/checkout-stepper-progress.service';
 import { FormsModule } from '@angular/forms';
+import { NavbarPublicv3Component } from "../../../../shared/components/system/navbar-publicv3/navbar-publicv3.component";
 
 @Component({
   selector: 'app-cartship',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, NavbarPublicv3Component],
   templateUrl: './car.component.html',
   styleUrls: ['./car.component.css'],
 })
@@ -27,6 +28,13 @@ export class CarComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    // Initialize with current cart state
+    const currentItems = this.cartService.getCart();
+    if (currentItems.length === 0) {
+      // If cart is empty on init, immediately show empty state
+      this.animateEmpty = true;
+    }
+
     this.cartService.cartItems$.subscribe((items) => {
       this.cartItems = items.map((item) => ({
         ...item,
@@ -36,7 +44,12 @@ export class CarComponent implements OnInit {
           : undefined,
       }));
 
-      setTimeout(() => (this.animateList = true), 30);
+      // Trigger appropriate animation based on cart state
+      if (this.cartItems.length === 0) {
+        setTimeout(() => (this.animateEmpty = true), 30);
+      } else {
+        setTimeout(() => (this.animateList = true), 30);
+      }
     });
   }
 

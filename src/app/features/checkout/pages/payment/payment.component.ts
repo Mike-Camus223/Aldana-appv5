@@ -28,6 +28,7 @@ import { NotificationService } from '../../../../core/services/notification.serv
 import { ButtonPrimaryDirective } from '../../../../shared/utils/directives/button-primary.directive';
 import { Modalv2Component } from '../../../../shared/components/generic/modalv2/modalv2.component';
 import { TextareaComponent } from '../../../../shared/components/generic/forms/textarea/textarea.component';
+import { LUCIDE_ICONS, LucideAngularModule, LucideIconProvider, ShoppingBag } from 'lucide-angular';
 
 @Component({
   selector: 'app-payment',
@@ -43,10 +44,20 @@ import { TextareaComponent } from '../../../../shared/components/generic/forms/t
     ButtonPrimaryDirective,
     Modalv2Component,
     TextareaComponent,
+    LucideAngularModule,
   ],
   templateUrl: './payment.component.html',
   styleUrls: ['./payment.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [
+      {
+        provide: LUCIDE_ICONS,
+        multi: true,
+        useValue: new LucideIconProvider({
+          ShoppingBag,
+        }),
+      },
+    ],
 })
 export class PaymentComponent implements OnInit, AfterViewInit, OnDestroy {
   shippingData: ShippingData | null = null;
