@@ -2,29 +2,31 @@
 <section>
     <app-breadcrumb [items]="breadcrumbItems"></app-breadcrumb>
 </section>
-<app-bettercustom-dual 
-  *ngIf="collectionBanner"
-  [mediaType]="'video'" 
-  [title]="collectionTitle"
-  [contentTestimonial]="collectionDescription" 
-  [videoSrc]="collectionBanner"
-  [videoAutoplay]="true" 
-  [videoMuted]="true" 
-  [useAspectRatio]="false"
-  [videoShowControls]="true" 
-  [videoGradientOverlay]="false"
-  [videoObjectFit]="'object-cover'" 
-  [imageWidth]="'64%'" 
-  [textWidth]="'36%'" 
-  [mobileOrder]="'image-first'"
-  [desktopOrder]="'text-first'" 
-  [height]="'h-auto md:h-[450px]'" 
-  [mobileHeight]="'auto'" 
-  [maxwidthandpadding]="'py-0'"
-  [textextracontetclass]="'text-center'"
-  [textcontetclass]="'text-center md:text-center'"
-  [titleAndContentClass]="'text-center uppercase'"
-></app-bettercustom-dual>
+<div class="max-w-screen-3xl px-4 sm:px-6 lg:px-12 xl:px-16 2xl:px-24 mx-auto">
+  <app-bettercustom-dual 
+    *ngIf="collectionBanner"
+    [mediaType]="'video'" 
+    [title]="collectionTitle"
+    [contentTestimonial]="collectionDescription" 
+    [videoSrc]="collectionBanner"
+    [videoAutoplay]="true" 
+    [videoMuted]="true" 
+    [useAspectRatio]="false"
+    [videoShowControls]="true" 
+    [videoGradientOverlay]="false"
+    [videoObjectFit]="'object-cover'" 
+    [imageWidth]="'64%'" 
+    [textWidth]="'36%'" 
+    [mobileOrder]="'image-first'"
+    [desktopOrder]="'text-first'" 
+    [height]="'h-auto md:h-[450px]'" 
+    [mobileHeight]="'auto'" 
+    [maxwidthandpadding]="'py-0'"
+    [textextracontetclass]="'text-center'"
+    [textcontetclass]="'text-center md:text-center'"
+    [titleAndContentClass]="'text-center uppercase'"
+  ></app-bettercustom-dual>
+</div>
 <div class="px-4 sm:px-6 lg:px-12 xl:px-16 2xl:px-24 w-full">
   <div class="max-w-screen-3xl mx-auto">
     <div class="py-10 md:py-16">

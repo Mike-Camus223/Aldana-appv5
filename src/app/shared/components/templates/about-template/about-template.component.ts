@@ -14,6 +14,7 @@ import { Award, Leaf, LUCIDE_ICONS, LucideAngularModule, LucideIconProvider, Sta
 import { CardInitAnimationDirective } from '../../../utils/directives/card-init-animation.directive';
 import { FadeUpLetterDirective } from '../../../utils/directives/fadeupletter.directive';
 import { WordRevealDirective } from '../../../utils/directives/word-reveal.directive';
+
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger);
 }
@@ -21,7 +22,7 @@ if (typeof window !== 'undefined') {
 @Component({
   selector: 'app-about-template',
   standalone: true,
-  imports: [CommonModule, CardInitAnimationDirective, LucideAngularModule, ReelsSectionComponent,WordRevealDirective, FadeUpLetterDirective],
+  imports: [CommonModule, CardInitAnimationDirective, LucideAngularModule, ReelsSectionComponent, WordRevealDirective, FadeUpLetterDirective],
   templateUrl: './about-template.component.html',
   providers: [
     {
@@ -67,6 +68,10 @@ export class AboutTemplateComponent implements AfterViewInit {
 
   private initScrollAnimations(): void {
     ScrollTrigger.matchMedia({
+
+      /* ======================================================
+         DESKTOP 1280px+
+         ====================================================== */
       "(min-width: 1280px)": () => {
         const tl = gsap.timeline({
           defaults: { ease: "power1.inOut" },
@@ -81,15 +86,21 @@ export class AboutTemplateComponent implements AfterViewInit {
           }
         });
 
-        gsap.set([this.greenCard.nativeElement, this.blueCard.nativeElement, this.redCard.nativeElement], {
-          y: 120,
+        // START LOWER + CENTERED
+        gsap.set([
+          this.greenCard.nativeElement,
+          this.blueCard.nativeElement,
+          this.redCard.nativeElement
+        ], {
+          y: 230,       // antes 120
           opacity: 0,
           scale: 0.95,
           rotation: 2
         });
 
         tl.to(this.greenCard.nativeElement, {
-          y: -120,
+          y: -60,       // antes -120
+          x: -40,       // centrado leve
           opacity: 1,
           scale: 1,
           rotation: 0,
@@ -98,24 +109,29 @@ export class AboutTemplateComponent implements AfterViewInit {
         }, 0);
 
         tl.to(this.blueCard.nativeElement, {
-          y: -120,
+          y: -60,
+          x: 0,        // centro
           opacity: 1,
           scale: 1,
           rotation: 0,
           duration: 1,
           ease: "back.out(1.1)"
-        }, 0.8);
+        }, 0.5);       // antes 0.8
 
         tl.to(this.redCard.nativeElement, {
-          y: -120,
+          y: -60,
+          x: 40,       // centrado leve
           opacity: 1,
           scale: 1,
           rotation: 0,
           duration: 1,
           ease: "back.out(1.1)"
-        }, 1.6);
+        }, 1.0);       // antes 1.6
       },
 
+      /* ======================================================
+         TABLET 768–1279px
+         ====================================================== */
       "(min-width: 768px) and (max-width: 1279px)": () => {
         const tl = gsap.timeline({
           defaults: { ease: "power1.inOut" },
@@ -130,41 +146,48 @@ export class AboutTemplateComponent implements AfterViewInit {
           }
         });
 
-        gsap.set([this.greenCard.nativeElement, this.blueCard.nativeElement, this.redCard.nativeElement], {
-          y: 80,
+        gsap.set([
+          this.greenCard.nativeElement,
+          this.blueCard.nativeElement,
+          this.redCard.nativeElement
+        ], {
+          y: 120,   // antes 80, ahora más abajo
           opacity: 0,
           scale: 0.95,
           rotation: 2
         });
 
         tl.to(this.greenCard.nativeElement, {
-          y: -10,
+          y: 10,
+          x: -25,
           opacity: 1,
           scale: 1,
           rotation: 0,
-          duration: 1,
-          ease: "back.out(1.1)"
+          duration: 1
         }, 0);
 
         tl.to(this.blueCard.nativeElement, {
-          y: -10,
+          y: 10,
+          x: 0,
           opacity: 1,
           scale: 1,
           rotation: 0,
-          duration: 1,
-          ease: "back.out(1.1)"
-        }, 0.8);
+          duration: 1
+        }, 0.5);
 
         tl.to(this.redCard.nativeElement, {
-          y: -10,
+          y: 10,
+          x: 25,
           opacity: 1,
           scale: 1,
           rotation: 0,
-          duration: 1,
-          ease: "back.out(1.1)"
-        }, 1.6);
+          duration: 1
+        }, 1.0);
       },
 
+      /* ======================================================
+         MOBILE ≤767px
+         ====================================================== */
       "(max-width: 767px)": () => {
         const tl = gsap.timeline({
           defaults: { ease: "power1.inOut" },
@@ -179,46 +202,49 @@ export class AboutTemplateComponent implements AfterViewInit {
           }
         });
 
-        gsap.set([this.greenCard.nativeElement, this.blueCard.nativeElement, this.redCard.nativeElement], {
-          y: 80,
+        gsap.set([
+          this.greenCard.nativeElement,
+          this.blueCard.nativeElement,
+          this.redCard.nativeElement
+        ], {
+          y: 120,    // antes 80, más abajo
           opacity: 0,
           scale: 0.95,
           rotation: 2
         });
 
         tl.to(this.greenCard.nativeElement, {
-          y: 40,
+          y: 60,
           x: 0,
           opacity: 1,
           scale: 1,
           rotation: 0,
-          duration: 1,
-          ease: "back.out(1.1)"
+          duration: 1
         }, 0);
 
         tl.to(this.blueCard.nativeElement, {
-          y: 40,
+          y: 60,
           x: 0,
           opacity: 1,
           scale: 1,
           rotation: 0,
-          duration: 1,
-          ease: "back.out(1.1)"
-        }, 0.8);
+          duration: 1
+        }, 0.5);
 
         tl.to(this.redCard.nativeElement, {
-          y: 40,
+          y: 60,
           x: 0,
           opacity: 1,
           scale: 1,
           rotation: 0,
-          duration: 1,
-          ease: "back.out(1.1)"
-        }, 1.6);
-      },
+          duration: 1
+        }, 1.0);
+      }
+
     });
   }
 
+  /* === FAN ANIMATION (SIN CAMBIOS) ==== */
   private initFanAnimation(): void {
     const leftValues = this.leftColumn?.nativeElement.querySelectorAll('.value-item') || [];
     const rightValues = this.rightColumn?.nativeElement.querySelectorAll('.value-item') || [];
@@ -246,43 +272,6 @@ export class AboutTemplateComponent implements AfterViewInit {
             });
           }
         });
-
-        ScrollTrigger.create({
-          trigger: this.valuesSection.nativeElement,
-          start: "top 90%",
-          end: "top 50%",
-          onEnterBack: () => {
-            gsap.to(leftValues, {
-              x: 200,
-              opacity: 0,
-              scale: 0.7,
-              duration: 0.6,
-              ease: "power2.inOut"
-            });
-
-            gsap.to(rightValues, {
-              x: -200,
-              opacity: 0,
-              scale: 0.7,
-              duration: 0.6,
-              ease: "power2.inOut"
-            });
-          },
-          onLeave: () => {
-            gsap.to([leftValues, rightValues], {
-              x: 0,
-              opacity: 1,
-              scale: 1,
-              duration: 0.6,
-              ease: "power2.out"
-            });
-
-            gsap.to(this.centerImage.nativeElement, {
-              scale: 1,
-              duration: 0.6
-            });
-          }
-        });
       },
 
       "(min-width: 769px) and (max-width: 1024px)": () => {
@@ -304,15 +293,6 @@ export class AboutTemplateComponent implements AfterViewInit {
               stagger: 0.2,
               duration: 1,
               ease: "power3.out"
-            });
-          },
-          onLeaveBack: batch => {
-            gsap.to(batch, {
-              opacity: 0,
-              y: 30,
-              scale: 0.9,
-              duration: 0.6,
-              ease: "power2.inOut"
             });
           }
         });
