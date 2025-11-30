@@ -71,6 +71,8 @@ export class PaymentComponent implements OnInit, AfterViewInit, OnDestroy {
   modalAddressOpen = false;
   modalPickupOpen = false;
   orderNotes = '';
+  isLoading = true;
+  showSkeleton = true;
 
   constructor(
     private cartService: CartService,
@@ -91,11 +93,27 @@ export class PaymentComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
+    // Si los datos ya están disponibles, ocultar skeleton inmediatamente
+    const startTime = Date.now();
+    const hideSkeleton = () => {
+      const elapsed = Date.now() - startTime;
+      const remaining = Math.max(0, 300 - elapsed); // Mínimo 300ms para evitar parpadeo
+      setTimeout(() => {
+        this.showSkeleton = false;
+        this.isLoading = false;
+        this.cdr.detectChanges();
+      }, remaining);
+    };
+
     this.cartService.cartItems$.subscribe((items) => {
       this.cartItems = items.map((item) => ({
         ...item,
         variantMainImage: item.variantMainImage?.trim() || undefined,
       }));
+      // Ocultar skeleton cuando los datos estén listos
+      if (items.length > 0) {
+        hideSkeleton();
+      }
       this.cdr.detectChanges();
     });
 
@@ -103,6 +121,15 @@ export class PaymentComponent implements OnInit, AfterViewInit, OnDestroy {
       this.discountData = data;
       this.cdr.detectChanges();
     });
+
+    // Fallback: ocultar skeleton después de 1 segundo máximo
+    setTimeout(() => {
+      if (this.showSkeleton) {
+        this.showSkeleton = false;
+        this.isLoading = false;
+        this.cdr.detectChanges();
+      }
+    }, 1000);
   }
 
   toggleAccordion(value: string) {
@@ -389,5 +416,17 @@ export class PaymentComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private formatCurrency(amount: number): string {
     return `$${amount.toFixed(2)}`;
+  }
+
+  // Método para testing del skeleton loader
+  simulateLoading(): void {
+    this.showSkeleton = true;
+    this.isLoading = true;
+    
+    setTimeout(() => {
+      this.showSkeleton = false;
+      this.isLoading = false;
+      this.cdr.detectChanges();
+    }, 300);
   }
 }

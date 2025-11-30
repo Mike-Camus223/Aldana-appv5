@@ -1,7 +1,7 @@
 <ng-container *ngIf="isMobileView; else desktopView">
   <div appFade class="transition relative overflow-hidden flex flex-col">
     <a [routerLink]="['/producto', product.slug]" class="group block relative">
-      <div class="relative w-full aspect-[4/5] overflow-hidden bg-white">
+      <div class="relative w-full aspect-[4/5] overflow-hidden bg-aldy-white">
         <img appZoomout *ngIf="displayImage || product.main_image" 
      [ngSrc]="displayImage || product.main_image" 
      [alt]="product.name"
@@ -44,7 +44,7 @@
   </div>
 </ng-container>
 <ng-template #desktopView>
-  <div appFade class="relative overflow-hidden group bg-white aspect-[3/4] sm:aspect-[3/4] md:aspect-[3/5] lg:aspect-[3/5] xl:aspect-[3/5]">
+  <div appFade class="relative overflow-hidden group bg-aldy-white aspect-[3/4] sm:aspect-[3/4] md:aspect-[3/5] lg:aspect-[3/5] xl:aspect-[3/5]">
     <button type="button" [routerLink]="['/producto', product.slug]" class="absolute inset-0 z-0">
       <img
   #productImage

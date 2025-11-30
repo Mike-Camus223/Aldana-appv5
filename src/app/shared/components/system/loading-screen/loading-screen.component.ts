@@ -22,7 +22,6 @@ export class LoadingScreenComponent implements AfterViewInit, OnDestroy {
   @ViewChild('logoSvg') logoSvg!: ElementRef;
   @ViewChild('nameContainer') nameContainer!: ElementRef;
   @ViewChild('vilcabanaSvg') vilcabanaSvg!: ElementRef;
-  @ViewChild('aldanaSvg') aldanasvg!: ElementRef;
 
   @Output() loadingFinished = new EventEmitter<void>();
 
@@ -43,10 +42,8 @@ export class LoadingScreenComponent implements AfterViewInit, OnDestroy {
 
   ngAfterViewInit(): void {
     if (isPlatformBrowser(this.platformId)) {
-      // Configurar estados iniciales inmediatamente
       this.setupInitialStates();
       
-      // Pequeño delay para asegurar que el DOM esté listo
       setTimeout(() => {
         this.initializeAnimation();
       }, 100);
@@ -56,7 +53,6 @@ export class LoadingScreenComponent implements AfterViewInit, OnDestroy {
   private setupInitialStates(): void {
     if (!isPlatformBrowser(this.platformId)) return;
 
-    // Ocultar todo inmediatamente con CSS nativo
     const elements = [
       this.box1?.nativeElement,
       this.box2?.nativeElement,
@@ -71,7 +67,6 @@ export class LoadingScreenComponent implements AfterViewInit, OnDestroy {
       this.renderer.setStyle(el, 'visibility', 'hidden');
     });
 
-    // Configurar grayscale inicial en las imágenes
     this.setupImagePreloading();
   }
 
@@ -82,11 +77,9 @@ export class LoadingScreenComponent implements AfterViewInit, OnDestroy {
       if (box?.nativeElement) {
         const img = box.nativeElement.querySelector('img');
         if (img) {
-          // Forzar carga eager
           img.loading = 'eager';
           img.fetchPriority = 'high';
           
-          // Aplicar grayscale inicial inmediatamente
           this.renderer.setStyle(img, 'filter', 'grayscale(100%)');
           
           if (img.complete) {
@@ -110,7 +103,6 @@ export class LoadingScreenComponent implements AfterViewInit, OnDestroy {
       return;
     }
 
-    // Esperar a que las imágenes carguen o timeout
     const startAnimation = () => {
       this.blockScrollAndInteraction();
       this.optimizePerformance();
@@ -120,12 +112,10 @@ export class LoadingScreenComponent implements AfterViewInit, OnDestroy {
     if (this.imagesLoaded >= this.totalImages) {
       startAnimation();
     } else {
-      // Timeout de seguridad
       const timeoutId = setTimeout(() => {
         startAnimation();
       }, 2000);
 
-      // También iniciar si todas las imágenes cargan antes
       const checkImages = setInterval(() => {
         if (this.imagesLoaded >= this.totalImages) {
           clearTimeout(timeoutId);
@@ -139,7 +129,6 @@ export class LoadingScreenComponent implements AfterViewInit, OnDestroy {
   private optimizePerformance(): void {
     if (!isPlatformBrowser(this.platformId)) return;
 
-    // Mostrar elementos antes de animar
     const allElements = [
       this.screen.nativeElement,
       this.circleGroup.nativeElement,
@@ -156,7 +145,6 @@ export class LoadingScreenComponent implements AfterViewInit, OnDestroy {
       el.style.perspective = '1000px';
     });
 
-    // Forzar layout sync
     this.screen.nativeElement.offsetHeight;
   }
 
@@ -167,12 +155,9 @@ export class LoadingScreenComponent implements AfterViewInit, OnDestroy {
       }
     });
 
-    // Activar animación SVG cuando el timeline comience
     this.timeline.eventCallback('onStart', () => {
-      // El logo SVG se activará después de su animación de escala
     });
 
-    // Configurar estados iniciales para GSAP (MANTENIENDO GRAYSCALE)
     const boxes = [this.box1, this.box2, this.box3, this.box4];
     
     gsap.set(boxes.map(b => b.nativeElement), { 
@@ -182,7 +167,6 @@ export class LoadingScreenComponent implements AfterViewInit, OnDestroy {
       force3D: true
     });
 
-    // MANTENER el grayscale en las imágenes
     boxes.forEach(box => {
       const img = box.nativeElement.querySelector('img');
       if (img) {
@@ -206,7 +190,6 @@ export class LoadingScreenComponent implements AfterViewInit, OnDestroy {
       force3D: true
     });
 
-    // Animación secuencial de boxes (CON ROTACIÓN INICIAL COMO TENÍAS)
     this.timeline.fromTo(this.box1.nativeElement, 
       { 
         scale: 0,
@@ -267,19 +250,16 @@ export class LoadingScreenComponent implements AfterViewInit, OnDestroy {
         force3D: true
       }, 0.45);
 
-    // Logo SVG con animación
     this.timeline.to(this.logoSvg.nativeElement, { 
       scale: 1,
       opacity: 1, 
       duration: 0.7, 
       ease: 'back.out(1.8)',
       onComplete: () => {
-        // Activar la animación SVG después de la escala
         this.logoSvg.nativeElement.classList.add('active');
       }
     }, '+=0.1');
     
-    // Nombre (Aldana y Vilcabana SVGs)
     this.timeline.to(this.nameContainer.nativeElement, { 
       opacity: 1, 
       y: 0, 
@@ -287,7 +267,6 @@ export class LoadingScreenComponent implements AfterViewInit, OnDestroy {
       ease: 'power2.out'
     }, '-=0.2');
     
-    // COLORIZACIÓN - MANTENIENDO LA ANIMACIÓN DE GRAYSCALE A COLOR
     this.timeline.to([this.box1, this.box2, this.box3, this.box4].map(box => 
       box.nativeElement.querySelector('img')), { 
         filter: 'grayscale(0%)', 
@@ -297,24 +276,19 @@ export class LoadingScreenComponent implements AfterViewInit, OnDestroy {
         stagger: 0.1
       }, '-=0.3');
 
-    // Salida
     this.timeline.to(this.circleGroup.nativeElement, { 
       opacity: 0, 
       duration: 0.4, 
       ease: 'power2.out'
     }, '+=0.5');
     
-    // ---- CAMBIO CRÍTICO: activamos el scroll y ponemos SVGs en blanco EN EL MOMENTO
-    // ---- en que comienza la transición a fondo negro (onStart).
     this.timeline.to(this.screen.nativeElement, { 
       backgroundColor: '#AEC2A9', 
       duration: 0.8, 
       ease: 'power2.out',
       onStart: () => {
-        // Activar scrollbar justo cuando la pantalla empieza a ponerse negra
         this.unblockScrollAndInteraction();
 
-        // Convertir los SVGs del nombre a blanco (fill y stroke)
         if (this.nameContainer && this.nameContainer.nativeElement) {
           const svgElements = this.nameContainer.nativeElement.querySelectorAll('path, text, polygon, rect, circle, tspan, line, polyline, g');
           svgElements.forEach((el: Element) => {
@@ -322,12 +296,10 @@ export class LoadingScreenComponent implements AfterViewInit, OnDestroy {
               this.renderer.setStyle(el, 'fill', '#ffffff');
               this.renderer.setStyle(el, 'stroke', '#ffffff');
             } catch (e) {
-              // no hacer nada si algún elemento no acepta estilos directos
             }
           });
         }
 
-        // También asegurar que el vilcabanaSvg (si existe) se ponga blanco
         if (this.vilcabanaSvg && this.vilcabanaSvg.nativeElement) {
           try {
             const nodes = this.vilcabanaSvg.nativeElement.querySelectorAll('*');
@@ -335,25 +307,19 @@ export class LoadingScreenComponent implements AfterViewInit, OnDestroy {
               this.renderer.setStyle(n, 'fill', '#ffffff');
               this.renderer.setStyle(n, 'stroke', '#ffffff');
             });
-          } catch (e) { /* ignore */ }
+          } catch (e) { }
         }
       }
     }, '-=0.4');
 
     this.timeline.to(this.logoSvg.nativeElement, { 
-      filter: 'brightness(0) invert(1)', // Convertir logo principal a blanco
+      filter: 'brightness(0) invert(1)',
       duration: 0.3,
       ease: 'power2.out'
     }, '-=0.7');
 
     this.timeline.to(this.vilcabanaSvg.nativeElement, { 
-      filter: 'brightness(0) invert(1)', // Convertir logo principal a blanco
-      duration: 0.3,
-      ease: 'power2.out'
-    }, '-=0.7');
-
-    this.timeline.to(this.aldanasvg.nativeElement, { 
-      filter: 'brightness(0) invert(1)', // Convertir logo principal a blanco
+      filter: 'brightness(0) invert(1)',
       duration: 0.3,
       ease: 'power2.out'
     }, '-=0.7');
@@ -369,21 +335,19 @@ export class LoadingScreenComponent implements AfterViewInit, OnDestroy {
   }
 
   private hideAndComplete(): void {
-  this.isAnimationComplete = true;
-  
-  // Activar animaciones INMEDIATAMENTE usando el servicio
-  this.loaderService.setAnimationsEnabled(true);
-  
-  this.unblockScrollAndInteraction();
-  
-  // Ocultar completamente el componente
-  if (this.screen?.nativeElement) {
-    this.renderer.setStyle(this.screen.nativeElement, 'display', 'none');
+    this.isAnimationComplete = true;
+    
+    this.loaderService.setAnimationsEnabled(true);
+    
+    this.unblockScrollAndInteraction();
+    
+    if (this.screen?.nativeElement) {
+      this.renderer.setStyle(this.screen.nativeElement, 'display', 'none');
+    }
+    
+    this.loadingFinished.emit();
+    this.loaderService.finish('main');
   }
-  
-  this.loadingFinished.emit();
-  this.loaderService.finish('main');
-}
 
   private cleanupWillChange(): void {
     if (!isPlatformBrowser(this.platformId)) return;

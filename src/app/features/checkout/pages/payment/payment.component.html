@@ -1,11 +1,11 @@
 <nav class="w-full border-b px-4 sm:px-6 border-aldy-medium bg-aldy-white">
-  <div class="max-w-7xl mx-auto h-16 flex items-center justify-between">
+  <div class="max-w-3xl mx-auto h-16 flex items-center justify-between">
     
     <a href="/" class="flex items-center">
       <img
         src="../../../../../assets/svg/logo_full-cropped.svg"
         alt="Aldana Vilcabana"
-        class="h-8 w-auto object-contain"
+        class="h-12 sm:h-14 w-auto object-contain"
       />
     </a>
 
@@ -18,8 +18,77 @@
 
   </div>
 </nav>
-<div class="w-full bg-aldy-white px-4 sm:px-6 lg:px-12 xl:px-16 2xl:px-24">
-  <div class="max-w-7xl mx-auto">
+
+<!-- Skeleton Loader -->
+<div *ngIf="showSkeleton" class="w-full bg-aldy-white px-4 sm:px-6 lg:px-12 xl:px-16 2xl:px-24">
+  <div class="max-w-3xl mx-auto">
+    <div class="w-full flex flex-col md:flex-row justify-center gap-6 min-h-[calc(100vh-65px)]">
+      <!-- Left Column Skeleton -->
+      <div class="w-full md:w-1/2 flex justify-center">
+        <div class="relative w-full">
+          <div class="space-y-6">
+            <!-- Header Skeleton -->
+            <div class="space-y-4">
+              <div class="h-4 bg-aldy-light rounded w-32"></div>
+              <div class="h-4 bg-aldy-light rounded w-48"></div>
+              <div class="h-4 bg-aldy-light rounded w-64"></div>
+            </div>
+            
+            <!-- Sections Skeleton -->
+            <div class="space-y-4">
+              <div class="h-16 bg-aldy-light rounded"></div>
+              <div class="h-16 bg-aldy-light rounded"></div>
+              <div class="h-16 bg-aldy-light rounded"></div>
+              <div class="h-16 bg-aldy-light rounded"></div>
+            </div>
+            
+            <!-- Payment Methods Skeleton -->
+            <div class="space-y-4">
+              <div class="h-6 bg-aldy-light rounded w-40"></div>
+              <div class="h-12 bg-aldy-light rounded"></div>
+              <div class="h-12 bg-aldy-light rounded"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Right Column Skeleton (Order Summary) -->
+      <div class="w-full md:w-1/2 py-5 md:border-l md:border-aldy-medium md:pl-6">
+        <div class="space-y-4">
+          <!-- Product Items Skeleton -->
+          <div class="flex gap-4">
+            <div class="w-20 h-20 bg-aldy-light rounded"></div>
+            <div class="flex-1 space-y-2">
+              <div class="h-4 bg-aldy-light rounded w-3/4"></div>
+              <div class="h-3 bg-aldy-light rounded w-1/2"></div>
+              <div class="h-3 bg-aldy-light rounded w-1/4"></div>
+            </div>
+          </div>
+          
+          <!-- Price Summary Skeleton -->
+          <div class="pt-4 mt-6 border-t border-aldy-medium space-y-2">
+            <div class="flex justify-between">
+              <div class="h-3 bg-aldy-light rounded w-16"></div>
+              <div class="h-3 bg-aldy-light rounded w-20"></div>
+            </div>
+            <div class="flex justify-between">
+              <div class="h-3 bg-aldy-light rounded w-12"></div>
+              <div class="h-3 bg-aldy-light rounded w-8"></div>
+            </div>
+            <div class="flex justify-between pt-2">
+              <div class="h-4 bg-aldy-light rounded w-16"></div>
+              <div class="h-4 bg-aldy-light rounded w-24"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Main Content -->
+<div *ngIf="!showSkeleton" class="w-full bg-aldy-white px-4 sm:px-6 lg:px-12 xl:px-16 2xl:px-24">
+  <div class="max-w-3xl mx-auto">
     <div class="w-full flex flex-col md:flex-row justify-center gap-6 min-h-[calc(100vh-65px)]">
       <div class="w-full md:w-1/2 flex justify-center">
         <div class="relative w-full">
@@ -38,7 +107,7 @@
               <div class="flex items-start gap-4">
                 <i class="fa-solid fa-box text-aldy-green-gray mt-1"></i>
                 <div>
-                  <p class="text-md NewAldyTitle tracking-widest text-aldy-green-gray-bold uppercase">
+                  <p class="text-sm NewAldyTitle tracking-widest text-aldy-green-gray-bold uppercase">
                     Retiras en correo argentino - Gratis
                   </p>
                   <p class="text-sm NewAldyFontType4 tracking-wider text-aldy-green-gray">
@@ -59,7 +128,7 @@
               <div class="flex items-start gap-4">
                 <i class="fa-regular fa-user text-aldy-green-gray mt-1"></i>
                 <div>
-                  <p class="text-md NewAldyTitle tracking-widest text-aldy-green-gray-bold uppercase">
+                  <p class="text-sm NewAldyTitle tracking-widest text-aldy-green-gray-bold uppercase">
                     Datos de cobranza
                   </p>
     
@@ -80,7 +149,7 @@
                     {{ shippingData?.city }}, {{ shippingData?.province }} - {{ shippingData?.phone }}
                   </p>
     
-                  <p class="mt-4 text-md NewAldyTitle tracking-widest text-aldy-green-gray-bold uppercase">
+                  <p class="mt-4 text-sm NewAldyTitle tracking-widest text-aldy-green-gray-bold uppercase">
                     Persona que retirará el pedido
                   </p>
     
@@ -120,8 +189,8 @@
             </section>
             <section class="space-y-4 mt-6">
     
-              <h4 class="text-md NewAldyTitle tracking-widest text-aldy-green-gray-bold uppercase mb-2">
-                M<span class="NewAldyFontTypeAccent font-light text-lg">é</span>todos de pago
+              <h4 class="text-sm NewAldyTitle tracking-widest text-aldy-green-gray-bold uppercase mb-2">
+                M<span class="NewAldyFontTypeAccent font-light text-base">é</span>todos de pago
               </h4>
               <app-acordiongeneric
                 [useIcon]="true"
@@ -205,19 +274,19 @@
         <div class="flex flex-col justify-between w-full">
     
           <div>
-            <h3 class="text-md NewAldyTitle tracking-widest text-aldy-green-gray-bold font-light uppercase">
+            <h3 class="text-sm NewAldyTitle tracking-widest text-aldy-green-gray-bold font-light uppercase">
               {{ item.name }} x{{ item.quantity }}
             </h3>
     
             <p *ngIf="item.color"
-               class="text-[11px] sm:text-sm text-aldy-green-gray NewAldyFontType4 mt-1 flex items-center gap-2">
+               class="text-xs sm:text-sm text-aldy-green-gray NewAldyFontType4 mt-1 flex items-center gap-2">
               Color:
               <span class="inline-block w-3 h-3 rounded-xs ring-2 ring-aldy-green-gray"
                     [ngStyle]="{ 'background-color': item.color }"></span>
             </p>
-    
+
             <p *ngIf="item.size"
-               class="text-[11px] sm:text-sm text-aldy-green-gray flex items-center gap-2 NewAldyFontType4 mt-1">
+               class="text-xs sm:text-sm text-aldy-green-gray flex items-center gap-2 NewAldyFontType4 mt-1">
               Talla:
               <span class="bg-gray-100 px-2 py-0.5 text-[10px] NewAldyFontType4">
                 {{ item.size }}
@@ -271,7 +340,7 @@
     
     <!-- MODAL: NOTAS -->
     <app-modalv2 [(open)]="modalNotesOpen">
-      <h2 class="text-xl font-bold mb-4">Notas de pedido</h2>
+      <h2 class="text-lg font-bold mb-4">Notas de pedido</h2>
       <app-textarea
         [(ngModel)]="orderNotes"
         [label]="'Escribe tus notas aquí'"
@@ -299,7 +368,7 @@
     
     <!-- MODAL: DIRECCIÓN -->
     <app-modalv2 [(open)]="modalAddressOpen">
-      <h2 class="text-xl font-bold mb-4">Cambiar datos de envío</h2>
+      <h2 class="text-lg font-bold mb-4">Cambiar datos de envío</h2>
       <p>Formulario futuro</p>
     </app-modalv2>
     
@@ -307,7 +376,7 @@
     <app-modalv2 [(open)]="modalPickupOpen">
       <div class="space-y-4">
         <div class="flex justify-between items-center">
-          <h2 class="text-xl font-bold">Entrega</h2>
+          <h2 class="text-lg font-bold">Entrega</h2>
         </div>
         
         <div class="space-y-3">
@@ -407,6 +476,14 @@
 
   </div>
 </div>
+
+<!-- Testing button for skeleton loader (remove in production) -->
+<button 
+  *ngIf="!showSkeleton" 
+  (click)="simulateLoading()" 
+  class="fixed bottom-4 right-4 bg-gray-500 text-white px-3 py-2 rounded text-xs opacity-50 hover:opacity-100 transition-opacity z-50">
+  Test Skeleton
+</button>
 
 
 

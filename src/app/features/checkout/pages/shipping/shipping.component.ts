@@ -89,6 +89,8 @@ export class ShippingComponent implements OnInit, OnDestroy {
   discountType: 'percent' | 'fixed' | null = null;
   discountCodeApplied: string | null = null;
   discountError: string | null = null;
+  isLoading = true;
+  showSkeleton = true;
 
   readonly provinces = provinces_arg;
   readonly ciudades = [
@@ -111,6 +113,12 @@ export class ShippingComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    // Mostrar skeleton por 800ms para simular carga, luego ocultar directamente sin fade
+    setTimeout(() => {
+      this.showSkeleton = false;
+      this.isLoading = false;
+    }, 800);
+
     this.initForm();
 
     // Configurar el email del usuario autenticado
@@ -452,5 +460,16 @@ export class ShippingComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  // Método para testing del skeleton loader
+  simulateLoading(): void {
+    this.showSkeleton = true;
+    this.isLoading = true;
+    
+    setTimeout(() => {
+      this.showSkeleton = false;
+      this.isLoading = false;
+    }, 800);
   }
 }
