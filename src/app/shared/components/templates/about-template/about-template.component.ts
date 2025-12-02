@@ -99,8 +99,7 @@ export class AboutTemplateComponent implements AfterViewInit {
         });
 
         tl.to(this.greenCard.nativeElement, {
-          y: -60,       // antes -120
-          x: -40,       // centrado leve
+          y: -60,       // solo movimiento vertical
           opacity: 1,
           scale: 1,
           rotation: 0,
@@ -109,24 +108,22 @@ export class AboutTemplateComponent implements AfterViewInit {
         }, 0);
 
         tl.to(this.blueCard.nativeElement, {
-          y: -60,
-          x: 0,        // centro
+          y: -60,       // solo movimiento vertical
           opacity: 1,
           scale: 1,
           rotation: 0,
           duration: 1,
           ease: "back.out(1.1)"
-        }, 0.5);       // antes 0.8
+        }, 0.5);
 
         tl.to(this.redCard.nativeElement, {
-          y: -60,
-          x: 40,       // centrado leve
+          y: -60,       // solo movimiento vertical
           opacity: 1,
           scale: 1,
           rotation: 0,
           duration: 1,
           ease: "back.out(1.1)"
-        }, 1.0);       // antes 1.6
+        }, 1.0);
       },
 
       /* ======================================================
@@ -158,8 +155,7 @@ export class AboutTemplateComponent implements AfterViewInit {
         });
 
         tl.to(this.greenCard.nativeElement, {
-          y: 10,
-          x: -25,
+          y: 10,        // solo movimiento vertical
           opacity: 1,
           scale: 1,
           rotation: 0,
@@ -167,8 +163,7 @@ export class AboutTemplateComponent implements AfterViewInit {
         }, 0);
 
         tl.to(this.blueCard.nativeElement, {
-          y: 10,
-          x: 0,
+          y: 10,        // solo movimiento vertical
           opacity: 1,
           scale: 1,
           rotation: 0,
@@ -176,8 +171,7 @@ export class AboutTemplateComponent implements AfterViewInit {
         }, 0.5);
 
         tl.to(this.redCard.nativeElement, {
-          y: 10,
-          x: 25,
+          y: 10,        // solo movimiento vertical
           opacity: 1,
           scale: 1,
           rotation: 0,
@@ -214,8 +208,7 @@ export class AboutTemplateComponent implements AfterViewInit {
         });
 
         tl.to(this.greenCard.nativeElement, {
-          y: 60,
-          x: 0,
+          y: 60,        // solo movimiento vertical
           opacity: 1,
           scale: 1,
           rotation: 0,
@@ -223,8 +216,7 @@ export class AboutTemplateComponent implements AfterViewInit {
         }, 0);
 
         tl.to(this.blueCard.nativeElement, {
-          y: 60,
-          x: 0,
+          y: 60,        // solo movimiento vertical
           opacity: 1,
           scale: 1,
           rotation: 0,
@@ -232,8 +224,7 @@ export class AboutTemplateComponent implements AfterViewInit {
         }, 0.5);
 
         tl.to(this.redCard.nativeElement, {
-          y: 60,
-          x: 0,
+          y: 60,        // solo movimiento vertical
           opacity: 1,
           scale: 1,
           rotation: 0,
