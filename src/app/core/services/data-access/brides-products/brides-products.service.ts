@@ -1,64 +1,132 @@
 import { Injectable } from '@angular/core';
 import { getDataHelperService } from '../getDataHelper.service';
+import { SupabaseService } from '../supabase.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class BridesProductsService {
 
-  constructor(private db: getDataHelperService) {}
+  constructor(
+    private supabaseService: SupabaseService,
+    private helper: getDataHelperService
+  ) {}
 
-  // SELECT BASE, igual estilo que products
-  private selectFields = `
-    id,
-    name,
-    description,
-    details,
-    metadata,
-    main_image,
-    additional_images,
-    slug,
-    avid,
-    color_id,
-    color_name,
-    color_hex,
-    created_at,
-    collection_brides:collection_brides!pbrides_products_collection_id_fkey (
+  /**
+   * Obtener todos los productos de vestidos de novia
+   * o uno específico por slug
+   */
+  async getProducts(slug?: string) {
+    const selectFields = `
       id,
       name,
+      description,
+      details,
+      price,
+      collection_id,
+      main_image,
+      additional_images,
+      sizes,
       slug,
-      cover_image_url
-    )
-  `;
-
-  // Obtener todos los vestidos de novia
-  async getAllBridesProducts() {
-    return this.db.getData<any[]>(
-      'pbrides_products',
-      this.selectFields
-    );
-  }
-
-  // Obtener un vestido de novia por slug
-  async getBridesProductBySlug(slug: string) {
-    return this.db.getData<any>(
-      'pbrides_products',
-      this.selectFields,
-      'slug',
-      slug,
-      true
-    );
-  }
-
-  // Si quieres buscar por avid
-  async getBridesProductByAvid(avid: string) {
-    return this.db.getData<any>(
-      'pbrides_products',
-      this.selectFields,
-      'avid',
       avid,
-      true
+      color_id,
+      color_name,
+      color_hex,
+      categories:pbrides_categories!pbrides_products_category_id_fkey (
+        id,
+        name
+      ),
+      subcategories:pbrides_subcategories!pbrides_products_subcategory_id_fkey (
+        id,
+        name
+      ),
+      product_variants (
+        id,
+        color_id,
+        color_name,
+        color_hex,
+        avid,
+        main_image,
+        additional_images,
+        colors:pbrides_colors!pbrides_product_variants_color_id_fkey (
+          code,
+          name,
+          hex
+        )
+      ),
+      collection:pbrides_collection_brides!pbrides_products_collection_id_fkey (
+        id,
+        name,
+        slug,
+        cover_image_url,
+        season,
+        release_date
+      )
+    `;
+
+    // Usamos el helper para autenticación si fuese necesario
+    return this.helper.getData<any>(
+      'pbrides_products',
+      selectFields,
+      slug ? 'slug' : undefined,
+      slug,
+      Boolean(slug)
     );
+  }
+
+  /**
+   * Obtener variantes de un producto específico
+   */
+  async getProductVariants(productId: string) {
+    const selectFields = `
+      id,
+      color_id,
+      color_name,
+      color_hex,
+      avid,
+      main_image,
+      additional_images,
+      colors:pbrides_colors!pbrides_product_variants_color_id_fkey (
+        code,
+        name,
+        hex
+      )
+    `;
+
+    return this.helper.getData<any>(
+      'pbrides_product_variants',
+      selectFields,
+      'product_id',
+      productId
+    );
+  }
+
+  /**
+   * Obtener colecciones de novias (para mostrar en galería)
+   */
+  async getCollections() {
+    const selectFields = `
+      id,
+      uuid,
+      name,
+      cover_image_url,
+      season,
+      release_date,
+      banner,
+      description,
+      slug,
+      collection_media_brides (
+        id,
+        section_name,
+        media_url,
+        alt,
+        type,
+        order,
+        poster_url
+      )
+    `;
+
+    return this.helper.getData<any>('collection_brides', selectFields);
   }
 
 }
