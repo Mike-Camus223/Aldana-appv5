@@ -1,6 +1,4 @@
-// supabase-helper.service.ts
 import { Injectable } from '@angular/core';
-import { SupabaseClient } from '@supabase/supabase-js';
 import { AuthService } from '../auth/auth.service';
 
 @Injectable({ providedIn: 'root' })
@@ -64,7 +62,7 @@ export class getDataHelperService {
         return { data: error ? null : (insertData as T), error };
       }
     } catch (error) {
-      console.error('❌ Exception in insertWithAuth:', error);
+      console.error('Exception in insertWithAuth:', error);
       return { data: null, error };
     }
   }
