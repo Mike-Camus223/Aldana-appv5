@@ -6,9 +6,10 @@
 >
 
   <div
-    @modalAnim
-    class="relative bg-aldy-white shadow-xl p-6 max-w-lg w-full z-51"
-    (click)="$event.stopPropagation()"  
+  @modalAnim
+  class="relative bg-aldy-white shadow-xl w-full z-51 overflow-hidden"
+  [ngClass]="[Mostyles]"
+  (click)="$event.stopPropagation()" 
   >
     <button
       (click)="close()"

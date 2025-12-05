@@ -29,21 +29,13 @@ import { trigger, transition, style, animate } from '@angular/animations';
     ])
   ]
 })
-export class Modalv2Component implements OnChanges {
+export class Modalv2Component {
   @Input() open = false;
   @Output() openChange = new EventEmitter<boolean>();
-
-  ngOnChanges(changes: SimpleChanges) {
-    // No hacer nada con el scroll
-  }
+  @Input() Mostyles: string = 'p-0';
 
   close() {
     this.open = false;
     this.openChange.emit(false);
-  }
-
-  @HostListener('document:keydown.escape')
-  onEscapeKey() {
-    this.close();
   }
 }

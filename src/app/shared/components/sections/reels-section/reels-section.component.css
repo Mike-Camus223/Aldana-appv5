@@ -1,7 +1,14 @@
-::ng-deep .p-dialog-header {
-    padding: 10px !important;
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
 }
 
-::ng-deep  .p-dialog {
-    border-radius: 5px !important;
+.scrollbar-hide {
+  -ms-overflow-style: none; 
+  scrollbar-width: none; 
+}
+
+.break-inside-avoid {
+  break-inside: avoid;
+  page-break-inside: avoid;
+  -webkit-column-break-inside: avoid;
 }
