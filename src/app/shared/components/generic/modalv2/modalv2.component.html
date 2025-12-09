@@ -1,12 +1,12 @@
 <div
   *ngIf="open"
   @backdropAnim
-  class="fixed inset-0 flex items-center justify-center backdrop-blur-sm bg-black/20 z-50"
+  class="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm  z-50 will-change-transform"
   (click)="close()"
 >
   <div
     @modalAnim
-    class="relative bg-white shadow-2xl overflow-hidden"
+    class="relative bg-white shadow-2xl overflow-hidden will-change-transform"
     [ngClass]="[Mostyles]"
     (click)="$event.stopPropagation()"
   >
