@@ -9,31 +9,7 @@
     [hoverOverlay]="true"
     [hoverIconClass]="'fab fa-instagram'"
     (imageClick)="openModal($event)"
-  >
-    <!-- Template personalizado para mostrar reels vs historias -->
-    <ng-template let-item>
-      <div class="relative w-full h-full">
-        <img 
-          [src]="item.image_url" 
-          [alt]="item.caption || 'Instagram content'"
-          class="w-full h-full object-cover"
-        />
-        <!-- Indicador de historia vs reel -->
-        <div 
-          *ngIf="item.is_story" 
-          class="absolute top-2 left-2 bg-white/80 backdrop-blur-sm rounded-full px-2 py-1 text-xs font-medium text-gray-700"
-        >
-          Historia
-        </div>
-        <div 
-          *ngIf="!item.is_story" 
-          class="absolute top-2 left-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full px-2 py-1 text-xs font-medium text-white"
-        >
-          Reel
-        </div>
-      </div>
-    </ng-template>
-  </app-carousel-images-genericv2>
+  ></app-carousel-images-genericv2>
 
   <div *ngIf="!reels || reels.length === 0" class="text-center py-8">
     <p class="text-gray-500">No hay reels disponibles</p>
@@ -169,7 +145,7 @@
           </div>
           <div class="flex flex-col">
             <span class="NewAldyTitle text-aldy-green-gray-bold text-sm">
-              aldyapp
+              {{ selectedReel.username }}
             </span>
             <span class="NewAldyFontType4 text-aldy-green-gray text-xs">
               Publicación original
@@ -204,7 +180,7 @@
 
             <div class="flex-1">
               <p class="NewAldyFontType4 text-aldy-green-gray text-sm leading-relaxed">
-                <span class="NewAldyTitle text-aldy-green-gray-bold mr-2">aldyapp</span>
+                <span class="NewAldyTitle text-aldy-green-gray-bold mr-2">{{ selectedReel.username }}</span>
                 {{ selectedReel.caption }}
               </p>
 

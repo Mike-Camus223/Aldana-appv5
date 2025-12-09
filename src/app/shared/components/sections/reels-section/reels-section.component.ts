@@ -1,5 +1,5 @@
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { Component, OnInit, Inject, HostListener } from '@angular/core';
+import { Component, OnInit, OnDestroy, Inject, HostListener } from '@angular/core';
 import { PLATFORM_ID } from '@angular/core';
 import { Modalv2Component } from '../../generic/modalv2/modalv2.component';
 import { SupabaseService } from '../../../../core/services/data-access/supabase.service';
@@ -12,7 +12,7 @@ import { CarouselImagesGenericv2Component } from '../../generic/carousel-images-
   templateUrl: './reels-section.component.html',
   styleUrls: ['./reels-section.component.css'],
 })
-export class ReelsSectionComponent implements OnInit {
+export class ReelsSectionComponent implements OnInit, OnDestroy {
   showModal = false;
   reels: any[] = [];
   selectedReel: any = null;
@@ -26,6 +26,10 @@ export class ReelsSectionComponent implements OnInit {
   // Carousel del modal
   currentMediaIndex = 0;
   isMuted = true;
+
+  // Real-time refresh
+  private refreshInterval: any;
+  private readonly REFRESH_INTERVAL_MS = 30000; // 30 segundos
 
 
 
@@ -50,6 +54,33 @@ export class ReelsSectionComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
+    await this.loadInstagramReels();
+    this.startRealTimeRefresh();
+
+    if (isPlatformBrowser(this.platformId)) {
+      this.isMobile = window.innerWidth < 1024;
+      this.updateModalStyles();
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.stopRealTimeRefresh();
+  }
+
+  private startRealTimeRefresh(): void {
+    this.refreshInterval = setInterval(() => {
+      this.refreshInstagramData();
+    }, this.REFRESH_INTERVAL_MS);
+  }
+
+  private stopRealTimeRefresh(): void {
+    if (this.refreshInterval) {
+      clearInterval(this.refreshInterval);
+      this.refreshInterval = null;
+    }
+  }
+
+  private async loadInstagramReels(): Promise<void> {
     try {
       const { data, error } = await this.supabaseService.getInstagramReels();
       
@@ -72,18 +103,78 @@ export class ReelsSectionComponent implements OnInit {
           comments: item.comments || [],
           media: item.media || [{ url: item.media_url, type: item.media_type === 'VIDEO' || item.media_type === 'REELS' ? 'video' : 'image' }],
           profile_picture_url: item.profile_picture_url || '', // Foto de perfil de la cuenta
+          username: item.username || 'aldyapp', // Nombre real de la cuenta
+          account_name: item.account_name || 'aldyapp', // Nombre de la cuenta
           // Identificar si es historia o reel para mostrar diferente en UI
           is_story: item.media_type === 'STORY'
         })) || [];
       }
     } catch (error) {
-      console.error('Error en ngOnInit:', error);
+      console.error('Error en loadInstagramReels:', error);
       this.reels = [];
     }
+  }
 
-    if (isPlatformBrowser(this.platformId)) {
-      this.isMobile = window.innerWidth < 1024;
-      this.updateModalStyles();
+  async refreshInstagramData(): Promise<void> {
+    try {
+      console.log('Actualizando datos de Instagram en tiempo real...');
+      const { data, error } = await this.supabaseService.getInstagramReels();
+      
+      if (error) {
+        console.error('Error actualizando reels de Instagram:', error);
+        return;
+      }
+
+      if (data && data.length > 0) {
+        // Mapear los nuevos datos
+        const newReels = data.map((item: any) => ({
+          id: item.id,
+          image_url: item.image_url || item.thumbnail_url,
+          caption: item.caption || '',
+          hashtags: item.hashtags || '',
+          post_url: item.permalink,
+          media_type: item.media_type,
+          media_url: item.media_url,
+          like_count: item.like_count || 0,
+          comments_count: item.comments_count || 0,
+          timestamp: item.timestamp,
+          comments: item.comments || [],
+          media: item.media || [{ url: item.media_url, type: item.media_type === 'VIDEO' || item.media_type === 'REELS' ? 'video' : 'image' }],
+          profile_picture_url: item.profile_picture_url || '',
+          username: item.username || 'aldyapp',
+          account_name: item.account_name || 'aldyapp',
+          is_story: item.media_type === 'STORY'
+        }));
+
+        // Actualizar los reels existentes con los nuevos datos
+        this.updateReelsData(newReels);
+        
+        // Si hay un modal abierto, actualizar también el reel seleccionado
+        if (this.selectedReel) {
+          this.updateSelectedReel();
+        }
+        
+        console.log('Datos de Instagram actualizados exitosamente');
+      }
+    } catch (error) {
+      console.error('Error en refreshInstagramData:', error);
+    }
+  }
+
+  private updateReelsData(newReels: any[]): void {
+    // Actualizar los datos existentes manteniendo el orden
+    this.reels = this.reels.map(existingReel => {
+      const updatedReel = newReels.find(newReel => newReel.id === existingReel.id);
+      return updatedReel || existingReel;
+    });
+  }
+
+  private updateSelectedReel(): void {
+    if (this.selectedReel) {
+      const updatedReel = this.reels.find(reel => reel.id === this.selectedReel.id);
+      if (updatedReel) {
+        this.selectedReel = { ...updatedReel };
+      }
     }
   }
 

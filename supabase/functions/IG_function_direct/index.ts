@@ -77,15 +77,16 @@ serve(async (req) => {
         let comments = []
         try {
           const commentsResponse = await fetch(
-            `https://graph.facebook.com/v18.0/${reel.id}/comments?fields=text,username,timestamp&limit=5&access_token=${igToken}`
+            `https://graph.facebook.com/v18.0/${reel.id}/comments?fields=text,username,timestamp,user{id,name,profile_pic}&limit=5&access_token=${igToken}`
           )
           
           if (commentsResponse.ok) {
             const commentsData = await commentsResponse.json()
             comments = (commentsData.data || []).map((comment: any) => ({
-              user: comment.username || 'Usuario',
+              user: comment.username || comment.user?.name || 'Usuario',
               text: comment.text,
-              time: formatTimeAgo(new Date(comment.timestamp))
+              time: formatTimeAgo(new Date(comment.timestamp)),
+              profile_pic: comment.user?.profile_pic || null
             }))
           }
         } catch (e) {
