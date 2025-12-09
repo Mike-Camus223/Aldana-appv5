@@ -10,6 +10,29 @@
     [hoverIconClass]="'fab fa-instagram'"
     (imageClick)="openModal($event)"
   >
+    <!-- Template personalizado para mostrar reels vs historias -->
+    <ng-template let-item>
+      <div class="relative w-full h-full">
+        <img 
+          [src]="item.image_url" 
+          [alt]="item.caption || 'Instagram content'"
+          class="w-full h-full object-cover"
+        />
+        <!-- Indicador de historia vs reel -->
+        <div 
+          *ngIf="item.is_story" 
+          class="absolute top-2 left-2 bg-white/80 backdrop-blur-sm rounded-full px-2 py-1 text-xs font-medium text-gray-700"
+        >
+          Historia
+        </div>
+        <div 
+          *ngIf="!item.is_story" 
+          class="absolute top-2 left-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full px-2 py-1 text-xs font-medium text-white"
+        >
+          Reel
+        </div>
+      </div>
+    </ng-template>
   </app-carousel-images-genericv2>
 
   <div *ngIf="!reels || reels.length === 0" class="text-center py-8">
@@ -129,10 +152,20 @@
         <div
           class="p-4 border-b border-gray-200 flex items-center gap-3 flex-shrink-0"
         >
-          <div
-            class="w-10 h-10 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center"
-          >
-            <i class="fab fa-instagram text-white text-base"></i>
+          <!-- FOTO DE PERFIL DE LA CUENTA -->
+          <div class="w-10 h-10 rounded-full flex items-center justify-center overflow-hidden">
+            <img 
+              *ngIf="selectedReel.profile_picture_url" 
+              [src]="selectedReel.profile_picture_url" 
+              alt="Perfil" 
+              class="w-full h-full object-cover"
+            />
+            <div 
+              *ngIf="!selectedReel.profile_picture_url"
+              class="w-full h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center"
+            >
+              <i class="fab fa-instagram text-white text-base"></i>
+            </div>
           </div>
           <div class="flex flex-col">
             <span class="NewAldyTitle text-aldy-green-gray-bold text-sm">
@@ -153,10 +186,20 @@
         >
           <!-- CAPTION -->
           <div class="p-4 border-b border-gray-200 flex gap-3 flex-shrink-0">
-            <div
-              class="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center flex-shrink-0"
-            >
-              <i class="fab fa-instagram text-white text-base"></i>
+            <!-- FOTO DE PERFIL DE LA CUENTA -->
+            <div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden">
+              <img 
+                *ngIf="selectedReel.profile_picture_url" 
+                [src]="selectedReel.profile_picture_url" 
+                alt="Perfil" 
+                class="w-full h-full object-cover"
+              />
+              <div 
+                *ngIf="!selectedReel.profile_picture_url"
+                class="w-full h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center"
+              >
+                <i class="fab fa-instagram text-white text-base"></i>
+              </div>
             </div>
 
             <div class="flex-1">
@@ -182,15 +225,27 @@
               class="comment-block flex gap-3 flex-shrink-0"
               *ngFor="let comment of selectedReel.comments"
             >
-              <div
-                class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center flex-shrink-0"
-              >
-                <i class="fas fa-user text-gray-600 text-xs"></i>
+              <!-- FOTO DE PERFIL DEL COMENTARISTA -->
+              <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden">
+                <img 
+                  *ngIf="comment.profile_pic" 
+                  [src]="comment.profile_pic" 
+                  alt="Perfil" 
+                  class="w-full h-full object-cover"
+                />
+                <div 
+                  *ngIf="!comment.profile_pic"
+                  class="w-full h-full bg-gray-300 rounded-full flex items-center justify-center"
+                >
+                  <i class="fas fa-user text-gray-600 text-xs"></i>
+                </div>
               </div>
 
               <div class="flex-1">
                 <p class="NewAldyFontType4 text-aldy-green-gray text-sm">
-                  <span class="NewAldyTitle text-aldy-green-gray-bold">{{ comment.user }}</span>
+                  <span class="NewAldyTitle text-aldy-green-gray-bold">
+                    {{ comment.is_own_comment ? 'Tú' : comment.user }}
+                  </span>
                   {{ comment.text }}
                 </p>
                 <div class="flex items-center gap-4 mt-1">

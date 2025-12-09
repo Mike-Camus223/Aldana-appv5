@@ -187,7 +187,28 @@ export class SupabaseService {
       }
 
       const result = await response.json();
-      const limitedData = result.data ? result.data.slice(0, 5) : [];
+      
+      // Combinar y ordenar reels e historias por fecha y likes
+      const allMedia = result.data || [];
+      
+      // Ordenar por timestamp (más recientes primero) y luego por likes
+      const sortedMedia = allMedia.sort((a: any, b: any) => {
+        // Primero por fecha (más reciente primero)
+        const dateA = new Date(a.timestamp || 0).getTime();
+        const dateB = new Date(b.timestamp || 0).getTime();
+        
+        if (dateB !== dateA) {
+          return dateB - dateA; // Más reciente primero
+        }
+        
+        // Si mismo tiempo, ordenar por likes (más likes primero)
+        return (b.like_count || 0) - (a.like_count || 0);
+      });
+      
+      // Limitar a los primeros 5
+      const limitedData = sortedMedia.slice(0, 5);
+      
+      console.log(`Media combinada: ${allMedia.length} items, mostrando ${limitedData.length}`);
       
       return { data: limitedData, error: null };
     } catch (error) {

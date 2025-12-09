@@ -58,19 +58,22 @@ export class ReelsSectionComponent implements OnInit {
         this.reels = [];
       } else {
         // Mapear los datos de Instagram al formato esperado
-        this.reels = data?.map((reel: any) => ({
-          id: reel.id,
-          image_url: reel.image_url || reel.thumbnail_url,
-          caption: reel.caption || '',
-          hashtags: reel.hashtags || '',
-          post_url: reel.permalink,
-          media_type: reel.media_type,
-          media_url: reel.media_url,
-          like_count: reel.like_count || 0,
-          comments_count: reel.comments_count || 0,
-          timestamp: reel.timestamp,
-          comments: reel.comments || [],
-          media: reel.media || [{ url: reel.media_url, type: reel.media_type === 'VIDEO' ? 'video' : 'image' }]
+        this.reels = data?.map((item: any) => ({
+          id: item.id,
+          image_url: item.image_url || item.thumbnail_url,
+          caption: item.caption || '',
+          hashtags: item.hashtags || '',
+          post_url: item.permalink,
+          media_type: item.media_type,
+          media_url: item.media_url,
+          like_count: item.like_count || 0,
+          comments_count: item.comments_count || 0,
+          timestamp: item.timestamp,
+          comments: item.comments || [],
+          media: item.media || [{ url: item.media_url, type: item.media_type === 'VIDEO' || item.media_type === 'REELS' ? 'video' : 'image' }],
+          profile_picture_url: item.profile_picture_url || '', // Foto de perfil de la cuenta
+          // Identificar si es historia o reel para mostrar diferente en UI
+          is_story: item.media_type === 'STORY'
         })) || [];
       }
     } catch (error) {
