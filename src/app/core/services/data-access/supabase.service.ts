@@ -108,16 +108,101 @@ export class SupabaseService {
     return result.data;
   }
 
-  async getTempReels() {
-    const selectReels = `
-      id,
-      image_url,
-      caption,
-      hashtags,
-      link
-    `;
-    return this.getData<any>('reels', selectReels);
+  async getInstagramReels() {
+    try {
+      console.log('Obteniendo reels de Instagram...');
+      console.log('Usando Supabase Key:', environment.SUPABASE_KEY?.substring(0, 10) + '...');
+      
+      // Intentar primero con el ID de Instagram directo
+      const response = await fetch('https://graph.facebook.com/v18.0/17841444599332423/media?fields=id,caption,media_type,media_url,thumbnail_url,permalink,timestamp,like_count,comments_count&limit=20&access_token=EAAI user token aqui', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      console.log('Estado de respuesta:', response.status);
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: 'Error desconocido' })) as { error?: string };
+        console.error('Error obteniendo reels de Instagram:', errorData);
+        
+        // Si falla el método directo, volver a la función Edge
+        return this.getInstagramReelsFromEdge();
+      }
+
+      const mediaData = await response.json();
+      console.log('Datos recibidos:', mediaData);
+      
+      // Filtrar solo videos/reels
+      const videos = mediaData.data?.filter((item: any) => 
+        item.media_type === 'VIDEO' || item.media_type === 'REELS'
+      ) || [];
+      
+      // Procesar los videos
+      const reels = videos.slice(0, 5).map((reel: any) => ({
+        id: reel.id,
+        image_url: reel.thumbnail_url || reel.media_url,
+        caption: reel.caption || '',
+        hashtags: this.extractHashtags(reel.caption || ''),
+        post_url: reel.permalink,
+        media_type: reel.media_type,
+        media_url: reel.media_url,
+        like_count: reel.like_count || 0,
+        comments_count: reel.comments_count || 0,
+        timestamp: reel.timestamp,
+        comments: [],
+        media: [{
+          url: reel.media_url,
+          type: 'video'
+        }]
+      }));
+      
+      console.log('Reels limitados a 5:', reels.length);
+      
+      return { data: reels, error: null };
+    } catch (error) {
+      console.error('Error en getInstagramReels:', error);
+      // Si falla el método directo, volver a la función Edge
+      return this.getInstagramReelsFromEdge();
+    }
   }
+
+  private async getInstagramReelsFromEdge() {
+    try {
+      console.log('Usando función Edge como respaldo...');
+      
+      const response = await fetch('https://cddrmboopihkiuyomxle.supabase.co/functions/v1/IG_function', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${environment.SUPABASE_KEY}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: 'Error desconocido' })) as { error?: string };
+        console.error('Error en función Edge:', errorData);
+        return { data: null, error: errorData.error || 'Error en la función Edge' };
+      }
+
+      const result = await response.json();
+      const limitedData = result.data ? result.data.slice(0, 5) : [];
+      
+      return { data: limitedData, error: null };
+    } catch (error) {
+      console.error('Error en función Edge:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
+      return { data: null, error: errorMessage };
+    }
+  }
+
+  private extractHashtags(text: string): string {
+    const hashtags = text.match(/#\w+/g);
+    return hashtags ? hashtags.join(' ') : '';
+  }
+
+
 
   async validateCoupon(code: string): Promise<{
     valid: boolean;

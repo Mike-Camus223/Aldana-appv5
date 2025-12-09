@@ -172,15 +172,15 @@
                 {{ selectedReel.hashtags }}
               </p>
 
-              <p class="NewAldyFontType4 text-gray-500 text-xs mt-1">Hace 1 día</p>
+              <p class="NewAldyFontType4 text-gray-500 text-xs mt-1">{{ formatTimestamp(selectedReel.timestamp) }}</p>
             </div>
           </div>
 
-          <!-- COMENTARIOS -->
+          <!-- COMENTARIOS REALES -->
           <div class="p-4 space-y-5">
             <div
               class="comment-block flex gap-3 flex-shrink-0"
-              *ngFor="let c of fakeComments"
+              *ngFor="let comment of selectedReel.comments"
             >
               <div
                 class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center flex-shrink-0"
@@ -190,11 +190,11 @@
 
               <div class="flex-1">
                 <p class="NewAldyFontType4 text-aldy-green-gray text-sm">
-                  <span class="NewAldyTitle text-aldy-green-gray-bold">{{ c.user }}</span>
-                  {{ c.text }}
+                  <span class="NewAldyTitle text-aldy-green-gray-bold">{{ comment.user }}</span>
+                  {{ comment.text }}
                 </p>
                 <div class="flex items-center gap-4 mt-1">
-                  <span class="NewAldyFontType4 text-gray-500 text-xs">{{ c.time }}</span>
+                  <span class="NewAldyFontType4 text-gray-500 text-xs">{{ comment.time }}</span>
                 </div>
               </div>
             </div>
@@ -215,8 +215,9 @@
             </a>
           </div>
 
-          <p class="NewAldyTitle text-aldy-green-gray-bold text-sm mb-1">256 me gusta</p>
-          <p class="NewAldyFontType4 text-gray-500 text-xs mb-1">1 de diciembre de 2024</p>
+          <p class="NewAldyTitle text-aldy-green-gray-bold text-sm mb-1">{{ selectedReel.like_count || 0 }} me gusta</p>
+          <p class="NewAldyFontType4 text-aldy-green-gray text-sm mb-1">{{ selectedReel.comments_count || 0 }} comentarios</p>
+          <p class="NewAldyFontType4 text-gray-500 text-xs mb-1">{{ formatTimestamp(selectedReel.timestamp) }}</p>
         </div>
       </div>
     </div>

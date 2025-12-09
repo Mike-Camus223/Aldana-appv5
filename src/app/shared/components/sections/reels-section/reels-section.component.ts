@@ -27,15 +27,7 @@ export class ReelsSectionComponent implements OnInit {
   currentMediaIndex = 0;
   isMuted = true;
 
-  fakeComments = [
-    { user: 'usuario1', text: '¡Excelente contenido! ❤️', time: 'Hace 2 horas' },
-    { user: 'usuario2', text: 'Muy buen contenido 🔥✨', time: 'Hace 1 hora' },
-    { user: 'usuario3', text: 'Increíble diseño 😍', time: 'Hace 30 min' },
-    { user: 'usuario4', text: 'Me encanta esto 🎉', time: 'Hace 15 min' },
-    { user: 'usuario5', text: '¡Sigue así! 💪', time: 'Hace 10 min' },
-    { user: 'usuario6', text: 'Wow, increíble trabajo', time: 'Hace 5 min' },
-    { user: 'usuario7', text: 'Esto es arte 🎨', time: 'Hace 3 min' },
-  ];
+
 
   breakpoints: any = {
     '(min-width: 640px)': { slides: { perView: 2, spacing: 5 } },
@@ -58,8 +50,33 @@ export class ReelsSectionComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
-    const { data } = await this.supabaseService.getTempReels();
-    this.reels = data || [];
+    try {
+      const { data, error } = await this.supabaseService.getInstagramReels();
+      
+      if (error) {
+        console.error('Error obteniendo reels de Instagram:', error);
+        this.reels = [];
+      } else {
+        // Mapear los datos de Instagram al formato esperado
+        this.reels = data?.map((reel: any) => ({
+          id: reel.id,
+          image_url: reel.image_url || reel.thumbnail_url,
+          caption: reel.caption || '',
+          hashtags: reel.hashtags || '',
+          post_url: reel.permalink,
+          media_type: reel.media_type,
+          media_url: reel.media_url,
+          like_count: reel.like_count || 0,
+          comments_count: reel.comments_count || 0,
+          timestamp: reel.timestamp,
+          comments: reel.comments || [],
+          media: reel.media || [{ url: reel.media_url, type: reel.media_type === 'VIDEO' ? 'video' : 'image' }]
+        })) || [];
+      }
+    } catch (error) {
+      console.error('Error en ngOnInit:', error);
+      this.reels = [];
+    }
 
     if (isPlatformBrowser(this.platformId)) {
       this.isMobile = window.innerWidth < 1024;
@@ -73,6 +90,33 @@ export class ReelsSectionComponent implements OnInit {
     } else {
       this.modalStyles = 'max-w-[95vw] lg:max-w-[1200px] max-h-[90vh] rounded-sm';
     }
+  }
+
+  formatTimestamp(timestamp: string): string {
+    // Si el timestamp ya viene formateado de la función Edge, devolverlo tal cual
+    if (timestamp && timestamp.includes('Hace')) {
+      return timestamp;
+    }
+    
+    // Si es un timestamp ISO, formatearlo
+    if (timestamp) {
+      const date = new Date(timestamp);
+      const now = new Date();
+      const diffMs = now.getTime() - date.getTime();
+      const diffMins = Math.floor(diffMs / 60000);
+      const diffHours = Math.floor(diffMs / 3600000);
+      const diffDays = Math.floor(diffMs / 86400000);
+      
+      if (diffMins < 60) {
+        return `Hace ${diffMins} minuto${diffMins !== 1 ? 's' : ''}`;
+      } else if (diffHours < 24) {
+        return `Hace ${diffHours} hora${diffHours !== 1 ? 's' : ''}`;
+      } else {
+        return `Hace ${diffDays} día${diffDays !== 1 ? 's' : ''}`;
+      }
+    }
+    
+    return 'Fecha desconocida';
   }
 
   private lockScroll(): void {
