@@ -113,13 +113,14 @@ export class ReelsSectionComponent implements OnInit, OnDestroy {
     }
   }
 
+  
   updateModalStyles(): void {
     if (this.isMobile) {
       this.modalStyles =
         'fixed inset-0 w-screen h-screen m-0 p-0 bg-white rounded-none overflow-hidden z-[9999]';
     } else {
       this.modalStyles =
-        'max-w-[95vw] lg:max-w-[1200px] max-h-[90vh] rounded-sm';
+        'w-auto max-h-[90vh] rounded-sm';
     }
   }
 

@@ -2,20 +2,19 @@
   *ngIf="open"
   @backdropAnim
   class="fixed inset-0 flex items-center justify-center backdrop-blur-sm bg-black/20 z-50"
-  (click)="close()"        
+  (click)="close()"
 >
-
   <div
-  @modalAnim
-  class="relative bg-white shadow-2xl w-full z-51 overflow-hidden"
-  [ngClass]="[Mostyles]"
-  (click)="$event.stopPropagation()" 
+    @modalAnim
+    class="relative bg-white shadow-2xl overflow-hidden"
+    [ngClass]="[Mostyles]"
+    (click)="$event.stopPropagation()"
   >
     <button
       (click)="close()"
-      class="absolute top-3 right-3 cursor-pointer hover:bg-black/5 p-2 rounded-full transition-colors duration-200 z-10"
+      class="absolute top-3 right-3 cursor-pointer transition-colors duration-200 z-10"
     >
-      <i class="fa-solid fa-xmark text-lg text-aldy-green-gray-bold"></i>
+      <i class="fa-solid fa-xmark text-sm text-aldy-green-gray-bold"></i>
     </button>
 
     <ng-content></ng-content>
