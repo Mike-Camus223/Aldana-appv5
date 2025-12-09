@@ -1,5 +1,11 @@
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { Component, OnInit, OnDestroy, Inject, HostListener } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  Inject,
+  HostListener,
+} from '@angular/core';
 import { PLATFORM_ID } from '@angular/core';
 import { Modalv2Component } from '../../generic/modalv2/modalv2.component';
 import { SupabaseService } from '../../../../core/services/data-access/supabase.service';
@@ -27,17 +33,11 @@ export class ReelsSectionComponent implements OnInit, OnDestroy {
   currentMediaIndex = 0;
   isMuted = true;
 
-  // Real-time refresh
-  private refreshInterval: any;
-  private readonly REFRESH_INTERVAL_MS = 30000; // 30 segundos
-
-
-
   breakpoints: any = {
     '(min-width: 640px)': { slides: { perView: 2, spacing: 5 } },
     '(min-width: 768px)': { slides: { perView: 3, spacing: 5 } },
     '(min-width: 1024px)': { slides: { perView: 4, spacing: 5 } },
-    '(min-width: 1280px)': { slides: { perView: 5, spacing: 5 } }
+    '(min-width: 1280px)': { slides: { perView: 5, spacing: 5 } },
   };
 
   constructor(
@@ -55,7 +55,6 @@ export class ReelsSectionComponent implements OnInit, OnDestroy {
 
   async ngOnInit(): Promise<void> {
     await this.loadInstagramReels();
-    this.startRealTimeRefresh();
 
     if (isPlatformBrowser(this.platformId)) {
       this.isMobile = window.innerWidth < 1024;
@@ -64,143 +63,110 @@ export class ReelsSectionComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.stopRealTimeRefresh();
-  }
-
-  private startRealTimeRefresh(): void {
-    this.refreshInterval = setInterval(() => {
-      this.refreshInstagramData();
-    }, this.REFRESH_INTERVAL_MS);
-  }
-
-  private stopRealTimeRefresh(): void {
-    if (this.refreshInterval) {
-      clearInterval(this.refreshInterval);
-      this.refreshInterval = null;
-    }
+    // Limpieza si es necesaria
   }
 
   private async loadInstagramReels(): Promise<void> {
     try {
+      console.log('📱 Cargando reels de Instagram...');
       const { data, error } = await this.supabaseService.getInstagramReels();
-      
-      if (error) {
-        console.error('Error obteniendo reels de Instagram:', error);
-        this.reels = [];
-      } else {
-        // Mapear los datos de Instagram al formato esperado
-        this.reels = data?.map((item: any) => ({
-          id: item.id,
-          image_url: item.image_url || item.thumbnail_url,
-          caption: item.caption || '',
-          hashtags: item.hashtags || '',
-          post_url: item.permalink,
-          media_type: item.media_type,
-          media_url: item.media_url,
-          like_count: item.like_count || 0,
-          comments_count: item.comments_count || 0,
-          timestamp: item.timestamp,
-          comments: item.comments || [],
-          media: item.media || [{ url: item.media_url, type: item.media_type === 'VIDEO' || item.media_type === 'REELS' ? 'video' : 'image' }],
-          profile_picture_url: item.profile_picture_url || '', // Foto de perfil de la cuenta
-          username: item.username || 'aldyapp', // Nombre real de la cuenta
-          account_name: item.account_name || 'aldyapp', // Nombre de la cuenta
-          // Identificar si es historia o reel para mostrar diferente en UI
-          is_story: item.media_type === 'STORY'
-        })) || [];
-      }
-    } catch (error) {
-      console.error('Error en loadInstagramReels:', error);
-      this.reels = [];
-    }
-  }
 
-  async refreshInstagramData(): Promise<void> {
-    try {
-      console.log('Actualizando datos de Instagram en tiempo real...');
-      const { data, error } = await this.supabaseService.getInstagramReels();
-      
       if (error) {
-        console.error('Error actualizando reels de Instagram:', error);
+        console.error('❌ Error obteniendo reels:', error);
+        this.reels = [];
         return;
       }
 
-      if (data && data.length > 0) {
-        // Mapear los nuevos datos
-        const newReels = data.map((item: any) => ({
+      if (!data || data.length === 0) {
+        console.warn('⚠️ No se encontraron reels');
+        this.reels = [];
+        return;
+      }
+
+      // Mapear los datos EXACTAMENTE como vienen de la API
+      this.reels = data.map((item: any) => {
+        console.log('🎬 Mapeando reel:', item.id);
+        console.log('💬 Comentarios encontrados:', item.comments?.length || 0);
+
+        // Debug: mostrar cada comentario
+        if (item.comments && item.comments.length > 0) {
+          item.comments.forEach((c: any, i: number) => {
+            console.log(`  Comentario ${i + 1}:`, {
+              user: c.user,
+              text: c.text,
+              profile_pic: c.profile_pic,
+            });
+          });
+        }
+
+        return {
           id: item.id,
           image_url: item.image_url || item.thumbnail_url,
           caption: item.caption || '',
           hashtags: item.hashtags || '',
-          post_url: item.permalink,
+          post_url: item.post_url || item.permalink,
           media_type: item.media_type,
           media_url: item.media_url,
           like_count: item.like_count || 0,
           comments_count: item.comments_count || 0,
           timestamp: item.timestamp,
-          comments: item.comments || [],
-          media: item.media || [{ url: item.media_url, type: item.media_type === 'VIDEO' || item.media_type === 'REELS' ? 'video' : 'image' }],
+          // IMPORTANTE: Asegurarnos de que comments sea un array válido
+          comments: Array.isArray(item.comments) ? item.comments : [],
+          media: item.media || [
+            {
+              url: item.media_url,
+              type:
+                item.media_type === 'VIDEO' || item.media_type === 'REELS'
+                  ? 'video'
+                  : 'image',
+            },
+          ],
           profile_picture_url: item.profile_picture_url || '',
           username: item.username || 'aldyapp',
-          account_name: item.account_name || 'aldyapp',
-          is_story: item.media_type === 'STORY'
-        }));
+        };
+      });
 
-        // Actualizar los reels existentes con los nuevos datos
-        this.updateReelsData(newReels);
-        
-        // Si hay un modal abierto, actualizar también el reel seleccionado
-        if (this.selectedReel) {
-          this.updateSelectedReel();
-        }
-        
-        console.log('Datos de Instagram actualizados exitosamente');
-      }
+      console.log('✅ Reels cargados:', this.reels.length);
+
+      // Debug: mostrar resumen de comentarios
+      const totalComments = this.reels.reduce(
+        (sum, reel) => sum + (reel.comments?.length || 0),
+        0
+      );
+      console.log('💬 Total de comentarios en todos los reels:', totalComments);
     } catch (error) {
-      console.error('Error en refreshInstagramData:', error);
-    }
-  }
-
-  private updateReelsData(newReels: any[]): void {
-    // Actualizar los datos existentes manteniendo el orden
-    this.reels = this.reels.map(existingReel => {
-      const updatedReel = newReels.find(newReel => newReel.id === existingReel.id);
-      return updatedReel || existingReel;
-    });
-  }
-
-  private updateSelectedReel(): void {
-    if (this.selectedReel) {
-      const updatedReel = this.reels.find(reel => reel.id === this.selectedReel.id);
-      if (updatedReel) {
-        this.selectedReel = { ...updatedReel };
-      }
+      console.error('❌ Error en loadInstagramReels:', error);
+      this.reels = [];
     }
   }
 
   updateModalStyles(): void {
     if (this.isMobile) {
-      this.modalStyles = 'fixed inset-0 w-screen h-screen m-0 p-0 bg-white rounded-none overflow-hidden z-[9999]';
+      this.modalStyles =
+        'fixed inset-0 w-screen h-screen m-0 p-0 bg-white rounded-none overflow-hidden z-[9999]';
     } else {
-      this.modalStyles = 'max-w-[95vw] lg:max-w-[1200px] max-h-[90vh] rounded-sm';
+      this.modalStyles =
+        'max-w-[95vw] lg:max-w-[1200px] max-h-[90vh] rounded-sm';
     }
   }
 
   formatTimestamp(timestamp: string): string {
-    // Si el timestamp ya viene formateado de la función Edge, devolverlo tal cual
-    if (timestamp && timestamp.includes('Hace')) {
+    if (!timestamp) return 'Fecha desconocida';
+
+    // Si el timestamp ya viene formateado de la función Edge
+    if (timestamp.includes('Hace')) {
       return timestamp;
     }
-    
+
     // Si es un timestamp ISO, formatearlo
-    if (timestamp) {
+    try {
       const date = new Date(timestamp);
       const now = new Date();
       const diffMs = now.getTime() - date.getTime();
       const diffMins = Math.floor(diffMs / 60000);
       const diffHours = Math.floor(diffMs / 3600000);
       const diffDays = Math.floor(diffMs / 86400000);
-      
+
       if (diffMins < 60) {
         return `Hace ${diffMins} minuto${diffMins !== 1 ? 's' : ''}`;
       } else if (diffHours < 24) {
@@ -208,9 +174,9 @@ export class ReelsSectionComponent implements OnInit, OnDestroy {
       } else {
         return `Hace ${diffDays} día${diffDays !== 1 ? 's' : ''}`;
       }
+    } catch (e) {
+      return 'Fecha desconocida';
     }
-    
-    return 'Fecha desconocida';
   }
 
   private lockScroll(): void {
@@ -227,6 +193,19 @@ export class ReelsSectionComponent implements OnInit, OnDestroy {
 
   openModal(reel: any): void {
     if (!reel) return;
+
+    console.log('🔍 Abriendo modal para reel:', reel.id);
+    console.log(
+      '💬 Comentarios en el reel seleccionado:',
+      reel.comments?.length || 0
+    );
+
+    if (reel.comments && reel.comments.length > 0) {
+      console.log('📝 Comentarios:', reel.comments);
+    } else {
+      console.warn('⚠️ Este reel no tiene comentarios');
+    }
+
     this.selectedReel = reel;
     this.currentMediaIndex = 0;
     this.isMuted = true;
@@ -237,6 +216,7 @@ export class ReelsSectionComponent implements OnInit, OnDestroy {
   closeModal(): void {
     this.showModal = false;
     this.currentMediaIndex = 0;
+    this.selectedReel = null;
     this.unlockScroll();
   }
 
@@ -244,8 +224,102 @@ export class ReelsSectionComponent implements OnInit, OnDestroy {
     this.showModal = isOpen;
     if (!isOpen) {
       this.currentMediaIndex = 0;
+      this.selectedReel = null;
       this.unlockScroll();
     }
+  }
+
+  // Agregar estos métodos a tu ReelsSectionComponent
+
+  /**
+   * Genera iniciales a partir de un nombre de usuario
+   */
+  getInitials(username: string): string {
+    if (!username) return '?';
+
+    // Remover @ si existe
+    const cleanName = username.replace('@', '').trim();
+
+    // Si es un solo nombre/palabra
+    if (!cleanName.includes(' ') && !cleanName.includes('_')) {
+      return cleanName.substring(0, 2).toUpperCase();
+    }
+
+    // Si tiene espacios
+    if (cleanName.includes(' ')) {
+      const words = cleanName.split(/\s+/);
+      if (words.length === 1) {
+        return words[0].substring(0, 2).toUpperCase();
+      }
+      return (words[0][0] + words[words.length - 1][0]).toUpperCase();
+    }
+
+    // Si tiene guión bajo (formato username)
+    if (cleanName.includes('_')) {
+      const parts = cleanName.split('_');
+      if (parts.length === 1) {
+        return parts[0].substring(0, 2).toUpperCase();
+      }
+      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    }
+
+    return cleanName.substring(0, 2).toUpperCase();
+  }
+
+  /**
+   * Genera un color consistente basado en el nombre de usuario
+   * Usa una paleta de colores agradables
+   */
+  getAvatarColor(username: string): string {
+    const colors = [
+      '#FF6B6B', // Rojo coral
+      '#4ECDC4', // Turquesa
+      '#45B7D1', // Azul cielo
+      '#FFA07A', // Salmón
+      '#98D8C8', // Menta
+      '#F7DC6F', // Amarillo suave
+      '#BB8FCE', // Lavanda
+      '#85C1E2', // Azul claro
+      '#F8B4D9', // Rosa
+      '#AED581', // Verde lima
+      '#FFB74D', // Naranja
+      '#9575CD', // Púrpura
+    ];
+
+    // Generar un índice consistente basado en el username
+    let hash = 0;
+    for (let i = 0; i < username.length; i++) {
+      hash = username.charCodeAt(i) + ((hash << 5) - hash);
+    }
+
+    const index = Math.abs(hash) % colors.length;
+    return colors[index];
+  }
+
+  /**
+   * Alternativa: Generar colores de gradiente
+   */
+  getAvatarGradient(username: string): string {
+    const gradients = [
+      'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+      'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+      'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+      'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+      'linear-gradient(135deg, #30cfd0 0%, #330867 100%)',
+      'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
+      'linear-gradient(135deg, #ff9a56 0%, #ff6a88 100%)',
+      'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
+      'linear-gradient(135deg, #ff6e7f 0%, #bfe9ff 100%)',
+    ];
+
+    let hash = 0;
+    for (let i = 0; i < username.length; i++) {
+      hash = username.charCodeAt(i) + ((hash << 5) - hash);
+    }
+
+    const index = Math.abs(hash) % gradients.length;
+    return gradients[index];
   }
 
   // Métodos del carousel
@@ -261,7 +335,10 @@ export class ReelsSectionComponent implements OnInit, OnDestroy {
   }
 
   nextMedia(): void {
-    if (this.selectedReel?.media && this.currentMediaIndex < this.selectedReel.media.length - 1) {
+    if (
+      this.selectedReel?.media &&
+      this.currentMediaIndex < this.selectedReel.media.length - 1
+    ) {
       this.currentMediaIndex++;
       this.resetVideoState();
     }
@@ -289,5 +366,10 @@ export class ReelsSectionComponent implements OnInit, OnDestroy {
 
   isVideo(media: any): boolean {
     return media?.type === 'video';
+  }
+
+  // Método helper para debug
+  get hasComments(): boolean {
+    return this.selectedReel?.comments && this.selectedReel.comments.length > 0;
   }
 }

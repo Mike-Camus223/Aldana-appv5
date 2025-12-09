@@ -139,24 +139,48 @@ export class SupabaseService {
         item.media_type === 'VIDEO' || item.media_type === 'REELS'
       ) || [];
       
-      // Procesar los videos
-      const reels = videos.slice(0, 5).map((reel: any) => ({
-        id: reel.id,
-        image_url: reel.thumbnail_url || reel.media_url,
-        caption: reel.caption || '',
-        hashtags: this.extractHashtags(reel.caption || ''),
-        post_url: reel.permalink,
-        media_type: reel.media_type,
-        media_url: reel.media_url,
-        like_count: reel.like_count || 0,
-        comments_count: reel.comments_count || 0,
-        timestamp: reel.timestamp,
-        comments: [],
-        media: [{
-          url: reel.media_url,
-          type: 'video'
-        }]
-      }));
+      // Procesar los videos con comentarios
+      const reels = await Promise.all(
+        videos.slice(0, 5).map(async (reel: any) => {
+          // Obtener comentarios reales
+          let comments = [];
+          try {
+            const commentsResponse = await fetch(
+              `https://graph.facebook.com/v18.0/${reel.id}/comments?fields=text,username,timestamp,user{id,name,profile_pic}&limit=10&access_token=EAAI user token aqui`
+            );
+            
+            if (commentsResponse.ok) {
+              const commentsData = await commentsResponse.json();
+              comments = (commentsData.data || []).map((comment: any) => ({
+                user: comment.username || comment.user?.name || 'Usuario',
+                text: comment.text,
+                time: this.formatTimeAgo(new Date(comment.timestamp)),
+                profile_pic: comment.user?.profile_pic || null
+              }));
+            }
+          } catch (e) {
+            console.warn('Error obteniendo comentarios para', reel.id);
+          }
+          
+          return {
+            id: reel.id,
+            image_url: reel.thumbnail_url || reel.media_url,
+            caption: reel.caption || '',
+            hashtags: this.extractHashtags(reel.caption || ''),
+            post_url: reel.permalink,
+            media_type: reel.media_type,
+            media_url: reel.media_url,
+            like_count: reel.like_count || 0,
+            comments_count: reel.comments_count || 0,
+            timestamp: reel.timestamp,
+            comments: comments,
+            media: [{
+              url: reel.media_url,
+              type: 'video'
+            }]
+          };
+        })
+      );
       
       console.log('Reels limitados a 5:', reels.length);
       
@@ -221,6 +245,30 @@ export class SupabaseService {
   private extractHashtags(text: string): string {
     const hashtags = text.match(/#\w+/g);
     return hashtags ? hashtags.join(' ') : '';
+  }
+
+  private formatTimeAgo(date: Date): string {
+    const now = new Date();
+    const diffInSeconds = Math.floor((now.getTime() - date.getTime())) / 1000;
+    
+    if (diffInSeconds < 60) {
+      return 'hace un momento';
+    } else if (diffInSeconds < 3600) {
+      const minutes = Math.floor(diffInSeconds / 60);
+      return `hace ${minutes} ${minutes === 1 ? 'minuto' : 'minutos'}`;
+    } else if (diffInSeconds < 86400) {
+      const hours = Math.floor(diffInSeconds / 3600);
+      return `hace ${hours} ${hours === 1 ? 'hora' : 'horas'}`;
+    } else if (diffInSeconds < 604800) {
+      const days = Math.floor(diffInSeconds / 86400);
+      return `hace ${days} ${days === 1 ? 'día' : 'días'}`;
+    } else if (diffInSeconds < 2592000) {
+      const weeks = Math.floor(diffInSeconds / 604800);
+      return `hace ${weeks} ${weeks === 1 ? 'semana' : 'semanas'}`;
+    } else {
+      const months = Math.floor(diffInSeconds / 2592000);
+      return `hace ${months} ${months === 1 ? 'mes' : 'meses'}`;
+    }
   }
 
 
