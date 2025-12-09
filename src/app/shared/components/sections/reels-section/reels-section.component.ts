@@ -68,37 +68,20 @@ export class ReelsSectionComponent implements OnInit, OnDestroy {
 
   private async loadInstagramReels(): Promise<void> {
     try {
-      console.log('📱 Cargando reels de Instagram...');
       const { data, error } = await this.supabaseService.getInstagramReels();
 
       if (error) {
-        console.error('❌ Error obteniendo reels:', error);
         this.reels = [];
         return;
       }
 
       if (!data || data.length === 0) {
-        console.warn('⚠️ No se encontraron reels');
         this.reels = [];
         return;
       }
 
       // Mapear los datos EXACTAMENTE como vienen de la API
       this.reels = data.map((item: any) => {
-        console.log('🎬 Mapeando reel:', item.id);
-        console.log('💬 Comentarios encontrados:', item.comments?.length || 0);
-
-        // Debug: mostrar cada comentario
-        if (item.comments && item.comments.length > 0) {
-          item.comments.forEach((c: any, i: number) => {
-            console.log(`  Comentario ${i + 1}:`, {
-              user: c.user,
-              text: c.text,
-              profile_pic: c.profile_pic,
-            });
-          });
-        }
-
         return {
           id: item.id,
           image_url: item.image_url || item.thumbnail_url,
@@ -125,17 +108,7 @@ export class ReelsSectionComponent implements OnInit, OnDestroy {
           username: item.username || 'aldyapp',
         };
       });
-
-      console.log('✅ Reels cargados:', this.reels.length);
-
-      // Debug: mostrar resumen de comentarios
-      const totalComments = this.reels.reduce(
-        (sum, reel) => sum + (reel.comments?.length || 0),
-        0
-      );
-      console.log('💬 Total de comentarios en todos los reels:', totalComments);
     } catch (error) {
-      console.error('❌ Error en loadInstagramReels:', error);
       this.reels = [];
     }
   }
@@ -194,18 +167,6 @@ export class ReelsSectionComponent implements OnInit, OnDestroy {
   openModal(reel: any): void {
     if (!reel) return;
 
-    console.log('🔍 Abriendo modal para reel:', reel.id);
-    console.log(
-      '💬 Comentarios en el reel seleccionado:',
-      reel.comments?.length || 0
-    );
-
-    if (reel.comments && reel.comments.length > 0) {
-      console.log('📝 Comentarios:', reel.comments);
-    } else {
-      console.warn('⚠️ Este reel no tiene comentarios');
-    }
-
     this.selectedReel = reel;
     this.currentMediaIndex = 0;
     this.isMuted = true;
@@ -215,17 +176,23 @@ export class ReelsSectionComponent implements OnInit, OnDestroy {
 
   closeModal(): void {
     this.showModal = false;
-    this.currentMediaIndex = 0;
-    this.selectedReel = null;
-    this.unlockScroll();
+    // Delay clearing the selectedReel to prevent flashing empty state during animation
+    setTimeout(() => {
+      this.currentMediaIndex = 0;
+      this.selectedReel = null;
+      this.unlockScroll();
+    }, 200); // Match the animation duration
   }
 
   onModalChange(isOpen: boolean): void {
     this.showModal = isOpen;
     if (!isOpen) {
-      this.currentMediaIndex = 0;
-      this.selectedReel = null;
-      this.unlockScroll();
+      // Delay clearing the selectedReel to prevent flashing empty state during animation
+      setTimeout(() => {
+        this.currentMediaIndex = 0;
+        this.selectedReel = null;
+        this.unlockScroll();
+      }, 200); // Match the animation duration
     }
   }
 

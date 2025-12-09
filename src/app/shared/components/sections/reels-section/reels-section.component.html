@@ -24,7 +24,7 @@
   [Mostyles]="modalStyles"
   (openChange)="onModalChange($event)"
 >
-  <ng-container *ngIf="selectedReel; else emptyState">
+  <ng-container *ngIf="selectedReel">
     <!-- WRAPPER PRINCIPAL ADAPTADO A LA FOTO -->
     <div
       class="flex flex-col lg:flex-row bg-white overflow-hidden"
@@ -240,22 +240,4 @@
       </div>
     </div>
   </ng-container>
-
-  <!-- EMPTY STATE -->
-  <ng-template #emptyState>
-    <div
-      class="flex flex-col items-center justify-center w-full min-h-[500px] p-8 bg-aldy-white"
-    >
-      <div class="text-center">
-        <i class="fas fa-heart-crack text-6xl text-aldy-green-gray mb-4"></i>
-        <h3 class="NewAldyTitle text-aldy-green-gray-bold mb-2">Lo sentimos</h3>
-        <p class="NewAldyFontType4 text-aldy-green-gray">
-          Contenido no disponible
-        </p>
-        <p class="NewAldyFontType4 text-aldy-green-gray text-sm mt-1">
-          Vuelva más rato
-        </p>
-      </div>
-    </div>
-  </ng-template>
 </app-modalv2>
