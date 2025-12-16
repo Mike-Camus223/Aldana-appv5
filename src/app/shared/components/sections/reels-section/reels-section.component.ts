@@ -32,6 +32,9 @@ export class ReelsSectionComponent implements OnInit, OnDestroy {
   currentMediaIndex = 0;
   isMuted = true;
 
+  // Para mantener la posición del scroll
+  private scrollPosition = 0;
+
   breakpoints: any = {
     '(min-width: 640px)': { slides: { perView: 2, spacing: 5 } },
     '(min-width: 768px)': { slides: { perView: 3, spacing: 5 } },
@@ -62,13 +65,13 @@ export class ReelsSectionComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    // Limpieza si es necesaria
+    // Asegurarse de desbloquear el scroll al destruir el componente
+    this.unlockScroll();
   }
 
   onMediaLoaded(_event?: Event): void {
-  this.isMediaLoading = false;
-}
-
+    this.isMediaLoading = false;
+  }
 
   private async loadInstagramReels(): Promise<void> {
     try {
@@ -117,14 +120,12 @@ export class ReelsSectionComponent implements OnInit, OnDestroy {
     }
   }
 
-  
   updateModalStyles(): void {
     if (this.isMobile) {
       this.modalStyles =
         'fixed inset-0 w-screen h-screen m-0 p-0 bg-white rounded-none overflow-hidden z-[9999]';
     } else {
-      this.modalStyles =
-        'w-auto max-h-[90vh] rounded-sm';
+      this.modalStyles = 'w-auto max-h-[90vh] rounded-sm';
     }
   }
 
@@ -158,14 +159,40 @@ export class ReelsSectionComponent implements OnInit, OnDestroy {
   }
 
   private lockScroll(): void {
-    if (isPlatformBrowser(this.platformId)) {
+    // SOLO bloquear scroll en mobile
+    if (isPlatformBrowser(this.platformId) && this.isMobile) {
+      // Guardar la posición actual del scroll
+      this.scrollPosition = window.pageYOffset || document.documentElement.scrollTop;
+      
+      // Bloquear scroll del body
+      document.body.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${this.scrollPosition}px`;
+      document.body.style.width = '100%';
+      
+      // Para iOS Safari - prevenir scroll touch
+      document.body.style.touchAction = 'none';
+      
+      // Agregar clase adicional por si acaso
       document.body.classList.add('no-scroll');
     }
   }
 
   private unlockScroll(): void {
-    if (isPlatformBrowser(this.platformId)) {
+    // SOLO desbloquear si estaba bloqueado (mobile)
+    if (isPlatformBrowser(this.platformId) && this.isMobile) {
+      // Restaurar scroll del body
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+      document.body.style.touchAction = '';
+      
+      // Remover clase
       document.body.classList.remove('no-scroll');
+      
+      // Restaurar la posición del scroll
+      window.scrollTo(0, this.scrollPosition);
     }
   }
 
@@ -181,27 +208,25 @@ export class ReelsSectionComponent implements OnInit, OnDestroy {
 
   closeModal(): void {
     this.showModal = false;
+    this.unlockScroll();
     // Delay clearing the selectedReel to prevent flashing empty state during animation
     setTimeout(() => {
       this.currentMediaIndex = 0;
       this.selectedReel = null;
-      this.unlockScroll();
     }, 200); // Match the animation duration
   }
 
   onModalChange(isOpen: boolean): void {
     this.showModal = isOpen;
     if (!isOpen) {
+      this.unlockScroll();
       // Delay clearing the selectedReel to prevent flashing empty state during animation
       setTimeout(() => {
         this.currentMediaIndex = 0;
         this.selectedReel = null;
-        this.unlockScroll();
       }, 200); // Match the animation duration
     }
   }
-
-  // Agregar estos métodos a tu ReelsSectionComponent
 
   /**
    * Genera iniciales a partir de un nombre de usuario
@@ -332,8 +357,8 @@ export class ReelsSectionComponent implements OnInit, OnDestroy {
   }
 
   toggleMute(): void {
-  this.isMuted = !this.isMuted;
-}
+    this.isMuted = !this.isMuted;
+  }
 
   private resetVideoState(): void {
     this.isMuted = true;
@@ -343,7 +368,6 @@ export class ReelsSectionComponent implements OnInit, OnDestroy {
     return media?.type === 'video';
   }
 
-  // Método helper para debug
   get hasComments(): boolean {
     return this.selectedReel?.comments && this.selectedReel.comments.length > 0;
   }
