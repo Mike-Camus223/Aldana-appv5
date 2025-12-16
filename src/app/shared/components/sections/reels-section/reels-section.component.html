@@ -16,16 +16,12 @@
   </div>
 </div>
 
-<!-- =============================== -->
-<!-- ========== MODAL ============== -->
-<!-- =============================== -->
 <app-modalv2
   [(open)]="showModal"
   [Mostyles]="modalStyles"
   (openChange)="onModalChange($event)"
 >
   <ng-container *ngIf="selectedReel">
-    <!-- WRAPPER PRINCIPAL ADAPTADO A MOBILE 50/50 -->
     <div
       class="flex flex-col lg:flex-row bg-white overflow-hidden"
       [ngClass]="{
@@ -33,9 +29,7 @@
         'w-auto h-auto': !isMobile
       }"
     >
-      <!-- ===================== -->
-      <!--   MEDIA IZQUIERDA     -->
-      <!-- ===================== -->
+      <!-- MEDIA IZQUIERDA -->
       <div
         class="bg-black flex items-center justify-center relative"
         [ngClass]="{
@@ -50,15 +44,16 @@
           >
             <div class="spinner"></div>
           </div>
-          <!-- IMAGEN -->
+          
           <img
             *ngIf="!isVideo(currentMedia)"
             [src]="currentMedia.url"
             class="w-full h-full object-contain"
+            loading="lazy"
             (load)="onMediaLoaded($event)"
             (error)="onMediaLoaded($event)"
           />
-          <!-- VIDEO -->
+          
           <video
             *ngIf="isVideo(currentMedia)"
             [src]="currentMedia.url"
@@ -67,11 +62,11 @@
             playsinline
             [muted]="isMuted"
             class="w-full h-full object-contain"
+            preload="metadata"
             (loadeddata)="onMediaLoaded($any($event))"
             (error)="onMediaLoaded($any($event))"
           ></video>
 
-          <!-- BOTÓN MUTE -->
           <button
             *ngIf="isVideo(currentMedia)"
             (click)="toggleMute()"
@@ -84,7 +79,6 @@
           </button>
         </div>
 
-        <!-- FLECHA IZQUIERDA -->
         <button
           *ngIf="hasMultipleMedia && currentMediaIndex > 0 && !isMobile"
           (click)="prevMedia()"
@@ -93,25 +87,20 @@
           <i class="fas fa-chevron-left text-gray-800"></i>
         </button>
 
-        <!-- FLECHA DERECHA -->
         <button
-          *ngIf="
-            hasMultipleMedia &&
-            currentMediaIndex < selectedReel.media.length - 1 &&
-            !isMobile
-          "
+          *ngIf="hasMultipleMedia && currentMediaIndex < selectedReel.media.length - 1 && !isMobile"
           (click)="nextMedia()"
           class="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-lg transition-all z-10"
         >
           <i class="fas fa-chevron-right text-gray-800"></i>
         </button>
-        <!-- INDICADORES -->
+
         <div
           *ngIf="hasMultipleMedia && !isMobile"
           class="absolute top-4 left-1/2 -translate-x-1/2 flex gap-1 z-10"
         >
           <div
-            *ngFor="let media of selectedReel.media; let i = index"
+            *ngFor="let media of selectedReel.media; let i = index; trackBy: trackByMediaIndex"
             (click)="goToMedia(i)"
             class="cursor-pointer transition-all"
             [ngClass]="{
@@ -122,9 +111,7 @@
         </div>
       </div>
 
-      <!-- ===================== -->
-      <!--      INFO DERECHA     -->
-      <!-- ===================== -->
+      <!-- INFO DERECHA -->
       <div
         class="w-full lg:w-[340px] flex flex-col bg-aldy-white border-l border-gray-200"
         [ngClass]="{
@@ -132,18 +119,16 @@
           'h-auto': !isMobile
         }"
       >
-        <!-- HEADER CON CAPTION - ALTURA LIMITADA EN MOBILE -->
         <div
           class="px-3 py-4 border-b border-gray-200 flex items-start gap-2.5 flex-shrink-0"
-          [ngClass]="{
-            'max-h-[30%]': isMobile
-          }"
+          [ngClass]="{ 'max-h-[30%]': isMobile }"
         >
           <div class="w-9 h-9 rounded-full overflow-hidden flex-shrink-0">
             <img
               *ngIf="selectedReel.profile_picture_url"
               [src]="selectedReel.profile_picture_url"
               class="w-full h-full object-cover"
+              loading="lazy"
             />
             <div
               *ngIf="!selectedReel.profile_picture_url"
@@ -169,7 +154,6 @@
           </div>
         </div>
 
-        <!-- SCROLLABLE COMMENTS - CON FLEX-1 PARA OCUPAR EL ESPACIO RESTANTE -->
         <div 
           class="overflow-y-auto scrollbar-hide px-3 py-4 space-y-4"
           [ngClass]="{
@@ -179,13 +163,14 @@
         >
           <div
             class="comment-block flex gap-2.5"
-            *ngFor="let comment of selectedReel.comments"
+            *ngFor="let comment of selectedReel.comments; trackBy: trackByCommentIndex"
           >
             <div class="w-8 h-8 rounded-full overflow-hidden flex-shrink-0">
               <img
                 *ngIf="comment.profile_pic"
                 [src]="comment.profile_pic"
                 class="w-full h-full object-cover"
+                loading="lazy"
               />
               <div
                 *ngIf="!comment.profile_pic"
@@ -197,26 +182,22 @@
             </div>
 
             <div class="flex-1 min-w-0">
-              <p
-                class="NewAldyFontType4 text-aldy-green-gray text-xs break-words"
-              >
+              <p class="NewAldyFontType4 text-aldy-green-gray text-xs break-words">
                 <span class="NewAldyTitle text-aldy-green-gray-bold">
                   {{ comment.user }}
                 </span>
                 {{ comment.text }}
               </p>
-              <span class="NewAldyFontType4 text-gray-500 text-xs">{{
-                comment.time
-              }}</span>
+              <span class="NewAldyFontType4 text-gray-500 text-xs">{{ comment.time }}</span>
             </div>
           </div>
         </div>
 
-        <!-- FOOTER - ALTURA FIJA -->
         <div class="px-3 py-4 border-t border-gray-200 flex-shrink-0">
           <a
             [href]="selectedReel.post_url"
             target="_blank"
+            rel="noopener noreferrer"
             class="text-aldy-green-gray text-2xl mr-2 inline-block"
           >
             <i class="fab fa-instagram"></i>
