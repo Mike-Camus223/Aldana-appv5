@@ -23,9 +23,8 @@ export class ReelsSectionComponent implements OnInit, OnDestroy {
   reels: any[] = [];
   selectedReel: any = null;
   isMobile = false;
-
+  isMediaLoading = true;
   modalStyles = '';
-
   slidesPerView = 2;
   spacing = 5;
 
@@ -65,6 +64,11 @@ export class ReelsSectionComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     // Limpieza si es necesaria
   }
+
+  onMediaLoaded(_event?: Event): void {
+  this.isMediaLoading = false;
+}
+
 
   private async loadInstagramReels(): Promise<void> {
     try {
@@ -167,10 +171,10 @@ export class ReelsSectionComponent implements OnInit, OnDestroy {
 
   openModal(reel: any): void {
     if (!reel) return;
-
     this.selectedReel = reel;
     this.currentMediaIndex = 0;
     this.isMuted = true;
+    this.isMediaLoading = true;
     this.showModal = true;
     this.lockScroll();
   }
@@ -308,6 +312,7 @@ export class ReelsSectionComponent implements OnInit, OnDestroy {
       this.currentMediaIndex < this.selectedReel.media.length - 1
     ) {
       this.currentMediaIndex++;
+      this.isMediaLoading = true;
       this.resetVideoState();
     }
   }
@@ -315,18 +320,20 @@ export class ReelsSectionComponent implements OnInit, OnDestroy {
   prevMedia(): void {
     if (this.currentMediaIndex > 0) {
       this.currentMediaIndex--;
+      this.isMediaLoading = true;
       this.resetVideoState();
     }
   }
 
   goToMedia(index: number): void {
     this.currentMediaIndex = index;
+    this.isMediaLoading = true;
     this.resetVideoState();
   }
 
   toggleMute(): void {
-    this.isMuted = !this.isMuted;
-  }
+  this.isMuted = !this.isMuted;
+}
 
   private resetVideoState(): void {
     this.isMuted = true;

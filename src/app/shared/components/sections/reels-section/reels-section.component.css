@@ -12,3 +12,18 @@
   page-break-inside: avoid;
   -webkit-column-break-inside: avoid;
 }
+
+.spinner {
+  width: 38px;
+  height: 38px;
+  border: 3px solid #D2E4CC;
+  border-top-color: var(--aldy-green-gray, #AEC2A9);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
