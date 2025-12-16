@@ -28,6 +28,7 @@ interface SignUpForm {
   standalone: true,
   imports: [RouterModule, ReactiveFormsModule, CommonModule, InputComponent, InputpasswordComponent,],
   templateUrl: './register-page.component.html',
+  styleUrl: './register-page.component.css',
 })
 export class RegisterPageComponent {
   private _fb = inject(FormBuilder);

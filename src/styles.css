@@ -114,3 +114,23 @@
 .NewAldyFontTypeAccent {
   font-family: 'accent-aldy';
 }
+
+.scrollbar-invisible {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  overflow: auto;
+}
+
+.scrollbar-invisible::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+.scrollbar-invisible::-webkit-scrollbar-track {
+  display: none;
+}
+
+.scrollbar-invisible::-webkit-scrollbar-thumb {
+  display: none;
+}
