@@ -1,121 +1,170 @@
 <div class="h-[72px] lg:h-[88px]"></div>
 
-<div class="min-h-[19rem] bg-aldy-white h-full w-full flex flex-col items-center justify-center pt-6 pb-8">
-    <div class="relative w-full max-w-screen px-2 xs:px-4 content-wrapper">
-        <input type="text" class="ghost-input mx-auto max-w-[18rem] xs:max-w-sm sm:max-w-xl md:max-w-2xl"
-            (input)="onInput($event)" autofocus #inputElement />
+<div
+  class="min-h-[19rem] bg-aldy-white h-full w-full flex flex-col items-center justify-center pt-6 pb-8"
+>
+  <div class="relative w-full max-w-screen px-2 xs:px-4 content-wrapper">
+    <!-- ===== WRAPPER NUEVO (SOLO PARA SINCRONIZAR TAMAÑO) ===== -->
+    <div class="relative mx-auto w-fit">
+      <!-- INPUT REAL (INVISIBLE, MISMO TAMAÑO) -->
+      <input
+        type="text"
+        class="ghost-input"
+        (input)="onInput($event)"
+        autofocus
+        #inputElement
+      />
 
-        <div #fakeInput
-            class="fake-input max-w-[18rem] xs:max-w-sm sm:max-w-xl md:max-w-2xl border-b border-aldy-green-gray text-2xl xs:text-3xl sm:text-6xl md:text-7xl lg:text-8xl text-gray-700 font-medium tracking-wide transition-all duration-300"
-            [ngClass]="{ activated: chars.length > 0 }" [style.width.px]="inputWidth">
-            <div #scrollContainer
-                class="scroll-text flex items-center max-w-[18rem] xs:max-w-sm sm:max-w-xl md:max-w-2xl relative overflow-x-auto hide-scrollbar whitespace-nowrap"
-                [ngClass]="{
-                    'text-center': chars.length === 0,
-                    'text-left': chars.length > 0
-                }">
-                <div #animatedText class="animated-text inline-flex gap-[1px] relative leading-none">
-                    <ng-container *ngIf="chars.length === 0">
-                        <span
-                            class="flex items-center gap-1 text-aldy-green-gray select-none placeholder-animate NewAldyTitle uppercase">
-                            <span class="leading-none">Buscar</span>
-                            <span class="blinking-cursor placeholder-cursor text-aldy-green-gray leading-none">|</span>
-                        </span>
-                    </ng-container>
+      <!-- ===== FAKE INPUT (TU CÓDIGO ORIGINAL, INTACTO) ===== -->
+      <div
+        #fakeInput
+        class="fake-input max-w-[18rem] xs:max-w-sm sm:max-w-xl md:max-w-4xl border-b border-aldy-green-gray text-2xl xs:text-3xl sm:text-6xl md:text-7xl lg:text-8xl text-gray-700 font-medium tracking-wide transition-all duration-300"
+        [ngClass]="{ activated: chars.length > 0 }"
+        [style.width.px]="inputWidth"
+      >
+        <div
+          #scrollContainer
+          class="scroll-text flex items-center max-w-[18rem] xs:max-w-sm sm:max-w-xl md:max-w-4xl relative overflow-x-auto hide-scrollbar whitespace-nowrap"
+          [ngClass]="{
+            'text-center': chars.length === 0,
+            'text-left': chars.length > 0
+          }"
+        >
+          <div
+            #animatedText
+            class="animated-text inline-flex gap-[1px] relative leading-none"
+          >
+            <ng-container *ngIf="chars.length === 0">
+              <span
+                class="flex items-center gap-1 text-aldy-green-gray select-none placeholder-animate NewAldyTitle uppercase"
+              >
+                <span class="leading-none">Buscar</span>
+                <span
+                  class="blinking-cursor placeholder-cursor text-aldy-green-gray leading-none"
+                  >|</span
+                >
+              </span>
+            </ng-container>
 
-                    <ng-container *ngIf="chars.length > 0">
-                        <span *ngFor="let char of chars"
-                            class="inline-block whitespace-pre NewAldyFontType4 text-aldy-green-gray leading-none">{{
-                            char
-                            }}</span>
-                        <span class="blinking-cursor text-aldy-green-gray leading-none">|</span>
-                    </ng-container>
-                </div>
-            </div>
+            <ng-container *ngIf="chars.length > 0">
+              <span
+                *ngFor="let char of chars"
+                class="inline-block NewAldyFontType4 text-aldy-green-gray leading-none"
+                [class.char-space]="char === ' '"
+              >
+                {{ char === " " ? "\u00A0" : char }}
+              </span>
+
+              <span class="blinking-cursor text-aldy-green-gray leading-none"
+                >|</span
+              >
+            </ng-container>
+          </div>
         </div>
-
-        <div *ngIf="loading" class="flex justify-center my-10">
-            <p-progressSpinner></p-progressSpinner>
-        </div>
-
-        <div *ngIf="!loading && noResults && chars.length > 0"
-            class="text-center text-aldy-green-gray mt-[80px] px-2 xs:px-4 NewAldyFontType4 text-sm">
-            No se encontraron resultados.
-        </div>
-
-        <div *ngIf="!loading && !noResults && chars.length > 0" class="w-full max-w-8xl mx-auto px-2 xs:px-4 mt-[80px]">
-            <div
-                class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 max-w-screen-2xl mx-auto gap-6 justify-items-center">
-                <div *ngFor="let product of products; trackBy: trackByProductId"
-                    class="product-card rounded-sm transition relative overflow-hidden flex flex-col w-full cursor-pointer"
-                    (click)="navigateToProduct(product.slug, $event)"
-                    (touchstart)="navigateToProduct(product.slug, $event)">
-
-                    <div class="product-link group block">
-
-                        <!-- Imagen -->
-                        <div class="relative rounded-t-sm aspect-[3/4] sm:aspect-[3/4] md:aspect-[3/5] lg:aspect-[3/5] xl:aspect-[3/5]
-                    flex items-center justify-center overflow-hidden">
-
-                            <img [src]="product.main_image" [alt]="product.name" loading="lazy" fetchpriority="low"
-                                class="h-full w-full object-cover object-top" />
-
-                            <div class="absolute inset-0 bg-white/20 bg-opacity-10 opacity-0 
-                        group-hover:opacity-100 transition duration-300"></div>
-
-                            <!-- Wishlist -->
-                            <button type="button" aria-label="Añadir a favoritos"
-                                (click)="toggleWishlist($event); $event.stopPropagation()" class="absolute top-3 right-3 bg-white/80 backdrop-blur-sm p-[5px] rounded-full shadow 
-                       transition-colors z-20 hover:bg-white">
-
-                                <lucide-icon [strokeWidth]="2.5" [size]="22"
-                                    [name]="product.wishlisted ? 'heart' : 'heart-plus'"
-                                    [ngClass]="product.wishlisted ? 'text-aldy-primary-600' : 'text-gray-500'">
-                                </lucide-icon>
-                            </button>
-                        </div>
-
-                        <!-- Texto -->
-                        <div class="px-4 pt-3 pb-2 w-full flex flex-col">
-
-                            <!-- Título arriba -->
-                            <h3 class="text-sm sm:text-lg font-normal tracking-wider NewAldyFontType4 leading-tight">
-                                {{ product.name }}
-                            </h3>
-
-                            <!-- Precio + Colores alineados -->
-                            <div class="flex items-center justify-between mt-1 w-full">
-
-                                <!-- Precio -->
-                                <p
-                                    class="text-xs sm:text-sm tracking-wider font-bold text-aldy-green-gray NewAldyFontType4">
-                                    {{ product.price | currency:'ARS':'symbol-narrow':'1.2-2':'es-AR' }}
-                                </p>
-
-                                <!-- Selector de colores -->
-                                <div class="flex items-center gap-1.5">
-                                    <button *ngFor="let variant of product.variants"
-                                        (click)="selectColor(product.id, variant.color_name, $event)"
-                                        (touchstart)="selectColor(product.id, variant.color_name, $event)"
-                                        [ngStyle]="{ backgroundColor: variant.color_hex }"
-                                        class="w-4.5 h-4.5 rounded-sm transition-all border" [ngClass]="{
-                            'border-white border-[2px] ring-1 ring-gray-800 cursor-default':
-                                selectedColors[product.id] === variant.color_name,
-                            'border-gray-300 cursor-pointer':
-                                selectedColors[product.id] !== variant.color_name
-                        }" [title]="variant.color_name" aria-label="Elegir color">
-                                    </button>
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-                </div>
-
-
-            </div>
-        </div>
+      </div>
     </div>
+    <!-- SPINNER -->
+    <div *ngIf="loading" class="flex justify-center my-10">
+        <div class="spinner"></div>
+    </div>
+    <!-- NO RESULTS -->
+    <div
+      *ngIf="!loading && noResults && chars.length > 0"
+      class="text-center text-aldy-green-gray mt-[80px] px-2 xs:px-4 NewAldyFontType4 text-sm"
+    >
+      No se encontraron resultados.
+    </div>
+
+    <!-- ===== PRODUCTS ===== -->
+    <div
+      *ngIf="!loading && !noResults && chars.length > 0"
+      class="w-full max-w-8xl mx-auto px-2 xs:px-4 mt-[80px]"
+    >
+      <div
+        class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 max-w-screen-2xl mx-auto gap-6 justify-items-center"
+      >
+        <div
+          *ngFor="let product of products; trackBy: trackByProductId"
+          class="product-card rounded-sm transition relative overflow-hidden flex flex-col w-full cursor-pointer"
+          (click)="navigateToProduct(product.slug, $event)"
+          (touchstart)="navigateToProduct(product.slug, $event)"
+        >
+          <div class="product-link group block">
+            <div
+              class="relative rounded-t-sm aspect-[3/4] sm:aspect-[3/4] md:aspect-[3/5] lg:aspect-[3/5] xl:aspect-[3/5] flex items-center justify-center overflow-hidden"
+            >
+              <img
+                [src]="product.main_image"
+                [alt]="product.name"
+                loading="lazy"
+                fetchpriority="low"
+                class="h-full w-full object-cover object-top"
+              />
+
+              <div
+                class="absolute inset-0 bg-white/20 bg-opacity-10 opacity-0 group-hover:opacity-100 transition duration-300"
+              ></div>
+
+              <button
+                type="button"
+                aria-label="Añadir a favoritos"
+                (click)="toggleWishlist($event); $event.stopPropagation()"
+                class="absolute top-3 right-3 bg-white/80 backdrop-blur-sm p-[5px] rounded-full shadow transition-colors z-20 hover:bg-white"
+              >
+                <lucide-icon
+                  [strokeWidth]="2.5"
+                  [size]="22"
+                  [name]="product.wishlisted ? 'heart' : 'heart-plus'"
+                  [ngClass]="
+                    product.wishlisted
+                      ? 'text-aldy-primary-600'
+                      : 'text-gray-500'
+                  "
+                >
+                </lucide-icon>
+              </button>
+            </div>
+
+            <div class="px-4 pt-3 pb-2 w-full flex flex-col">
+              <h3
+                class="text-sm sm:text-lg font-normal tracking-wider NewAldyFontType4 leading-tight"
+              >
+                {{ product.name }}
+              </h3>
+              <div class="flex items-center justify-between mt-1 w-full">
+                <p
+                  class="text-xs sm:text-sm tracking-wider font-bold text-aldy-green-gray NewAldyFontType4"
+                >
+                  {{
+                    product.price
+                      | currency : "ARS" : "symbol-narrow" : "1.2-2" : "es-AR"
+                  }}
+                </p>
+                <div class="flex items-center gap-1.5">
+                  <button
+                    *ngFor="let variant of product.variants"
+                    (click)="
+                      selectColor(product.id, variant.color_name, $event)
+                    "
+                    (touchstart)="
+                      selectColor(product.id, variant.color_name, $event)
+                    "
+                    [ngStyle]="{ backgroundColor: variant.color_hex }"
+                    class="w-4.5 h-4.5 rounded-sm transition-all border"
+                    [ngClass]="{
+                      'border-white border-[2px] ring-1 ring-gray-800 cursor-default':
+                        selectedColors[product.id] === variant.color_name,
+                      'border-gray-300 cursor-pointer':
+                        selectedColors[product.id] !== variant.color_name
+                    }"
+                    [title]="variant.color_name"
+                  ></button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

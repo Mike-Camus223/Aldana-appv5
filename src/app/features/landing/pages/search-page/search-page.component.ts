@@ -12,7 +12,6 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SupabaseService } from '../../../../core/services/data-access/supabase.service';
-import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import gsap from 'gsap';
 import {
   Subject,
@@ -31,7 +30,7 @@ import { Heart, HeartPlus, LUCIDE_ICONS, LucideAngularModule, LucideIconProvider
 @Component({
   selector: 'app-search-page',
   standalone: true,
-  imports: [CommonModule, ProgressSpinnerModule, RouterModule, LucideAngularModule],
+  imports: [CommonModule, RouterModule, LucideAngularModule],
   templateUrl: './search-page.component.html',
   styleUrls: ['./search-page.component.css'],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],

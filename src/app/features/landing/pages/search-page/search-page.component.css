@@ -13,13 +13,12 @@
   text-align: left;
 }
 
-
-
 .ghost-input {
   position: absolute;
-  inset: 0;
+  inset: 0;                 /* 🔥 CLAVE DEL FIX */
   width: 100%;
   height: 100%;
+
   opacity: 0;
   z-index: 10;
   caret-color: transparent;
@@ -27,6 +26,9 @@
   border: none;
   color: transparent;
   font-size: inherit;
+  pointer-events: auto;
+  padding: 0;
+  margin: 0;
 }
 
 .scroll-text {
@@ -40,6 +42,10 @@
 
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
+}
+
+.char-space {
+  min-width: 0.33em; /* ancho real de espacio */
 }
 
 .placeholder-animate {
@@ -74,23 +80,24 @@
   touch-action: manipulation;
 }
 
-.color-selector {
-  -webkit-tap-highlight-color: transparent;
-  touch-action: manipulation;
-}
-
 .color-selector button {
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
-  position: relative;
 }
 
-.color-selector button:active {
-  transform: scale(1.1);
-  transition: transform 0.1s ease-in-out;
+.spinner {
+  width: 100px;
+  height: 100px;
+  border: 3px solid #D2E4CC;
+  border-top-color: var(--aldy-green-gray, #AEC2A9);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
 }
 
-/* Mejorar el área de toque en móviles */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
 @media (max-width: 768px) {
   .product-card {
     padding: 2px;
@@ -98,21 +105,13 @@
 }
 
 @keyframes writer {
-  from {
-    width: 0;
-  }
-  to {
-    width: 100%;
-  }
+  from { width: 0; }
+  to { width: 100%; }
 }
 
 @keyframes blink {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0;
-  }
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
 }
 
 @media (max-width: 320px) {
@@ -120,18 +119,22 @@
     max-width: 18rem !important;
     font-size: 1.5rem !important;
   }
-  
+
   .scroll-text {
     max-width: 18rem !important;
   }
-  
+
   .animated-text {
     padding: 0.75rem !important;
   }
-  
+
   .content-wrapper {
     padding-left: 0.5rem !important;
     padding-right: 0.5rem !important;
+  }
+
+  .ghost-input {
+    height: 60px;
   }
 }
 
@@ -140,7 +143,7 @@
     max-width: 20rem !important;
     font-size: 1.75rem !important;
   }
-  
+
   .scroll-text {
     max-width: 20rem !important;
   }

@@ -182,11 +182,13 @@
             </div>
 
             <div class="flex-1 min-w-0">
-              <p class="NewAldyFontType4 text-aldy-green-gray text-xs break-words">
-                <span class="NewAldyTitle text-aldy-green-gray-bold">
+              <p class="NewAldyFontType4 text-aldy-green-gray break-words">
+                <span class="NewAldyTitle text-sm text-aldy-green-gray-bold">
                   {{ comment.user }}
                 </span>
-                {{ comment.text }}
+                <span class="text-xs">
+                  {{ comment.text }}
+                </span>
               </p>
               <span class="NewAldyFontType4 text-gray-500 text-xs">{{ comment.time }}</span>
             </div>
