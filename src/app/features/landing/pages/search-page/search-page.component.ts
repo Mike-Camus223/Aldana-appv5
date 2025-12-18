@@ -25,25 +25,15 @@ import {
   ProductVariant
 } from '../../../../shared/utils/models/Products-supabase.interface';
 import { AuthService } from '../../../../core/services/auth/auth.service';
-import { Heart, HeartPlus, LUCIDE_ICONS, LucideAngularModule, LucideIconProvider } from 'lucide-angular';
+import { CardproductComponent } from '../../../../shared/components/generic/cardproduct/cardproduct.component';
 
 @Component({
   selector: 'app-search-page',
   standalone: true,
-  imports: [CommonModule, RouterModule, LucideAngularModule],
+  imports: [CommonModule, RouterModule, CardproductComponent],
   templateUrl: './search-page.component.html',
   styleUrls: ['./search-page.component.css'],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  providers: [
-    {
-      provide: LUCIDE_ICONS,
-      multi: true,
-      useValue: new LucideIconProvider({
-        Heart,
-        HeartPlus
-      })
-    }
-  ]
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class SearchPageComponent implements AfterViewInit, OnDestroy {
   chars: string[] = [];
@@ -56,7 +46,6 @@ export class SearchPageComponent implements AfterViewInit, OnDestroy {
   @Input() product!: Product;
   selectedCategory: string | null = null;
   selectedSubcategory: string | null = null;
-  private wishlistKey = 'wishlistProducts';
 
   private destroy$ = new Subject<void>();
   private searchSubject = new Subject<string>();
@@ -179,52 +168,24 @@ export class SearchPageComponent implements AfterViewInit, OnDestroy {
     }, 100);
   }
 
-  navigateToProduct(productSlug: string, event?: Event): void {
-  if (event) {
-    event.preventDefault();
-    event.stopPropagation();
-  }
-
-  setTimeout(() => {
-    this.router.navigate(['/producto', productSlug]);
-  }, 0);
-}
-
-  selectColor(productId: string, colorName: string, event?: Event): void {
-    if (event) {
-      event.preventDefault();
-      event.stopPropagation();
+  onColorSelected(event: { productId: string; color: string }): void {
+    this.selectedColors[event.productId] = event.color;
+    
+    const product = this.products.find(p => p.id === event.productId);
+    if (product) {
+      const variant = product.variants.find(v => v.color_name === event.color);
+      if (variant) {
+        // Actualizar la imagen del producto si es necesario
+      }
     }
-
-    if (this.selectedColors[productId] === colorName) return;
-    this.selectedColors[productId] = colorName;
-
-    const product = this.products.find(p => p.id === productId);
-    const variant = product?.variants.find(v => v.color_name === colorName);
-
-    if (product && variant) {
-      product.main_image = product.main_image; 
-    }
-
+    
     this.updateQueryParamsWithoutReload();
   }
 
-  async toggleWishlist(event: Event) {
-    event.stopPropagation();
-    
-    if (!this.authService.isAuthenticated()) {
-      alert('Por favor inicia sesión para añadir a favoritos');
-      return;
-    }
-
-    try {
-      const result = await this.favoritesService.toggleFavorite(this.product.id);
-      alert(result.message);
-      // Update the local state to reflect the change
-      this.product.wishlisted = !this.product.wishlisted;
-    } catch (error) {
-      console.error('Error toggling wishlist:', error);
-      alert('Ocurrió un error al actualizar favoritos');
+  onWishlistToggled(productId: string): void {
+    const product = this.products.find(p => p.id === productId);
+    if (product) {
+      product.wishlisted = !product.wishlisted;
     }
   }
 
@@ -247,11 +208,6 @@ export class SearchPageComponent implements AfterViewInit, OnDestroy {
       queryParamsHandling: 'merge'
     }).toString();
     window.history.replaceState({}, '', newUrl);
-  }
-
-  private saveWishlistToStorage(): void {
-    const wishlistedIds = this.products.filter(p => p.wishlisted).map(p => p.id);
-    localStorage.setItem(this.wishlistKey, JSON.stringify(wishlistedIds));
   }
 
   trackByProductId(index: number, product: Product): string {
