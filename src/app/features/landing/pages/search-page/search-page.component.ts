@@ -79,6 +79,8 @@ export class SearchPageComponent implements OnInit, AfterViewInit, OnDestroy {
   products: Product[] = []; // Filtered products for display
   originalProducts: Product[] = []; // Raw search results
   noResults: boolean = false;
+  hasSearched: boolean = false;
+  searchMode: 'input' | 'filters' | null = null;
   @Input() product!: Product;
   
   // Filter & Layout Properties
@@ -308,10 +310,21 @@ export class SearchPageComponent implements OnInit, AfterViewInit, OnDestroy {
              this.priceRange = [min, max];
         }
 
-        // Trigger fetch if we have a search term or filters? 
-        // Usually we want to fetch if we have 'q'.
-        if (this.searchTerm) {
+        const hasFilters = (
+          (params['categorias'] && params['categorias'].length) ||
+          (params['subcategorias'] && params['subcategorias'].length) ||
+          (params['tamanos'] && params['tamanos'].length) ||
+          params['precio_min'] !== undefined ||
+          params['precio_max'] !== undefined
+        );
+
+        if (this.searchTerm || hasFilters) {
+            this.hasSearched = true;
+            this.searchMode = this.searchTerm ? 'input' : 'filters';
             this.fetchProducts();
+        } else {
+            this.hasSearched = false;
+            this.searchMode = null;
         }
     });
   }
@@ -343,20 +356,6 @@ export class SearchPageComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngAfterViewInit() {
     this.updateInputWidth();
-
-    this.searchSubject
-      .pipe(
-        debounceTime(3000),
-        distinctUntilChanged(),
-        takeUntil(this.destroy$)
-      )
-      .subscribe(() => {
-        const term = (this.searchTerm || '').trim();
-        if (term.length > 0) {
-          this.updateUrl();
-          this.fetchProducts();
-        }
-      });
   }
 
   ngOnDestroy() {
@@ -385,7 +384,6 @@ export class SearchPageComponent implements OnInit, AfterViewInit, OnDestroy {
     this.searchTerm = input;
     this.updateCharsFromSearchTerm();
     this.updateInputWidth();
-    this.searchSubject.next(this.searchTerm);
   }
 
   updateCharsFromSearchTerm() {
@@ -420,34 +418,23 @@ export class SearchPageComponent implements OnInit, AfterViewInit, OnDestroy {
     setTimeout(() => {
       if (this.scrollContainer?.nativeElement) {
         const scroll = this.scrollContainer.nativeElement.scrollWidth;
-        this.inputWidth = Math.min(scroll + 50, window.innerWidth * 0.9);
+        const minW = this.getDefaultInputWidth();
+        this.inputWidth = Math.max(minW, Math.min(scroll + 50, window.innerWidth * 0.9));
       }
     }, 0);
   }
 
   updateUrl() {
-      const queryParams: any = {};
-      if (this.searchTerm) queryParams.q = this.searchTerm;
-      
-      if (this.sortOption && this.sortOption !== 'relevance') {
-          queryParams.sort = this.sortOption;
-      }
-
-      if (this.selectedCategories.length > 0) {
-          queryParams.categorias = this.selectedCategories.join(',');
-      }
-
       const subs = this.getSelectedSubcategoriesFlat().map(s => s.subcategory);
-      if (subs.length > 0) {
-          queryParams.subcategorias = subs.join(',');
-      }
-
-      if (this.selectedSizes.length > 0) {
-          queryParams.tamanos = this.selectedSizes.join(',');
-      }
-
-      if (this.priceMin > 0) queryParams.precio_min = this.priceMin;
-      if (this.priceMax < this.maxPriceLimit) queryParams.precio_max = this.priceMax;
+      const queryParams: any = {
+          q: (this.searchTerm && this.searchTerm.trim().length) ? this.searchTerm : null,
+          sort: (this.sortOption && this.sortOption !== 'relevance') ? this.sortOption : null,
+          categorias: this.selectedCategories.length > 0 ? this.selectedCategories.join(',') : null,
+          subcategorias: subs.length > 0 ? subs.join(',') : null,
+          tamanos: this.selectedSizes.length > 0 ? this.selectedSizes.join(',') : null,
+          precio_min: this.priceMin > 0 ? this.priceMin : null,
+          precio_max: this.priceMax < this.maxPriceLimit ? this.priceMax : null,
+      };
 
       this.router.navigate([], {
           relativeTo: this.route,
@@ -461,9 +448,9 @@ export class SearchPageComponent implements OnInit, AfterViewInit, OnDestroy {
     this.loading = true;
     this.noResults = false;
     
-    // Don't clear products immediately to avoid flicker, unless new search term implies total change
-    
+    const delayMin = new Promise<void>(resolve => setTimeout(resolve, 1000));
     const { data, error } = await this.supabase.getProducts();
+    await delayMin;
 
     if (error) {
       console.error('Error al obtener productos', error);
@@ -471,13 +458,17 @@ export class SearchPageComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    const search = this.searchTerm.toLowerCase();
-
-    const rawProducts = (data as any[]).filter(p =>
-      p.name?.toLowerCase().includes(search) ||
-      p.categories?.name?.toLowerCase().includes(search) ||
-      p.subcategories?.name?.toLowerCase().includes(search)
-    );
+    let rawProducts: any[] = [];
+    if (this.searchMode === 'filters') {
+      rawProducts = (data as any[]) || [];
+    } else {
+      const search = this.searchTerm.toLowerCase();
+      rawProducts = (data as any[]).filter(p =>
+        p.name?.toLowerCase().includes(search) ||
+        p.categories?.name?.toLowerCase().includes(search) ||
+        p.subcategories?.name?.toLowerCase().includes(search)
+      );
+    }
 
     this.originalProducts = ProductUtils.mapProducts(rawProducts);
     
@@ -492,6 +483,13 @@ export class SearchPageComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   extractFiltersFromProducts() {
+    if (this.searchMode === 'filters') {
+        this.visiblePretCategories = this.pretAPorterCategories;
+        this.visibleNoviasCategories = this.noviasCategories;
+        this.visibleCategories = [...this.visiblePretCategories, ...this.visibleNoviasCategories];
+        return;
+    }
+
     if (this.originalProducts.length === 0) {
         this.visibleCategories = [];
         this.visiblePretCategories = [];
@@ -556,18 +554,11 @@ export class SearchPageComponent implements OnInit, AfterViewInit, OnDestroy {
     // Update Allowed Sizes
     this.allowedSizes = Array.from(usedSizes).sort();
 
-    // Update Price Range
-    if (minP === Number.MAX_VALUE) minP = 0;
-    this.maxPriceLimit = Math.ceil(maxP / 100) * 100;
-    if (this.maxPriceLimit === 0) this.maxPriceLimit = 500000;
-    
-    // If user hasn't set price range yet, or if range is default, update it.
-    // But if user set it, keep it? 
-    // Usually on new search (new originalProducts), we might want to reset or clamp.
-    // For now, reset only if not set.
+    // Precio fijo: no limitado por productos
+    this.maxPriceLimit = 500000;
     if (this.priceMin === 0 && this.priceMax === 500000) {
         this.priceMin = 0;
-        this.priceMax = this.maxPriceLimit;
+        this.priceMax = 500000;
         this.priceRange = [this.priceMin, this.priceMax];
     }
   }
@@ -577,44 +568,40 @@ export class SearchPageComponent implements OnInit, AfterViewInit, OnDestroy {
   // --- FILTERS LOGIC ---
 
   applyFilters() {
-    let filtered = [...this.originalProducts];
+    const subUnion = Object.values(this.selectedSubcategoriesMap).flat();
+    const hasAnyCategory = this.selectedCategories.length > 0;
+    const hasAnySub = subUnion.length > 0;
+    const hasAnySize = this.selectedSizes.length > 0;
 
-    // 1. Categories
-    if (this.selectedCategories.length > 0) {
-      filtered = filtered.filter(p => {
-          const cat = ProductUtils.normalize(p.category?.name || '');
-          return this.selectedCategories.includes(cat);
-      });
-    }
+    const filtered = this.originalProducts.filter(p => {
+      const productCategory = ProductUtils.normalize(
+        typeof (p as any).category === 'string' ? (p as any).category : ((p as any).category?.name ?? '')
+      );
+      const productSubcategory = ProductUtils.normalize(
+        typeof (p as any).subcategory === 'string' ? (p as any).subcategory : ((p as any).subcategory?.name ?? '')
+      );
 
-    // 2. Subcategories
-    const subFlat = this.getSelectedSubcategoriesFlat();
-    if (subFlat.length > 0) {
-        // If subcategories are selected, we must match at least one of them
-        // Note: Logic in StoreTemplate might differ slightly (AND vs OR). 
-        // Usually, if multiple subcats are selected, it's OR.
-        // Also ensure the product belongs to the parent category of the subcategory.
-        
-        // Let's create a Set of allowed subcategories
-        const allowedSubs = new Set(subFlat.map(s => s.subcategory));
-        
-        filtered = filtered.filter(p => {
-            const sub = ProductUtils.normalize(p.subcategory?.name || '');
-            return allowedSubs.has(sub);
-        });
-    }
+      let include = !(hasAnyCategory || hasAnySub);
 
-    // 3. Sizes
-    if (this.selectedSizes.length > 0) {
-        filtered = filtered.filter(p => {
-             return this.selectedSizes.some(s => this.productHasSize(p, s));
-        });
-    }
+      if (hasAnyCategory) {
+        if (this.selectedCategories.includes(productCategory)) {
+          const subsForCat = this.selectedSubcategoriesMap[productCategory];
+          if (subsForCat && subsForCat.length > 0) {
+            include = subsForCat.includes(productSubcategory);
+          } else {
+            include = true;
+          }
+        }
+      }
 
-    // 4. Price
-    filtered = filtered.filter(p => {
-        const price = this.getProductPrice(p);
-        return price >= this.priceMin && price <= this.priceMax;
+      if (!include && hasAnySub) {
+        include = subUnion.includes(productSubcategory);
+      }
+
+      const sizeMatch = !hasAnySize || this.selectedSizes.some(s => this.productHasSize(p, s));
+      const price = this.getProductPrice(p);
+      const priceMatch = price >= this.priceMin && price <= this.priceMax;
+      return include && sizeMatch && priceMatch;
     });
 
     this.products = filtered;
@@ -764,7 +751,35 @@ export class SearchPageComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   applyFiltersAction(isMobile: boolean) {
-      this.updateUrl();
+      let term = (this.searchTerm || '').trim();
+      if (!term && this.chars.length > 0) {
+          term = this.chars.join('').trim();
+          this.searchTerm = term;
+      }
+      if (this.hasActiveFilters()) {
+          this.searchTerm = '';
+          this.updateCharsFromSearchTerm();
+          this.searchMode = 'filters';
+          this.inputWidth = this.getDefaultInputWidth();
+      }
+      if (term.length > 0 || this.hasActiveFilters()) {
+          this.hasSearched = true;
+          if (!this.hasActiveFilters()) this.searchMode = 'input';
+          this.updateUrl();
+          this.fetchProducts();
+      } else {
+          this.hasSearched = false;
+          this.searchMode = 'input';
+          this.products = [];
+          this.originalProducts = [];
+          this.noResults = false;
+          this.loading = true;
+          this.updateUrl();
+          setTimeout(() => {
+              this.loading = false;
+              this.updateInputWidth();
+          }, 500);
+      }
       if (isMobile) {
           this.toggleFilters();
       }
@@ -772,13 +787,34 @@ export class SearchPageComponent implements OnInit, AfterViewInit, OnDestroy {
 
   clearFilters() {
       this.searchTerm = '';
+      this.chars = [];
       this.selectedCategories = [];
       this.selectedSubcategoriesMap = {};
       this.selectedSizes = [];
       this.priceMin = 0;
       this.priceMax = 500000;
       this.priceRange = [0, 500000];
+      this.products = [];
+      this.originalProducts = [];
+      this.noResults = false;
+      this.hasSearched = false;
+      this.searchMode = 'input';
+      this.inputWidth = this.getDefaultInputWidth();
       this.updateUrl();
+      this.loading = true;
+      setTimeout(() => {
+          this.loading = false;
+          this.updateInputWidth();
+      }, 500);
+  }
+
+  private getDefaultInputWidth(): number {
+      if (isPlatformBrowser(this.platformId)) {
+          const vw = window.innerWidth;
+          const base = Math.min(Math.max(Math.floor(vw * 0.6), 280), 720);
+          return base;
+      }
+      return 320;
   }
 
   getSelectedSubcategoriesFlat(): { category: string; subcategory: string }[] {

@@ -85,14 +85,18 @@
          uppercase tracking-widest text-xs NewAldyFontType4">
 
   <lucide-icon name="Search" [size]="20" [strokeWidth]="2"></lucide-icon>
-</button>
+      </button>
 
 
     </div>
 
+    <div *ngIf="loading && searchMode === 'input' && !hasSearched" class="w-full py-6 flex items-center justify-center">
+      <div class="spinner"></div>
+    </div>
+
     <!-- RESULTS INFO -->
     <div
-      *ngIf="searchTerm && originalProducts.length > 0"
+      *ngIf="hasSearched && searchTerm && originalProducts.length > 0"
       class="w-full text-center py-6 NewAldyFontType4 text-sm text-aldy-green-gray animate-fade-in"
     >
       Se encontraron {{ originalProducts.length }} resultados para "{{
@@ -210,18 +214,9 @@
         </div>
       </div>
     </div>
-
-    <!-- LOADING BAR (MISMO LUGAR, ANCHO CORRECTO) -->
-    <div class="spinner"></div>
-
     <!-- NO RESULTS (Initial Search) -->
     <div
-      *ngIf="
-        !loading &&
-        noResults &&
-        chars.length > 0 &&
-        originalProducts.length === 0
-      "
+      *ngIf="!loading && hasSearched && originalProducts.length === 0"
       class="text-center text-aldy-green-gray mt-[80px] px-2 xs:px-4 NewAldyFontType4 text-sm"
     >
       No se encontraron resultados para su búsqueda.
@@ -584,12 +579,16 @@
           <!-- PRODUCTS GRID -->
           <div
             #productsContainer
-            class="transition-all duration-500 ease-in-out flex-1 min-h-[300px]"
+            class="relative transition-all duration-500 ease-in-out flex-1 min-h-[300px]"
           >
+            <!-- Overlay spinner sobre las cards -->
+            <div *ngIf="loading && hasSearched" class="absolute inset-0 z-10 flex items-center justify-center">
+              <div class="spinner"></div>
+            </div>
             <!-- No results after filter -->
             <div
-              *ngIf="!loading && products.length === 0"
-              class="w-full text-center py-12 text-gray-500 NewAldyFontType4"
+              *ngIf="!loading && hasSearched && products.length === 0"
+              class="absolute inset-0 flex items-center justify-center text-center text-gray-500 NewAldyFontType4"
             >
               No se encontraron productos que coincidan con los filtros
               seleccionados.
@@ -597,7 +596,7 @@
 
             <!-- Grid -->
             <div
-              *ngIf="products.length > 0"
+              *ngIf="!loading && products.length > 0"
               [@gridAnimation]="productColumns"
               class="grid gap-5 transition-all duration-500 ease-in-out"
               [ngClass]="[
