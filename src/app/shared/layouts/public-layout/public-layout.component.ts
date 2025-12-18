@@ -37,6 +37,13 @@ export class PublicLayoutComponent implements OnInit, OnDestroy {
     this.routerSubscription = this.router.events.pipe(
       filter(event => event instanceof NavigationStart)
     ).subscribe((event: NavigationStart) => {
+      // Avoid showing loader if only query params change (e.g. search filters)
+      const currentPath = this.router.url.split('?')[0];
+      const newPath = event.url.split('?')[0];
+      if (currentPath === newPath) {
+        return;
+      }
+
       // Mantener contexto público para navegación desde Public Layout
       this.loaderService.setContext('public');
       this.loaderService.showLoaderOnNavigationIfAllowed(event.url);

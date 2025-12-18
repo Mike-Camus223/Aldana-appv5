@@ -7,6 +7,7 @@
   white-space: nowrap;
   transition: width 0.2s ease-in-out;
   width: fit-content;
+  line-height: 1.15;
 }
 
 .fake-input.activated {
@@ -15,7 +16,7 @@
 
 .ghost-input {
   position: absolute;
-  inset: 0;                 /* 🔥 CLAVE DEL FIX */
+  inset: 0;                 
   width: 100%;
   height: 100%;
 
@@ -147,4 +148,31 @@
   .scroll-text {
     max-width: 20rem !important;
   }
+}
+
+/* New classes */
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 2px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
 }

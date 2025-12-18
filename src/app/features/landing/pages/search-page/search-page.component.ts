@@ -8,9 +8,11 @@ import {
   Inject,
   PLATFORM_ID,
   Input,
-  CUSTOM_ELEMENTS_SCHEMA
+  CUSTOM_ELEMENTS_SCHEMA,
+  HostListener,
+  OnInit
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { SupabaseService } from '../../../../core/services/data-access/supabase.service';
 import gsap from 'gsap';
 import {
@@ -26,26 +28,90 @@ import {
 } from '../../../../shared/utils/models/Products-supabase.interface';
 import { AuthService } from '../../../../core/services/auth/auth.service';
 import { CardproductComponent } from '../../../../shared/components/generic/cardproduct/cardproduct.component';
+import { FormsModule } from '@angular/forms';
+import { CheckboxModule } from 'primeng/checkbox';
+import { SliderModule } from 'primeng/slider';
+import { LucideAngularModule, LUCIDE_ICONS, LucideIconProvider, Funnel, ChevronDown, ChevronUp, Search } from 'lucide-angular';
+import { AcordiongenericComponent } from '../../../../shared/components/generic/acordiongeneric/acordiongeneric.component';
+import { AldyCheckboxV1Directive } from '../../../../shared/utils/directives/aldy-checkbox-v1.directive';
+import { trigger, transition, style, animate, state } from '@angular/animations';
+import { ProductUtils } from '../../../../shared/utils/dataEx/products-utils';
 
 @Component({
   selector: 'app-search-page',
   standalone: true,
-  imports: [CommonModule, RouterModule, CardproductComponent],
+  imports: [
+    CommonModule, 
+    RouterModule, 
+    CardproductComponent,
+    FormsModule,
+    CheckboxModule,
+    SliderModule,
+    LucideAngularModule,
+    AcordiongenericComponent,
+    AldyCheckboxV1Directive
+  ],
   templateUrl: './search-page.component.html',
   styleUrls: ['./search-page.component.css'],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA]
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  animations: [
+    trigger('gridAnimation', [
+      transition('* => *', [
+        style({ transform: 'scale(0.98)', opacity: 0.8 }),
+        animate('400ms ease-out', style({ transform: 'scale(1)', opacity: 1 })),
+      ]),
+    ]),
+  ],
+  providers: [
+    {
+      provide: LUCIDE_ICONS,
+      multi: true,
+      useValue: new LucideIconProvider({ Funnel, ChevronDown, ChevronUp,Search })
+    }
+  ]
 })
-export class SearchPageComponent implements AfterViewInit, OnDestroy {
+export class SearchPageComponent implements OnInit, AfterViewInit, OnDestroy {
   chars: string[] = [];
   inputWidth: number = 150;
   selectedColors: Record<string, string> = {};
   searchTerm: string = '';
   loading: boolean = false;
-  products: Product[] = [];
+  products: Product[] = []; // Filtered products for display
+  originalProducts: Product[] = []; // Raw search results
   noResults: boolean = false;
   @Input() product!: Product;
-  selectedCategory: string | null = null;
-  selectedSubcategory: string | null = null;
+  
+  // Filter & Layout Properties
+  showFilters = false;
+  isMobileView = false;
+  productColumns: number = 4;
+  
+  sortOption: string = 'relevance';
+  sortOptions = [
+    { label: 'Relevancia', value: 'relevance' },
+    { label: 'Menor Precio', value: 'price_asc' },
+    { label: 'Mayor Precio', value: 'price_desc' },
+    { label: 'Nombre A-Z', value: 'name_asc' },
+    { label: 'Nombre Z-A', value: 'name_desc' }
+  ];
+
+  selectedCategories: string[] = [];
+  selectedSubcategoriesMap: Record<string, string[]> = {};
+  allowedSizes: string[] = ['S', 'M', 'L'];
+  selectedSizes: string[] = [];
+
+  // Price
+  priceRange: number[] = [0, 500000];
+  priceMin: number = 0;
+  priceMax: number = 500000;
+  maxPriceLimit: number = 500000;
+
+  openAccordions: Set<string> = new Set(['categorias']);
+  get openAccordionsArray(): string[] { return Array.from(this.openAccordions); }
+  
+  // Accordion Toggles
+  pretAPorterOpen = false;
+  noviasOpen = false;
 
   private destroy$ = new Subject<void>();
   private searchSubject = new Subject<string>();
@@ -54,6 +120,138 @@ export class SearchPageComponent implements AfterViewInit, OnDestroy {
   @ViewChild('inputElement') inputElement!: ElementRef<HTMLInputElement>;
   @ViewChild('scrollContainer') scrollContainer!: ElementRef<HTMLDivElement>;
   @ViewChild('fakeInput') fakeInput!: ElementRef<HTMLDivElement>;
+  @ViewChild('productsContainer') productsContainerRef?: ElementRef<HTMLDivElement>;
+
+  // Dynamic filters
+  visibleCategories: any[] = []; // Fallback/Generic
+  visiblePretCategories: any[] = [];
+  visibleNoviasCategories: any[] = [];
+
+  // Static Categories Definitions (from StoreTemplate)
+  categories = [
+    {
+      label: 'Camisas', value: 'camisas', subsections: [
+        { label: 'Camisas 1', value: 'camisas 1' },
+        { label: 'Camisas 2', value: 'camisas 2' },
+        { label: 'Camisas 3', value: 'camisas 3' }
+      ]
+    },
+    {
+      label: 'Blusas', value: 'blusas', subsections: [
+        { label: 'Blusas 1', value: 'blusas 1' },
+        { label: 'Blusas 2', value: 'blusas 2' },
+        { label: 'Blusas 3', value: 'blusas 3' }
+      ]
+    },
+    {
+      label: 'Faldas', value: 'faldas', subsections: [
+        { label: 'Faldas 1', value: 'faldas 1' },
+        { label: 'Faldas 2', value: 'faldas 2' },
+        { label: 'Faldas 3', value: 'faldas 3' }
+      ]
+    },
+    {
+      label: 'Pantalón', value: 'pantalon', subsections: [
+        { label: 'Pantalón 1', value: 'pantalon 1' },
+        { label: 'Pantalón 2', value: 'pantalon 2' },
+        { label: 'Pantalón 3', value: 'pantalon 3' }
+      ]
+    },
+    {
+      label: 'Abrigos', value: 'abrigos', subsections: [
+        { label: 'Campera', value: 'campera' },
+        { label: 'Buzos', value: 'buzos' },
+        { label: 'Chalecos', value: 'chalecos' },
+        { label: 'Blazers', value: 'blazers' },
+        { label: 'Tapados', value: 'tapados' }
+      ]
+    },
+    {
+      label: 'Vestidos', value: 'vestidos', subsections: [
+        { label: 'Vestidos 1', value: 'vestidos 1' },
+        { label: 'Vestidos 2', value: 'vestidos 2' },
+        { label: 'Vestidos 3', value: 'vestidos 3' }
+      ]
+    },
+    {
+      label: 'Remeras', value: 'remeras', subsections: [
+        { label: 'Remeras 1', value: 'remeras 1' },
+        { label: 'Remeras 2', value: 'remeras 2' },
+        { label: 'Remeras 3', value: 'remeras 3' }
+      ]
+    }
+  ];
+
+  pretAPorterCategories = [
+    {
+      label: 'Camisas', value: 'camisas', subsections: [
+        { label: 'Camisas 1', value: 'camisas 1' },
+        { label: 'Camisas 2', value: 'camisas 2' },
+        { label: 'Camisas 3', value: 'camisas 3' }
+      ]
+    },
+    {
+      label: 'Blusas', value: 'blusas', subsections: [
+        { label: 'Blusas 1', value: 'blusas 1' },
+        { label: 'Blusas 2', value: 'blusas 2' },
+        { label: 'Blusas 3', value: 'blusas 3' }
+      ]
+    },
+    {
+      label: 'Faldas', value: 'faldas', subsections: [
+        { label: 'Faldas 1', value: 'faldas 1' },
+        { label: 'Faldas 2', value: 'faldas 2' },
+        { label: 'Faldas 3', value: 'faldas 3' }
+      ]
+    },
+    {
+      label: 'Pantalón', value: 'pantalon', subsections: [
+        { label: 'Pantalón 1', value: 'pantalon 1' },
+        { label: 'Pantalón 2', value: 'pantalon 2' },
+        { label: 'Pantalón 3', value: 'pantalon 3' }
+      ]
+    },
+    {
+      label: 'Abrigos', value: 'abrigos', subsections: [
+        { label: 'Campera', value: 'campera' },
+        { label: 'Buzos', value: 'buzos' },
+        { label: 'Chalecos', value: 'chalecos' },
+        { label: 'Blazers', value: 'blazers' },
+        { label: 'Tapados', value: 'tapados' }
+      ]
+    },
+    {
+      label: 'Vestidos', value: 'vestidos', subsections: [
+        { label: 'Vestidos 1', value: 'vestidos 1' },
+        { label: 'Vestidos 2', value: 'vestidos 2' },
+        { label: 'Vestidos 3', value: 'vestidos 3' }
+      ]
+    },
+    {
+      label: 'Remeras', value: 'remeras', subsections: [
+        { label: 'Remeras 1', value: 'remeras 1' },
+        { label: 'Remeras 2', value: 'remeras 2' },
+        { label: 'Remeras 3', value: 'remeras 3' }
+      ]
+    }
+  ];
+
+  noviasCategories = [
+    {
+      label: 'Vestidos de Novia', value: 'vestidos de novia', subsections: [
+        { label: 'Vestidos de Novia 1', value: 'vestidos de novia 1' },
+        { label: 'Vestidos de Novia 2', value: 'vestidos de novia 2' },
+        { label: 'Vestidos de Novia 3', value: 'vestidos de novia 3' }
+      ]
+    },
+    {
+      label: 'Velos', value: 'velos', subsections: [
+        { label: 'Velos 1', value: 'velos 1' },
+        { label: 'Velos 2', value: 'velos 2' },
+        { label: 'Velos 3', value: 'velos 3' }
+      ]
+    }
+  ];
 
   constructor(
     private supabase: SupabaseService,
@@ -64,21 +262,99 @@ export class SearchPageComponent implements AfterViewInit, OnDestroy {
     @Inject(PLATFORM_ID) private platformId: Object
   ) { }
 
+  ngOnInit() {
+    this.checkMobileView();
+    // Initialize state from query params
+    this.route.queryParams.pipe(takeUntil(this.destroy$)).subscribe(params => {
+        // Search Term
+        if (params['q']) {
+            this.searchTerm = params['q'];
+            this.updateCharsFromSearchTerm();
+        }
+
+        // Sort
+        if (params['sort']) {
+            this.sortOption = params['sort'];
+        }
+
+        // Categories
+        if (params['categorias']) {
+            const cats = params['categorias'].split(',').map((c: string) => ProductUtils.normalize(c)).filter(Boolean);
+            this.selectedCategories = cats;
+        }
+
+        // Subcategories
+        if (params['subcategorias']) {
+            const subs = params['subcategorias'].split(',').map((s: string) => ProductUtils.normalize(s)).filter(Boolean);
+            // We need to map subs back to parents for the map.
+            // This is tricky without knowing the parent. 
+            // We will attempt to reconstruct logic in fetchProducts or just store flat.
+            // For now, let's rely on applyFilters handling "flat" logic or we rebuild map later.
+            // Ideally, we rebuild map.
+            this.rebuildSubcategoriesMap(subs);
+        }
+
+        // Sizes
+        if (params['tamanos']) {
+            this.selectedSizes = params['tamanos'].split(',').map((s: string) => String(s).toUpperCase());
+        }
+
+        // Price
+        if (params['precio_min'] || params['precio_max']) {
+             const min = params['precio_min'] ? Number(params['precio_min']) : 0;
+             const max = params['precio_max'] ? Number(params['precio_max']) : 500000;
+             this.priceMin = min;
+             this.priceMax = max;
+             this.priceRange = [min, max];
+        }
+
+        // Trigger fetch if we have a search term or filters? 
+        // Usually we want to fetch if we have 'q'.
+        if (this.searchTerm) {
+            this.fetchProducts();
+        }
+    });
+  }
+
+  rebuildSubcategoriesMap(subs: string[]) {
+      this.selectedSubcategoriesMap = {};
+      const allCats = [...this.pretAPorterCategories, ...this.noviasCategories];
+      
+      subs.forEach(sub => {
+          // Find parent
+          const parent = allCats.find(c => 
+              c.subsections?.some(s => ProductUtils.normalize(s.value) === sub)
+          );
+          if (parent) {
+              const pVal = ProductUtils.normalize(parent.value);
+              if (!this.selectedSubcategoriesMap[pVal]) {
+                  this.selectedSubcategoriesMap[pVal] = [];
+              }
+              if (!this.selectedSubcategoriesMap[pVal].includes(sub)) {
+                  this.selectedSubcategoriesMap[pVal].push(sub);
+              }
+              // Ensure parent is selected? Usually yes.
+              if (!this.selectedCategories.includes(pVal)) {
+                  this.selectedCategories.push(pVal);
+              }
+          }
+      });
+  }
+
   ngAfterViewInit() {
     this.updateInputWidth();
 
     this.searchSubject
       .pipe(
-        debounceTime(1400),
+        debounceTime(3000),
         distinctUntilChanged(),
         takeUntil(this.destroy$)
       )
       .subscribe(() => {
-        if (this.searchTerm.trim().length > 0) {
+        const term = (this.searchTerm || '').trim();
+        if (term.length > 0) {
+          this.updateUrl();
           this.fetchProducts();
-        } else {
-          this.products = [];
-          this.noResults = false;
         }
       });
   }
@@ -88,46 +364,105 @@ export class SearchPageComponent implements AfterViewInit, OnDestroy {
     this.destroy$.complete();
   }
 
+  @HostListener('window:resize', ['$event'])
+  onResize(event: any): void {
+    if (isPlatformBrowser(this.platformId)) {
+      this.checkMobileView();
+      if (!this.isMobileView && this.showFilters) {
+        this.showFilters = false;
+      }
+    }
+  }
+
+  checkMobileView(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      this.isMobileView = window.innerWidth < 1024;
+    }
+  }
+
   onInput(event: Event) {
     const input = (event.target as HTMLInputElement).value;
     this.searchTerm = input;
-    const oldLength = this.chars.length;
-    const newLength = input.length;
-
-    if (newLength < oldLength) {
-      this.chars.splice(newLength);
-    } else {
-      const newChar = input[newLength - 1];
-      this.chars.push(newChar);
-
-      setTimeout(() => {
-        const span = this.animatedText.nativeElement.children[newLength - 1];
-        if (span) {
-          gsap.fromTo(span, { x: '8px' }, { x: '0px', duration: 0.2, ease: 'power1.out' });
-        }
-        this.scrollContainer.nativeElement.scrollLeft =
-          this.scrollContainer.nativeElement.scrollWidth;
-      }, 0);
-    }
-
+    this.updateCharsFromSearchTerm();
     this.updateInputWidth();
     this.searchSubject.next(this.searchTerm);
   }
 
+  updateCharsFromSearchTerm() {
+      // Re-create chars array based on searchTerm
+      const oldLength = this.chars.length;
+      const newLength = this.searchTerm.length;
+
+      if (newLength < oldLength) {
+        this.chars.splice(newLength);
+      } else if (newLength > oldLength) {
+          for (let i = oldLength; i < newLength; i++) {
+              this.chars.push(this.searchTerm[i]);
+          }
+          // Animate new chars
+          setTimeout(() => {
+            const span = this.animatedText?.nativeElement?.children[newLength - 1];
+            if (span) {
+              gsap.fromTo(span, { x: '8px' }, { x: '0px', duration: 0.2, ease: 'power1.out' });
+            }
+            if (this.scrollContainer?.nativeElement) {
+                this.scrollContainer.nativeElement.scrollLeft =
+                this.scrollContainer.nativeElement.scrollWidth;
+            }
+          }, 0);
+      } else {
+          // Length same (maybe pasting same length?), just update content if needed or do nothing
+          this.chars = this.searchTerm.split('');
+      }
+  }
+
   updateInputWidth() {
     setTimeout(() => {
-      const scroll = this.scrollContainer.nativeElement.scrollWidth;
-      this.inputWidth = Math.min(scroll + 50, window.innerWidth * 0.9);
+      if (this.scrollContainer?.nativeElement) {
+        const scroll = this.scrollContainer.nativeElement.scrollWidth;
+        this.inputWidth = Math.min(scroll + 50, window.innerWidth * 0.9);
+      }
     }, 0);
+  }
+
+  updateUrl() {
+      const queryParams: any = {};
+      if (this.searchTerm) queryParams.q = this.searchTerm;
+      
+      if (this.sortOption && this.sortOption !== 'relevance') {
+          queryParams.sort = this.sortOption;
+      }
+
+      if (this.selectedCategories.length > 0) {
+          queryParams.categorias = this.selectedCategories.join(',');
+      }
+
+      const subs = this.getSelectedSubcategoriesFlat().map(s => s.subcategory);
+      if (subs.length > 0) {
+          queryParams.subcategorias = subs.join(',');
+      }
+
+      if (this.selectedSizes.length > 0) {
+          queryParams.tamanos = this.selectedSizes.join(',');
+      }
+
+      if (this.priceMin > 0) queryParams.precio_min = this.priceMin;
+      if (this.priceMax < this.maxPriceLimit) queryParams.precio_max = this.priceMax;
+
+      this.router.navigate([], {
+          relativeTo: this.route,
+          queryParams,
+          queryParamsHandling: 'merge',
+          replaceUrl: true
+      });
   }
 
   async fetchProducts() {
     this.loading = true;
     this.noResults = false;
-    this.products = [];
-
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-
+    
+    // Don't clear products immediately to avoid flicker, unless new search term implies total change
+    
     const { data, error } = await this.supabase.getProducts();
 
     if (error) {
@@ -138,79 +473,446 @@ export class SearchPageComponent implements AfterViewInit, OnDestroy {
 
     const search = this.searchTerm.toLowerCase();
 
-    const filtered = (data as any[]).filter(p =>
+    const rawProducts = (data as any[]).filter(p =>
       p.name?.toLowerCase().includes(search) ||
       p.categories?.name?.toLowerCase().includes(search) ||
       p.subcategories?.name?.toLowerCase().includes(search)
     );
 
-    this.products = filtered.map(p => ({
-      id: p.id,
-      name: p.name,
-      description: p.description,
-      details: p.details || '',
-      price: p.price || 0,
-      variants: p.product_variants || [],
-      main_image: p.main_image || '',
-      additional_images: p.additional_images || [],
-      sizes: p.sizes || [],
-      slug: p.slug || '',
-      category: p.categories,
-      subcategory: p.subcategories,
-      wishlisted: false
-    }));
-
-    this.noResults = this.products.length === 0;
+    this.originalProducts = ProductUtils.mapProducts(rawProducts);
+    
+    // Extract filters based on original products (search results)
+    this.extractFiltersFromProducts();
+    
+    // Apply filters to populate this.products
+    this.applyFilters();
+    
     this.loading = false;
+    this.noResults = this.products.length === 0;
+  }
 
-    setTimeout(() => {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }, 100);
+  extractFiltersFromProducts() {
+    if (this.originalProducts.length === 0) {
+        this.visibleCategories = [];
+        this.visiblePretCategories = [];
+        this.visibleNoviasCategories = [];
+        this.allowedSizes = [];
+        return;
+    }
+
+    // 1. Extract Categories & Subcategories
+    const usedCategories = new Set<string>();
+    const usedSubcategories = new Set<string>(); // "category|subcategory"
+    
+    // 2. Extract Sizes
+    const usedSizes = new Set<string>();
+    
+    // 3. Extract Prices
+    let minP = Number.MAX_VALUE;
+    let maxP = 0;
+
+    this.originalProducts.forEach(p => {
+        // Categories
+        const cName = ProductUtils.normalize(p.category?.name || '');
+        if (cName) usedCategories.add(cName);
+        
+        const sName = ProductUtils.normalize(p.subcategory?.name || '');
+        if (cName && sName) usedSubcategories.add(`${cName}|${sName}`);
+
+        // Sizes
+        const pSizes = this.getProductSizes(p);
+        pSizes.forEach(s => usedSizes.add(s));
+
+        // Prices
+        const price = this.getProductPrice(p);
+        if (price < minP) minP = price;
+        if (price > maxP) maxP = price;
+    });
+
+    // Helper to filter category lists
+    const filterCatList = (list: any[]) => {
+        return list
+            .filter(catData => usedCategories.has(ProductUtils.normalize(catData.value)))
+            .map(catData => {
+                const catNorm = ProductUtils.normalize(catData.value);
+                const visibleSubs = (catData.subsections || []).filter((sub: any) => {
+                    const subNorm = ProductUtils.normalize(sub.value);
+                    return usedSubcategories.has(`${catNorm}|${subNorm}`);
+                });
+                return {
+                    ...catData,
+                    subsections: visibleSubs
+                };
+            });
+    };
+
+    // Update Visible Categories
+    this.visiblePretCategories = filterCatList(this.pretAPorterCategories);
+    this.visibleNoviasCategories = filterCatList(this.noviasCategories);
+    
+    // Fallback if needed, or just combine for mobile if simpler
+    this.visibleCategories = [...this.visiblePretCategories, ...this.visibleNoviasCategories];
+
+    // Update Allowed Sizes
+    this.allowedSizes = Array.from(usedSizes).sort();
+
+    // Update Price Range
+    if (minP === Number.MAX_VALUE) minP = 0;
+    this.maxPriceLimit = Math.ceil(maxP / 100) * 100;
+    if (this.maxPriceLimit === 0) this.maxPriceLimit = 500000;
+    
+    // If user hasn't set price range yet, or if range is default, update it.
+    // But if user set it, keep it? 
+    // Usually on new search (new originalProducts), we might want to reset or clamp.
+    // For now, reset only if not set.
+    if (this.priceMin === 0 && this.priceMax === 500000) {
+        this.priceMin = 0;
+        this.priceMax = this.maxPriceLimit;
+        this.priceRange = [this.priceMin, this.priceMax];
+    }
+  }
+
+
+
+  // --- FILTERS LOGIC ---
+
+  applyFilters() {
+    let filtered = [...this.originalProducts];
+
+    // 1. Categories
+    if (this.selectedCategories.length > 0) {
+      filtered = filtered.filter(p => {
+          const cat = ProductUtils.normalize(p.category?.name || '');
+          return this.selectedCategories.includes(cat);
+      });
+    }
+
+    // 2. Subcategories
+    const subFlat = this.getSelectedSubcategoriesFlat();
+    if (subFlat.length > 0) {
+        // If subcategories are selected, we must match at least one of them
+        // Note: Logic in StoreTemplate might differ slightly (AND vs OR). 
+        // Usually, if multiple subcats are selected, it's OR.
+        // Also ensure the product belongs to the parent category of the subcategory.
+        
+        // Let's create a Set of allowed subcategories
+        const allowedSubs = new Set(subFlat.map(s => s.subcategory));
+        
+        filtered = filtered.filter(p => {
+            const sub = ProductUtils.normalize(p.subcategory?.name || '');
+            return allowedSubs.has(sub);
+        });
+    }
+
+    // 3. Sizes
+    if (this.selectedSizes.length > 0) {
+        filtered = filtered.filter(p => {
+             return this.selectedSizes.some(s => this.productHasSize(p, s));
+        });
+    }
+
+    // 4. Price
+    filtered = filtered.filter(p => {
+        const price = this.getProductPrice(p);
+        return price >= this.priceMin && price <= this.priceMax;
+    });
+
+    this.products = filtered;
+    this.sortProducts();
+    this.noResults = this.products.length === 0;
+  }
+
+  sortProducts() {
+      if (!this.products.length) return;
+      
+      switch (this.sortOption) {
+          case 'price_asc':
+              this.products.sort((a, b) => this.getProductPrice(a) - this.getProductPrice(b));
+              break;
+          case 'price_desc':
+              this.products.sort((a, b) => this.getProductPrice(b) - this.getProductPrice(a));
+              break;
+          case 'name_asc':
+              this.products.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+              break;
+          case 'name_desc':
+              this.products.sort((a, b) => (b.name || '').localeCompare(a.name || ''));
+              break;
+          default: // relevance
+             // If we want to restore original order, we re-apply filters on originalProducts
+             // This is handled by applyFilters calling sortProducts, so we need to ensure applyFilters preserves order if 'relevance'
+             // Actually applyFilters creates a new array from originalProducts which is already "relevance" sorted (by DB or search match)
+             break;
+      }
+  }
+  
+  onSortChange(event: any) {
+      this.sortOption = event.target.value;
+      this.sortProducts();
+      this.updateUrl();
+  }
+
+  setProductColumns(cols: number): void {
+    if (cols >= 2 && cols <= 4) {
+      this.productColumns = cols;
+    }
+  }
+
+  toggleFilters(): void {
+    this.showFilters = !this.showFilters;
+    if (this.isMobileView && isPlatformBrowser(this.platformId)) {
+      if (typeof document !== 'undefined' && document.body) {
+        document.body.style.overflow = this.showFilters ? 'hidden' : 'auto';
+      }
+    }
+  }
+  
+  onOverlayClick(event: Event) {
+      this.toggleFilters();
+  }
+
+  // --- Accordion ---
+  onAccordionToggled(value: string) {
+      if (this.openAccordions.has(value)) {
+          this.openAccordions.delete(value);
+      } else {
+          this.openAccordions.add(value);
+      }
+  }
+
+  togglePretAPorter() {
+      this.pretAPorterOpen = !this.pretAPorterOpen;
+  }
+
+  toggleNovias() {
+      this.noviasOpen = !this.noviasOpen;
+  }
+
+  toggleCategory(categoryValue: string): void {
+    const cat = ProductUtils.normalize(categoryValue);
+    const idx = this.selectedCategories.indexOf(cat);
+    if (idx >= 0) {
+      this.selectedCategories.splice(idx, 1);
+      delete this.selectedSubcategoriesMap[cat];
+    } else {
+      this.selectedCategories.push(cat);
+    }
+    this.openAccordions.add('categorias');
+  }
+
+  isCategorySelected(categoryValue: string): boolean {
+    const cat = ProductUtils.normalize(categoryValue);
+    return this.selectedCategories.includes(cat);
+  }
+
+  toggleSubcategory(categoryValue: string, subValue: string): void {
+      const cat = ProductUtils.normalize(categoryValue);
+      const sub = ProductUtils.normalize(subValue);
+      const arr = this.selectedSubcategoriesMap[cat] || [];
+      const idx = arr.indexOf(sub);
+      if (idx >= 0) {
+        arr.splice(idx, 1);
+      } else {
+        arr.push(sub);
+      }
+      if (arr.length) {
+        this.selectedSubcategoriesMap[cat] = arr;
+      } else {
+        delete this.selectedSubcategoriesMap[cat];
+      }
+  }
+
+  isSubcategorySelected(categoryValue: string, subValue: string): boolean {
+      const cat = ProductUtils.normalize(categoryValue);
+      const sub = ProductUtils.normalize(subValue);
+      const arr = this.selectedSubcategoriesMap[cat] || [];
+      return arr.includes(sub);
+  }
+
+  toggleSize(size: string): void {
+      const s = String(size).toUpperCase();
+      if (!this.allowedSizes.includes(s)) return;
+      const idx = this.selectedSizes.indexOf(s);
+      if (idx >= 0) {
+        this.selectedSizes.splice(idx, 1);
+      } else {
+        this.selectedSizes.push(s);
+      }
+  }
+
+  isSizeSelected(size: string): boolean {
+      return this.selectedSizes.includes(String(size).toUpperCase());
+  }
+
+  onPriceRangeChange(range: number[]): void {
+      if (!Array.isArray(range)) return;
+      const min = Math.max(0, Math.min(500000, Number(range[0] ?? 0)));
+      const max = Math.max(0, Math.min(500000, Number(range[1] ?? 500000)));
+      this.priceMin = Math.min(min, max);
+      this.priceMax = Math.max(min, max);
+      this.priceRange = [this.priceMin, this.priceMax];
+  }
+
+  onPriceInputChange(which: 'min' | 'max', value: number): void {
+      const num = Math.max(0, Math.min(500000, Number(value ?? 0)));
+      if (which === 'min') {
+        this.priceMin = Math.min(num, this.priceMax);
+      } else {
+        this.priceMax = Math.max(num, this.priceMin);
+      }
+      this.priceRange = [this.priceMin, this.priceMax];
+  }
+
+  applyFiltersAction(isMobile: boolean) {
+      this.updateUrl();
+      if (isMobile) {
+          this.toggleFilters();
+      }
+  }
+
+  clearFilters() {
+      this.searchTerm = '';
+      this.selectedCategories = [];
+      this.selectedSubcategoriesMap = {};
+      this.selectedSizes = [];
+      this.priceMin = 0;
+      this.priceMax = 500000;
+      this.priceRange = [0, 500000];
+      this.updateUrl();
+  }
+
+  getSelectedSubcategoriesFlat(): { category: string; subcategory: string }[] {
+      const out: { category: string; subcategory: string }[] = [];
+      this.selectedCategories.forEach(cat => {
+        const subs = this.selectedSubcategoriesMap[cat] || [];
+        subs.forEach(sub => out.push({ category: cat, subcategory: sub }));
+      });
+      return out;
+  }
+
+  getSubcategoriesForCategory(categoryValue: string): { label: string; value: string }[] {
+      const catNorm = ProductUtils.normalize(categoryValue);
+      
+      // Check in generic categories
+      const catObj = this.categories.find(c => ProductUtils.normalize(c.value) === catNorm);
+      if (catObj?.subsections) {
+        return catObj.subsections;
+      }
+      
+      // Check in Pret a Porter
+      const pretAPorterObj = this.pretAPorterCategories.find(c => ProductUtils.normalize(c.value) === catNorm);
+      if (pretAPorterObj?.subsections) {
+        return pretAPorterObj.subsections;
+      }
+      
+      // Check in Novias
+      const noviasObj = this.noviasCategories.find(c => ProductUtils.normalize(c.value) === catNorm);
+      if (noviasObj?.subsections) {
+        return noviasObj.subsections;
+      }
+      
+      return [];
+  }
+
+  // --- Category/Subcategory Toggles ---
+  // (Methods are already defined above: togglePretAPorterCategory, toggleNoviasCategory, etc.)
+  
+  // Helper for generic categories (if used) or fallback
+  // getSubcategoriesForCategory is defined above (line 807)
+
+  // --- Sizes (Duplicate removed) ---
+  // toggleSize defined above
+  // isSizeSelected defined above
+
+  // --- Price (Duplicate removed) ---
+  // onPriceRangeChange defined above
+  // onPriceInputChange defined above
+
+  // --- Actions (Duplicate removed) ---
+  // clearFilters defined above
+  // applyFiltersAction defined above
+
+  hasActiveFilters(): boolean {
+      return this.selectedCategories.length > 0 || 
+             this.selectedSizes.length > 0 || 
+             Object.keys(this.selectedSubcategoriesMap).length > 0 ||
+             this.priceMin > 0 || 
+             this.priceMax < this.maxPriceLimit;
+  }
+
+
+  // --- Helpers ---
+  private getProductPrice(p: Product): number {
+    const anyP: any = p as any;
+    const candidates = [anyP.price, anyP.price_ars, anyP.price_value, anyP.priceUsd];
+    const found = candidates.find(v => typeof v === 'number');
+    if (typeof found === 'number') return found;
+    if (Array.isArray(anyP.variants)) {
+      const vFound = anyP.variants.find((v: any) => typeof v?.price === 'number');
+      if (vFound) return Number(vFound.price);
+    }
+    return 0;
+  }
+  
+  private getProductSizes(p: Product): string[] {
+      const sizes = new Set<string>();
+      const anyP: any = p as any;
+      
+      // Direct size
+      if (anyP.size) sizes.add(String(anyP.size).toUpperCase());
+      if (Array.isArray(anyP.sizes)) anyP.sizes.forEach((s: any) => sizes.add(String(s).toUpperCase()));
+      
+      // Variants
+      if (Array.isArray(anyP.variants)) {
+          anyP.variants.forEach((v: any) => {
+              const vSize = [v?.size, v?.size_name, v?.talla, v?.tamano, v?.tamanos]
+                  .flat()
+                  .filter(Boolean)
+                  .map((x: any) => String(x).toUpperCase());
+              vSize.forEach((s: string) => sizes.add(s));
+          });
+      }
+      return Array.from(sizes);
+  }
+
+  private productHasSize(p: Product, size: string): boolean {
+    const sUp = String(size).toUpperCase();
+    const anyP: any = p as any;
+    if (typeof anyP.size === 'string' && String(anyP.size).toUpperCase() === sUp) return true;
+    if (Array.isArray(anyP.sizes) && anyP.sizes.map((x: any) => String(x).toUpperCase()).includes(sUp)) return true;
+    if (Array.isArray(anyP.variants)) {
+      return anyP.variants.some((v: any) => {
+        const vSize = [v?.size, v?.size_name, v?.talla, v?.tamano, v?.tamanos]
+          .flat()
+          .filter(Boolean)
+          .map((x: any) => String(x).toUpperCase());
+        return vSize.includes(sUp);
+      });
+    }
+    return false;
+  }
+
+  trackByProductId(index: number, product: Product): string {
+    return product.id || product.slug;
   }
 
   onColorSelected(event: { productId: string; color: string }): void {
     this.selectedColors[event.productId] = event.color;
-    
+    // Logic to update image in local product object if needed
     const product = this.products.find(p => p.id === event.productId);
     if (product) {
-      const variant = product.variants.find(v => v.color_name === event.color);
-      if (variant) {
-        // Actualizar la imagen del producto si es necesario
-      }
+        const variant = product.variants.find(v => v.color_name === event.color);
+        if (variant?.main_image) {
+            product.main_image = variant.main_image;
+        }
     }
-    
-    this.updateQueryParamsWithoutReload();
   }
 
   onWishlistToggled(productId: string): void {
     const product = this.products.find(p => p.id === productId);
     if (product) {
       product.wishlisted = !product.wishlisted;
+      // Optionally save to service/localstorage
     }
-  }
-
-  private updateQueryParamsWithoutReload(): void {
-    const queryParams: any = {
-      categoria: this.selectedCategory || null,
-      subcategoria: this.selectedSubcategory || null
-    };
-
-    const colorFilters = Object.entries(this.selectedColors)
-      .filter(([_, color]) => !!color)
-      .map(([id, color]) => `${id}:${color}`);
-    if (colorFilters.length > 0) {
-      queryParams.colores = colorFilters.join(',');
-    }
-
-    const newUrl = this.router.createUrlTree([], {
-      relativeTo: this.route,
-      queryParams,
-      queryParamsHandling: 'merge'
-    }).toString();
-    window.history.replaceState({}, '', newUrl);
-  }
-
-  trackByProductId(index: number, product: Product): string {
-    return product.slug;
   }
 }
