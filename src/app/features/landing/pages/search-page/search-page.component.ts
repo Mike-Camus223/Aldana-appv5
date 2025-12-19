@@ -773,12 +773,9 @@ export class SearchPageComponent implements OnInit, AfterViewInit, OnDestroy {
           this.products = [];
           this.originalProducts = [];
           this.noResults = false;
-          this.loading = true;
+          this.loading = false;
           this.updateUrl();
-          setTimeout(() => {
-              this.loading = false;
-              this.updateInputWidth();
-          }, 500);
+          this.updateInputWidth();
       }
       if (isMobile) {
           this.toggleFilters();
@@ -786,8 +783,6 @@ export class SearchPageComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   clearFilters() {
-      this.searchTerm = '';
-      this.chars = [];
       this.selectedCategories = [];
       this.selectedSubcategoriesMap = {};
       this.selectedSizes = [];
@@ -799,13 +794,25 @@ export class SearchPageComponent implements OnInit, AfterViewInit, OnDestroy {
       this.noResults = false;
       this.hasSearched = false;
       this.searchMode = 'input';
-      this.inputWidth = this.getDefaultInputWidth();
+      this.showFilters = false;
+      if (this.isMobileView && isPlatformBrowser(this.platformId)) {
+          if (typeof document !== 'undefined' && document.body) {
+              document.body.style.overflow = 'auto';
+          }
+      }
       this.updateUrl();
-      this.loading = true;
+      this.loading = false;
       setTimeout(() => {
-          this.loading = false;
+          if (this.inputElement?.nativeElement) {
+              this.inputElement.nativeElement.focus();
+          }
           this.updateInputWidth();
-      }, 500);
+          if (isPlatformBrowser(this.platformId)) {
+              try {
+                  this.fakeInput?.nativeElement?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              } catch {}
+          }
+      }, 0);
   }
 
   private getDefaultInputWidth(): number {

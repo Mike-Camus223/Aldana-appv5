@@ -90,7 +90,7 @@
 
     </div>
 
-    <div *ngIf="loading && searchMode === 'input' && !hasSearched" class="w-full py-6 flex items-center justify-center">
+    <div *ngIf="loading && searchMode === 'input' && originalProducts.length === 0" class="w-full py-6 flex items-center justify-center">
       <div class="spinner"></div>
     </div>
 
