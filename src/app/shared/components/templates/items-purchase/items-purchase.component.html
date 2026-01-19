@@ -2,14 +2,12 @@
 
 <div *ngIf="product" class="px-4 sm:px-6 lg:px-12 xl:px-16 2xl:px-24 py-4 sm:py-8 w-full">
   <div class="max-w-screen-3xl mx-auto">
-    <div class="grid lg:grid-cols-2 gap-8 font-main text-gray-800">
+    <div class="grid lg:grid-cols-2 gap-4 sm:gap-0 text-gray-800">
       <div class="relative overflow-hidden">
         <app-fancy-carousel [images]="carouselImages" [id]="'carousel-' + product.id"></app-fancy-carousel>
       </div>
-
-      <div class="relative space-y-5">
+      <div class="relative max-w-[550px] ml-0 sm:ml-13 space-y-5">
         <h1 class="text-md sm:text-3xl NewAldyTitle text-aldy-green-gray-bold ">{{ product.name }}</h1>
-        <p class="text-sm sm:text-sm font-light NewAldyFontType4 text-aldy-green-gray">{{ product.description }}</p>
         <p class="text-sm sm:text-sm font-light NewAldyFontType4 text-aldy-green-gray mt-1">
           {{ product.price | currency: 'ARS':'symbol-narrow':'1.2-2':'es-AR' }}
         </p>
@@ -58,7 +56,61 @@
           </button>
         </div>
 
-        <app-acordiongeneric [title]="'Detalles'" [value]="'detalles'" [selected]="openAccordion"
+        <app-acordiongeneric [title]="'Descripción'"
+  [value]="'descripcion'" [selected]="openAccordion"
+          (toggled)="toggleAccordion($event)">
+          <div class="space-y-1">
+            <p class="flex items-center gap-2 py-2 px-3 text-xs tracking-wider NewAldyFontType4 w-full rounded-md">
+              {{ product.description }}
+            </p>
+          </div>
+        </app-acordiongeneric>
+
+        <app-acordiongeneric [title]="'Detalles del producto'"
+  [value]="'detalles'" [selected]="openAccordion"
+          (toggled)="toggleAccordion($event)">
+          <div class="space-y-1">
+            <p class="flex items-center gap-2 py-2 px-3 text-xs tracking-wider NewAldyFontType4 w-full rounded-md">
+              {{ product.details }}
+            </p>
+          </div>
+        </app-acordiongeneric>
+
+        <app-acordiongeneric  [title]="'Talla y ajuste'"
+  [value]="'talla'" [selected]="openAccordion"
+          (toggled)="toggleAccordion($event)">
+          <div class="space-y-1">
+            <p class="flex items-center gap-2 py-2 px-3 text-xs tracking-wider NewAldyFontType4 w-full rounded-md">
+              {{ product.details }}
+            </p>
+          </div>
+        </app-acordiongeneric>
+
+        
+        <app-acordiongeneric [title]="'Fabricación'"
+  [value]="'fabricacion'" [selected]="openAccordion"
+          (toggled)="toggleAccordion($event)">
+          <div class="space-y-1">
+            <p class="flex items-center gap-2 py-2 px-3 text-xs tracking-wider NewAldyFontType4 w-full rounded-md">
+              {{ product.details }}
+            </p>
+          </div>
+        </app-acordiongeneric>
+
+        
+        <app-acordiongeneric [title]="'Citas y pruebas'"
+  [value]="'citas'" [selected]="openAccordion"
+          (toggled)="toggleAccordion($event)">
+          <div class="space-y-1">
+            <p class="flex items-center gap-2 py-2 px-3 text-xs tracking-wider NewAldyFontType4 w-full rounded-md">
+              {{ product.details }}
+            </p>
+          </div>
+        </app-acordiongeneric>
+
+        
+        <app-acordiongeneric [title]="'Envío y cronograma'"
+  [value]="'envio'" [selected]="openAccordion"
           (toggled)="toggleAccordion($event)">
           <div class="space-y-1">
             <p class="flex items-center gap-2 py-2 px-3 text-xs tracking-wider NewAldyFontType4 w-full rounded-md">

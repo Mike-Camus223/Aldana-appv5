@@ -14,7 +14,7 @@
                 aria-label="Añadir a favoritos" 
                 (click)="toggleWishlist($event)"
                 class="absolute top-2 right-2 z-10 cursor-pointer leading-none transition-colors focus:outline-none">
-          <lucide-icon [name]="product.wishlisted ? 'heart' : 'heart-plus'"
+          <lucide-icon name="heart"
                        [ngClass]="product.wishlisted ? 'text-aldy-primary-600' : 'text-gray-300'">
           </lucide-icon>
         </button>
@@ -67,7 +67,7 @@
           <button type="button" aria-label="Añadir a favoritos" (click)="toggleWishlist($event)"
             class="cursor-pointer leading-none transition-colors focus:outline-none z-10">
             <lucide-icon [strokeWidth]="3" [size]="20" 
-              [name]="product.wishlisted ? 'heart' : 'heart-plus'"
+              name="heart"
               [ngClass]="product.wishlisted ? 'text-aldy-primary-600' : 'text-gray-300'">
             </lucide-icon>
           </button>

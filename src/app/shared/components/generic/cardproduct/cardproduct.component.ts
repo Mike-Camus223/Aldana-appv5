@@ -26,6 +26,7 @@ import { ZoomoutDirective } from '../../../utils/directives/zoomout.directive';
 import { MoveupFadeDirective } from '../../../utils/directives/moveup-fade.directive';
 import { FavoritesService } from '../../../../core/services/favorites/favorites.service';
 import { AuthService } from '../../../../core/services/auth/auth.service';
+import { NotificationService } from '../../../../core/services/notification.service';
 
 @Component({
   selector: 'app-cardproduct',
@@ -72,7 +73,8 @@ export class CardproductComponent implements OnInit {
   constructor(
     private favoritesService: FavoritesService,
     private authService: AuthService,
-    @Inject(PLATFORM_ID) private platformId: Object
+    @Inject(PLATFORM_ID) private platformId: Object,
+    private notificationService: NotificationService
   ) {}
 
   ngOnInit(): void {
@@ -145,18 +147,24 @@ export class CardproductComponent implements OnInit {
     event.stopPropagation();
     
     if (!this.authService.isAuthenticated()) {
-      alert('Por favor inicia sesión para añadir a favoritos');
+      this.notificationService.showWarn(
+        'Opps!',
+        'Por favor inicia sesión para añadir a favoritos'
+      );
       return;
     }
 
     try {
       const result = await this.favoritesService.toggleFavorite(this.product.id);
-      alert(result.message);
+      this.notificationService.showSuccess(result.message, '');
+
       // Update the local state to reflect the change
       this.product.wishlisted = !this.product.wishlisted;
     } catch (error) {
-      console.error('Error toggling wishlist:', error);
-      alert('Ocurrió un error al actualizar favoritos');
+      this.notificationService.showError(
+        'Error Inesperado',
+        'Ocurrió un error al actualizar favoritos'
+      )
     }
   }
 
