@@ -148,23 +148,26 @@ export class CardproductComponent implements OnInit {
     
     if (!this.authService.isAuthenticated()) {
       this.notificationService.showWarn(
-        'Opps!',
-        'Por favor inicia sesión para añadir a favoritos'
+        'Necesitas iniciar sesión',
+        'Antes de agregar un producto a Favoritos'
       );
       return;
     }
+
+    // Actualización optimista: Cambiar estado visualmente primero
+    const previousState = this.product.wishlisted;
+    this.product.wishlisted = !previousState;
 
     try {
       const result = await this.favoritesService.toggleFavorite(this.product.id);
       this.notificationService.showSuccess(result.message, '');
 
-      // Update the local state to reflect the change
-      this.product.wishlisted = !this.product.wishlisted;
     } catch (error) {
+      this.product.wishlisted = previousState;
       this.notificationService.showError(
         'Error Inesperado',
         'Ocurrió un error al actualizar favoritos'
-      )
+      );
     }
   }
 

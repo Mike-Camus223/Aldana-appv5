@@ -232,8 +232,7 @@
           ]">
           <app-cardproduct *ngFor="let product of pagedProducts; trackBy: trackByProductId" [product]="product"
             [selectedColor]="selectedColors[product.id]" [displayImage]="product.main_image" [mobileMode]="'ismobile'"
-            [desktopMode]="'isdesktop'" (colorSelected)="selectColor($event)"
-            (wishlistToggled)="toggleWishlist($event)">
+            [desktopMode]="'isdesktop'" (colorSelected)="selectColor($event)">
           </app-cardproduct>
         </div>
         <div *ngIf="!loading && filteredProducts.length > 0 && totalPages > 1"

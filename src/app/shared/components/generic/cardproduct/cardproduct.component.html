@@ -15,7 +15,7 @@
                 (click)="toggleWishlist($event)"
                 class="absolute top-2 right-2 z-10 cursor-pointer leading-none transition-colors focus:outline-none">
           <lucide-icon name="heart"
-                       [ngClass]="product.wishlisted ? 'text-aldy-primary-600' : 'text-gray-300'">
+                       [ngClass]="product.wishlisted ? 'text-aldy-medium fill-current' : 'text-gray-300'">
           </lucide-icon>
         </button>
       </div>
@@ -68,7 +68,7 @@
             class="cursor-pointer leading-none transition-colors focus:outline-none z-10">
             <lucide-icon [strokeWidth]="3" [size]="20" 
               name="heart"
-              [ngClass]="product.wishlisted ? 'text-aldy-primary-600' : 'text-gray-300'">
+              [ngClass]="product.wishlisted ? 'text-aldy-medium fill-current' : 'text-gray-300'">
             </lucide-icon>
           </button>
         </div>

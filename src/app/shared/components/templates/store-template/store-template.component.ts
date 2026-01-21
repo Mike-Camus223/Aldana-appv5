@@ -16,6 +16,8 @@ import { AcordiongenericComponent } from '../../generic/acordiongeneric/acordion
 import { LoadingbarComponent } from '../../system/loadingbar/loadingbar.component';
 import { AldyCheckboxV1Directive } from '../../../utils/directives/aldy-checkbox-v1.directive';
 import { Location } from '@angular/common';
+import { FavoritesService } from '../../../../core/services/favorites/favorites.service';
+import { AuthService } from '../../../../core/services/auth/auth.service';
 
 
 @Component({
@@ -101,6 +103,7 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
   @ViewChild('productsContainer') productsContainerRef?: ElementRef<HTMLDivElement>;
   private containerLocked = false;
   private lockedHeight = 0;
+  private currentFavorites: Set<string> = new Set();
 
   categories = [
     {
@@ -231,6 +234,8 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
   constructor(
     private supabaseService: SupabaseService,
     private bridesProductsService: BridesProductsService,
+    private favoritesService: FavoritesService,
+    private authService: AuthService,
     private route: ActivatedRoute,
     private router: Router,
     private location: Location,
@@ -240,6 +245,23 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.checkMobileView();
     this.initializeRoute();
+    
+    // Suscribirse a cambios en favoritos
+    this.favoritesService.favorites$.subscribe(favorites => {
+      if (this.authService.isAuthenticated()) {
+        this.currentFavorites = new Set(favorites.map(f => f.product_id));
+        this.updateWishlistStatus(this.currentFavorites);
+      }
+    });
+  }
+
+  private updateWishlistStatus(favoriteIds: Set<string>): void {
+    const updateProduct = (p: Product) => {
+      p.wishlisted = favoriteIds.has(p.id);
+    };
+
+    if (this.allProducts) this.allProducts.forEach(updateProduct);
+    if (this.filteredProducts) this.filteredProducts.forEach(updateProduct);
   }
 
   ngOnDestroy(): void {
@@ -276,6 +298,11 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
             this.allProducts.forEach(p => {
               this.selectedColors[p.id] = p.variants[0]?.color_name || '';
             });
+
+            // Sincronizar con favoritos actuales si está autenticado
+            if (this.authService.isAuthenticated()) {
+              this.updateWishlistStatus(this.currentFavorites);
+            }
           }
         }
         // Inicializar selección múltiple desde path y query params
@@ -382,37 +409,6 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
     }
   }
 
-  toggleWishlist(productId: string): void {
-    const product = this.filteredProducts.find(p => p.id === productId);
-    if (!product) return;
-    product.wishlisted = !product.wishlisted;
-    this.saveWishlistToStorage();
-  }
-
-  private saveWishlistToStorage(): void {
-    try {
-      const wishlistedIds = this.filteredProducts.filter(p => p.wishlisted).map(p => p.id);
-      if (typeof Storage !== 'undefined') {
-        localStorage.setItem(this.wishlistKey, JSON.stringify(wishlistedIds));
-      }
-    } catch (error) {
-      console.warn('Could not save to localStorage:', error);
-    }
-  }
-
-  private loadWishlistFromStorage(): void {
-    try {
-      if (typeof Storage !== 'undefined') {
-        const stored = localStorage.getItem(this.wishlistKey);
-        if (stored) {
-          const wishlistedIds: string[] = JSON.parse(stored);
-          this.filteredProducts.forEach(p => (p.wishlisted = wishlistedIds.includes(p.id)));
-        }
-      }
-    } catch (error) {
-      console.warn('Could not load from localStorage:', error);
-    }
-  }
 
   selectColor(event: { productId: string, color: string }): void {
     const { productId, color } = event;
@@ -833,7 +829,6 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
     this.currentPage = 1;
     await this.delay(500);
     this.applyFiltersSync();
-    this.loadWishlistFromStorage();
     this.loading = false;
     this.unlockProductsContainer();
   }

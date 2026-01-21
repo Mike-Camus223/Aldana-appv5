@@ -23,7 +23,13 @@ export class FavoritesService {
     private supabase: SupabaseService,
     private authService: AuthService
   ) {
-    this.loadFavorites();
+    this.authService.currentUser$.subscribe(user => {
+      if (user) {
+        this.loadFavorites();
+      } else {
+        this.favoritesSubject.next([]);
+      }
+    });
   }
 
   private async loadFavorites() {
