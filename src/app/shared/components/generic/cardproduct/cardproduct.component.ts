@@ -63,7 +63,7 @@ export class CardproductComponent implements OnInit {
   @Output() colorSelected = new EventEmitter<{ productId: string; color: string }>();
   @Output() wishlistToggled = new EventEmitter<string>();
   @ViewChild('productImage', { static: false }) productImageRef!: ElementRef<HTMLImageElement>;
-
+  selectedSize: string | null = null;
   private preventHover = false;
   isMobileView: boolean = false;
   currentImage!: string;
@@ -191,6 +191,11 @@ export class CardproductComponent implements OnInit {
       this.preventHover = false;
     }, 200);
   }
+
+   selectSize(size: string) {
+    this.selectedSize = size;
+  }
+
 
   private preloadImage(src: string): void {
     if (!src) return;
