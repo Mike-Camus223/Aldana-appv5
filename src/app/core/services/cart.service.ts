@@ -132,9 +132,11 @@ export class CartService {
     const existing = currentItems.find(i => i.id === item.id);
 
     if (existing) {
-      existing.quantity = Math.max(1, existing.quantity + item.quantity);
+      const merged = Math.max(1, existing.quantity + item.quantity);
+      existing.quantity = Math.min(5, merged);
     } else {
-      currentItems.push({ ...item, quantity: Math.max(1, item.quantity) });
+      const initialQty = Math.max(1, item.quantity);
+      currentItems.push({ ...item, quantity: Math.min(5, initialQty) });
     }
 
     this.cartItemsSubject.next(currentItems);
@@ -151,7 +153,8 @@ export class CartService {
     const updated = this.cartItemsSubject.value.map(item => {
       if (item.id === id) {
         const newQty = Math.max(1, item.quantity + change);
-        return { ...item, quantity: newQty };
+        const capped = Math.min(5, newQty);
+        return { ...item, quantity: capped };
       }
       return item;
     });
@@ -163,7 +166,9 @@ export class CartService {
   setQuantity(id: string, newQuantity: number): void {
     const updated = this.cartItemsSubject.value.map(item => {
       if (item.id === id) {
-        return { ...item, quantity: Math.max(1, newQuantity) };
+        const normalized = Math.max(1, newQuantity);
+        const capped = Math.min(5, normalized);
+        return { ...item, quantity: capped };
       }
       return item;
     });

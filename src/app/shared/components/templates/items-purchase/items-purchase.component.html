@@ -38,7 +38,7 @@
 
         <div class="flex items-center cursor-pointer mt-4">
           <div class="relative">
-            <select [(ngModel)]="quantitySelected"
+            <select [(ngModel)]="quantitySelected" (ngModelChange)="onQuantityChange($event)"
               class="appearance-none border border-aldy-medium py-3 pl-3 pr-8 text-sm focus:outline-none">
               <option *ngFor="let qty of [1, 2, 3, 4, 5]" [value]="qty">{{ qty }}</option>
             </select>

@@ -86,10 +86,10 @@
                     <div class="relative group">
                       <select
                         class="appearance-none border border-aldy-medium py-1 pl-2 pr-6 text-sm text-aldy-green-gray NewAldyFontType4 focus:outline-none cursor-pointer tracking-wider"
-                        [ngModel]="item.quantity"
+                        [(ngModel)]="item.quantity"
                         (ngModelChange)="onSelectQuantity(item.id, $event)"
                       >
-                        <option *ngFor="let qty of [1, 2, 3, 4, 5]" [value]="qty">
+                        <option *ngFor="let qty of ([1, 2, 3, 4, 5].includes(item.quantity) ? [1, 2, 3, 4, 5] : [1, 2, 3, 4, 5, item.quantity])" [value]="qty">
                           {{ qty }}
                         </option>
                       </select>

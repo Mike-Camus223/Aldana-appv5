@@ -93,12 +93,6 @@ export class CarComponent implements OnInit {
     this.isClearingCart = false;
     this.startUpdating();
 
-    if (value === '5+') {
-      this.cartService.setQuantity(id, 5);
-      this.finishUpdating();
-      return;
-    }
-
     const qty = Number(value);
     if (!isNaN(qty) && qty >= 1) {
       this.cartService.setQuantity(id, qty);

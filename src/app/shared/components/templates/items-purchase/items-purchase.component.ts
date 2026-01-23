@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { AccordionModule } from 'primeng/accordion';
 import { ToastModule } from 'primeng/toast';
 import { FancyCarouselComponent } from '../../sections/fancy-carousel/fancy-carousel.component';
@@ -44,17 +44,32 @@ export class ItemsPurchaseComponent implements OnInit {
   carouselImages: { src: string; thumb: string }[] = [];
   quantitySelected: number = 1;
   openAccordion: string | null = null;
+  private initialColorParam: string | null = null;
+  private initialSizeParam: string | null = null;
+  private initialQuantityParam: number | null = null;
 
   constructor(
     private route: ActivatedRoute,
     private supabaseService: SupabaseService,
     private cartService: CartService,
     private router: Router,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private location: Location
   ) { }
 
   ngOnInit(): void {
+    this.openAccordion = 'descripcion';
     const id = this.route.snapshot.paramMap.get('slug');
+    const qp = this.route.snapshot.queryParamMap;
+    this.initialColorParam = qp.get('color');
+    this.initialSizeParam = qp.get('talla');
+    const qtyRaw = qp.get('cantidad');
+    if (qtyRaw) {
+      const v = Number(qtyRaw);
+      if (!Number.isNaN(v)) {
+        this.initialQuantityParam = Math.min(5, Math.max(1, v));
+      }
+    }
     if (id) this.loadProduct(id);
   }
 
@@ -73,7 +88,31 @@ export class ItemsPurchaseComponent implements OnInit {
       ];
 
       if (this.product.variants.length > 0) {
-        this.selectColor(this.product.variants[0].color_name);
+        const normalized = (t: string) => ProductUtils.normalize(t);
+        // Intentar aplicar color desde query param
+        if (this.initialColorParam) {
+          const targetColorNorm = normalized(this.initialColorParam);
+          const match = this.product.variants.find(v => normalized(v.color_name) === targetColorNorm);
+          if (match) {
+            this.selectColor(match.color_name);
+          } else {
+            this.selectColor(this.product.variants[0].color_name);
+          }
+        } else {
+          this.selectColor(this.product.variants[0].color_name);
+        }
+        // Intentar aplicar talla desde query param
+        if (this.initialSizeParam) {
+          const targetSize = String(this.initialSizeParam).toUpperCase();
+          const sizes = (this.product.sizes || []).map(s => String(s).toUpperCase());
+          if (sizes.includes(targetSize)) {
+            this.selectedSize = targetSize;
+          }
+        }
+        if (this.initialQuantityParam) {
+          this.quantitySelected = this.initialQuantityParam;
+        }
+        this.updateUrlQuery(); // reflejar estado inicial amigable
       }
     }
   }
@@ -99,6 +138,7 @@ export class ItemsPurchaseComponent implements OnInit {
     if (hasAdditionalImages) {
       this.carouselImages.push(...(newVariant.additional_images ?? []).map(img => ({ src: img, thumb: img })));
     }
+    this.updateUrlQuery();
   }
 
   toggleAccordion(value: string) {
@@ -128,12 +168,20 @@ export class ItemsPurchaseComponent implements OnInit {
       quantity: this.quantitySelected
     };
 
-    this.cartService.addToCart(cartItem);
-
-    this.notificationService.showSuccess(
-      'Producto añadido',
-      `Se añadieron ${this.quantitySelected} unidad(es) al carrito.`
-    );
+    const existing = this.cartService.getCart().some(i => i.id === cartItem.id);
+    if (existing) {
+      this.cartService.setQuantity(cartItem.id, this.quantitySelected);
+      this.notificationService.showSuccess(
+        'Cantidad actualizada',
+        `Se actualizó a ${this.quantitySelected} unidad(es) en el carrito.`
+      );
+    } else {
+      this.cartService.addToCart(cartItem);
+      this.notificationService.showSuccess(
+        'Producto añadido',
+        `Se añadieron ${this.quantitySelected} unidad(es) al carrito.`
+      );
+    }
 
     this.router.navigate(['/checkout/carrito']);
   }
@@ -141,9 +189,54 @@ export class ItemsPurchaseComponent implements OnInit {
 
   selectSize(size: string) {
     this.selectedSize = size;
+    this.updateUrlQuery();
   }
 
   isColorSelected(color: string): boolean {
     return this.selectedVariant?.color_name === color;
+  }
+
+  private updateUrlQuery(): void {
+    if (!this.product) return;
+    const params: any = {};
+    params['producto'] = null;
+    if (this.selectedVariant?.color_name) {
+      params['color'] = ProductUtils.normalize(this.selectedVariant.color_name);
+    }
+    if (this.selectedSize) {
+      params['talla'] = String(this.selectedSize).toUpperCase();
+    }
+    if (this.quantitySelected && this.quantitySelected !== 1) {
+      params['cantidad'] = String(this.quantitySelected);
+    }
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: params,
+      queryParamsHandling: 'merge'
+    });
+  }
+
+  onQuantityChange(value: number) {
+    const v = Number(value);
+    this.quantitySelected = Math.min(5, Math.max(1, Number.isNaN(v) ? 1 : v));
+    this.updateUrlQuery();
+    this.updateCartQuantityInCart();
+  }
+
+  private updateCartQuantityInCart(): void {
+    if (!this.product || !this.selectedVariant) return;
+    const basePrefix = `${this.product.id}-${this.selectedVariant.color_name}-`;
+    const cart = this.cartService.getCart();
+    if (this.selectedSize) {
+      const id = `${basePrefix}${this.selectedSize}`;
+      if (cart.some(i => i.id === id)) {
+        this.cartService.setQuantity(id, this.quantitySelected);
+      }
+      return;
+    }
+    const matches = cart.filter(i => i.id.startsWith(basePrefix));
+    if (matches.length === 1) {
+      this.cartService.setQuantity(matches[0].id, this.quantitySelected);
+    }
   }
 }
