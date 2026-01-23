@@ -88,25 +88,21 @@ export class ItemsPurchaseComponent implements OnInit {
       ];
 
       if (this.product.variants.length > 0) {
-        const normalized = (t: string) => ProductUtils.normalize(t);
-        // Intentar aplicar color desde query param
+        // Intentar aplicar color desde query param usando valor real (sin normalizar)
         if (this.initialColorParam) {
-          const targetColorNorm = normalized(this.initialColorParam);
-          const match = this.product.variants.find(v => normalized(v.color_name) === targetColorNorm);
-          if (match) {
-            this.selectColor(match.color_name);
-          } else {
-            this.selectColor(this.product.variants[0].color_name);
-          }
+          const targetColorLc = String(this.initialColorParam).toLowerCase();
+          const match = this.product.variants.find(v => String(v.color_name).toLowerCase() === targetColorLc);
+          this.selectColor(match ? match.color_name : this.product.variants[0].color_name);
         } else {
           this.selectColor(this.product.variants[0].color_name);
         }
-        // Intentar aplicar talla desde query param
+        // Intentar aplicar talla desde query param usando valor real (sin uppercasing)
         if (this.initialSizeParam) {
-          const targetSize = String(this.initialSizeParam).toUpperCase();
-          const sizes = (this.product.sizes || []).map(s => String(s).toUpperCase());
-          if (sizes.includes(targetSize)) {
-            this.selectedSize = targetSize;
+          const targetSizeLc = String(this.initialSizeParam).toLowerCase();
+          const sizes = this.product.sizes || [];
+          const matchSize = sizes.find(s => String(s).toLowerCase() === targetSizeLc);
+          if (matchSize) {
+            this.selectedSize = matchSize;
           }
         }
         if (this.initialQuantityParam) {
@@ -201,10 +197,10 @@ export class ItemsPurchaseComponent implements OnInit {
     const params: any = {};
     params['producto'] = null;
     if (this.selectedVariant?.color_name) {
-      params['color'] = ProductUtils.normalize(this.selectedVariant.color_name);
+      params['color'] = this.selectedVariant.color_name;
     }
     if (this.selectedSize) {
-      params['talla'] = String(this.selectedSize).toUpperCase();
+      params['talla'] = String(this.selectedSize);
     }
     if (this.quantitySelected && this.quantitySelected !== 1) {
       params['cantidad'] = String(this.quantitySelected);

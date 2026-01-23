@@ -12,7 +12,7 @@ import {
 } from '@angular/core';
 import { CommonModule, isPlatformBrowser, NgOptimizedImage } from '@angular/common';
 import { PLATFORM_ID } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { Product } from '../../../utils/models/Products-supabase.interface';
 import {
   Heart,
@@ -74,7 +74,8 @@ export class CardproductComponent implements OnInit {
     private favoritesService: FavoritesService,
     private authService: AuthService,
     @Inject(PLATFORM_ID) private platformId: Object,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -194,6 +195,11 @@ export class CardproductComponent implements OnInit {
 
    selectSize(size: string) {
     this.selectedSize = size;
+    const queryParams: any = { talla: size };
+    if (this.selectedColor) {
+      queryParams.color = this.selectedColor;
+    }
+    this.router.navigate(['/producto', this.product.slug], { queryParams });
   }
 
 
