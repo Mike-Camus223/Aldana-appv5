@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CommonModule, Location } from '@angular/common';
 import { AccordionModule } from 'primeng/accordion';
@@ -13,6 +13,7 @@ import { FormsModule } from '@angular/forms';
 import { ProductUtils } from '../../../utils/dataEx/products-utils';
 import { AcordiongenericComponent } from '../../generic/acordiongeneric/acordiongeneric.component';
 import { LUCIDE_ICONS, LucideAngularModule, LucideIconProvider, ShoppingBag } from 'lucide-angular';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-items-purchase',
@@ -37,7 +38,7 @@ import { LUCIDE_ICONS, LucideAngularModule, LucideIconProvider, ShoppingBag } fr
     }
   ]
 })
-export class ItemsPurchaseComponent implements OnInit {
+export class ItemsPurchaseComponent implements OnInit, OnDestroy {
   product: Product | null = null;
   selectedVariant: ProductVariant | null = null;
   selectedSize: string | null = null;
@@ -47,6 +48,9 @@ export class ItemsPurchaseComponent implements OnInit {
   private initialColorParam: string | null = null;
   private initialSizeParam: string | null = null;
   private initialQuantityParam: number | null = null;
+  private qpSub?: Subscription;
+  private paramSub?: Subscription;
+  private currentSlug: string | null = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -71,9 +75,67 @@ export class ItemsPurchaseComponent implements OnInit {
       }
     }
     if (id) this.loadProduct(id);
+
+    this.paramSub = this.route.paramMap.subscribe(pm => {
+      const slug = pm.get('slug');
+      if (slug && slug !== this.currentSlug) {
+        this.loadProduct(slug);
+      }
+    });
+
+    this.qpSub = this.route.queryParamMap.subscribe(qpm => {
+      if (!this.product) {
+        this.initialColorParam = qpm.get('color');
+        this.initialSizeParam = qpm.get('talla');
+        const qtyRt = qpm.get('cantidad');
+        if (qtyRt) {
+          const v = Number(qtyRt);
+          if (!Number.isNaN(v)) {
+            this.initialQuantityParam = Math.min(5, Math.max(1, v));
+          }
+        }
+        return;
+      }
+      const colorParam = qpm.get('color');
+      if (colorParam) {
+        const targetLc = colorParam.toLowerCase();
+        const match = this.product.variants.find(v => String(v.color_name).toLowerCase() === targetLc);
+        if (match && (!this.selectedVariant || String(this.selectedVariant.color_name).toLowerCase() !== targetLc)) {
+          this.selectColor(match.color_name, true);
+        }
+      }
+      const tallaParam = qpm.get('talla');
+      if (tallaParam) {
+        const targetSizeLc = tallaParam.toLowerCase();
+        const sizes = this.product.sizes || [];
+        const matchSize = sizes.find(s => String(s).toLowerCase() === targetSizeLc);
+        if (matchSize && this.selectedSize !== matchSize) {
+          this.selectedSize = matchSize;
+        }
+      } else {
+        if (this.selectedSize) {
+          this.selectedSize = null;
+        }
+      }
+      const qtyParam = qpm.get('cantidad');
+      if (qtyParam !== null) {
+        const v = Number(qtyParam);
+        const clamped = Math.min(5, Math.max(1, Number.isNaN(v) ? 1 : v));
+        if (this.quantitySelected !== clamped) {
+          this.quantitySelected = clamped;
+          this.updateCartQuantityInCart();
+        }
+      } else {
+        if (this.quantitySelected !== 1) {
+          this.quantitySelected = 1;
+          this.updateCartQuantityInCart();
+        }
+      }
+    });
   }
 
   async loadProduct(slug: string) {
+    this.currentSlug = slug;
     const { data, error } = await this.supabaseService.getProducts(slug);
     if (!error && data) {
       const productArray = Array.isArray(data) ? data : [data];
@@ -113,7 +175,7 @@ export class ItemsPurchaseComponent implements OnInit {
     }
   }
 
-  selectColor(color: string) {
+  selectColor(color: string, silent: boolean = false) {
     if (!this.product || this.selectedVariant?.color_name === color) return;
     const newVariant = this.product.variants.find(v => v.color_name === color);
     if (!newVariant) return;
@@ -134,7 +196,9 @@ export class ItemsPurchaseComponent implements OnInit {
     if (hasAdditionalImages) {
       this.carouselImages.push(...(newVariant.additional_images ?? []).map(img => ({ src: img, thumb: img })));
     }
-    this.updateUrlQuery();
+    if (!silent) {
+      this.updateUrlQuery();
+    }
   }
 
   toggleAccordion(value: string) {
@@ -183,9 +247,11 @@ export class ItemsPurchaseComponent implements OnInit {
   }
 
 
-  selectSize(size: string) {
+  selectSize(size: string, silent: boolean = false) {
     this.selectedSize = size;
-    this.updateUrlQuery();
+    if (!silent) {
+      this.updateUrlQuery();
+    }
   }
 
   isColorSelected(color: string): boolean {
@@ -235,5 +301,10 @@ export class ItemsPurchaseComponent implements OnInit {
     if (matches.length === 1) {
       this.cartService.setQuantity(matches[0].id, this.quantitySelected);
     }
+  }
+
+  ngOnDestroy(): void {
+    this.qpSub?.unsubscribe();
+    this.paramSub?.unsubscribe();
   }
 }
