@@ -1,14 +1,14 @@
 <ng-container *ngIf="isMobileView; else desktopView">
-  <div appFade class="transition relative overflow-hidden flex flex-col">
+  <div #cardRoot class="transition relative overflow-hidden flex flex-col">
     <a [routerLink]="['/producto', product.slug]" class="group block relative">
       <div class="relative w-full aspect-[4/5] overflow-hidden bg-aldy-white">
-        <img appZoomout *ngIf="displayImage || product.main_image" 
-     [ngSrc]="displayImage || product.main_image" 
-     [alt]="product.name"
-     width="400"
-     height="500"
-     priority
-     class="w-full h-full cursor-pointer object-cover object-top"/>
+        <img *ngIf="displayImage || product.main_image" 
+             [ngSrc]="displayImage || product.main_image" 
+             [alt]="product.name"
+             width="400"
+             height="500"
+             priority
+             class="w-full h-full cursor-pointer object-cover object-top"/>
 
         <button type="button" 
                 aria-label="Añadir a favoritos" 
@@ -44,19 +44,28 @@
   </div>
 </ng-container>
 <ng-template #desktopView>
-  <div appFade class="relative overflow-hidden group bg-aldy-white aspect-[3/4] sm:aspect-[3/4] md:aspect-[3/5] lg:aspect-[3/5] xl:aspect-[3/5]">
-    <button type="button" [routerLink]="['/producto', product.slug]" class="absolute inset-0 z-0">
+  <div #cardRoot class="relative overflow-hidden group bg-aldy-white aspect-[3/4] sm:aspect-[3/4] md:aspect-[3/5] lg:aspect-[3/5] xl:aspect-[3/5]">
+    <button type="button" [routerLink]="['/producto', product.slug]" class="absolute inset-0 z-0" appPanimationcard [disableHover]="isMobileView">
       <img
-  #productImage
-  [ngSrc]="currentImage"
-  alt="{{ product.name }}"
-  width="400"
-  height="500"
-  priority
-  class="w-full h-full cursor-pointer object-cover object-top"
-  (mouseenter)="onMouseEnter($event)"
-  (mouseleave)="onMouseLeave()"
-/>
+        #productImage
+        [ngSrc]="currentImage"
+        alt="{{ product.name }}"
+        width="400"
+        height="500"
+        priority
+        class="w-full h-full cursor-pointer object-cover object-top"
+      />
+      <img
+        *ngIf="hoverImage"
+        data-overlay-image
+        [ngSrc]="hoverImage"
+        alt="{{ product.name }}"
+        width="400"
+        height="500"
+        priority
+        class="absolute inset-0 w-full h-full object-cover object-top pointer-events-none"
+        style="opacity:0"
+      />
     </button>
     <div appMoveupFade class="absolute inset-0 flex items-end z-10 pointer-events-none">
       <div class="w-full bg-aldy-white space-y-3 p-4 m-3 pointer-events-auto">
