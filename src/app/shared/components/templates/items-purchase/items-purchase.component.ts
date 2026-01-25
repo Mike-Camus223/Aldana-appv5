@@ -108,7 +108,7 @@ export class ItemsPurchaseComponent implements OnInit {
         if (this.initialQuantityParam) {
           this.quantitySelected = this.initialQuantityParam;
         }
-        this.updateUrlQuery(); // reflejar estado inicial amigable
+        this.updateUrlQuery(true);
       }
     }
   }
@@ -192,7 +192,7 @@ export class ItemsPurchaseComponent implements OnInit {
     return this.selectedVariant?.color_name === color;
   }
 
-  private updateUrlQuery(): void {
+  private updateUrlQuery(replace: boolean = false): void {
     if (!this.product) return;
     const params: any = {};
     params['producto'] = null;
@@ -208,7 +208,8 @@ export class ItemsPurchaseComponent implements OnInit {
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams: params,
-      queryParamsHandling: 'merge'
+      queryParamsHandling: 'merge',
+      replaceUrl: replace
     });
   }
 
