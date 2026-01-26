@@ -100,8 +100,6 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
   pretAPorterOpen = false;
   noviasOpen = false;
 
-  @ViewChild('productsTop') productsTopRef?: ElementRef<HTMLDivElement>;
-  @ViewChild('productsControls') productsControlsRef?: ElementRef<HTMLDivElement>;
   @ViewChild('productsContainer') productsContainerRef?: ElementRef<HTMLDivElement>;
   private containerLocked = false;
   private lockedHeight = 0;
@@ -608,7 +606,6 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
     this.applyFiltersSync();
     // Mantener SPA sin recarga total; actualizar solo URL sin navegación
     this.location.replaceState('/tienda');
-    this.scrollToProductsTop();
   }
 
   applyFiltersAction(isMobile: boolean = false): void {
@@ -620,7 +617,6 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
       // Actualiza la URL sin disparar navegación ni loaders genéricos
       const [base, query] = url.split('?');
       this.location.replaceState(base, query ?? '');
-      this.scrollToProductsTop();
       if (isMobile) {
         this.toggleFilters();
       }
@@ -852,23 +848,6 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
     this.unlockProductsContainer();
   }
 
-  private scrollToProductsTop(): void {
-    if (isPlatformBrowser(this.platformId)) {
-      try {
-        const targetEl = this.productsControlsRef?.nativeElement
-          || this.productsTopRef?.nativeElement
-          || document.getElementById('productsTop');
-        if (targetEl) {
-          targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        } else {
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-      } catch (e) {
-        // fallback: scroll to top of page
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      }
-    }
-  }
 
   private delay(ms: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -907,7 +886,6 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
     const url = this.buildUrlString();
     const [base, query] = url.split('?');
     this.location.replaceState(base, query ?? '');
-    this.scrollToProductsTop();
   }
 
   prevPage(): void {

@@ -2,7 +2,7 @@
   <div #cardRoot class="transition relative overflow-hidden flex flex-col">
     <a [routerLink]="['/producto', product.slug]" class="group block relative">
       <div class="relative w-full aspect-[4/5] overflow-hidden bg-aldy-white">
-        <img *ngIf="displayImage || product.main_image" 
+        <img *ngIf="displayImage || product.main_image" #mobileImage
              [ngSrc]="displayImage || product.main_image" 
              [alt]="product.name"
              width="400"

@@ -68,6 +68,7 @@ export class CardproductComponent implements OnInit, AfterViewInit, OnDestroy {
   @Output() wishlistToggled = new EventEmitter<string>();
   @ViewChild('productImage', { static: false }) productImageRef!: ElementRef<HTMLImageElement>;
   @ViewChild('cardRoot', { static: false }) cardRootRef!: ElementRef<HTMLElement>;
+  @ViewChild('mobileImage', { static: false }) mobileImageRef!: ElementRef<HTMLImageElement>;
   selectedSize: string | null = null;
   private preventHover = false;
   isMobileView: boolean = false;
@@ -75,6 +76,9 @@ export class CardproductComponent implements OnInit, AfterViewInit, OnDestroy {
   hoverImage: string | null = null;
   private destroy$ = new Subject<void>();
   private fadeupTrigger?: ScrollTrigger;
+  private readonly fadeupDuration = 0.8;
+  private readonly zoomDuration = 1.0;
+  private readonly staggerBase = 0.08;
 
 
   constructor(
@@ -83,7 +87,8 @@ export class CardproductComponent implements OnInit, AfterViewInit, OnDestroy {
     @Inject(PLATFORM_ID) private platformId: Object,
     private notificationService: NotificationService,
     private router: Router,
-    private loaderService: LoaderService
+    private loaderService: LoaderService,
+    private hostRef: ElementRef<HTMLElement>
   ) {}
 
   ngOnInit(): void {
@@ -135,20 +140,31 @@ export class CardproductComponent implements OnInit, AfterViewInit, OnDestroy {
       this.fadeupTrigger = undefined;
     }
     gsap.set(this.cardRootRef.nativeElement, { opacity: 0, y: 30, willChange: 'opacity, transform' });
+    const imgEl = this.getImageEl();
+    if (imgEl) {
+      gsap.set(imgEl, { scale: 1.06, willChange: 'transform' });
+    }
+    const delay = this.computeStaggerDelay();
     this.fadeupTrigger = ScrollTrigger.create({
       trigger: this.cardRootRef.nativeElement,
       start: 'top 95%',
       once: true,
       onEnter: () => {
-        gsap.to(this.cardRootRef.nativeElement, {
+        const tl = gsap.timeline({ defaults: { ease: 'power2.out' }, delay });
+        tl.to(this.cardRootRef.nativeElement, {
           opacity: 1,
           y: 0,
-          duration: 0.6,
-          ease: 'power2.out',
+          duration: this.fadeupDuration,
           onComplete: () => {
             (this.cardRootRef.nativeElement as HTMLElement).style.willChange = 'auto';
           }
-        });
+        }, 0);
+        if (imgEl) {
+          tl.to(imgEl, {
+            scale: 1.0,
+            duration: this.zoomDuration
+          }, 0);
+        }
       }
     });
   }
@@ -161,6 +177,11 @@ export class CardproductComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     gsap.killTweensOf(this.cardRootRef.nativeElement);
     gsap.set(this.cardRootRef.nativeElement, { opacity: 0, y: 30, willChange: 'opacity, transform' });
+    const imgEl = this.getImageEl();
+    if (imgEl) {
+      gsap.killTweensOf(imgEl);
+      gsap.set(imgEl, { scale: 1.06, willChange: 'transform' });
+    }
   }
 
   private updateView(): void {
@@ -268,11 +289,31 @@ export class CardproductComponent implements OnInit, AfterViewInit, OnDestroy {
     this.router.navigate(['/producto', this.product.slug], { queryParams });
   }
 
-
   private preloadImage(src: string): void {
     if (!src) return;
     const img = new Image();
     img.src = src;
+  }
+  
+  private getImageEl(): HTMLElement | null {
+    const el = this.productImageRef?.nativeElement || this.mobileImageRef?.nativeElement || null;
+    return el;
+  }
+  
+  private computeStaggerDelay(): number {
+    try {
+      const parent = this.hostRef.nativeElement.parentElement;
+      if (!parent) return 0;
+      const children = Array.from(parent.children);
+      const index = children.indexOf(this.hostRef.nativeElement);
+      const style = window.getComputedStyle(parent);
+      const colsDef = style.gridTemplateColumns || '';
+      const cols = colsDef.split(' ').filter(s => s && s !== 'none').length || 1;
+      const colIndex = cols > 0 ? (index % cols) : index;
+      return colIndex * this.staggerBase;
+    } catch {
+      return 0;
+    }
   }
 
   ngOnDestroy(): void {
