@@ -211,8 +211,8 @@
             <button type="button" (click)="clearFilters()"
               class="flex-1 border border-aldy-medium text-aldy-medium px-3 py-2 font-light hover:border-aldy-medium-2 hover:text-aldy-medium-2 NewAldyFontType4 cursor-pointer transition-colors text-xs uppercase tracking-widest">Borrar
               filtros</button>
-            <button type="button" (click)="applyFiltersAction(false)"
-              class="flex-1 text-white px-3 py-2 font-light bg-aldy-medium hover:bg-aldy-medium-2 NewAldyFontType4 cursor-pointer transition-colors text-xs uppercase tracking-wider">Buscar</button>
+            <button type="button" (click)="applyFiltersAction(false)" [disabled]="loading"
+              class="flex-1 text-white px-3 py-2 font-light bg-aldy-medium hover:bg-aldy-medium-2 NewAldyFontType4 cursor-pointer transition-colors text-xs uppercase tracking-wider disabled:opacity-40 disabled:cursor-default">Buscar</button>
           </div>
         </div>
       </aside>
@@ -389,8 +389,8 @@
         <button type="button" (click)="clearFilters()"
           class="flex-1 border border-aldy-medium text-aldy-medium px-3 py-2 font-light hover:border-aldy-medium-2 hover:text-aldy-medium-2 NewAldyFontType4 cursor-pointer transition-colors text-xs uppercase tracking-widest">Borrar
           filtros</button>
-        <button type="button" (click)="applyFiltersAction(false)"
-          class="flex-1 text-white px-3 py-2 font-light bg-aldy-medium hover:bg-aldy-medium-2 NewAldyFontType4 cursor-pointer transition-colors text-xs uppercase tracking-wider">Buscar</button>
+        <button type="button" (click)="applyFiltersAction(false)" [disabled]="loading"
+          class="flex-1 text-white px-3 py-2 font-light bg-aldy-medium hover:bg-aldy-medium-2 NewAldyFontType4 cursor-pointer transition-colors text-xs uppercase tracking-wider disabled:opacity-40 disabled:cursor-default">Buscar</button>
       </div>
     </div>
   </div>

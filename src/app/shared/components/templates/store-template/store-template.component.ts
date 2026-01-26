@@ -93,6 +93,8 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
   selectedAccordion: string | null = null;
   openAccordions: Set<string> = new Set(['categorias']);
   get openAccordionsArray(): string[] { return Array.from(this.openAccordions); }
+  private bridesLoaded = false;
+  private bridesLoadPromise: Promise<void> | null = null;
 
   // Control de acordiones para Pret a Porter y Novias
   pretAPorterOpen = false;
@@ -610,6 +612,9 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
   }
 
   applyFiltersAction(isMobile: boolean = false): void {
+    if (this.loading) {
+      return;
+    }
     this.applyFilters().then(() => {
       const url = this.buildUrlString();
       // Actualiza la URL sin disparar navegación ni loaders genéricos
@@ -758,41 +763,55 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
   }
 
   private async loadBridesProducts(): Promise<void> {
-    try {
-      const bridesData = await this.bridesProductsService.getProducts();
-      if (bridesData && Array.isArray(bridesData)) {
-        // Mapear productos de novias al formato de Product
-        const bridesProducts = bridesData.map(product => ({
-          id: product.id,
-          name: product.name,
-          description: product.description,
-          details: product.details,
-          price: product.price,
-          category: { 
-            id: product.categories?.[0]?.id || 0,
-            name: this.getBridesCategoryName(product) 
-          },
-          subcategory: { 
-            id: product.subcategories?.[0]?.id || 0,
-            name: this.getBridesSubcategoryName(product) 
-          },
-          main_image: product.main_image,
-          additional_images: product.additional_images,
-          sizes: product.sizes,
-          slug: product.slug,
-          avid: product.avid,
-          variants: product.product_variants || [],
-          collection: product.collection
-        }));
-        
-        // Agregar productos de novias a allProducts si no están ya
-        const existingIds = this.allProducts.map(p => p.id);
-        const newBridesProducts = bridesProducts.filter(p => !existingIds.includes(p.id));
-        this.allProducts.push(...newBridesProducts);
-      }
-    } catch (error) {
-      console.error('Error loading brides products:', error);
+    if (this.bridesLoaded) {
+      return;
     }
+    if (this.bridesLoadPromise) {
+      return this.bridesLoadPromise;
+    }
+    this.bridesLoadPromise = (async () => {
+      try {
+        const bridesData = await this.bridesProductsService.getProducts();
+        if (bridesData && Array.isArray(bridesData)) {
+          const bridesProducts = bridesData.map(product => ({
+            id: product.id,
+            name: product.name,
+            description: product.description,
+            details: product.details,
+            price: product.price,
+            category: { 
+              id: product.categories?.[0]?.id || 0,
+              name: this.getBridesCategoryName(product) 
+            },
+            subcategory: { 
+              id: product.subcategories?.[0]?.id || 0,
+              name: this.getBridesSubcategoryName(product) 
+            },
+            main_image: product.main_image,
+            additional_images: product.additional_images,
+            sizes: product.sizes,
+            slug: product.slug,
+            avid: product.avid,
+            variants: product.product_variants || [],
+            collection: product.collection
+          }));
+          const existingIds = new Set(this.allProducts.map(p => p.id));
+          const newBridesProducts = bridesProducts.filter(p => !existingIds.has(p.id));
+          this.allProducts.push(...newBridesProducts);
+          const unique = new Map<string, Product>();
+          for (const p of this.allProducts) {
+            unique.set(p.id, p);
+          }
+          this.allProducts = Array.from(unique.values());
+        }
+      } catch (error) {
+        console.error('Error loading brides products:', error);
+      } finally {
+        this.bridesLoaded = true;
+        this.bridesLoadPromise = null;
+      }
+    })();
+    return this.bridesLoadPromise;
   }
 
   private getBridesCategoryName(product: any): string {
