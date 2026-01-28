@@ -18,7 +18,7 @@ import { AldyCheckboxV1Directive } from '../../../utils/directives/aldy-checkbox
 import { Location } from '@angular/common';
 import { FavoritesService } from '../../../../core/services/favorites/favorites.service';
 import { AuthService } from '../../../../core/services/auth/auth.service';
-import { DiscountLeafComponent } from '../../system/discount-leaf/discount-leaf.component';
+ 
 
 
 @Component({
@@ -34,8 +34,7 @@ import { DiscountLeafComponent } from '../../system/discount-leaf/discount-leaf.
     LucideAngularModule,
     AcordiongenericComponent,
     LoadingbarComponent,
-    AldyCheckboxV1Directive,
-    DiscountLeafComponent
+    AldyCheckboxV1Directive
   ],
   templateUrl: './store-template.component.html',
   styleUrls: ['./store-template.component.css'],

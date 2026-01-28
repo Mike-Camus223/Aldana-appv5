@@ -6,6 +6,7 @@ import { filter } from 'rxjs/operators';
 import { LoadingScreenGenericComponent } from "./shared/components/system/loading-screen-generic/loading-screen-generic.component";
 import { LoadingScreenComponent } from './shared/components/system/loading-screen/loading-screen.component';
 import { ToastNotificationComponent } from './shared/components/system/toast-notification/toast-notification.component';
+import { DiscountLeafComponent } from './shared/components/system/discount-leaf/discount-leaf.component';
 
 @Component({
   selector: 'app-root',
@@ -15,7 +16,8 @@ import { ToastNotificationComponent } from './shared/components/system/toast-not
     ToastNotificationComponent,
     LoadingScreenGenericComponent, 
     LoadingScreenComponent,
-    CommonModule
+    CommonModule,
+    DiscountLeafComponent
   ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']

@@ -31,6 +31,20 @@ export class SupabaseService {
     };
   }
 
+  async subscribeEmail(email: string, origin: string) {
+    const payload = {
+      email,
+      origin,
+      created_at: new Date().toISOString()
+    };
+    const result = await this.supabase
+      .from('newsletter_subscribers')
+      .insert(payload)
+      .select()
+      .single();
+    return { data: result.data, error: result.error };
+  }
+
   async getProducts(slug?: string) {
     const selectProducts = `
       id,
