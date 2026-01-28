@@ -18,6 +18,7 @@ import { AldyCheckboxV1Directive } from '../../../utils/directives/aldy-checkbox
 import { Location } from '@angular/common';
 import { FavoritesService } from '../../../../core/services/favorites/favorites.service';
 import { AuthService } from '../../../../core/services/auth/auth.service';
+import { DiscountLeafComponent } from '../../system/discount-leaf/discount-leaf.component';
 
 
 @Component({
@@ -34,6 +35,7 @@ import { AuthService } from '../../../../core/services/auth/auth.service';
     AcordiongenericComponent,
     LoadingbarComponent,
     AldyCheckboxV1Directive,
+    DiscountLeafComponent
   ],
   templateUrl: './store-template.component.html',
   styleUrls: ['./store-template.component.css'],
@@ -95,11 +97,8 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
   get openAccordionsArray(): string[] { return Array.from(this.openAccordions); }
   private bridesLoaded = false;
   private bridesLoadPromise: Promise<void> | null = null;
-
-  // Control de acordiones para Pret a Porter y Novias
   pretAPorterOpen = false;
   noviasOpen = false;
-
   @ViewChild('productsContainer') productsContainerRef?: ElementRef<HTMLDivElement>;
   private containerLocked = false;
   private lockedHeight = 0;

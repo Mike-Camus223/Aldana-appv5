@@ -1,0 +1,82 @@
+<div class="fixed left-0 bottom-0 group pointer-events-none
+         transform transition-transform
+         duration-1000
+         ease-[cubic-bezier(.22,1,.36,1)]" [ngClass]="{
+    'translate-x-[-300px] translate-y-[300px]': leafHidden,
+    'translate-x-0 translate-y-0': !leafHidden
+  }">
+  <div class="relative w-[150px] h-[150px]">
+    <!-- TRIÁNGULO -->
+    <div (click)="openLeafModal()" class="absolute bottom-0 left-0 w-0 h-0
+             border-t-[140px] border-l-[140px]
+             border-t-transparent border-l-aldy-white
+             transition-all duration-400 ease-out
+             group-hover:border-t-[165px]
+             group-hover:border-l-[165px]
+             pointer-events-auto cursor-pointer">
+    </div>
+    <div (click)="openLeafModal()" class="absolute bottom-5 left-3
+             transform rotate-45 text-center
+             transition-all duration-400 ease-out
+             group-hover:bottom-8
+             group-hover:left-6
+             pointer-events-auto cursor-pointer">
+      <span class="block NewAldyFontType4 text-aldy-green-gray-bold text-2xl leading-none">
+        10%
+      </span>
+      <span class="block NewAldyFontType4 text-aldy-green-gray-bold text-xs">
+        Descuento
+      </span>
+    </div>
+    <button (click)="closeLeaf()" class="absolute bottom-4 left-[130px]
+             w-5 h-5 rounded-full
+             bg-black text-white
+             flex items-center justify-center
+             text-xs font-bold
+             pointer-events-auto cursor-pointer
+             transition-all duration-400 ease-out
+             group-hover:bottom-7
+             group-hover:left-[145px]">
+      ✕
+    </button>
+  </div>
+</div>
+<app-modalv2 [(open)]="modalOpen" (openChange)="!$event && onModalClose()"
+  Mostyles="p-0 rounded-2xl w-full max-w-[700px] h-[500px] overflow-hidden">
+  <div class="flex h-full">
+    <div class="w-1/2 h-full">
+      <img src="../../../../../assets/images/others/about2.jpg" alt="Aldana Vilcabana"
+        class="w-full h-full object-cover" />
+    </div>
+    <div class="w-1/2 h-full bg-aldy-white px-12 py-8 flex flex-col items-center">
+      <div class="w-full max-w-[330px] h-full justify-center space-y-6 flex flex-col">
+        <div class="text-center">
+          <img src="../../../../../assets/svg/logo-4.svg" alt="Aldana Vilcabana" class="mx-auto mb-7 h-12" />
+          <h2 class="text-xl text-aldy-green-gray NewAldyTitle leading-snug">
+            Suscribite y obtené 10% OFF en tu primera compra ✨
+          </h2>
+        </div>
+        <div class=" flex flex-col justify-center">
+          <form action="post">
+            <input type="email" required placeholder="Ingresá tu correo electrónico"
+              class="w-full border border-aldy-medium NewAldyFontType4 px-4 py-3 text-xs tracking-widest mb-5  focus:outline-none focus:ring-1 focus:ring-aldy-white" />
+            <button
+              class="w-full bg-aldy-medium text-white cursor-pointer NewAldyFontType4 font-light uppercase text-[11px] tracking-[0.3em] py-3  hover:opacity-90 transition">
+              Subscribirse
+            </button>
+          </form>
+        </div>
+        <div class="text-center">
+          <p class="text-[11px] NewAldyFontType4 text-aldy-green-gray leading-relaxed mb-6">
+            Recibí novedades exclusivas, nuevos lanzamientos y el
+            universo creativo de Aldana Vilcabana.
+          </p>
+          <p class="text-[10px] NewAldyFontType4 text-aldy-green-gray">
+            *Podés darte de baja en cualquier momento.
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</app-modalv2>
