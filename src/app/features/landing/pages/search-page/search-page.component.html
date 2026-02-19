@@ -19,7 +19,9 @@
         <button
           type="button"
           (click)="applyFiltersAction(false)"
+          [disabled]="loading"
           class="flex items-center justify-center text-aldy-green-gray hover:text-white border border-aldy-green-gray hover:bg-aldy-medium-2 hover:border-aldy-medium-2 transition-all duration-300 cursor-pointer uppercase tracking-widest text-xs NewAldyFontType4 h-[42px] w-[42px]"
+          [ngClass]="loading ? 'opacity-60 cursor-not-allowed' : ''"
         >
           <lucide-icon name="Search" [size]="20" [strokeWidth]="2"></lucide-icon>
         </button>

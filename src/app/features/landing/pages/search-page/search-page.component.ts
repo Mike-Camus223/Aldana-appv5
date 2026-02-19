@@ -125,6 +125,7 @@ export class SearchPageComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   private searchSubject = new Subject<string>();
   private readonly RECENT_KEY = 'recent_searches';
+  private lastSearchSignature: string | null = null;
 
   @ViewChild('inputElement') inputElement!: ElementRef<HTMLInputElement>;
   @ViewChild('productsContainer') productsContainerRef?: ElementRef<HTMLDivElement>;
@@ -714,9 +715,17 @@ export class SearchPageComponent implements OnInit, OnDestroy {
   }
 
   applyFiltersAction(isMobile: boolean) {
+      if (this.loading) {
+          return;
+      }
       let term = (this.searchTerm || '').trim();
       if (this.hasActiveFilters()) {
           this.searchMode = 'filters';
+      }
+      const mode: 'input' | 'filters' | null = this.hasActiveFilters() ? 'filters' : 'input';
+      const signature = this.buildSearchSignature(term, mode);
+      if (this.lastSearchSignature === signature && this.originalProducts.length > 0 && !this.noResults) {
+          return;
       }
       if (term.length > 0) {
           this.saveRecentSearch(term);
@@ -724,6 +733,7 @@ export class SearchPageComponent implements OnInit, OnDestroy {
       if (term.length > 0 || this.hasActiveFilters()) {
           this.hasSearched = true;
           if (!this.hasActiveFilters()) this.searchMode = 'input';
+          this.lastSearchSignature = signature;
           this.updateUrl();
           this.fetchProducts();
       } else {
@@ -734,6 +744,7 @@ export class SearchPageComponent implements OnInit, OnDestroy {
           this.noResults = false;
           this.loading = false;
           this.updateUrl();
+          this.lastSearchSignature = null;
       }
       if (isMobile) {
           this.toggleFilters();
@@ -792,6 +803,24 @@ export class SearchPageComponent implements OnInit, OnDestroy {
   onRecentClick(term: string): void {
       this.searchTerm = term;
       this.applyFiltersAction(false);
+  }
+
+  private buildSearchSignature(term: string, mode: 'input' | 'filters' | null): string {
+      const normTerm = (term || '').trim().toLowerCase();
+      const cats = [...this.selectedCategories].map(c => ProductUtils.normalize(c)).sort();
+      const subs = this.getSelectedSubcategoriesFlat()
+        .map(s => `${ProductUtils.normalize(s.category)}|${ProductUtils.normalize(s.subcategory)}`)
+        .sort();
+      const sizes = [...this.selectedSizes].map(s => String(s).toUpperCase()).sort();
+      return JSON.stringify({
+          mode,
+          term: mode === 'filters' ? '' : normTerm,
+          cats,
+          subs,
+          sizes,
+          priceMin: this.priceMin,
+          priceMax: this.priceMax
+      });
   }
 
   getSelectedSubcategoriesFlat(): { category: string; subcategory: string }[] {
