@@ -1,68 +1,27 @@
-.fake-input {
-  pointer-events: none;
-  position: relative;
-  text-align: center;
-  margin: 0 auto;
-  overflow: hidden;
-  white-space: nowrap;
-  transition: width 0.2s ease-in-out;
-  width: fit-content;
-  line-height: 1.15;
-}
-
-.fake-input.activated {
-  text-align: left;
-}
-
-.ghost-input {
-  position: absolute;
-  inset: 0;                 
+.searchbar-container {
+  display: grid;
+  place-items: center;
   width: 100%;
-  height: 100%;
+}
 
-  opacity: 0;
-  z-index: 10;
-  caret-color: transparent;
-  background: transparent;
+.searchbar {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  width: 100%;
+  column-gap: 0.5rem;
+}
+
+.search-input {
+  width: 100%;
   border: none;
-  color: transparent;
-  font-size: inherit;
-  pointer-events: auto;
+  border-bottom: 1px solid var(--aldy-green-gray, #AEC2A9);
+  background: transparent;
+  outline: none;
+  line-height: 1.15;
   padding: 0;
   margin: 0;
-}
-
-.scroll-text {
-  display: inline-block;
-}
-
-.hide-scrollbar {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-
-.hide-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-
-.char-space {
-  min-width: 0.33em; /* ancho real de espacio */
-}
-
-.placeholder-animate {
-  display: inline-block;
-  overflow: hidden;
-  white-space: nowrap;
-  animation: writer 0.3s steps(8, end);
-}
-
-.blinking-cursor {
-  display: inline-block;
-  animation: blink 1s steps(1) infinite;
-  line-height: 1;
-  font-weight: 400;
-  font-size: inherit;
-  vertical-align: baseline;
+  caret-color: currentColor;
 }
 
 .product-card {
@@ -105,48 +64,10 @@
   }
 }
 
-@keyframes writer {
-  from { width: 0; }
-  to { width: 100%; }
-}
-
-@keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
-}
-
 @media (max-width: 320px) {
-  .fake-input {
-    max-width: 18rem !important;
-    font-size: 1.5rem !important;
-  }
-
-  .scroll-text {
-    max-width: 18rem !important;
-  }
-
-  .animated-text {
-    padding: 0.75rem !important;
-  }
-
   .content-wrapper {
     padding-left: 0.5rem !important;
     padding-right: 0.5rem !important;
-  }
-
-  .ghost-input {
-    height: 60px;
-  }
-}
-
-@media (max-width: 375px) {
-  .fake-input {
-    max-width: 20rem !important;
-    font-size: 1.75rem !important;
-  }
-
-  .scroll-text {
-    max-width: 20rem !important;
   }
 }
 

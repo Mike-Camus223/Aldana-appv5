@@ -3,7 +3,6 @@ import {
   Component,
   ElementRef,
   ViewChild,
-  AfterViewInit,
   OnDestroy,
   Inject,
   PLATFORM_ID,
@@ -14,7 +13,6 @@ import {
 } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { SupabaseService } from '../../../../core/services/data-access/supabase.service';
-import gsap from 'gsap';
 import {
   Subject,
   debounceTime,
@@ -61,6 +59,16 @@ import { ProductUtils } from '../../../../shared/utils/dataEx/products-utils';
         animate('400ms ease-out', style({ transform: 'scale(1)', opacity: 1 })),
       ]),
     ]),
+    trigger('contentFade', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(8px)' }),
+        animate('300ms ease-out', style({ opacity: 1, transform: 'translateY(0)' })),
+      ]),
+      transition(':leave', [
+        style({ opacity: 1, transform: 'translateY(0)' }),
+        animate('200ms ease-in', style({ opacity: 0, transform: 'translateY(4px)' })),
+      ]),
+    ]),
   ],
   providers: [
     {
@@ -70,11 +78,10 @@ import { ProductUtils } from '../../../../shared/utils/dataEx/products-utils';
     }
   ]
 })
-export class SearchPageComponent implements OnInit, AfterViewInit, OnDestroy {
-  chars: string[] = [];
-  inputWidth: number = 150;
+export class SearchPageComponent implements OnInit, OnDestroy {
   selectedColors: Record<string, string> = {};
   searchTerm: string = '';
+  recentSearches: string[] = [];
   loading: boolean = false;
   products: Product[] = []; // Filtered products for display
   originalProducts: Product[] = []; // Raw search results
@@ -117,11 +124,9 @@ export class SearchPageComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private destroy$ = new Subject<void>();
   private searchSubject = new Subject<string>();
+  private readonly RECENT_KEY = 'recent_searches';
 
-  @ViewChild('animatedText') animatedText!: ElementRef<HTMLDivElement>;
   @ViewChild('inputElement') inputElement!: ElementRef<HTMLInputElement>;
-  @ViewChild('scrollContainer') scrollContainer!: ElementRef<HTMLDivElement>;
-  @ViewChild('fakeInput') fakeInput!: ElementRef<HTMLDivElement>;
   @ViewChild('productsContainer') productsContainerRef?: ElementRef<HTMLDivElement>;
 
   // Dynamic filters
@@ -266,12 +271,12 @@ export class SearchPageComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit() {
     this.checkMobileView();
+    this.loadRecentSearches();
     // Initialize state from query params
     this.route.queryParams.pipe(takeUntil(this.destroy$)).subscribe(params => {
         // Search Term
         if (params['q']) {
             this.searchTerm = params['q'];
-            this.updateCharsFromSearchTerm();
         }
 
         // Sort
@@ -354,9 +359,7 @@ export class SearchPageComponent implements OnInit, AfterViewInit, OnDestroy {
       });
   }
 
-  ngAfterViewInit() {
-    this.updateInputWidth();
-  }
+  ngAfterViewInit() {}
 
   ngOnDestroy() {
     this.destroy$.next();
@@ -382,46 +385,6 @@ export class SearchPageComponent implements OnInit, AfterViewInit, OnDestroy {
   onInput(event: Event) {
     const input = (event.target as HTMLInputElement).value;
     this.searchTerm = input;
-    this.updateCharsFromSearchTerm();
-    this.updateInputWidth();
-  }
-
-  updateCharsFromSearchTerm() {
-      // Re-create chars array based on searchTerm
-      const oldLength = this.chars.length;
-      const newLength = this.searchTerm.length;
-
-      if (newLength < oldLength) {
-        this.chars.splice(newLength);
-      } else if (newLength > oldLength) {
-          for (let i = oldLength; i < newLength; i++) {
-              this.chars.push(this.searchTerm[i]);
-          }
-          // Animate new chars
-          setTimeout(() => {
-            const span = this.animatedText?.nativeElement?.children[newLength - 1];
-            if (span) {
-              gsap.fromTo(span, { x: '8px' }, { x: '0px', duration: 0.2, ease: 'power1.out' });
-            }
-            if (this.scrollContainer?.nativeElement) {
-                this.scrollContainer.nativeElement.scrollLeft =
-                this.scrollContainer.nativeElement.scrollWidth;
-            }
-          }, 0);
-      } else {
-          // Length same (maybe pasting same length?), just update content if needed or do nothing
-          this.chars = this.searchTerm.split('');
-      }
-  }
-
-  updateInputWidth() {
-    setTimeout(() => {
-      if (this.scrollContainer?.nativeElement) {
-        const scroll = this.scrollContainer.nativeElement.scrollWidth;
-        const minW = this.getDefaultInputWidth();
-        this.inputWidth = Math.max(minW, Math.min(scroll + 50, window.innerWidth * 0.9));
-      }
-    }, 0);
   }
 
   updateUrl() {
@@ -752,15 +715,11 @@ export class SearchPageComponent implements OnInit, AfterViewInit, OnDestroy {
 
   applyFiltersAction(isMobile: boolean) {
       let term = (this.searchTerm || '').trim();
-      if (!term && this.chars.length > 0) {
-          term = this.chars.join('').trim();
-          this.searchTerm = term;
-      }
       if (this.hasActiveFilters()) {
-          this.searchTerm = '';
-          this.updateCharsFromSearchTerm();
           this.searchMode = 'filters';
-          this.inputWidth = this.getDefaultInputWidth();
+      }
+      if (term.length > 0) {
+          this.saveRecentSearch(term);
       }
       if (term.length > 0 || this.hasActiveFilters()) {
           this.hasSearched = true;
@@ -775,7 +734,6 @@ export class SearchPageComponent implements OnInit, AfterViewInit, OnDestroy {
           this.noResults = false;
           this.loading = false;
           this.updateUrl();
-          this.updateInputWidth();
       }
       if (isMobile) {
           this.toggleFilters();
@@ -806,22 +764,34 @@ export class SearchPageComponent implements OnInit, AfterViewInit, OnDestroy {
           if (this.inputElement?.nativeElement) {
               this.inputElement.nativeElement.focus();
           }
-          this.updateInputWidth();
-          if (isPlatformBrowser(this.platformId)) {
-              try {
-                  this.fakeInput?.nativeElement?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-              } catch {}
-          }
       }, 0);
   }
 
-  private getDefaultInputWidth(): number {
-      if (isPlatformBrowser(this.platformId)) {
-          const vw = window.innerWidth;
-          const base = Math.min(Math.max(Math.floor(vw * 0.6), 280), 720);
-          return base;
-      }
-      return 320;
+  private loadRecentSearches(): void {
+      if (!isPlatformBrowser(this.platformId)) return;
+      try {
+          const raw = localStorage.getItem(this.RECENT_KEY);
+          const arr = raw ? JSON.parse(raw) : [];
+          if (Array.isArray(arr)) {
+              this.recentSearches = arr.filter((x: any) => typeof x === 'string').slice(0, 5);
+          }
+      } catch {}
+  }
+
+  private saveRecentSearch(term: string): void {
+      if (!isPlatformBrowser(this.platformId)) return;
+      const t = String(term).trim();
+      if (!t) return;
+      const existing = this.recentSearches.filter(s => s.toLowerCase() !== t.toLowerCase());
+      this.recentSearches = [t, ...existing].slice(0, 5);
+      try {
+          localStorage.setItem(this.RECENT_KEY, JSON.stringify(this.recentSearches));
+      } catch {}
+  }
+
+  onRecentClick(term: string): void {
+      this.searchTerm = term;
+      this.applyFiltersAction(false);
   }
 
   getSelectedSubcategoriesFlat(): { category: string; subcategory: string }[] {
