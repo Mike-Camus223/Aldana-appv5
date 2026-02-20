@@ -34,6 +34,7 @@ import { AcordiongenericComponent } from '../../../../shared/components/generic/
 import { AldyCheckboxV1Directive } from '../../../../shared/utils/directives/aldy-checkbox-v1.directive';
 import { trigger, transition, style, animate, state } from '@angular/animations';
 import { ProductUtils } from '../../../../shared/utils/dataEx/products-utils';
+import { LinkHoverUnderlineDirective } from '../../../../shared/utils/directives/link-hover-underline.directive';
 
 @Component({
   selector: 'app-search-page',
@@ -47,7 +48,8 @@ import { ProductUtils } from '../../../../shared/utils/dataEx/products-utils';
     SliderModule,
     LucideAngularModule,
     AcordiongenericComponent,
-    AldyCheckboxV1Directive
+    AldyCheckboxV1Directive,
+    LinkHoverUnderlineDirective
   ],
   templateUrl: './search-page.component.html',
   styleUrls: ['./search-page.component.css'],

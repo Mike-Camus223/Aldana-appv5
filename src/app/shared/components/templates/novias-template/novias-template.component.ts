@@ -42,7 +42,7 @@ import { WordRevealDirective } from '../../../utils/directives/word-reveal.direc
 })
 export class NoviasTemplateComponent implements AfterViewInit {
   CollectionBrides: Collection[] = [];
-  productColumns: number = 3;
+  productColumns: number = 4;
 
 
   constructor(
