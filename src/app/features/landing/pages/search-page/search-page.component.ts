@@ -724,7 +724,7 @@ export class SearchPageComponent implements OnInit, OnDestroy {
       }
       const mode: 'input' | 'filters' | null = this.hasActiveFilters() ? 'filters' : 'input';
       const signature = this.buildSearchSignature(term, mode);
-      if (this.lastSearchSignature === signature && this.originalProducts.length > 0 && !this.noResults) {
+      if (this.lastSearchSignature === signature && this.hasSearched) {
           return;
       }
       if (term.length > 0) {
