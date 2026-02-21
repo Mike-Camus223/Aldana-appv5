@@ -83,6 +83,7 @@ import { LinkHoverUnderlineDirective } from '../../../../shared/utils/directives
 export class SearchPageComponent implements OnInit, OnDestroy {
   selectedColors: Record<string, string> = {};
   searchTerm: string = '';
+  displayedSearchTerm: string = ''; // Store the search term used for the current results
   recentSearches: string[] = [];
   loading: boolean = false;
   products: Product[] = []; // Filtered products for display
@@ -414,6 +415,19 @@ export class SearchPageComponent implements OnInit, OnDestroy {
     this.loading = true;
     this.noResults = false;
     
+    // Handle empty search input
+    if (this.searchMode === 'input' && (!this.searchTerm || !this.searchTerm.trim())) {
+      await new Promise<void>(resolve => setTimeout(resolve, 1000)); // Show spinner for 1 second
+      this.loading = false;
+      this.hasSearched = false;
+      this.originalProducts = [];
+      this.products = [];
+      return;
+    }
+    
+    // Store the search term that will be used for displaying results
+    this.displayedSearchTerm = this.searchTerm;
+    
     const delayMin = new Promise<void>(resolve => setTimeout(resolve, 1000));
     const { data, error } = await this.supabase.getProducts();
     await delayMin;
@@ -739,14 +753,18 @@ export class SearchPageComponent implements OnInit, OnDestroy {
           this.updateUrl();
           this.fetchProducts();
       } else {
-          this.hasSearched = false;
-          this.searchMode = 'input';
-          this.products = [];
-          this.originalProducts = [];
-          this.noResults = false;
-          this.loading = false;
-          this.updateUrl();
-          this.lastSearchSignature = null;
+          // Show spinner for empty search, then reset to default state
+          this.loading = true;
+          setTimeout(() => {
+              this.hasSearched = false;
+              this.searchMode = 'input';
+              this.products = [];
+              this.originalProducts = [];
+              this.noResults = false;
+              this.loading = false;
+              this.updateUrl();
+              this.lastSearchSignature = null;
+          }, 1000); // Show spinner for 1 second
       }
       if (isMobile) {
           this.toggleFilters();

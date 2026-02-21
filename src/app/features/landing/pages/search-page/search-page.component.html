@@ -18,10 +18,10 @@
     </div>
 
     <!-- RESULTS INFO -->
-    <div *ngIf="!loading && hasSearched && searchTerm && originalProducts.length > 0"
+    <div *ngIf="!loading && hasSearched && displayedSearchTerm && originalProducts.length > 0"
       class="w-full text-center py-6 NewAldyFontType4 text-sm text-aldy-green-gray animate-fade-in">
       Se encontraron {{ originalProducts.length }} resultados para "{{
-      searchTerm
+      displayedSearchTerm
       }}"
     </div>
 
@@ -101,12 +101,11 @@
     <div *ngIf="originalProducts.length > 0 && !loading" [@contentFade]="originalProducts.length"
       class="px-4 bg-aldy-white sm:px-6 lg:px-12 xl:px-16 2xl:px-24 py-2 w-full">
       <div class="max-w-screen-3xl mx-auto">
-        <div class="flex flex-col lg:flex-row transition-all duration-500 ease-in-out" [ngClass]="{
+        <div class="flex flex-col lg:flex-row transition-all duration-500 ease-in-out items-start" [ngClass]="{
             'gap-4': showFilters && !isMobileView,
             'gap-0': !showFilters || isMobileView
           }">
-          <!-- SIDEBAR (Desktop) -->
-          <aside *ngIf="!isMobileView" class="transition-all duration-500 ease-in-out overflow-hidden" [ngStyle]="{
+          <aside *ngIf="!isMobileView" class="transition-all duration-500 ease-in-out overflow-hidden self-stretch" [ngStyle]="{
               flexBasis: showFilters ? '17%' : '0%',
               maxWidth: showFilters ? '17%' : '0%',
               minWidth: showFilters ? '260px' : '0px',
@@ -294,7 +293,7 @@
           </aside>
 
           <!-- PRODUCTS GRID -->
-          <div #productsContainer class="relative transition-all duration-500 ease-in-out flex-1 min-h-[300px]">
+          <div #productsContainer class="relative transition-all duration-500 ease-in-out flex-1">
             <!-- No results after filter -->
             <div *ngIf="!loading && hasSearched && products.length === 0"
               class="absolute inset-0 flex items-center justify-center text-center text-gray-500 NewAldyFontType4">
