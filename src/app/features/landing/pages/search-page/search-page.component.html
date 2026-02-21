@@ -1,6 +1,6 @@
 <div class="h-[72px] lg:h-[88px]"></div>
 
-<div class="min-h-[6rem] bg-aldy-white h-full w-full flex flex-col items-center justify-center mt-10">
+<div class="min-h-[6rem] overflow-y-hidden bg-aldy-white h-full w-full flex flex-col items-center justify-center mt-10">
   <div class="relative w-full max-w-screen px-2 xs:px-4 content-wrapper">
     <div class="searchbar-container">
       <div class="searchbar max-w-[18rem] xs:max-w-sm sm:max-w-xl md:max-w-4xl w-full">
@@ -330,8 +330,8 @@
 
 
 
-<div  class="pb-7 pt-5 flex items-center justify-center min-h-[160px] w-full mb-4">
-  <div *ngIf="!hasSearched && recentSearches.length > 0" class="w-full flex justify-center">
+<div *ngIf="!(hasSearched && originalProducts.length > 0 && !loading)" class="pb-7 pt-5 flex items-center justify-center min-h-[160px] w-full mb-4">
+  <div *ngIf="!hasSearched && recentSearches.length > 0 && originalProducts.length === 0" class="w-full flex justify-center">
     <div class="w-full max-w-[18rem] xs:max-w-sm sm:max-w-xl md:max-w-4xl space-y-4">
       <div class="flex items-center justify-between">
         <h3 class="text-sm NewAldyFontType4 tracking-wider text-aldy-green-gray uppercase">Últimas búsquedas</h3>
