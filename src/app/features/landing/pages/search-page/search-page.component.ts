@@ -733,9 +733,9 @@ export class SearchPageComponent implements OnInit, OnDestroy {
   }
 
   applyFiltersAction(isMobile: boolean) {
-      if (this.loading) {
-          return;
-      }
+       if (this.loading) {
+           return;
+       }
       let term = (this.searchTerm || '').trim();
       
       // Always clear search input when applying filters from filter panel
@@ -808,9 +808,9 @@ export class SearchPageComponent implements OnInit, OnDestroy {
           this.products = [];
           this.originalProducts = [];
           this.noResults = false;
-          this.hasSearched = false; // Reset to false to show recent searches
-          this.searchMode = 'input';
           this.loading = false;
+          this.hasSearched = false; // Reset to false to show recent searches after loading
+
           this.lastSearchSignature = null;
           
           // Focus on search input

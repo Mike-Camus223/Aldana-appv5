@@ -18,16 +18,30 @@
     </div>
 
     <!-- RESULTS INFO -->
-    <div *ngIf="!loading && hasSearched && originalProducts.length > 0"
+    <div *ngIf="!loading && hasSearched && products.length > 0"
       class="w-full text-center py-6 NewAldyFontType4 text-sm text-aldy-green-gray animate-fade-in">
       <span *ngIf="searchMode === 'input' && displayedSearchTerm">
-        Se encontraron {{ originalProducts.length }} resultados para "{{ displayedSearchTerm }}"
+        Se encontraron {{ products.length }} resultados para "{{ displayedSearchTerm }}"
       </span>
       <span *ngIf="searchMode === 'filters' && filterDescription">
-        Se encontraron {{ originalProducts.length }} resultados para {{ filterDescription }}
+        Se encontraron {{ products.length }} resultados para {{ filterDescription }}
       </span>
       <span *ngIf="searchMode === 'filters' && !filterDescription">
-        Se encontraron {{ originalProducts.length }} resultados
+        Se encontraron {{ products.length }} resultados
+      </span>
+    </div>
+    
+    <!-- NO RESULTS INFO -->
+    <div *ngIf="!loading && hasSearched && products.length === 0 && originalProducts.length > 0"
+      class="w-full text-center py-6 NewAldyFontType4 text-sm text-aldy-green-gray animate-fade-in">
+      <span *ngIf="searchMode === 'input' && displayedSearchTerm">
+        No se encontraron resultados para "{{ displayedSearchTerm }}"
+      </span>
+      <span *ngIf="searchMode === 'filters' && filterDescription">
+        No se encontraron resultados para {{ filterDescription }}
+      </span>
+      <span *ngIf="searchMode === 'filters' && !filterDescription">
+        No se encontraron resultados
       </span>
     </div>
 
@@ -303,14 +317,8 @@
             <!-- No results after filter -->
             <div *ngIf="!loading && hasSearched && products.length === 0"
               class="absolute inset-0 flex items-center justify-center text-center text-gray-500 NewAldyFontType4">
-              <span *ngIf="searchMode === 'input' && displayedSearchTerm">
-                No se encontraron resultados para "{{ displayedSearchTerm }}"
-              </span>
-              <span *ngIf="searchMode === 'filters' && filterDescription">
-                No se encontraron resultados para {{ filterDescription }}
-              </span>
-              <span *ngIf="(searchMode === 'filters' && !filterDescription) || (searchMode === 'input' && !displayedSearchTerm)">
-                No se encontraron productos que coincidan con los filtros seleccionados.
+              <span>
+                No se encontró el producto
               </span>
             </div>
 
@@ -342,8 +350,20 @@
 </div>
 
 
+<div *ngIf="hasSearched && loading" class="pb-7 pt-5 flex items-center justify-center min-h-[160px] w-full mb-4">
+  <div class="w-full flex justify-center">
+    <div class="w-full max-w-[18rem] xs:max-w-sm sm:max-w-xl md:max-w-4xl">
+      <div class="w-full flex items-center justify-center">
+        <div class="spinner"></div>
+      </div>
+    </div>
+  </div>
+</div>
 
-<div *ngIf="!(hasSearched && originalProducts.length > 0 && !loading)" class="pb-7 pt-5 flex items-center justify-center min-h-[160px] w-full mb-4">
+
+
+<div *ngIf="!hasSearched || (!loading && originalProducts.length === 0)" class="pb-7 pt-5 flex items-center justify-center min-h-[160px] w-full mb-4">
+
   <div *ngIf="!hasSearched && recentSearches.length > 0 && originalProducts.length === 0" class="w-full flex justify-center">
     <div class="w-full max-w-[18rem] xs:max-w-sm sm:max-w-xl md:max-w-4xl space-y-4">
       <div class="flex items-center justify-between">
@@ -358,14 +378,6 @@
           </button>
         </li>
       </ul>
-    </div>
-  </div>
-
-  <div *ngIf="hasSearched && loading" class="w-full flex justify-center">
-    <div class="w-full max-w-[18rem] xs:max-w-sm sm:max-w-xl md:max-w-4xl">
-      <div class="w-full flex items-center justify-center">
-        <div class="spinner"></div>
-      </div>
     </div>
   </div>
 
