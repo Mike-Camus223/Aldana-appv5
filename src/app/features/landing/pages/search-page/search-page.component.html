@@ -18,11 +18,17 @@
     </div>
 
     <!-- RESULTS INFO -->
-    <div *ngIf="!loading && hasSearched && displayedSearchTerm && originalProducts.length > 0"
+    <div *ngIf="!loading && hasSearched && originalProducts.length > 0"
       class="w-full text-center py-6 NewAldyFontType4 text-sm text-aldy-green-gray animate-fade-in">
-      Se encontraron {{ originalProducts.length }} resultados para "{{
-      displayedSearchTerm
-      }}"
+      <span *ngIf="searchMode === 'input' && displayedSearchTerm">
+        Se encontraron {{ originalProducts.length }} resultados para "{{ displayedSearchTerm }}"
+      </span>
+      <span *ngIf="searchMode === 'filters' && filterDescription">
+        Se encontraron {{ originalProducts.length }} resultados para {{ filterDescription }}
+      </span>
+      <span *ngIf="searchMode === 'filters' && !filterDescription">
+        Se encontraron {{ originalProducts.length }} resultados
+      </span>
     </div>
 
     <!-- CONTROLS BAR -->
@@ -84,7 +90,7 @@
 
         <!-- Sort Dropdown -->
         <div class="relative group h-[42px]">
-          <select (change)="onSortChange($event)" [value]="sortOption"
+          <select [(ngModel)]="sortOption" (change)="onSortChange($event)"
             class="appearance-none h-full bg-transparent border border-aldy-medium-2 pl-4 pr-10 text-xs uppercase tracking-wider font-medium text-aldy-green-gray focus:outline-none cursor-pointer hover:bg-aldy-medium-2 hover:text-white transition-colors">
             <option *ngFor="let opt of sortOptions" [value]="opt.value" class="text-gray-800 bg-white">
               {{ opt.label }}
@@ -284,7 +290,7 @@
                   class="flex-1 border border-aldy-medium text-aldy-medium px-3 py-2 font-light hover:border-aldy-medium-2 hover:text-aldy-medium-2 NewAldyFontType4 cursor-pointer transition-colors text-xs uppercase tracking-widest">
                   Borrar filtros
                 </button>
-                <button type="button" (click)="applyFiltersAction(false)"
+                <button type="button" (click)="applyFiltersAction(false); searchMode = 'filters'"
                   class="flex-1 text-white px-3 py-2 font-light bg-aldy-medium hover:bg-aldy-medium-2 NewAldyFontType4 cursor-pointer transition-colors text-xs uppercase tracking-wider">
                   Buscar
                 </button>
@@ -297,8 +303,15 @@
             <!-- No results after filter -->
             <div *ngIf="!loading && hasSearched && products.length === 0"
               class="absolute inset-0 flex items-center justify-center text-center text-gray-500 NewAldyFontType4">
-              No se encontraron productos que coincidan con los filtros
-              seleccionados.
+              <span *ngIf="searchMode === 'input' && displayedSearchTerm">
+                No se encontraron resultados para "{{ displayedSearchTerm }}"
+              </span>
+              <span *ngIf="searchMode === 'filters' && filterDescription">
+                No se encontraron resultados para {{ filterDescription }}
+              </span>
+              <span *ngIf="(searchMode === 'filters' && !filterDescription) || (searchMode === 'input' && !displayedSearchTerm)">
+                No se encontraron productos que coincidan con los filtros seleccionados.
+              </span>
             </div>
 
             <!-- Grid -->
@@ -360,7 +373,15 @@
     <div class="w-full max-w-[18rem] xs:max-w-sm sm:max-w-xl md:max-w-4xl">
       <div
         class="text-center flex items-center justify-center text-aldy-green-gray px-2 xs:px-4 NewAldyFontType4 text-sm">
-        No se encontraron resultados para su búsqueda.
+        <span *ngIf="searchMode === 'input' && displayedSearchTerm">
+          No se encontraron resultados para "{{ displayedSearchTerm }}"
+        </span>
+        <span *ngIf="searchMode === 'filters' && filterDescription">
+          No se encontraron resultados para {{ filterDescription }}
+        </span>
+        <span *ngIf="(searchMode === 'filters' && !filterDescription) || (searchMode === 'input' && !displayedSearchTerm)">
+          No se encontraron resultados para su búsqueda.
+        </span>
       </div>
     </div>
   </div>
@@ -536,7 +557,7 @@
         class="w-full border border-aldy-medium text-aldy-medium px-3 py-2 font-light hover:border-aldy-medium-2 hover:text-aldy-medium-2 NewAldyFontType4 cursor-pointer transition-colors text-xs uppercase tracking-widest mb-2">
         Borrar filtros
       </button>
-      <button type="button" (click)="applyFiltersAction(true)"
+      <button type="button" (click)="applyFiltersAction(true); searchMode = 'filters'"
         class="w-full bg-aldy-medium text-white px-3 py-2 font-light hover:bg-aldy-medium-2 NewAldyFontType4 cursor-pointer transition-colors text-xs uppercase tracking-widest">
         Buscar
       </button>

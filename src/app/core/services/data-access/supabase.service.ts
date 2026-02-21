@@ -123,10 +123,7 @@ export class SupabaseService {
   }
 
   async getInstagramReels() {
-    try {
-      console.log('Obteniendo reels de Instagram...');
-      console.log('Usando Supabase Key:', environment.SUPABASE_KEY?.substring(0, 10) + '...');
-      
+    try {      
       // Intentar primero con el ID de Instagram directo
       const response = await fetch('https://graph.facebook.com/v18.0/17841444599332423/media?fields=id,caption,media_type,media_url,thumbnail_url,permalink,timestamp,like_count,comments_count&limit=20&access_token=EAAI user token aqui', {
         method: 'GET',
@@ -134,8 +131,6 @@ export class SupabaseService {
           'Content-Type': 'application/json'
         }
       });
-
-      console.log('Estado de respuesta:', response.status);
       
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({ error: 'Error desconocido' })) as { error?: string };
@@ -146,7 +141,6 @@ export class SupabaseService {
       }
 
       const mediaData = await response.json();
-      console.log('Datos recibidos:', mediaData);
       
       // Filtrar solo videos/reels
       const videos = mediaData.data?.filter((item: any) => 
@@ -195,9 +189,7 @@ export class SupabaseService {
           };
         })
       );
-      
-      console.log('Reels limitados a 5:', reels.length);
-      
+            
       return { data: reels, error: null };
     } catch (error) {
       console.error('Error en getInstagramReels:', error);
@@ -208,7 +200,6 @@ export class SupabaseService {
 
   private async getInstagramReelsFromEdge() {
     try {
-      console.log('Usando función Edge como respaldo...');
       
       const response = await fetch('https://cddrmboopihkiuyomxle.supabase.co/functions/v1/IG_function', {
         method: 'POST',
@@ -244,10 +235,7 @@ export class SupabaseService {
       });
       
       // Limitar a los primeros 5
-      const limitedData = sortedMedia.slice(0, 5);
-      
-      console.log(`Media combinada: ${allMedia.length} items, mostrando ${limitedData.length}`);
-      
+      const limitedData = sortedMedia.slice(0, 5);      
       return { data: limitedData, error: null };
     } catch (error) {
       console.error('Error en función Edge:', error);

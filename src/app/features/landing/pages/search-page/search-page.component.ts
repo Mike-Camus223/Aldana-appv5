@@ -92,6 +92,7 @@ export class SearchPageComponent implements OnInit, OnDestroy {
   hasSearched: boolean = false;
   searchMode: 'input' | 'filters' | null = null;
   @Input() product!: Product;
+  filterDescription: string = '';
   
   // Filter & Layout Properties
   showFilters = false;
@@ -587,6 +588,7 @@ export class SearchPageComponent implements OnInit, OnDestroy {
     this.products = filtered;
     this.sortProducts();
     this.noResults = this.products.length === 0;
+    this.generateFilterDescription();
   }
 
   sortProducts() {
@@ -735,9 +737,14 @@ export class SearchPageComponent implements OnInit, OnDestroy {
           return;
       }
       let term = (this.searchTerm || '').trim();
+      
+      // Always clear search input when applying filters from filter panel
       if (this.hasActiveFilters()) {
+          this.searchTerm = '';
+          term = '';
           this.searchMode = 'filters';
       }
+      
       const mode: 'input' | 'filters' | null = this.hasActiveFilters() ? 'filters' : 'input';
       const signature = this.buildSearchSignature(term, mode);
       if (this.lastSearchSignature === signature && this.hasSearched) {
@@ -772,30 +779,47 @@ export class SearchPageComponent implements OnInit, OnDestroy {
   }
 
   clearFilters() {
+      // Show loading spinner and maintain search state for spinner display
+      this.loading = true;
+      this.hasSearched = true; // Keep true to show spinner during reset
+      
+      // Clear all filters
       this.selectedCategories = [];
       this.selectedSubcategoriesMap = {};
       this.selectedSizes = [];
       this.priceMin = 0;
       this.priceMax = 500000;
       this.priceRange = [0, 500000];
-      this.products = [];
-      this.originalProducts = [];
-      this.noResults = false;
-      this.hasSearched = false;
-      this.searchMode = 'input';
+      this.searchTerm = '';
+      
+      // Hide filters panel on mobile
       this.showFilters = false;
       if (this.isMobileView && isPlatformBrowser(this.platformId)) {
           if (typeof document !== 'undefined' && document.body) {
               document.body.style.overflow = 'auto';
           }
       }
+      
+      // Update URL immediately
       this.updateUrl();
-      this.loading = false;
+      
+      // Simulate loading and then show search history
       setTimeout(() => {
-          if (this.inputElement?.nativeElement) {
-              this.inputElement.nativeElement.focus();
-          }
-      }, 0);
+          this.products = [];
+          this.originalProducts = [];
+          this.noResults = false;
+          this.hasSearched = false; // Reset to false to show recent searches
+          this.searchMode = 'input';
+          this.loading = false;
+          this.lastSearchSignature = null;
+          
+          // Focus on search input
+          setTimeout(() => {
+              if (this.inputElement?.nativeElement) {
+                  this.inputElement.nativeElement.focus();
+              }
+          }, 0);
+      }, 1000); // Show spinner for 1 second
   }
 
   private loadRecentSearches(): void {
@@ -900,6 +924,41 @@ export class SearchPageComponent implements OnInit, OnDestroy {
              Object.keys(this.selectedSubcategoriesMap).length > 0 ||
              this.priceMin > 0 || 
              this.priceMax < this.maxPriceLimit;
+  }
+
+  generateFilterDescription(): void {
+    const parts: string[] = [];
+    
+    // Add categories
+    this.selectedCategories.forEach(cat => {
+      const subcategories = this.selectedSubcategoriesMap[cat] || [];
+      if (subcategories.length > 0) {
+        parts.push(...subcategories.map(sub => this.getCategoryDisplayName(sub)));
+      } else {
+        parts.push(this.getCategoryDisplayName(cat));
+      }
+    });
+    
+    // Add sizes
+    if (this.selectedSizes.length > 0) {
+      parts.push(...this.selectedSizes);
+    }
+    
+    // Generate description
+    if (parts.length === 0) {
+      this.filterDescription = '';
+    } else if (parts.length <= 3) {
+      this.filterDescription = parts.join(', ');
+    } else {
+      this.filterDescription = parts.slice(0, 3).join(', ') + '...';
+    }
+  }
+
+  private getCategoryDisplayName(categoryValue: string): string {
+    // Find in any of the category lists
+    const allCategories = [...this.categories, ...this.pretAPorterCategories, ...this.noviasCategories];
+    const found = allCategories.find(cat => ProductUtils.normalize(cat.value) === ProductUtils.normalize(categoryValue));
+    return found ? found.label : categoryValue;
   }
 
 

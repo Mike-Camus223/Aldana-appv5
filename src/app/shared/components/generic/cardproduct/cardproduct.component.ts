@@ -93,7 +93,20 @@ export class CardproductComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit(): void {
     this.updateView();
-        if (this.selectedColor) {
+    
+    // If no selected color is provided, select the first available color or base color
+    if (!this.selectedColor && this.product.variants && this.product.variants.length > 0) {
+      // Try to find a base color first
+      const baseVariant = this.product.variants.find(v => v.isBase);
+      if (baseVariant) {
+        this.selectedColor = baseVariant.color_name;
+      } else {
+        // If no base color, select the first variant
+        this.selectedColor = this.product.variants[0].color_name;
+      }
+    }
+    
+    if (this.selectedColor) {
       const selectedVariant = this.product.variants.find(
         (v) => v.color_name === this.selectedColor
       );
