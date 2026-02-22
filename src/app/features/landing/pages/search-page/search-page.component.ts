@@ -99,6 +99,11 @@ export class SearchPageComponent implements OnInit, OnDestroy {
   isMobileView = false;
   productColumns: number = 4;
   
+  // Pagination Properties
+  itemsPerPage: number = 4;
+  currentPage: number = 1;
+  pagesArray: number[] = [];
+  
   sortOption: string = 'relevance';
   sortOptions = [
     { label: 'Relevancia', value: 'relevance' },
@@ -453,6 +458,9 @@ export class SearchPageComponent implements OnInit, OnDestroy {
 
     this.originalProducts = ProductUtils.mapProducts(rawProducts);
     
+    // Reset pagination when new search results are loaded
+    this.currentPage = 1;
+    
     // Extract filters based on original products (search results)
     this.extractFiltersFromProducts();
     
@@ -589,6 +597,9 @@ export class SearchPageComponent implements OnInit, OnDestroy {
     this.sortProducts();
     this.noResults = this.products.length === 0;
     this.generateFilterDescription();
+    // Reset to first page when filters change
+    this.currentPage = 1;
+    this.updatePagination();
   }
 
   sortProducts() {
@@ -613,6 +624,43 @@ export class SearchPageComponent implements OnInit, OnDestroy {
              // Actually applyFilters creates a new array from originalProducts which is already "relevance" sorted (by DB or search match)
              break;
       }
+      // Update pagination after sorting
+      this.updatePagination();
+  }
+
+  // --- Pagination Methods ---
+  get totalPages(): number {
+    const total = Math.ceil((this.products.length || 0) / this.itemsPerPage);
+    return Math.max(1, total);
+  }
+
+  private updatePagination(): void {
+    // clamp current page
+    if (this.currentPage > this.totalPages) this.currentPage = this.totalPages;
+    if (this.currentPage < 1) this.currentPage = 1;
+    // build pages array
+    this.pagesArray = Array.from({ length: this.totalPages }, (_, i) => i + 1);
+  }
+
+  goToPage(page: number): void {
+    if (page < 1 || page > this.totalPages) return;
+    this.currentPage = page;
+    this.updatePagination();
+  }
+
+  prevPage(): void {
+    this.goToPage(this.currentPage - 1);
+  }
+
+  nextPage(): void {
+    this.goToPage(this.currentPage + 1);
+  }
+
+  // Get products for current page
+  get pagedProducts(): Product[] {
+    const start = (this.currentPage - 1) * this.itemsPerPage;
+    const end = start + this.itemsPerPage;
+    return this.products.slice(start, end);
   }
   
   onSortChange(event: any) {
