@@ -1,11 +1,33 @@
-<p-floatLabel variant="on" class="w-full">
+<div class="relative">
+
   <textarea
-    pTextarea
     [id]="id"
     [rows]="rows"
-    [(ngModel)]="value"
+    [value]="value"
     (input)="onInput($event)"
-    class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 resize-none"
+    (blur)="onTouched()"
+    [disabled]="disabled"
+    placeholder=" "
+    class="peer block w-full border  px-3 pt-6 pb-2 text-sm bg-transparent appearance-none focus:outline-none focus:ring-0 transition-all duration-300 ease-in-out resize-none"
+    [ngClass]="{
+      'border-red-400 text-red-400 focus:border-red-400': invalid,
+      'border-aldy-medium focus:border-aldy-medium': !invalid && !disabled,
+      'bg-transparent text-aldy-green-gray': disabled
+    }"
   ></textarea>
-  <label [for]="id">{{ label }}</label>
-</p-floatLabel>
+
+  <label
+    [for]="id"
+    class="absolute left-2 -top-2 z-10 origin-[0] scale-75 px-2 text-sm transition-all duration-300
+           peer-placeholder-shown:top-3 peer-placeholder-shown:scale-100
+           peer-focus:-top-2 peer-focus:scale-75"
+    [ngClass]="{
+      'bg-white text-red-400 peer-focus:text-red-400': invalid,
+      'bg-white text-aldy-green-gray peer-disabled:text-aldy-green-gray': disabled,
+      'bg-white text-aldy-green-gray-bold peer-focus:text-aldy-medium': !invalid && !disabled
+    }"
+  >
+    {{ label }}
+  </label>
+
+</div>
