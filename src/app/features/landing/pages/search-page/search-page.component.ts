@@ -32,7 +32,7 @@ import { SliderModule } from 'primeng/slider';
 import { LucideAngularModule, LUCIDE_ICONS, LucideIconProvider, Funnel, ChevronDown, ChevronUp, Search } from 'lucide-angular';
 import { AcordiongenericComponent } from '../../../../shared/components/generic/acordiongeneric/acordiongeneric.component';
 import { AldyCheckboxV1Directive } from '../../../../shared/utils/directives/aldy-checkbox-v1.directive';
-import { trigger, transition, style, animate, state } from '@angular/animations';
+import { trigger, transition, style, animate, state, query, stagger } from '@angular/animations';
 import { ProductUtils } from '../../../../shared/utils/dataEx/products-utils';
 import { LinkHoverUnderlineDirective } from '../../../../shared/utils/directives/link-hover-underline.directive';
 
@@ -71,6 +71,22 @@ import { LinkHoverUnderlineDirective } from '../../../../shared/utils/directives
         animate('200ms ease-in', style({ opacity: 0, transform: 'translateY(4px)' })),
       ]),
     ]),
+    trigger('cardWaveAnimation', [
+      transition('* => *', [
+        query(':enter', [
+          style({ opacity: 0, transform: 'translateY(20px)' }),
+          stagger(100, [
+            animate('400ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
+          ])
+        ], { optional: true })
+      ])
+    ]),
+    trigger('cardEnterAnimation', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(20px)' }),
+        animate('400ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
+      ])
+    ])
   ],
   providers: [
     {

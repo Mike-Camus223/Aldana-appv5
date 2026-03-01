@@ -102,7 +102,7 @@
                 </button>
                 <div *ngIf="pretAPorterOpen" class="pl-4 mt-1 space-y-1">
                   <label *ngFor="let category of pretAPorterCategories" 
-                    class="flex items-center gap-2 py-1 px-2 text-xs tracking-wider NewAldyFontType4 cursor-pointer w-full rounded-md">
+                    class="flex items-center gap-2 py-1 px-2 text-xs tracking-wider NewAldyFontType4 cursor-pointer w-full hover:bg-aldy-light">
                     <input type="checkbox" [checked]="isPretAPorterCategorySelected(category.value)"
                       (change)="togglePretAPorterCategory(category.value)" AldyCheckboxV1 />
                     <span [ngClass]="isPretAPorterCategorySelected(category.value) ? 'text-aldy-medium font-semibold' : 'text-aldy-green-gray'">
@@ -141,7 +141,7 @@
                 </button>
                 <div *ngIf="noviasOpen" class="pl-4 mt-1 space-y-1">
                   <label *ngFor="let category of noviasCategories" 
-                    class="flex items-center gap-2 py-1 px-2 text-xs tracking-wider NewAldyFontType4 cursor-pointer w-full rounded-md">
+                    class="flex items-center gap-2 py-1 px-2 text-xs tracking-wider NewAldyFontType4 cursor-pointer w-full hover:bg-aldy-light">
                     <input type="checkbox" [checked]="isNoviasCategorySelected(category.value)"
                       (change)="toggleNoviasCategory(category.value)" AldyCheckboxV1 />
                     <span [ngClass]="isNoviasCategorySelected(category.value) ? 'text-aldy-medium font-semibold' : 'text-aldy-green-gray'">
@@ -164,7 +164,7 @@
                 <div class="px-3 pb-1 text-xs uppercase tracking-wider text-gray-500">{{ cat }}</div>
                 <div class="space-y-1">
                   <label *ngFor="let sub of getSubcategoriesForCategory(cat)"
-                    class="flex items-center gap-2 py-2 px-3 text-xs tracking-wider NewAldyFontType4 cursor-pointer w-full  rounded-md">
+                    class="flex items-center gap-2 py-2 px-3 text-xs tracking-wider NewAldyFontType4 cursor-pointer w-full  hover:bg-aldy-light">
                     <input type="checkbox" [checked]="isSubcategorySelected(cat, sub.value)"
                       (change)="toggleSubcategory(cat, sub.value)" AldyCheckboxV1 />
                     <span
@@ -181,7 +181,7 @@
             (toggled)="onAccordionToggled($event)">
             <div class="space-y-1">
               <label *ngFor="let s of allowedSizes"
-                class="flex items-center gap-2 py-2 px-3 text-xs tracking-wider NewAldyFontType4 cursor-pointer w-full  rounded-md">
+                class="flex items-center gap-2 py-2 px-3 text-xs tracking-wider NewAldyFontType4 cursor-pointer w-full  hover:bg-aldy-light">
                 <input type="checkbox" [checked]="isSizeSelected(s)" (change)="toggleSize(s)" AldyCheckboxV1 />
                 <span [ngClass]="isSizeSelected(s) ? 'text-aldy-medium font-semibold' : 'text-aldy-green-gray'">{{ s }}</span>
               </label>
@@ -321,7 +321,7 @@
         (toggled)="onAccordionToggled($event)">
         <div class="space-y-1">
           <label *ngFor="let category of categories"
-            class="flex items-center gap-2 py-2 px-3 text-sm NewAldyFontType4 tracking-wider cursor-pointer w-full  rounded-md">
+            class="flex items-center gap-2 py-2 px-3 text-sm NewAldyFontType4 tracking-wider cursor-pointer w-full  hover:bg-aldy-light">
             <input type="checkbox" [checked]="isCategorySelected(category.value)"
               (change)="toggleCategory(category.value)" AldyCheckboxV1 />
             <span [ngClass]="isCategorySelected(category.value) ? 'text-aldy-medium font-light' : 'text-gray-900'">{{
@@ -338,7 +338,7 @@
             <div class="px-3 pb-1 text-xs uppercase tracking-wider text-aldy-green-gray-bold">{{ cat }}</div>
             <div class="space-y-1">
               <label *ngFor="let sub of getSubcategoriesForCategory(cat)"
-                class="flex items-center gap-2 py-2 px-3 text-sm NewAldyFontType4 cursor-pointer w-full  rounded-md">
+                class="flex items-center gap-2 py-2 px-3 text-sm NewAldyFontType4 cursor-pointer w-full  hover:bg-aldy-light">
                 <input type="checkbox" [checked]="isSubcategorySelected(cat, sub.value)"
                   (change)="toggleSubcategory(cat, sub.value)" AldyCheckboxV1 />
                 <span
@@ -354,7 +354,7 @@
         (toggled)="onAccordionToggled($event)">
         <div class="space-y-1">
           <label *ngFor="let s of allowedSizes"
-            class="flex items-center gap-2 py-2 px-3 text-sm NewAldyFontType4 cursor-pointer w-full  rounded-md">
+            class="flex items-center gap-2 py-2 px-3 text-sm NewAldyFontType4 cursor-pointer w-full  hover:bg-aldy-light">
             <input type="checkbox" [checked]="isSizeSelected(s)" (change)="toggleSize(s)" AldyCheckboxV1 />
             <span [ngClass]="isSizeSelected(s) ? 'text-aldy-medium font-semibold' : 'text-aldy-green-gray'">{{ s }}</span>
           </label>

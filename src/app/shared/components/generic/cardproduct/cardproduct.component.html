@@ -45,7 +45,7 @@
 </ng-container>
 <ng-template #desktopView>
   <div #cardRoot class="relative overflow-hidden group bg-aldy-white aspect-[3/4] sm:aspect-[3/4] md:aspect-[3/5] lg:aspect-[3/5] xl:aspect-[3/5]">
-    <button type="button" [routerLink]="['/producto', product.slug]" class="absolute inset-0 z-0" appPanimationcard [disableHover]="isMobileView">
+    <a [routerLink]="['/producto', product.slug]" class="absolute inset-0 z-0 block" appPanimationcard [disableHover]="isMobileView">
       <img
         #productImage
         [ngSrc]="currentImage"
@@ -66,7 +66,7 @@
         class="absolute inset-0 w-full h-full object-cover object-top pointer-events-none"
         style="opacity:0"
       />
-    </button>
+    </a>
     <div appMoveupFade class="absolute inset-0 flex items-end z-10 pointer-events-none">
       <div class="w-full bg-aldy-white space-y-3 p-4 m-3 pointer-events-auto">
         

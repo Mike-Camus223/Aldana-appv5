@@ -1,3 +1,15 @@
+::ng-deep .p-checkbox-input::checkmark {
+    background-color: var(--color-aldy-primary-600) !important;
+}
+
+::ng-deep .p-slider-range {
+    background-color: var(--color-aldy-medium) !important;
+}
+
+::ng-deep .p-slider {
+    background: var(--color-aldy-green-gray) !important;
+}
+
 .searchbar-container {
   display: grid;
   place-items: center;

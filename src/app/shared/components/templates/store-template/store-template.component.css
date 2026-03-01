@@ -5,11 +5,6 @@
 ::ng-deep .p-slider-range {
     background-color: var(--color-aldy-medium) !important;
 }
-/* ::ng-deep .p-slider-handle {
-  height: 2px !important;
-  width: 2px !important;
-  background: transparent !important;
-} */
 
 ::ng-deep .p-slider {
     background: var(--color-aldy-green-gray) !important;

@@ -9,8 +9,6 @@ import { WordRevealDirective } from '../../../utils/directives/word-reveal.direc
 import { FadeUpLetterDirective } from '../../../utils/directives/fadeupletter.directive';
 import { CardInitAnimationDirective } from '../../../utils/directives/card-init-animation.directive';
 
-
-
 @Component({
   selector: 'app-contact-template',
   standalone: true,
@@ -27,7 +25,10 @@ import { CardInitAnimationDirective } from '../../../utils/directives/card-init-
   templateUrl: './contact-template.component.html',
 })
 export class ContactTemplateComponent {
+
   contactForm: FormGroup;
+  submitted = false;
+
   departments = [
     { label: 'Ventas', value: 'sales' },
     { label: 'Atención al cliente', value: 'support' },
@@ -45,10 +46,20 @@ export class ContactTemplateComponent {
     });
   }
 
+  isInvalid(field: string): boolean {
+    const control = this.contactForm.get(field);
+    return !!(control && control.invalid && (control.dirty || control.touched || this.submitted));
+  }
+
   onSubmit(): void {
+    this.submitted = true;
+
     if (this.contactForm.valid) {
       const formData = this.contactForm.value;
+      console.log(formData);
+
       this.contactForm.reset();
+      this.submitted = false;
     }
   }
 }

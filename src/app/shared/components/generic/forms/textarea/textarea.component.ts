@@ -1,32 +1,49 @@
-import { Component, Input, forwardRef } from '@angular/core';
+import {
+  Component,
+  Input,
+  Optional,
+  Self
+} from '@angular/core';
+
+import {
+  ControlValueAccessor,
+  NgControl,
+  ControlContainer
+} from '@angular/forms';
+
 import { CommonModule } from '@angular/common';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-textarea',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
-  templateUrl: './textarea.component.html',
-  providers: [
-    {
-      provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => TextareaComponent),
-      multi: true
-    }
-  ]
+  imports: [CommonModule],
+  templateUrl: './textarea.component.html'
 })
 export class TextareaComponent implements ControlValueAccessor {
 
   @Input() label = '';
   @Input() id = '';
   @Input() rows = 5;
-  @Input() invalid = false;
 
   value = '';
   disabled = false;
 
   onChange = (_: any) => {};
   onTouched = () => {};
+
+  constructor(
+    @Self() @Optional() public ngControl: NgControl,
+    @Optional() private controlContainer: ControlContainer
+  ){
+    if (ngControl) ngControl.valueAccessor = this;
+  }
+
+  // ⭐ estado invalid real del form
+  get invalid(): boolean {
+    const c = this.ngControl?.control;
+    const submitted = (this.controlContainer as any)?.submitted;
+    return !!(c && c.invalid && (c.touched || c.dirty || submitted));
+  }
 
   writeValue(value: any): void {
     this.value = value ?? '';

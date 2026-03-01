@@ -2,10 +2,10 @@
   <div class="max-w-screen-3xl mx-auto">
     <div class="w-full py-20 px-2 flex flex-col items-center">
       <div class="max-w-6xl w-full grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
-        <div class="space-y-8 px-4 lg:px-0">
+        <div class="space-y-0 lg:space-y-8 px-4 lg:px-0">
           <h1 appWordReveal
             class="uppercase tracking-widest relative text-3xl text-center lg:text-start lg:text-5xl NewAldyTitle font-light text-aldy-green-gray-bold leading-relaxed">
-            Cont<span class="text-[49px] NewAldyFontTypeAccent relative -top-[1px]">á</span>ctanos
+            Cont<span class="text-[30px] lg:text-[49px] NewAldyFontTypeAccent relative -top-[1px]">á</span>ctanos
           </h1>
           <p appFadeUpLetter
             class="text-base lg:text-base text-center lg:text-start text-aldy-green-gray NewAldyFontType4 leading-8 whitespace-pre-wrap break-words">
@@ -16,16 +16,80 @@
         </div>
         <div class="bg-white shadow-md p-4 lg:p-8 space-y-6">
           <form appFadeUpLetter [formGroup]="contactForm" class="flex flex-col gap-4 w-full" (ngSubmit)="onSubmit()">
-            <app-input id="name" label="Nombre completo" formControlName="name"></app-input>
-            <app-input id="email" label="Correo electrónico*" formControlName="email"></app-input>
-            <app-input id="phone" label="Teléfono*" [numericMax11]="true" formControlName="phone"></app-input>
-            <app-selects id="department" label="Seleccioná un departamento" [options]="departments"
-              formControlName="department"></app-selects>
-            <app-textarea id="message" label="Tu mensaje*" formControlName="message" [rows]="5"></app-textarea>
+
+            <!-- Nombre -->
+            <div>
+              <app-input id="name" label="Nombre completo" formControlName="name"></app-input>
+
+              <div *ngIf="isInvalid('name')" class="text-red-400 text-xs mt-1">
+                <span *ngIf="contactForm.get('name')?.errors?.['required']">
+                  Por favor, ingresa tu nombre.
+                </span>
+                <span *ngIf="contactForm.get('name')?.errors?.['minlength']">
+                  Debe tener al menos 2 caracteres.
+                </span>
+              </div>
+            </div>
+
+            <!-- Email -->
+            <div>
+              <app-input id="email" label="Correo electrónico*" formControlName="email"></app-input>
+
+              <div *ngIf="isInvalid('email')" class="text-red-400 text-xs mt-1">
+                <span *ngIf="contactForm.get('email')?.errors?.['required']">
+                  Por favor, ingresa tu correo electrónico.
+                </span>
+                <span *ngIf="contactForm.get('email')?.errors?.['email']">
+                  Formato de correo inválido.
+                </span>
+              </div>
+            </div>
+
+            <!-- Teléfono -->
+            <div>
+              <app-input id="phone" label="Teléfono*" [numericMax11]="true" formControlName="phone"></app-input>
+
+              <div *ngIf="isInvalid('phone')" class="text-red-400 text-xs mt-1">
+                <span *ngIf="contactForm.get('phone')?.errors?.['required']">
+                  Por favor, ingresa tu teléfono.
+                </span>
+                <span *ngIf="contactForm.get('phone')?.errors?.['pattern']">
+                  Número inválido.
+                </span>
+              </div>
+            </div>
+
+            <!-- Departamento -->
+            <div>
+              <app-selects id="department" label="Seleccioná un departamento" [options]="departments"
+                formControlName="department">
+              </app-selects>
+
+              <div *ngIf="isInvalid('department')" class="text-red-400 text-xs mt-1">
+                Seleccioná un departamento.
+              </div>
+            </div>
+
+            <!-- Mensaje -->
+            <div>
+              <app-textarea id="message" label="Tu mensaje*" formControlName="message" [rows]="5"></app-textarea>
+
+              <div *ngIf="isInvalid('message')" class="text-red-400 text-xs mt-1">
+                <span *ngIf="contactForm.get('message')?.errors?.['required']">
+                  Escribí un mensaje.
+                </span>
+                <span *ngIf="contactForm.get('message')?.errors?.['minlength']">
+                  Debe tener al menos 10 caracteres.
+                </span>
+              </div>
+            </div>
+
+            <!-- Botón -->
             <button type="submit"
-              class="w-full bg-aldy-medium text-white text-xs tracking-widest py-3 uppercase hover:bg-aldy-medium-2 transition-colors duration-200 ease-in-out cursor-pointer">
+              class="w-full bg-aldy-medium text-white text-xs tracking-widest py-3 uppercase hover:bg-aldy-medium-2 transition-colors duration-200">
               ENVIAR →
             </button>
+
           </form>
         </div>
       </div>
@@ -48,7 +112,8 @@
               class="text-lg lg:text-xl leading-relaxed uppercase tracking-widest NewAldyTitle font-light text-aldy-green-gray-bold">
               Tel<span class="text-[21px] lg:text-[22px] NewAldyFontTypeAccent relative -top-[0.5px]">é</span>fono
             </h2>
-            <p appFadeUpLetter class="text-base NewAldyFontType4 text-aldy-green-gray lg:text-base">+54 9 11 6408-2659</p>
+            <p appFadeUpLetter class="text-base NewAldyFontType4 text-aldy-green-gray lg:text-base">+54 9 11 6408-2659
+            </p>
           </div>
           <!-- Columna Síguenos -->
           <div class="flex flex-col items-center space-y-3">
@@ -79,11 +144,13 @@
 <div class="w-full bg-aldy-white pb-8 md:pb-10">
   <div class="grid grid-cols-1 md:grid-cols-7 xl:grid-cols-4 items-center">
     <div class="w-full overflow-hidden md:col-span-4 xl:col-span-3 order-1">
-      <img appCardInitAnimation="up" src="../../../../../assets/images/others/contact.jpg" alt="asesoramiento personalizado"
-        class="w-full h-52 md:h-[400px] object-cover object-[50%_40%]" draggable="false" />
+      <img appCardInitAnimation="up" src="../../../../../assets/images/others/contact.jpg"
+        alt="asesoramiento personalizado" class="w-full h-52 md:h-[400px] object-cover object-[50%_40%]"
+        draggable="false" />
     </div>
     <div class="flex flex-col items-center text-center space-y-3 w-full md:col-span-3 xl:col-span-1 p-6 order-2">
-      <h2 appWordReveal class="text-lg lg:text-xl uppercase tracking-widest NewAldyTitle font-light text-aldy-green-gray-bold">
+      <h2 appWordReveal
+        class="text-lg lg:text-xl uppercase tracking-widest NewAldyTitle font-light text-aldy-green-gray-bold">
         Asesoramiento
       </h2>
       <p appFadeUpLetter class="text-base NewAldyFontType4 lg:text-base text-aldy-green-gray leading-7 max-w-md">

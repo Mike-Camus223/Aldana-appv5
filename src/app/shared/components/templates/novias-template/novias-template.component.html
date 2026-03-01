@@ -41,7 +41,7 @@
       productColumns === 4 ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 mx-0' : ''
     ]">
       <ng-container *ngFor="let collectionB of CollectionBrides">
-        <div (click)="goToCollection(collectionB.slug)" class="flex flex-col items-center w-full">
+       <a [routerLink]="['/novias-colecciones', collectionB.slug]" class="flex flex-col items-center w-full group">
           <div class="group block relative w-full cursor-pointer">
             <div class="aspect-[3/4] overflow-hidden w-full bg-aldy-white relative">
               <img appCardInitAnimation="up" [src]="collectionB.cover_image_url" [alt]="collectionB.name"
@@ -54,7 +54,7 @@
               Novias - {{ collectionB.name }}
             </h3>
           </div>
-        </div>
+        </a>
       </ng-container>
     </div>
   </div>

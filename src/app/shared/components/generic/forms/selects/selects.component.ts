@@ -1,7 +1,20 @@
-import { Component, Input, Optional, Self, HostListener } from '@angular/core';
-import { ControlValueAccessor, FormsModule, NgControl } from '@angular/forms';
+import {
+  Component,
+  Input,
+  Optional,
+  Self,
+  HostListener
+} from '@angular/core';
+
+import {
+  ControlValueAccessor,
+  FormsModule,
+  NgControl,
+  ControlContainer
+} from '@angular/forms';
+
 import { CommonModule } from '@angular/common';
-import { trigger, state, style, transition, animate } from '@angular/animations';
+import { trigger, transition, style, animate } from '@angular/animations';
 
 @Component({
   selector: 'app-selects',
@@ -12,7 +25,7 @@ import { trigger, state, style, transition, animate } from '@angular/animations'
     trigger('slideDown', [
       transition(':enter', [
         style({ opacity: 0, transform: 'translateY(-5px) scaleY(0.95)' }),
-        animate('200ms ease-out', 
+        animate('200ms ease-out',
           style({ opacity: 1, transform: 'translateY(0) scaleY(1)' })
         )
       ]),
@@ -25,159 +38,138 @@ import { trigger, state, style, transition, animate } from '@angular/animations'
   ]
 })
 export class SelectsComponent implements ControlValueAccessor {
+
   @Input() label = '';
   @Input() id = '';
   @Input() options: any[] = [];
   @Input() optionLabel = 'label';
   @Input() optionValue = 'value';
   @Input() disabled = false;
-  @Input() placeholder = '';
 
   value: any = null;
   isOpen = false;
+
   onChange = (_: any) => {};
   onTouched = () => {};
 
-  constructor(@Self() @Optional() public ngControl: NgControl) {
-    if (ngControl) {
-      ngControl.valueAccessor = this;
-    }
+  constructor(
+    @Self() @Optional() public ngControl: NgControl,
+    @Optional() private controlContainer: ControlContainer
+  ) {
+    if (ngControl) ngControl.valueAccessor = this;
   }
 
+  // ⭐ VALID STATE PROFESIONAL
   get invalid(): boolean {
-    return !!(this.ngControl?.control?.invalid && this.ngControl?.control?.dirty);
+    const c = this.ngControl?.control;
+    const submitted = (this.controlContainer as any)?.submitted;
+    return !!(c && c.invalid && (c.touched || c.dirty || submitted));
   }
 
-  writeValue(value: any): void {
-    this.value = value;
+  // ---------- CVA ----------
+  writeValue(value: any){ this.value = value; }
+  registerOnChange(fn:any){ this.onChange = fn; }
+  registerOnTouched(fn:any){ this.onTouched = fn; }
+
+  setDisabledState(disabled:boolean){
+    this.disabled = disabled;
+    if(disabled) this.closeDropdown();
   }
 
-  registerOnChange(fn: any): void {
-    this.onChange = fn;
-  }
-
-  registerOnTouched(fn: any): void {
-    this.onTouched = fn;
-  }
-
-  setDisabledState(isDisabled: boolean): void {
-    this.disabled = isDisabled;
-    if (isDisabled) {
-      this.closeDropdown();
-    }
-  }
-
-  toggleDropdown(): void {
-    if (this.disabled) return;
+  // ---------- UI ----------
+  toggleDropdown(){
+    if(this.disabled) return;
     this.isOpen = !this.isOpen;
-    if (!this.isOpen) {
+    if(!this.isOpen) this.onTouched();
+  }
+
+  closeDropdown(){
+    if(this.isOpen){
+      this.isOpen=false;
       this.onTouched();
     }
   }
 
-  closeDropdown(): void {
-    if (this.isOpen) {
-      this.isOpen = false;
-      this.onTouched();
-    }
-  }
-
-  selectOption(option: any): void {
-    const newValue = option ? this.getOptionValue(option) : null;
-    this.value = newValue;
+  selectOption(option:any){
+    this.value = this.getOptionValue(option);
     this.onChange(this.value);
     this.closeDropdown();
   }
 
-  isSelected(option: any): boolean {
-    if (!this.value) return false;
-    const optionValue = this.getOptionValue(option);
-    return optionValue === this.value;
+  isSelected(option:any){
+    return this.getOptionValue(option) === this.value;
   }
 
-  getDisplayText(): string {
-    if (!this.value) return '';
-    
-    if (typeof this.value === 'string' || typeof this.value === 'number') {
-      const selectedOption = this.options.find(option => 
-        this.getOptionValue(option) === this.value
-      );
-      return selectedOption ? this.getOptionLabel(selectedOption) : '';
-    }
-  
-    if (this.value && typeof this.value === 'object') {
-      return this.getOptionLabel(this.value);
-    }
-  
-    return '';
+  // ---------- HELPERS ----------
+  getDisplayText(){
+    const found = this.options.find(o =>
+      this.getOptionValue(o) === this.value
+    );
+    return found ? this.getOptionLabel(found) : '';
   }
-  
 
-  getOptionLabel(option: any): string {
-    if (typeof option === 'string' || typeof option === 'number') {
+  getOptionLabel(option:any){
+    if(typeof option === 'string' || typeof option === 'number')
       return option.toString();
-    }
-    return option[this.optionLabel] || option.toString();
+
+    return option[this.optionLabel] ?? option.toString();
   }
 
-  getOptionValue(option: any): any {
-    if (typeof option === 'string' || typeof option === 'number') {
+  getOptionValue(option:any){
+    if(typeof option === 'string' || typeof option === 'number')
       return option;
-    }
-    // Cambiamos la lógica para devolver siempre el objeto completo si no es primitivo
-    return option;
+
+    return option[this.optionValue] ?? option;
   }
 
-  onKeyDown(event: KeyboardEvent): void {
-    if (this.disabled) return;
+  // ---------- KEYBOARD ----------
+  onKeyDown(event:KeyboardEvent){
+    if(this.disabled) return;
 
-    switch (event.key) {
+    switch(event.key){
+
       case 'Enter':
       case ' ':
         event.preventDefault();
         this.toggleDropdown();
         break;
+
       case 'Escape':
-        event.preventDefault();
         this.closeDropdown();
         break;
+
       case 'ArrowDown':
         event.preventDefault();
-        if (!this.isOpen) {
-          this.isOpen = true;
-        } else {
-          this.navigateOptions(1);
-        }
+        this.navigate(1);
         break;
+
       case 'ArrowUp':
         event.preventDefault();
-        if (this.isOpen) {
-          this.navigateOptions(-1);
-        }
+        this.navigate(-1);
         break;
     }
   }
 
-  private navigateOptions(direction: number): void {
-    if (!this.options.length) return;
+  private navigate(dir:number){
+    if(!this.options.length) return;
 
-    const currentIndex = this.options.findIndex(option => 
-      this.getOptionValue(option) === this.value
+    const i = this.options.findIndex(o =>
+      this.getOptionValue(o) === this.value
     );
-    
-    let newIndex = currentIndex + direction;
-    
-    if (newIndex < 0) {
-      newIndex = this.options.length - 1;
-    } else if (newIndex >= this.options.length) {
-      newIndex = 0;
-    }
-    
-    this.selectOption(this.options[newIndex]);
+
+    let next = i + dir;
+
+    if(next < 0) next = this.options.length-1;
+    if(next >= this.options.length) next = 0;
+
+    this.selectOption(this.options[next]);
   }
 
+  // ---------- CLICK OUTSIDE ----------
   @HostListener('document:click', ['$event'])
-  onDocumentClick(event: Event): void {
-    // This is handled by the overlay div in template
+  onDocClick(e:Event){
+    const target = e.target as HTMLElement;
+    if(!target.closest(`#${this.id}`))
+      this.closeDropdown();
   }
 }

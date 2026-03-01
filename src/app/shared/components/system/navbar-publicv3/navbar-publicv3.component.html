@@ -45,13 +45,13 @@
             <div class="w-1/3 bg-aldy-white p-8">
               <h3 class="mb-8 text-2xl text-aldy-medium-2 uppercase font-light  NewAldyTitle tracking-widest">
                 categorias
-                </h3>
+              </h3>
               <ul class="space-y-4">
                 <li *ngFor="let item of tiendaItems">
                   <div class="flex gap-3 items-center">
                     <div class="h-2 w-2 bg-aldy-light rounded-full"></div>
-                    <a (click)="goToCategory(item)"
-                      class="block transition-all font-light NewAldyFontType4 text-sm duration-200 cursor-pointer text-aldy-medium-2 hover:text-aldy-medium-2 hover:translate-x-1">
+                    <a [routerLink]="['/tienda/categoria', normalizeCategory(item)]" (click)="closeDropdown()"
+                      class="block transition-all font-light NewAldyFontType4 text-sm duration-200 text-aldy-medium-2 hover:text-aldy-medium-2 hover:translate-x-1">
                       {{ item }}
                     </a>
                   </div>
@@ -59,46 +59,76 @@
               </ul>
             </div>
 
-            <!-- COLECCIONES DESTACADAS A LA DERECHA -->
+            <!-- Tienda seccion con imagenes -->
+
             <div class="w-2/3 p-8">
-              <div class="grid grid-cols-3 gap-6">
-                <!-- Vestidos -->
-                <div class="group cursor-pointer">
-                  <div class="relative overflow-hidden mb-3 aspect-[3/4]">
-                    <img
-                      src="https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/products/vestidos/vestido_gladiolo/1752718247389.jpg"
-                      alt="Vestidos"
-                      class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
-                  </div>
-                  <h4 class="font-light NewAldyFontType4 text-aldy-medium-2 text-sm tracking-wider mb-1">VESTIDOS</h4>
-                  <p class="text-xs text-aldy-bold leading-relaxed">Elegantes diseños para ocasiones especiales</p>
-                </div>
+  <div class="grid grid-cols-3 gap-6">
 
-                <!-- Abrigos -->
-                <div class="group cursor-pointer">
-                  <div class="relative overflow-hidden mb-3 aspect-[3/4]">
-                    <img
-                      src="https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/products/abrigos/buzos/buzo%20cactus/1752807793069.jpg"
-                      alt="Abrigos"
-                      class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
-                  </div>
-                  <h4 class="font-light NewAldyFontType4 text-aldy-medium-2 text-sm tracking-wider mb-1">ABRIGOS</h4>
-                  <p class="text-xs text-aldy-bold leading-relaxed">Comodidad y estilo para looks urbanos</p>
-                </div>
+    <!-- Vestidos -->
+    <a
+      [routerLink]="['/tienda/categoria','vestidos']"
+      class="group block"
+    >
+      <div class="relative overflow-hidden mb-3 aspect-[3/4]">
+        <img
+          src="https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/products/vestidos/vestido_gladiolo/1752718247389.jpg"
+          alt="Vestidos"
+          class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+      </div>
 
-                <!-- Pantalones -->
-                <div class="group cursor-pointer">
-                  <div class="relative overflow-hidden mb-3 aspect-[3/4]">
-                    <img
-                      src="https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/products/pantalones/pantalon_cala/1752716551897.jpg"
-                      alt="Pantalones"
-                      class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
-                  </div>
-                  <h4 class="font-light NewAldyFontType4 text-aldy-medium-2 text-sm tracking-wider mb-1">PANTALONES</h4>
-                  <p class="text-xs text-aldy-bold leading-relaxed">Corte perfecto y versatilidad diaria</p>
-                </div>
-              </div>
-            </div>
+      <h4 class="font-light NewAldyFontType4 text-aldy-medium-2 text-sm tracking-wider mb-1">
+        VESTIDOS
+      </h4>
+
+      <p class="text-xs text-aldy-bold leading-relaxed">
+        Elegantes diseños para ocasiones especiales
+      </p>
+    </a>
+
+    <!-- Abrigos -->
+    <a
+      [routerLink]="['/tienda/categoria','abrigos']"
+      class="group block"
+    >
+      <div class="relative overflow-hidden mb-3 aspect-[3/4]">
+        <img
+          src="https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/products/abrigos/buzos/buzo%20cactus/1752807793069.jpg"
+          alt="Abrigos"
+          class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+      </div>
+
+      <h4 class="font-light NewAldyFontType4 text-aldy-medium-2 text-sm tracking-wider mb-1">
+        ABRIGOS
+      </h4>
+
+      <p class="text-xs text-aldy-bold leading-relaxed">
+        Comodidad y estilo para looks urbanos
+      </p>
+    </a>
+
+    <!-- Pantalones -->
+    <a
+      [routerLink]="['/tienda/categoria','pantalones']"
+      class="group block"
+    >
+      <div class="relative overflow-hidden mb-3 aspect-[3/4]">
+        <img
+          src="https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/products/pantalones/pantalon_cala/1752716551897.jpg"
+          alt="Pantalones"
+          class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+      </div>
+
+      <h4 class="font-light NewAldyFontType4 text-aldy-medium-2 text-sm tracking-wider mb-1">
+        PANTALONES
+      </h4>
+
+      <p class="text-xs text-aldy-bold leading-relaxed">
+        Corte perfecto y versatilidad diaria
+      </p>
+    </a>
+
+  </div>
+</div>
           </div>
         </div>
       </div>
@@ -129,20 +159,25 @@
       <!-- ÍCONOS -->
       <div class="flex items-center space-x-6 text-xl">
         <a routerLink="/busqueda" class="cursor-pointer" (mouseenter)="onInteractiveEnter()">
-          <lucide-icon name="search" class="w-6 h-6 transition-colors duration-200 ease-in-out" [ngClass]="iconColorClass"></lucide-icon>
+          <lucide-icon name="search" class="w-6 h-6 transition-colors duration-200 ease-in-out"
+            [ngClass]="iconColorClass"></lucide-icon>
         </a>
 
-        <a *ngIf="isAuthenticated" routerLink="/panel/favoritos" class="cursor-pointer" (mouseenter)="onInteractiveEnter()">
-          <lucide-icon name="heart" class="w-6 h-6 transition-colors duration-200 ease-in-out" [ngClass]="iconColorClass"></lucide-icon>
+        <a *ngIf="isAuthenticated" routerLink="/panel/favoritos" class="cursor-pointer"
+          (mouseenter)="onInteractiveEnter()">
+          <lucide-icon name="heart" class="w-6 h-6 transition-colors duration-200 ease-in-out"
+            [ngClass]="iconColorClass"></lucide-icon>
         </a>
 
         <button (click)="onUserButtonClick()" class="cursor-pointer" (mouseenter)="onInteractiveEnter()">
-          <lucide-icon name="user" class="w-6 h-6 transition-colors duration-200 ease-in-out" [ngClass]="iconColorClass"></lucide-icon>
+          <lucide-icon name="user" class="w-6 h-6 transition-colors duration-200 ease-in-out"
+            [ngClass]="iconColorClass"></lucide-icon>
         </button>
 
         <div class="flex items-center cursor-pointer" (mouseenter)="onInteractiveEnter()">
           <a routerLink="/checkout/carrito" class="cursor-pointer">
-            <lucide-icon name="shopping-bag" class="w-6 h-6 transition-colors duration-200 ease-in-out" [ngClass]="iconColorClass"></lucide-icon>
+            <lucide-icon name="shopping-bag" class="w-6 h-6 transition-colors duration-200 ease-in-out"
+              [ngClass]="iconColorClass"></lucide-icon>
           </a>
           <span translate="no" class="text-base ml-1" [ngClass]="{
               'text-white border-white': isHomePage && !MoverScroll && !hoverNavbar,
@@ -165,7 +200,8 @@
     '-translate-y-full': !showNavbar,
     'bg-aldy-white shadow-md': menuOpen || !isHomePage || MoverScroll || hoverNavbar,
     'bg-gradient-to-b from-black/35 to-transparent': !menuOpen && isHomePage && !MoverScroll && !hoverNavbar
-  }" class="block lg:hidden w-full fixed top-0 z-50 font-font-light NewAldyFontType4 text-sm transform transition-all duration-300 ease-in-out">
+  }"
+  class="block lg:hidden w-full fixed top-0 z-50 font-font-light NewAldyFontType4 text-sm transform transition-all duration-300 ease-in-out">
   <div class="flex items-center justify-between h-16 px-[5%] relative">
 
     <!-- ICONOS IZQUIERDA -->
@@ -269,9 +305,11 @@
           <lucide-icon name="chevron-down" class="w-5 h-5 transition-transform duration-200 text-gray-700"
             [ngClass]="{ 'rotate-180': mobileDropdownOpen }"></lucide-icon>
         </button>
-        <div *ngIf="mobileDropdownOpen" @expandDropdown class="pl-4 mt-2 space-y-3 border-l-2 border-aldy-medium hover:border-aldy-medium-2">
-          <a *ngFor="let item of tiendaItems" (click)="goToCategory(item)"
-            class="block cursor-pointer text-md text-gray-600 hover:text-aldy-primary-500 font-light NewAldyFontType4 text-sm transition-colors duration-200 py-2">
+        <div *ngIf="mobileDropdownOpen" @expandDropdown
+          class="pl-4 mt-2 space-y-3 border-l-2 border-aldy-medium hover:border-aldy-medium-2">
+          <a *ngFor="let item of tiendaItems" [routerLink]="['/tienda/categoria', normalizeCategory(item)]"
+            (click)="onMenuLinkClick()"
+            class="block text-md text-gray-600 hover:text-aldy-primary-500 font-light NewAldyFontType4 text-sm transition-colors duration-200 py-2">
             {{ item }}
           </a>
         </div>

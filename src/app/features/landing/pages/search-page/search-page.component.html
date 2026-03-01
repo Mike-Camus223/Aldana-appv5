@@ -18,8 +18,8 @@
     </div>
 
     <!-- RESULTS INFO -->
-    <div *ngIf="!loading && hasSearched && products.length > 0"
-      class="w-full text-center py-6 NewAldyFontType4 text-sm text-aldy-green-gray animate-fade-in">
+    <div *ngIf="!loading && hasSearched && products.length > 0" [@cardEnterAnimation]="products.length"
+      class="w-full text-center py-6 NewAldyFontType4 text-sm text-aldy-green-gray">
       <span *ngIf="searchMode === 'input' && displayedSearchTerm">
         Se encontraron {{ products.length }} resultados para "{{ displayedSearchTerm }}"
       </span>
@@ -32,8 +32,8 @@
     </div>
     
     <!-- NO RESULTS INFO -->
-    <div *ngIf="!loading && hasSearched && products.length === 0 && originalProducts.length > 0"
-      class="w-full text-center py-6 NewAldyFontType4 text-sm text-aldy-green-gray animate-fade-in">
+    <div *ngIf="!loading && hasSearched && products.length === 0 && originalProducts.length > 0" [@cardEnterAnimation]="products.length"
+      class="w-full text-center py-6 NewAldyFontType4 text-sm text-aldy-green-gray">
       <span *ngIf="searchMode === 'input' && displayedSearchTerm">
         No se encontraron resultados para "{{ displayedSearchTerm }}"
       </span>
@@ -118,7 +118,7 @@
 
 
     <!-- MAIN CONTENT (Sidebar + Grid) -->
-    <div *ngIf="originalProducts.length > 0 && !loading" [@contentFade]="originalProducts.length"
+    <div *ngIf="originalProducts.length > 0 && !loading"
       class="px-4 bg-aldy-white sm:px-6 lg:px-12 xl:px-16 2xl:px-24 py-6 w-full">
       <div class="max-w-screen-3xl mx-auto">
         <div class="flex flex-col lg:flex-row transition-all duration-500 ease-in-out items-center" [ngClass]="{
@@ -315,7 +315,7 @@
           <!-- PRODUCTS GRID -->
           <div #productsContainer class="relative transition-all duration-500 ease-in-out flex-1">
             <!-- No results after filter -->
-            <div *ngIf="!loading && hasSearched && products.length === 0"
+            <div *ngIf="!loading && hasSearched && products.length === 0" [@cardEnterAnimation]="products.length"
               class="absolute inset-0 flex items-center justify-center text-center text-gray-500 NewAldyFontType4">
               <span>
                 No se encontró el producto
@@ -323,7 +323,7 @@
             </div>
 
             <!-- Grid -->
-            <div *ngIf="!loading && products.length > 0" [@gridAnimation]="productColumns"
+            <div *ngIf="!loading && products.length > 0" [@cardWaveAnimation]="pagedProducts.length"
               class="grid gap-5 transition-all duration-500 ease-in-out" [ngClass]="[
                 productColumns === 2
                   ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-2 mx-0 xl:mx-60'
@@ -335,7 +335,10 @@
                   ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 mx-0'
                   : ''
               ]">
-              <div *ngFor="let product of pagedProducts; trackBy: trackByProductId" class="w-full">
+              <div *ngFor="let product of pagedProducts; trackBy: trackByProductId; let i = index" 
+                   class="w-full" 
+                   [@cardEnterAnimation]
+                   [style.animation-delay]="i * 100 + 'ms'">
                 <app-cardproduct [product]="product" [selectedColor]="selectedColors[product.id] || ''"
                   [displayImage]="product.main_image" [mobileMode]="'ismobile'" [desktopMode]="'isdesktop'"
                   (colorSelected)="onColorSelected($event)" (wishlistToggled)="onWishlistToggled($event)">
@@ -402,7 +405,7 @@
   <div class="w-full flex justify-center">
     <div class="w-full max-w-[18rem] xs:max-w-sm sm:max-w-xl md:max-w-4xl">
       <div class="w-full flex items-center justify-center">
-        <div class="spinner"></div>
+        <div class="spinner" style="animation: spin 0.7s linear infinite;"></div>
       </div>
     </div>
   </div>
@@ -412,13 +415,15 @@
 
 <div *ngIf="!hasSearched || (!loading && originalProducts.length === 0)" class="pb-7 pt-5 flex items-center justify-center min-h-[160px] w-full mb-4">
 
-  <div *ngIf="!hasSearched && recentSearches.length > 0 && originalProducts.length === 0" class="w-full flex justify-center">
+  <div *ngIf="!hasSearched && recentSearches.length > 0 && originalProducts.length === 0" class="w-full flex justify-center" [@cardEnterAnimation]="recentSearches.length">
     <div class="w-full max-w-[18rem] xs:max-w-sm sm:max-w-xl md:max-w-4xl space-y-4">
       <div class="flex items-center justify-between">
         <h3 class="text-sm NewAldyFontType4 tracking-wider text-aldy-green-gray uppercase">Últimas búsquedas</h3>
       </div>
       <ul class="space-y-3 text-sm font-semibold NewAldyFontType4 text-aldy-green-gray">
-        <li *ngFor="let optionsTracking of recentSearches">
+        <li *ngFor="let optionsTracking of recentSearches; let i = index" 
+            [@cardEnterAnimation] 
+            [style.animation-delay]="i * 100 + 'ms'">
           <button type="button" appLinkHoverUnderline [underlineHeight]="'1px'" (click)="onRecentClick(optionsTracking)"
             class="w-auto cursor-pointer text-left hover:text-aldy-medium-2">
             {{ optionsTracking
@@ -429,7 +434,7 @@
     </div>
   </div>
 
-  <div *ngIf="hasSearched && !loading && originalProducts.length === 0" class="w-full flex justify-center">
+  <div *ngIf="hasSearched && !loading && originalProducts.length === 0" class="w-full flex justify-center" [@cardEnterAnimation]="originalProducts.length">
     <div class="w-full max-w-[18rem] xs:max-w-sm sm:max-w-xl md:max-w-4xl">
       <div
         class="text-center flex items-center justify-center text-aldy-green-gray px-2 xs:px-4 NewAldyFontType4 text-sm">
