@@ -4,6 +4,7 @@ import { CommonModule, Location } from '@angular/common';
 import { AccordionModule } from 'primeng/accordion';
 import { ToastModule } from 'primeng/toast';
 import { FancyCarouselComponent } from '../../sections/fancy-carousel/fancy-carousel.component';
+import { ProductCarouselComponent } from '../../sections/product-carousel/product-carousel.component';
 import { Product, ProductVariant } from '../../../utils/models/Products-supabase.interface';
 import { CartItem } from '../../../utils/models/cartItems-model';
 import { SupabaseService } from '../../../../core/services/data-access/supabase.service';
@@ -24,6 +25,7 @@ import { Subscription } from 'rxjs';
     CommonModule,
     AccordionModule,
     FancyCarouselComponent,
+    ProductCarouselComponent,
     RouterModule,
     ToastModule,
     FormsModule,
@@ -45,6 +47,7 @@ export class ItemsPurchaseComponent implements OnInit, OnDestroy {
   carouselImages: { src: string; thumb: string }[] = [];
   quantitySelected: number = 1;
   openAccordion: string | null = null;
+  relatedProducts: Product[] = [];
   private initialColorParam: string | null = null;
   private initialSizeParam: string | null = null;
   private initialQuantityParam: number | null = null;
@@ -148,6 +151,9 @@ export class ItemsPurchaseComponent implements OnInit, OnDestroy {
         { src: this.product.main_image, thumb: this.product.main_image },
         ...this.product.additional_images.map(img => ({ src: img, thumb: img }))
       ];
+
+      // Load related products
+      await this.loadRelatedProducts();
 
       if (this.product.variants.length > 0) {
         // Intentar aplicar color desde query param usando valor real (sin normalizar)
@@ -301,6 +307,65 @@ export class ItemsPurchaseComponent implements OnInit, OnDestroy {
     if (matches.length === 1) {
       this.cartService.setQuantity(matches[0].id, this.quantitySelected);
     }
+  }
+
+  private async loadRelatedProducts(): Promise<void> {
+    if (!this.product) return;
+
+    try {
+      // Get all products to filter related ones
+      const { data, error } = await this.supabaseService.getProducts();
+      if (error || !data) return;
+
+      const allProducts = ProductUtils.mapProducts(Array.isArray(data) ? data : [data]);
+      
+      // Filter related products based on current product characteristics
+      const related = allProducts.filter(p => {
+        // Don't include the current product
+        if (p.id === this.product!.id) return false;
+        
+        // Simple recommendation logic for now
+        // 1. Same category/brand (if product name contains similar words)
+        const currentProductName = this.product!.name.toLowerCase();
+        const candidateProductName = p.name.toLowerCase();
+        
+        // Check for common words (brand, type, etc.)
+        const currentWords = currentProductName.split(' ');
+        const candidateWords = candidateProductName.split(' ');
+        
+        const commonWords = currentWords.filter(word => 
+          word.length > 3 && candidateWords.includes(word)
+        );
+        
+        // If they share significant words, they're related
+        if (commonWords.length >= 1) return true;
+        
+        // 2. Similar price range (within 30% of current product price)
+        const priceDiff = Math.abs(p.price - this.product!.price);
+        const priceThreshold = this.product!.price * 0.3;
+        if (priceDiff <= priceThreshold) return true;
+        
+        return false;
+      });
+
+      // Sort by relevance (products with more common words first)
+      related.sort((a, b) => {
+        const aCommonWords = this.countCommonWords(this.product!.name, a.name);
+        const bCommonWords = this.countCommonWords(this.product!.name, b.name);
+        return bCommonWords - aCommonWords;
+      });
+
+      this.relatedProducts = related.slice(0, 6); // Limit to 6 products
+    } catch (error) {
+      console.error('Error loading related products:', error);
+      this.relatedProducts = [];
+    }
+  }
+
+  private countCommonWords(productName1: string, productName2: string): number {
+    const words1 = productName1.toLowerCase().split(' ').filter(w => w.length > 3);
+    const words2 = productName2.toLowerCase().split(' ').filter(w => w.length > 3);
+    return words1.filter(word => words2.includes(word)).length;
   }
 
   ngOnDestroy(): void {

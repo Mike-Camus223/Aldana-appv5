@@ -1,5 +1,4 @@
 <div *ngIf="product" class="h-[0px] lg:h-[88px]"></div>
-
 <div *ngIf="product" class="px-4 sm:px-6 lg:px-12 xl:px-16 2xl:px-24 py-4 sm:py-8 w-full">
   <div class="max-w-screen-3xl mx-auto">
     <div class="grid lg:grid-cols-2 gap-4 sm:gap-0 text-gray-800">
@@ -118,13 +117,6 @@
             </p>
           </div>
         </app-acordiongeneric>
-
-        <!-- <p-accordion id="acordionItem" class="w-full mt-4">
-          <p-accordion-tab header="Detalles" class="text-sm sm:text-sm font-light text-aldy-green-gray tracking-wider">
-            <p>{{ product.details }}</p>
-          </p-accordion-tab>
-        </p-accordion> -->
-
         <div class="text-sm sm:text-sm text-aldy-green-gray NewAldyFontType4 tracking-wider mt-4">
           <p>
             Para más detalles sobre métodos de pago haz clic
@@ -139,6 +131,13 @@
     </div>
   </div>
 </div>
-<!-- <div class="flex w-full h-auto items-center justify-center py-4">
-  <h2 class="text-xl font-light NewAldyFontType4 tracking-wider text-gray-800"> Puede que también te guste </h2>
-</div> -->
+<div class="px-4 sm:px-6 lg:px-12 xl:px-16 2xl:px-24 py-8 sm:py-12 w-full" *ngIf="relatedProducts.length > 0">
+  <div class="max-w-screen-3xl mx-auto">
+    <app-product-carousel 
+      [products]="relatedProducts" 
+      title="Puede que también te guste"
+      [maxProducts]="6"
+      [visibleProducts]="4">
+    </app-product-carousel>
+  </div>
+</div> 
