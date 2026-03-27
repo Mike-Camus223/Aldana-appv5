@@ -1,9 +1,10 @@
-<div class="px-4 py-2 sm:px-6 bg-aldy-white lg:px-12 xl:px-16 2xl:px-24 inline-flex justify-between items-center w-full">
+<div
+  class="px-4 py-2 sm:px-6 bg-aldy-white lg:px-12 xl:px-16 2xl:px-24 inline-flex justify-between items-center w-full">
   <button type="button" (click)="toggleFilters()"
     class="inline-flex text-xs NewAldyFontType4 gap-2 items-center border cursor-pointer border-aldy-medium-2 px-6 py-3 tracking-wider font-medium uppercase transition-all duration-300 text-aldy-green-gray ease-in-out hover:bg-aldy-medium-2 hover:text-white">
     <lucide-icon name="Funnel" class="h-4 w-4"></lucide-icon>
     <span>{{ showFilters ? 'Ocultar filtros' : 'Mostrar filtros' }}</span>
-    <lucide-icon [name]="showFilters ? 'ChevronUp' : 'ChevronDown'" class="h-4 w-4"></lucide-icon>
+    <lucide-icon [name]="showFilters ? 'Plus' : 'Minus'" class="h-4 w-4"></lucide-icon>
   </button>
 
   <div #productsControls id="productsControls" class="w-40 h-auto justify-end gap-2 hidden lg:flex">
@@ -72,89 +73,194 @@
           <app-acordiongeneric [title]="'Categorías'" [value]="'categorias'" [selectedMultiple]="openAccordionsArray"
             (toggled)="onAccordionToggled($event)">
             <div class="space-y-1">
-              
-              <!-- Sección Pret a Porter -->
+              <!-- Sección Pret a Porter (Dropdown principal) -->
               <div class="pb-2 mb-2">
-                <button type="button" (click)="togglePretAPorter()" 
-                  class="w-full cursor-pointer flex items-center justify-between py-2 px-2 text-xs font-medium text-aldy-green-gray hover:text-aldy-medium transition-colors">
-                  <span class="NewAldyFontType4 text-xs font-light tracking-wider">Pret a Porter</span>
-                  <div class="relative w-3 h-3 text-aldy-medium">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
-                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                      class="absolute transition-all duration-300 ease-in-out"
+                <button type="button" (click)="togglePretAPorter()"
+                  class="w-full flex items-center cursor-pointer justify-between py-2 px-2 text-xs font-medium text-aldy-green-gray hover:text-aldy-medium transition-colors relative">
+                  <span class="NewAldyFontType4 text-xs font-light tracking-wider uppercase">Pret a Porter</span>
+
+                  <span class="relative h-4 w-4 flex items-center justify-center">
+                    <lucide-icon name="Plus" class="absolute h-3 w-3 transition-all duration-300 ease-in-out" [ngClass]="{
+        'opacity-100 scale-100 rotate-0': !pretAPorterOpen,
+        'opacity-0 scale-90 rotate-90': pretAPorterOpen
+      }">
+                    </lucide-icon>
+                    <lucide-icon name="Minus" class="absolute h-3 w-3 transition-all duration-300 ease-in-out"
                       [ngClass]="{
-                        'opacity-0 scale-90 rotate-90': pretAPorterOpen,
-                        'opacity-100 scale-100 rotate-0': !pretAPorterOpen
-                      }">
-                      <path d="M5 12h14" />
-                      <path d="M12 5v14" />
-                    </svg>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
-                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                      class="absolute transition-all duration-300 ease-in-out"
-                      [ngClass]="{
-                        'opacity-100 scale-100 rotate-0': pretAPorterOpen,
-                        'opacity-0 scale-90 -rotate-90': !pretAPorterOpen
-                      }">
-                      <path d="M5 12h14" />
-                    </svg>
-                  </div>
+        'opacity-0 scale-90 -rotate-90': !pretAPorterOpen,
+        'opacity-100 scale-100 rotate-0': pretAPorterOpen
+      }">
+                    </lucide-icon>
+                  </span>
                 </button>
-                <div *ngIf="pretAPorterOpen" class="pl-4 mt-1 space-y-1">
-                  <label *ngFor="let category of pretAPorterCategories" 
-                    class="flex items-center gap-2 py-1 px-2 text-xs tracking-wider NewAldyFontType4 cursor-pointer w-full hover:bg-aldy-light">
-                    <input type="checkbox" [checked]="isPretAPorterCategorySelected(category.value)"
-                      (change)="togglePretAPorterCategory(category.value)" AldyCheckboxV1 />
-                    <span [ngClass]="isPretAPorterCategorySelected(category.value) ? 'text-aldy-medium font-semibold' : 'text-aldy-green-gray'">
-                      {{ category.label }}
-                    </span>
-                  </label>
+                <div *ngIf="pretAPorterOpen" class="pl-2 mt-1 space-y-2">
+                  <div class="border-l border-aldy-medium/20 pl-2">
+                    <button type="button" (click)="toggleCollectionDropdown('normal-general')"
+                      class="w-full cursor-pointer flex items-center justify-between py-1 px-2 text-xs font-light text-aldy-green-gray hover:text-aldy-medium transition-colors">
+                      <span class="NewAldyFontType4 tracking-wider"
+                        [ngClass]="{'text-aldy-medium font-medium': selectedCollectionId === 'general'}">General</span>
+                        <span class="relative h-4 w-4 flex items-center justify-center">
+                    <lucide-icon name="Plus" class="absolute h-3 w-3 transition-all duration-300 ease-in-out" [ngClass]="{
+        'opacity-100 scale-100 rotate-0': !isCollectionDropdownOpen('normal-general'),
+        'opacity-0 scale-90 rotate-90': isCollectionDropdownOpen('normal-general')
+      }">
+                    </lucide-icon>
+                    <lucide-icon name="Minus" class="absolute h-3 w-3 transition-all duration-300 ease-in-out"
+                      [ngClass]="{
+        'opacity-0 scale-90 -rotate-90': !isCollectionDropdownOpen('normal-general'),
+        'opacity-100 scale-100 rotate-0': isCollectionDropdownOpen('normal-general')
+      }">
+                    </lucide-icon>
+                  </span>
+                    </button>
+                    <div *ngIf="isCollectionDropdownOpen('normal-general')" class="pl-4 mt-1 space-y-1">
+                      <div *ngFor="let category of getCategoriesForCollection('normal', 'general')" class="space-y-1">
+                        <label
+                          class="flex items-center gap-2 py-1 px-2 text-[11px] tracking-wider NewAldyFontType4 cursor-pointer w-full hover:bg-aldy-light">
+                          <input type="checkbox" [checked]="isCategorySelected(category.value)"
+                            (change)="toggleCategory(category.value)" AldyCheckboxV1 />
+                          <span
+                            [ngClass]="isCategorySelected(category.value) ? 'text-aldy-medium font-semibold' : 'text-aldy-green-gray'">
+                            {{ category.label }}
+                          </span>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Colecciones Dropdowns (Antiguo estilo: solo lista de checkboxes) -->
+                  <div *ngFor="let col of topCollections" class="border-l border-aldy-medium/20 pl-2">
+                    <button type="button" (click)="toggleCollectionDropdown('normal-' + col.id)"
+                      class="w-full cursor-pointer flex items-center justify-between py-1 px-2 text-xs font-light text-aldy-green-gray hover:text-aldy-medium transition-colors">
+                      <span class="NewAldyFontType4 tracking-wider"
+                        [ngClass]="{'text-aldy-medium font-medium': selectedCollectionId === col.id}">{{ col.name
+                        }}</span>
+                        <span class="relative h-4 w-4 flex items-center justify-center">
+                    <lucide-icon name="Plus" class="absolute h-3 w-3 transition-all duration-300 ease-in-out" [ngClass]="{
+        'opacity-100 scale-100 rotate-0': !isCollectionDropdownOpen('normal-' + col.id),
+        'opacity-0 scale-90 rotate-90': isCollectionDropdownOpen('normal-' + col.id)
+      }">
+                    </lucide-icon>
+                    <lucide-icon name="Minus" class="absolute h-3 w-3 transition-all duration-300 ease-in-out"
+                      [ngClass]="{
+        'opacity-0 scale-90 -rotate-90': !isCollectionDropdownOpen('normal-' + col.id),
+        'opacity-100 scale-100 rotate-0': isCollectionDropdownOpen('normal-' + col.id)
+      }">
+                    </lucide-icon>
+                  </span>
+                    </button>
+                    <div *ngIf="isCollectionDropdownOpen('normal-' + col.id)" class="pl-4 mt-1 space-y-1">
+                      <div *ngFor="let category of getCategoriesForCollection('normal', col.id)" class="space-y-1">
+                        <label
+                          class="flex items-center gap-2 py-1 px-2 text-[11px] tracking-wider NewAldyFontType4 cursor-pointer w-full hover:bg-aldy-light">
+                          <input type="checkbox" [checked]="isCategorySelected(category.value)"
+                            (change)="toggleCategory(category.value)" AldyCheckboxV1 />
+                          <span
+                            [ngClass]="isCategorySelected(category.value) ? 'text-aldy-medium font-semibold' : 'text-aldy-green-gray'">
+                            {{ category.label }}
+                          </span>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+
                 </div>
               </div>
-
-              <!-- Sección Novias -->
+              <!-- Sección Novias (Dropdown principal) -->
               <div class="pb-2 mb-2">
-                <button type="button" (click)="toggleNovias()" 
+                <button type="button" (click)="toggleNovias()"
                   class="w-full cursor-pointer flex items-center justify-between py-2 px-2 text-xs font-medium text-aldy-green-gray hover:text-aldy-medium transition-colors">
-                  <span class="NewAldyFontType4 text-xs font-light tracking-wider">Novias</span>
-                  <div class="relative w-3 h-3 text-aldy-medium">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
-                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                      class="absolute transition-all duration-300 ease-in-out"
+                  <span class="NewAldyFontType4 text-xs font-light tracking-wider uppercase">Novias</span>
+                  <span class="relative h-4 w-4 flex items-center justify-center">
+                    <lucide-icon name="Plus" class="absolute h-3 w-3 transition-all duration-300 ease-in-out" [ngClass]="{
+        'opacity-100 scale-100 rotate-0': !noviasOpen,
+        'opacity-0 scale-90 rotate-90': noviasOpen
+      }">
+                    </lucide-icon>
+                    <lucide-icon name="Minus" class="absolute h-3 w-3 transition-all duration-300 ease-in-out"
                       [ngClass]="{
-                        'opacity-0 scale-90 rotate-90': noviasOpen,
-                        'opacity-100 scale-100 rotate-0': !noviasOpen
-                      }">
-                      <path d="M5 12h14" />
-                      <path d="M12 5v14" />
-                    </svg>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
-                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                      class="absolute transition-all duration-300 ease-in-out"
-                      [ngClass]="{
-                        'opacity-100 scale-100 rotate-0': noviasOpen,
-                        'opacity-0 scale-90 -rotate-90': !noviasOpen
-                      }">
-                      <path d="M5 12h14" />
-                    </svg>
-                  </div>
+        'opacity-0 scale-90 -rotate-90': !noviasOpen,
+        'opacity-100 scale-100 rotate-0': noviasOpen
+      }">
+                    </lucide-icon>
+                  </span>
                 </button>
-                <div *ngIf="noviasOpen" class="pl-4 mt-1 space-y-1">
-                  <label *ngFor="let category of noviasCategories" 
-                    class="flex items-center gap-2 py-1 px-2 text-xs tracking-wider NewAldyFontType4 cursor-pointer w-full hover:bg-aldy-light">
-                    <input type="checkbox" [checked]="isNoviasCategorySelected(category.value)"
-                      (change)="toggleNoviasCategory(category.value)" AldyCheckboxV1 />
-                    <span [ngClass]="isNoviasCategorySelected(category.value) ? 'text-aldy-medium font-semibold' : 'text-aldy-green-gray'">
-                      {{ category.label }}
-                    </span>
-                  </label>
+                <div *ngIf="noviasOpen" class="pl-2 mt-1 space-y-2">
+                  <div class="border-l border-aldy-medium/20 pl-2">
+                    <button type="button" (click)="toggleCollectionDropdown('bridal-general')"
+                      class="w-full cursor-pointer flex items-center justify-between py-1 px-2 text-xs font-light text-aldy-green-gray hover:text-aldy-medium transition-colors">
+                      <span class="NewAldyFontType4 tracking-wider"
+                        [ngClass]="{'text-aldy-medium font-medium': selectedBridesCollectionId === 'general'}">General</span>
+                        <span class="relative h-4 w-4 flex items-center justify-center">
+                    <lucide-icon name="Plus" class="absolute h-3 w-3 transition-all duration-300 ease-in-out" [ngClass]="{
+        'opacity-100 scale-100 rotate-0': !isCollectionDropdownOpen('bridal-general'),
+        'opacity-0 scale-90 rotate-90': isCollectionDropdownOpen('bridal-general')
+      }">
+                    </lucide-icon>
+                    <lucide-icon name="Minus" class="absolute h-3 w-3 transition-all duration-300 ease-in-out"
+                      [ngClass]="{
+        'opacity-0 scale-90 -rotate-90': !isCollectionDropdownOpen('bridal-general'),
+        'opacity-100 scale-100 rotate-0': isCollectionDropdownOpen('bridal-general')
+      }">
+                    </lucide-icon>
+                  </span>
+                        
+                    </button>
+                    <div *ngIf="isCollectionDropdownOpen('bridal-general')" class="pl-4 mt-1 space-y-1">
+                      <div *ngFor="let category of getCategoriesForCollection('bridal', 'general')" class="space-y-1">
+                        <label
+                          class="flex items-center gap-2 py-1 px-2 text-[11px] tracking-wider NewAldyFontType4 cursor-pointer w-full hover:bg-aldy-light">
+                          <input type="checkbox" [checked]="isCategorySelected(category.value)"
+                            (change)="toggleCategory(category.value)" AldyCheckboxV1 />
+                          <span
+                            [ngClass]="isCategorySelected(category.value) ? 'text-aldy-medium font-semibold' : 'text-aldy-green-gray'">
+                            {{ category.label }}
+                          </span>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Colecciones Novias Dropdowns (Antiguo estilo: solo lista de checkboxes) -->
+                  <div *ngFor="let col of topBridesCollections" class="border-l border-aldy-medium/20 pl-2">
+                    <button type="button" (click)="toggleCollectionDropdown('bridal-' + col.id)"
+                      class="w-full cursor-pointer flex items-center justify-between py-1 px-2 text-xs font-light text-aldy-green-gray hover:text-aldy-medium transition-colors">
+                      <span class="NewAldyFontType4 tracking-wider"
+                        [ngClass]="{'text-aldy-medium font-medium': selectedBridesCollectionId === col.id}">{{ col.name
+                        }}</span>
+                         <span class="relative h-4 w-4 flex items-center justify-center">
+                    <lucide-icon name="Plus" class="absolute h-3 w-3 transition-all duration-300 ease-in-out" [ngClass]="{
+        'opacity-100 scale-100 rotate-0': !isCollectionDropdownOpen('bridal-' + col.id),
+        'opacity-0 scale-90 rotate-90': isCollectionDropdownOpen('bridal-' + col.id)
+      }">
+                    </lucide-icon>
+                    <lucide-icon name="Minus" class="absolute h-3 w-3 transition-all duration-300 ease-in-out"
+                      [ngClass]="{
+        'opacity-0 scale-90 -rotate-90': !isCollectionDropdownOpen('bridal-' + col.id),
+        'opacity-100 scale-100 rotate-0': isCollectionDropdownOpen('bridal-' + col.id)
+      }">
+                    </lucide-icon>
+                  </span>
+                    </button>
+                    <div *ngIf="isCollectionDropdownOpen('bridal-' + col.id)" class="pl-4 mt-1 space-y-1">
+                      <div *ngFor="let category of getCategoriesForCollection('bridal', col.id)" class="space-y-1">
+                        <label
+                          class="flex items-center gap-2 py-1 px-2 text-[11px] tracking-wider NewAldyFontType4 cursor-pointer w-full hover:bg-aldy-light">
+                          <input type="checkbox" [checked]="isCategorySelected(category.value)"
+                            (change)="toggleCategory(category.value)" AldyCheckboxV1 />
+                          <span
+                            [ngClass]="isCategorySelected(category.value) ? 'text-aldy-medium font-semibold' : 'text-aldy-green-gray'">
+                            {{ category.label }}
+                          </span>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
 
             </div>
           </app-acordiongeneric>
-
-          <!-- Acordeón: Subcategorías -->
           <app-acordiongeneric [title]="'Subcategorías'" [value]="'subcategorias'"
             [selectedMultiple]="openAccordionsArray" (toggled)="onAccordionToggled($event)">
             <div class="space-y-2 max-h-72 overflow-y-auto pr-2">
@@ -183,7 +289,8 @@
               <label *ngFor="let s of allowedSizes"
                 class="flex items-center gap-2 py-2 px-3 text-xs tracking-wider NewAldyFontType4 cursor-pointer w-full  hover:bg-aldy-light">
                 <input type="checkbox" [checked]="isSizeSelected(s)" (change)="toggleSize(s)" AldyCheckboxV1 />
-                <span [ngClass]="isSizeSelected(s) ? 'text-aldy-medium font-semibold' : 'text-aldy-green-gray'">{{ s }}</span>
+                <span [ngClass]="isSizeSelected(s) ? 'text-aldy-medium font-semibold' : 'text-aldy-green-gray'">{{ s
+                  }}</span>
               </label>
             </div>
           </app-acordiongeneric>
@@ -299,7 +406,7 @@
       <div class="flex items-center justify-between">
         <h3 class="text-lg font-semibold text-aldy-medium-2">Filtros</h3>
         <button class="p-2 hover:bg-gray-100 rounded-full transition-colors" (click)="toggleFilters()">
-          <lucide-icon name="ChevronUp" class="h-5 w-5 text-gray-500 rotate-45"></lucide-icon>
+          <lucide-icon name="Plus" class="h-5 w-5 text-gray-500 rotate-45"></lucide-icon>
         </button>
       </div>
     </div>
@@ -320,19 +427,120 @@
       <app-acordiongeneric [title]="'Categorías'" [value]="'categorias'" [selectedMultiple]="openAccordionsArray"
         (toggled)="onAccordionToggled($event)">
         <div class="space-y-1">
-          <label *ngFor="let category of categories"
-            class="flex items-center gap-2 py-2 px-3 text-sm NewAldyFontType4 tracking-wider cursor-pointer w-full  hover:bg-aldy-light">
-            <input type="checkbox" [checked]="isCategorySelected(category.value)"
-              (change)="toggleCategory(category.value)" AldyCheckboxV1 />
-            <span [ngClass]="isCategorySelected(category.value) ? 'text-aldy-medium font-light' : 'text-gray-900'">{{
-              category.label }}</span>
-          </label>
+
+          <!-- Sección Pret a Porter Mobile -->
+          <div class="pb-2 mb-2">
+            <button type="button" (click)="togglePretAPorter()"
+              class="w-full cursor-pointer flex items-center justify-between py-2 px-2 text-xs font-medium text-aldy-green-gray hover:text-aldy-medium transition-colors">
+              <span class="NewAldyFontType4 text-xs font-light tracking-wider uppercase">Pret a Porter</span>
+              <lucide-icon [name]="pretAPorterOpen ? 'Plus' : 'Minus'" class="h-3 w-3"></lucide-icon>
+            </button>
+            <div *ngIf="pretAPorterOpen" class="pl-2 mt-1 space-y-2">
+              <!-- General -->
+              <div class="border-l border-aldy-medium/20 pl-2">
+                <button type="button" (click)="toggleCollectionDropdown('normal-general-mobile')"
+                  class="w-full cursor-pointer flex items-center justify-between py-1 px-2 text-xs font-light text-aldy-green-gray">
+                  <span>General</span>
+                  <lucide-icon [name]="isCollectionDropdownOpen('normal-general-mobile') ? 'Plus' : 'Minus'"
+                    class="h-3 w-3"></lucide-icon>
+                </button>
+                <div *ngIf="isCollectionDropdownOpen('normal-general-mobile')" class="pl-4 mt-1 space-y-1">
+                  <div *ngFor="let category of getCategoriesForCollection('normal', 'general')">
+                    <label
+                      class="flex items-center gap-2 py-1 px-2 text-xs tracking-wider NewAldyFontType4 cursor-pointer w-full">
+                      <input type="checkbox" [checked]="isCategorySelected(category.value)"
+                        (change)="toggleCategory(category.value)" AldyCheckboxV1 />
+                      <span
+                        [ngClass]="isCategorySelected(category.value) ? 'text-aldy-medium font-semibold' : 'text-aldy-green-gray'">{{
+                        category.label }}</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <!-- Collections -->
+              <div *ngFor="let col of topCollections" class="border-l border-aldy-medium/20 pl-2">
+                <button type="button" (click)="toggleCollectionDropdown('normal-mobile-' + col.id)"
+                  class="w-full cursor-pointer flex items-center justify-between py-1 px-2 text-xs font-light text-aldy-green-gray">
+                  <span>{{ col.name }}</span>
+                  <lucide-icon [name]="isCollectionDropdownOpen('normal-mobile-' + col.id) ? 'Plus' : 'Minus'"
+                    class="h-3 w-3"></lucide-icon>
+                </button>
+                <div *ngIf="isCollectionDropdownOpen('normal-mobile-' + col.id)" class="pl-4 mt-1 space-y-1">
+                  <div *ngFor="let category of getCategoriesForCollection('normal', col.id)">
+                    <label
+                      class="flex items-center gap-2 py-1 px-2 text-xs tracking-wider NewAldyFontType4 cursor-pointer w-full">
+                      <input type="checkbox" [checked]="isCategorySelected(category.value)"
+                        (change)="toggleCategory(category.value)" AldyCheckboxV1 />
+                      <span
+                        [ngClass]="isCategorySelected(category.value) ? 'text-aldy-medium font-semibold' : 'text-aldy-green-gray'">{{
+                        category.label }}</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sección Novias Mobile -->
+          <div class="pb-2 mb-2">
+            <button type="button" (click)="toggleNovias()"
+              class="w-full cursor-pointer flex items-center justify-between py-2 px-2 text-xs font-medium text-aldy-green-gray hover:text-aldy-medium transition-colors">
+              <span class="NewAldyFontType4 text-xs font-light tracking-wider uppercase">Novias</span>
+              <lucide-icon [name]="noviasOpen ? 'Plus' : 'Minus'" class="h-3 w-3"></lucide-icon>
+            </button>
+            <div *ngIf="noviasOpen" class="pl-2 mt-1 space-y-2">
+              <!-- General -->
+              <div class="border-l border-aldy-medium/20 pl-2">
+                <button type="button" (click)="toggleCollectionDropdown('bridal-general-mobile')"
+                  class="w-full cursor-pointer flex items-center justify-between py-1 px-2 text-xs font-light text-aldy-green-gray">
+                  <span>General</span>
+                  <lucide-icon [name]="isCollectionDropdownOpen('bridal-general-mobile') ? 'Plus' : 'Minus'"
+                    class="h-3 w-3"></lucide-icon>
+                </button>
+                <div *ngIf="isCollectionDropdownOpen('bridal-general-mobile')" class="pl-4 mt-1 space-y-1">
+                  <div *ngFor="let category of getCategoriesForCollection('bridal', 'general')">
+                    <label
+                      class="flex items-center gap-2 py-1 px-2 text-xs tracking-wider NewAldyFontType4 cursor-pointer w-full">
+                      <input type="checkbox" [checked]="isCategorySelected(category.value)"
+                        (change)="toggleCategory(category.value)" AldyCheckboxV1 />
+                      <span
+                        [ngClass]="isCategorySelected(category.value) ? 'text-aldy-medium font-semibold' : 'text-aldy-green-gray'">{{
+                        category.label }}</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <!-- Collections -->
+              <div *ngFor="let col of topBridesCollections" class="border-l border-aldy-medium/20 pl-2">
+                <button type="button" (click)="toggleCollectionDropdown('bridal-mobile-' + col.id)"
+                  class="w-full cursor-pointer flex items-center justify-between py-1 px-2 text-xs font-light text-aldy-green-gray">
+                  <span>{{ col.name }}</span>
+                  <lucide-icon [name]="isCollectionDropdownOpen('bridal-mobile-' + col.id) ? 'Plus' : 'Minus'"
+                    class="h-3 w-3"></lucide-icon>
+                </button>
+                <div *ngIf="isCollectionDropdownOpen('bridal-mobile-' + col.id)" class="pl-4 mt-1 space-y-1">
+                  <div *ngFor="let category of getCategoriesForCollection('bridal', col.id)">
+                    <label
+                      class="flex items-center gap-2 py-1 px-2 text-xs tracking-wider NewAldyFontType4 cursor-pointer w-full">
+                      <input type="checkbox" [checked]="isCategorySelected(category.value)"
+                        (change)="toggleCategory(category.value)" AldyCheckboxV1 />
+                      <span
+                        [ngClass]="isCategorySelected(category.value) ? 'text-aldy-medium font-semibold' : 'text-aldy-green-gray'">{{
+                        category.label }}</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
         </div>
       </app-acordiongeneric>
       <app-acordiongeneric [title]="'Subcategorías'" [value]="'subcategorias'" [selectedMultiple]="openAccordionsArray"
         (toggled)="onAccordionToggled($event)">
         <div class="space-y-2 max-h-72 overflow-y-auto pr-2">
-          <div *ngIf="selectedCategories.length === 0" class="px-3 py-2 text-xs text-aldy-green-gray">Selecciona una categoría
+          <div *ngIf="selectedCategories.length === 0" class="px-3 py-2 text-xs text-aldy-green-gray">Selecciona una
+            categoría
             primero.</div>
           <div *ngFor="let cat of selectedCategories" class="px-1">
             <div class="px-3 pb-1 text-xs uppercase tracking-wider text-aldy-green-gray-bold">{{ cat }}</div>
@@ -356,7 +564,8 @@
           <label *ngFor="let s of allowedSizes"
             class="flex items-center gap-2 py-2 px-3 text-sm NewAldyFontType4 cursor-pointer w-full  hover:bg-aldy-light">
             <input type="checkbox" [checked]="isSizeSelected(s)" (change)="toggleSize(s)" AldyCheckboxV1 />
-            <span [ngClass]="isSizeSelected(s) ? 'text-aldy-medium font-semibold' : 'text-aldy-green-gray'">{{ s }}</span>
+            <span [ngClass]="isSizeSelected(s) ? 'text-aldy-medium font-semibold' : 'text-aldy-green-gray'">{{ s
+              }}</span>
           </label>
         </div>
       </app-acordiongeneric>

@@ -70,6 +70,14 @@ export class SupabaseService {
         id,
         name
       ),
+      product_collections (
+        collection_id,
+        collections (
+          id,
+          name,
+          slug
+        )
+      ),
       product_variants (
     id,
     color_id,

@@ -30,6 +30,12 @@ export interface Subcategory {
   name: string;
 }
 
+export interface Collection {
+  id: number;
+  name: string;
+  slug: string;
+}
+
 export interface Product {
   id: string;
   name: string;
@@ -44,5 +50,6 @@ export interface Product {
   category: Category;
   subcategory?: Subcategory;
   wishlisted?: boolean;
+  collections?: Collection[];
 }
 

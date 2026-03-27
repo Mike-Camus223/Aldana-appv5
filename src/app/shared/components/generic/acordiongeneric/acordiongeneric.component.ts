@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, Output, EventEmitter, ViewChild, ElementRef, AfterViewInit, OnChanges, SimpleChanges, OnDestroy } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ViewChild, ElementRef, AfterViewInit, OnChanges, SimpleChanges, OnDestroy, ChangeDetectorRef, inject } from '@angular/core';
 
 @Component({
   selector: 'app-acordiongeneric',
@@ -24,6 +24,7 @@ export class AcordiongenericComponent implements AfterViewInit, OnChanges, OnDes
 
   contentHeight = 0;
   private mutationObserver: MutationObserver | null = null;
+  private changeDetectorRef = inject(ChangeDetectorRef);
 
   onToggle(): void {
     this.toggled.emit(this.value);
@@ -38,6 +39,7 @@ export class AcordiongenericComponent implements AfterViewInit, OnChanges, OnDes
   ngAfterViewInit() {
     this.updateContentHeight();
     this.setupMutationObserver();
+    this.changeDetectorRef.detectChanges();
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -49,12 +51,10 @@ export class AcordiongenericComponent implements AfterViewInit, OnChanges, OnDes
   private updateContentHeight() {
     if (!this.contentWrapper) return;
 
-    if (this.isOpen()) {
-      // Medir altura real del contenido para la transición
-      this.contentHeight = this.contentWrapper.nativeElement.scrollHeight;
-    } else {
-      // Si está cerrado, maxHeight = 0
-      this.contentHeight = 0;
+    const newHeight = this.isOpen() ? this.contentWrapper.nativeElement.scrollHeight : 0;
+    if (this.contentHeight !== newHeight) {
+      this.contentHeight = newHeight;
+      this.changeDetectorRef.detectChanges();
     }
   }
 

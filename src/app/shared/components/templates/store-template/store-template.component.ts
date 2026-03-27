@@ -10,7 +10,7 @@ import { BridesProductsService } from '../../../../core/services/data-access/bri
 import { Product } from '../../../utils/models/Products-supabase.interface';
 import { ProductUtils } from '../../../utils/dataEx/products-utils';
 import { CardproductComponent } from '../../generic/cardproduct/cardproduct.component';
-import { Funnel, LUCIDE_ICONS, LucideIconProvider, LucideAngularModule, ChevronDown, ChevronUp } from 'lucide-angular';
+import { Funnel, LUCIDE_ICONS, LucideIconProvider, LucideAngularModule, ChevronDown, ChevronUp, Minus, Plus } from 'lucide-angular';
 import { trigger, transition, style, animate, state } from '@angular/animations';
 import { AcordiongenericComponent } from '../../generic/acordiongeneric/acordiongeneric.component';
 import { LoadingbarComponent } from '../../system/loadingbar/loadingbar.component';
@@ -61,7 +61,7 @@ import { AuthService } from '../../../../core/services/auth/auth.service';
     {
       provide: LUCIDE_ICONS,
       multi: true,
-      useValue: new LucideIconProvider({ Funnel, ChevronDown, ChevronUp })
+      useValue: new LucideIconProvider({ Funnel, ChevronDown, ChevronUp,Minus, Plus })
     }
   ],
 })
@@ -98,6 +98,18 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
   private bridesLoadPromise: Promise<void> | null = null;
   pretAPorterOpen = false;
   noviasOpen = false;
+  
+  // Collections state
+  allCollections: any[] = [];
+  allBridesCollections: any[] = [];
+  topCollections: any[] = [];
+  topBridesCollections: any[] = [];
+  
+  // Track open state for collection dropdowns
+  openCollectionDropdowns: Set<string> = new Set();
+  selectedCollectionId: string | 'general' | null = null;
+  selectedBridesCollectionId: string | 'general' | null = null;
+
   @ViewChild('productsContainer') productsContainerRef?: ElementRef<HTMLDivElement>;
   private containerLocked = false;
   private lockedHeight = 0;
@@ -284,6 +296,20 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
 
       try {
         if (this.allProducts.length === 0) {
+          // Cargar colecciones normales
+          const collectionsData = await this.supabaseService.getAllCollections();
+          this.allCollections = collectionsData || [];
+          this.topCollections = [...this.allCollections]
+            .sort((a, b) => new Date(b.release_date || b.created_at).getTime() - new Date(a.release_date || a.created_at).getTime())
+            .slice(0, 4);
+
+          // Cargar colecciones bridal
+          const bridesCollectionsData = await this.bridesProductsService.getCollections();
+          this.allBridesCollections = bridesCollectionsData?.data || [];
+          this.topBridesCollections = [...this.allBridesCollections]
+            .sort((a, b) => new Date(b.release_date || b.created_at).getTime() - new Date(a.release_date || a.created_at).getTime())
+            .slice(0, 4);
+
           const { data, error } = await this.supabaseService.getProducts();
           if (error) {
             console.error('Error loading products:', error);
@@ -296,6 +322,9 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
             this.allProducts.forEach(p => {
               this.selectedColors[p.id] = p.variants[0]?.color_name || '';
             });
+
+            // Cargar productos bridal también por defecto
+            await this.loadBridesProducts();
 
             // Sincronizar con favoritos actuales si está autenticado
             if (this.authService.isAuthenticated()) {
@@ -313,6 +342,15 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
         const qp = this.route.snapshot.queryParamMap;
         const qpCats = qp.get('categorias');
         const qpSubs = qp.get('subcategorias');
+        const qpColl = qp.get('coleccion');
+        const qpBridesColl = qp.get('coleccion_novias');
+
+        if (qpColl) {
+          this.selectedCollectionId = qpColl;
+        }
+        if (qpBridesColl) {
+          this.selectedBridesCollectionId = qpBridesColl;
+        }
 
         if (qpCats) {
           const extraCats = qpCats.split(',').map(c => ProductUtils.normalize(c)).filter(Boolean);
@@ -422,6 +460,104 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
     }
   }
 
+  // --- LÓGICA DE COLECCIONES ---
+  toggleCollectionDropdown(id: string): void {
+    if (this.openCollectionDropdowns.has(id)) {
+      this.openCollectionDropdowns.delete(id);
+    } else {
+      this.openCollectionDropdowns.add(id);
+    }
+  }
+
+  isCollectionDropdownOpen(id: string): boolean {
+    return this.openCollectionDropdowns.has(id);
+  }
+
+  selectCollection(type: 'normal' | 'bridal', id: string | 'general' | null): void {
+    if (type === 'normal') {
+      this.selectedCollectionId = this.selectedCollectionId === id ? null : id;
+      this.selectedBridesCollectionId = null; // Reset bridal selection if normal selected
+    } else {
+      this.selectedBridesCollectionId = this.selectedBridesCollectionId === id ? null : id;
+      this.selectedCollectionId = null; // Reset normal selection if bridal selected
+    }
+    // Reset categories/subcategories when collection changes
+    this.selectedCategories = [];
+    this.selectedSubcategoriesMap = {};
+    this.applyFilters();
+  }
+
+  getCategoriesForCollection(type: 'normal' | 'bridal', id: string | 'general' | null): { label: string, value: string }[] {
+    // Si es "general", devolver las categorías estáticas originales
+    if (id === 'general') {
+      return type === 'normal' ? this.pretAPorterCategories : this.noviasCategories;
+    }
+
+    const products = this.allProducts.filter(p => {
+      const isBridal = p.category?.name === 'vestidos de novia' || p.category?.name === 'velos';
+      if (type === 'normal' && isBridal) return false;
+      if (type === 'bridal' && !isBridal) return false;
+
+      if (id !== null) {
+        // Normalizar comparación de IDs por si vienen como string/number
+        return p.collections?.some(c => String(c.id) === String(id));
+      }
+      return true;
+    });
+
+    const categoryMap = new Map<string, string>();
+    products.forEach(p => {
+      const catName = typeof p.category === 'string' ? p.category : p.category?.name;
+      if (catName) {
+        categoryMap.set(ProductUtils.normalize(catName), catName);
+      }
+    });
+
+    return Array.from(categoryMap.entries()).map(([value, label]) => ({
+      label: label.charAt(0).toUpperCase() + label.slice(1),
+      value
+    }));
+  }
+
+  getSubcategoriesForCollectionCategory(type: 'normal' | 'bridal', id: string | 'general' | null, categoryValue: string): { label: string, value: string }[] {
+    const catNorm = ProductUtils.normalize(categoryValue);
+
+    // Si es "general", devolver las subcategorías estáticas originales
+    if (id === 'general') {
+      const cats = type === 'normal' ? this.pretAPorterCategories : this.noviasCategories;
+      const catObj = cats.find(c => ProductUtils.normalize(c.value) === catNorm);
+      return catObj?.subsections || [];
+    }
+
+    const products = this.allProducts.filter(p => {
+      const isBridal = p.category?.name === 'vestidos de novia' || p.category?.name === 'velos';
+      if (type === 'normal' && isBridal) return false;
+      if (type === 'bridal' && !isBridal) return false;
+
+      const pCatNorm = ProductUtils.normalize(typeof p.category === 'string' ? p.category : p.category?.name || '');
+      if (pCatNorm !== catNorm) return false;
+
+      if (id !== null) {
+        // Normalizar comparación de IDs por si vienen como string/number
+        return p.collections?.some(c => String(c.id) === String(id));
+      }
+      return true;
+    });
+
+    const subcatMap = new Map<string, string>();
+    products.forEach(p => {
+      const subName = typeof p.subcategory === 'string' ? p.subcategory : p.subcategory?.name;
+      if (subName) {
+        subcatMap.set(ProductUtils.normalize(subName), subName);
+      }
+    });
+
+    return Array.from(subcatMap.entries()).map(([value, label]) => ({
+      label: label.charAt(0).toUpperCase() + label.slice(1),
+      value
+    }));
+  }
+
   // --- NUEVA LÓGICA DE SELECCIÓN ---
   toggleCategory(categoryValue: string): void {
     const cat = ProductUtils.normalize(categoryValue);
@@ -431,8 +567,10 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
       delete this.selectedSubcategoriesMap[cat];
     } else {
       this.selectedCategories.push(cat);
+      // Abrir el acordeón de subcategorías automáticamente al seleccionar una categoría
+      this.openAccordions.add('subcategorias');
     }
-    // Mantener Categorías abierto. NO abrir Subcategorías automáticamente
+    // Mantener Categorías abierto
     this.openAccordions.add('categorias');
   }
 
@@ -444,25 +582,18 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
   getSubcategoriesForCategory(categoryValue: string): { label: string; value: string }[] {
     const catNorm = ProductUtils.normalize(categoryValue);
     
-    // Buscar en categorías originales
-    const catObj = this.categories.find(c => ProductUtils.normalize(c.value) === catNorm);
-    if (catObj?.subsections) {
-      return catObj.subsections;
+    // Si hay una colección seleccionada, filtrar subcategorías por esa colección
+    if (this.selectedCollectionId) {
+      return this.getSubcategoriesForCollectionCategory('normal', this.selectedCollectionId, categoryValue);
     }
-    
-    // Buscar en Pret a Porter
-    const pretAPorterObj = this.pretAPorterCategories.find(c => ProductUtils.normalize(c.value) === catNorm);
-    if (pretAPorterObj?.subsections) {
-      return pretAPorterObj.subsections;
+    if (this.selectedBridesCollectionId) {
+      return this.getSubcategoriesForCollectionCategory('bridal', this.selectedBridesCollectionId, categoryValue);
     }
-    
-    // Buscar en Novias
-    const noviasObj = this.noviasCategories.find(c => ProductUtils.normalize(c.value) === catNorm);
-    if (noviasObj?.subsections) {
-      return noviasObj.subsections;
-    }
-    
-    return [];
+
+    // Fallback a las categorías estáticas si no hay colección seleccionada (aunque ahora todo debería pasar por colecciones)
+    const allStaticCats = [...this.categories, ...this.pretAPorterCategories, ...this.noviasCategories];
+    const catObj = allStaticCats.find(c => ProductUtils.normalize(c.value) === catNorm);
+    return catObj?.subsections || [];
   }
 
   toggleSubcategory(categoryValue: string, subValue: string): void {
@@ -594,6 +725,8 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
     this.selectedSubcategoriesMap = {};
     this.selectedCategory = null;
     this.selectedSubcategory = null;
+    this.selectedCollectionId = null;
+    this.selectedBridesCollectionId = null;
     this.selectedSizes = [];
     this.priceMin = 0;
     this.priceMax = 500000;
@@ -601,6 +734,7 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
     this.currentPage = 1;
     this.openAccordions.clear();
     this.openAccordions.add('categorias');
+    this.openCollectionDropdowns.clear();
     this.applyFiltersSync();
     // Mantener SPA sin recarga total; actualizar solo URL sin navegación
     this.location.replaceState('/tienda');
@@ -649,6 +783,13 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
     // Tamaños como query param
     if (this.selectedSizes.length > 0) {
       queryParams['tamanos'] = this.selectedSizes.join(',');
+    }
+    // Colecciones
+    if (this.selectedCollectionId) {
+      queryParams['coleccion'] = this.selectedCollectionId;
+    }
+    if (this.selectedBridesCollectionId) {
+      queryParams['coleccion_novias'] = this.selectedBridesCollectionId;
     }
     // Precio como query param (evitar defaults para SEO limpio)
     if (this.priceRange[0] !== 0) {
@@ -721,6 +862,28 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
 
   private filterProducts(hasAnyCategory: boolean, hasAnySub: boolean, hasAnySize: boolean, selectedSubUnion: string[]): void {
     this.filteredProducts = this.allProducts.filter(p => {
+      const isBridal = p.category?.name === 'vestidos de novia' || p.category?.name === 'velos';
+      
+      // Filtro de colección Normal
+      if (this.selectedCollectionId) {
+        if (isBridal) return false;
+        if (this.selectedCollectionId === 'general') {
+          if (p.collections && p.collections.length > 0) return false;
+        } else {
+          if (!p.collections?.some(c => String(c.id) === String(this.selectedCollectionId))) return false;
+        }
+      }
+
+      // Filtro de colección Bridal
+      if (this.selectedBridesCollectionId) {
+        if (!isBridal) return false;
+        if (this.selectedBridesCollectionId === 'general') {
+          if (p.collections && p.collections.length > 0) return false;
+        } else {
+          if (!p.collections?.some(c => String(c.id) === String(this.selectedBridesCollectionId))) return false;
+        }
+      }
+
       const productCategory = ProductUtils.normalize(
         typeof p.category === 'string' ? p.category : (p.category?.name ?? '')
       );
@@ -937,10 +1100,16 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
   }
 
   private findParentCategoryForSub(subNormalized: string): string | null {
-    for (const cat of this.categories) {
-      const catNorm = ProductUtils.normalize(cat.value);
-      const match = cat.subsections?.some(s => ProductUtils.normalize(s.value) === subNormalized || ProductUtils.normalize(s.label) === subNormalized);
-      if (match) return catNorm;
+    // Buscar en todas las categorías posibles (incluyendo las de colecciones)
+    const allProductsCategories = this.getCategoriesForCollection('normal', null);
+    const allBridesCategories = this.getCategoriesForCollection('bridal', null);
+    const allCats = [...allProductsCategories, ...allBridesCategories];
+
+    for (const cat of allCats) {
+      const subs = this.getSubcategoriesForCategory(cat.value);
+      if (subs.some(s => ProductUtils.normalize(s.value) === subNormalized)) {
+        return cat.value;
+      }
     }
     return null;
   }
@@ -952,80 +1121,5 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
 
   toggleNovias(): void {
     this.noviasOpen = !this.noviasOpen;
-  }
-
-  // Métodos para manejar selección de categorías de Pret a Porter
-  togglePretAPorterCategory(categoryValue: string): void {
-    const index = this.selectedCategories.indexOf(categoryValue);
-    if (index === -1) {
-      this.selectedCategories.push(categoryValue);
-    } else {
-      this.selectedCategories.splice(index, 1);
-      // Limpiar subcategorías de esta categoría
-      if (this.selectedSubcategoriesMap[categoryValue]) {
-        delete this.selectedSubcategoriesMap[categoryValue];
-      }
-    }
-  }
-
-  togglePretAPorterSubcategory(categoryValue: string, subcategoryValue: string): void {
-    if (!this.selectedSubcategoriesMap[categoryValue]) {
-      this.selectedSubcategoriesMap[categoryValue] = [];
-    }
-    const index = this.selectedSubcategoriesMap[categoryValue].indexOf(subcategoryValue);
-    if (index === -1) {
-      this.selectedSubcategoriesMap[categoryValue].push(subcategoryValue);
-    } else {
-      this.selectedSubcategoriesMap[categoryValue].splice(index, 1);
-      if (this.selectedSubcategoriesMap[categoryValue].length === 0) {
-        delete this.selectedSubcategoriesMap[categoryValue];
-      }
-    }
-  }
-
-  // Métodos para manejar selección de categorías de Novias
-  toggleNoviasCategory(categoryValue: string): void {
-    const index = this.selectedCategories.indexOf(categoryValue);
-    if (index === -1) {
-      this.selectedCategories.push(categoryValue);
-    } else {
-      this.selectedCategories.splice(index, 1);
-      // Limpiar subcategorías de esta categoría
-      if (this.selectedSubcategoriesMap[categoryValue]) {
-        delete this.selectedSubcategoriesMap[categoryValue];
-      }
-    }
-  }
-
-  toggleNoviasSubcategory(categoryValue: string, subcategoryValue: string): void {
-    if (!this.selectedSubcategoriesMap[categoryValue]) {
-      this.selectedSubcategoriesMap[categoryValue] = [];
-    }
-    const index = this.selectedSubcategoriesMap[categoryValue].indexOf(subcategoryValue);
-    if (index === -1) {
-      this.selectedSubcategoriesMap[categoryValue].push(subcategoryValue);
-    } else {
-      this.selectedSubcategoriesMap[categoryValue].splice(index, 1);
-      if (this.selectedSubcategoriesMap[categoryValue].length === 0) {
-        delete this.selectedSubcategoriesMap[categoryValue];
-      }
-    }
-  }
-
-  // Helpers para verificar selección
-  isPretAPorterCategorySelected(categoryValue: string): boolean {
-    return this.selectedCategories.includes(categoryValue);
-  }
-
-  isPretAPorterSubcategorySelected(categoryValue: string, subcategoryValue: string): boolean {
-    return this.selectedSubcategoriesMap[categoryValue]?.includes(subcategoryValue) || false;
-  }
-
-  isNoviasCategorySelected(categoryValue: string): boolean {
-    return this.selectedCategories.includes(categoryValue);
-  }
-
-  isNoviasSubcategorySelected(categoryValue: string, subcategoryValue: string): boolean {
-    return this.selectedSubcategoriesMap[categoryValue]?.includes(subcategoryValue) || false;
   }
 }

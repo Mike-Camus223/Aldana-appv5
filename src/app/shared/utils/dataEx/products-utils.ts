@@ -31,6 +31,14 @@ export class ProductUtils {
         })));
       }
 
+      // Normal and Bridal collections
+      let collections: any[] = [];
+      if (Array.isArray(p.product_collections)) {
+        collections = p.product_collections
+          .map((pc: any) => pc.collections)
+          .filter(Boolean);
+      }
+
       return {
         id: p.id,
         name: p.name,
@@ -43,8 +51,15 @@ export class ProductUtils {
         sizes: p.sizes || [],
         slug: p.slug || '',
         wishlisted: false,
-        category: p.categories?.name?.toLowerCase() || '',
-        subcategory: p.subcategories?.name?.toLowerCase() || ''
+        category: {
+          id: p.categories?.id || 0,
+          name: p.categories?.name?.toLowerCase() || ''
+        },
+        subcategory: p.subcategories ? {
+          id: p.subcategories?.id || 0,
+          name: p.subcategories?.name?.toLowerCase() || ''
+        } : undefined,
+        collections
       };
 
     });

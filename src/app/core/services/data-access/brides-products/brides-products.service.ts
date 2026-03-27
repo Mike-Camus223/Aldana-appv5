@@ -40,6 +40,14 @@ export class BridesProductsService {
         id,
         name
       ),
+      product_collections:pbrides_product_collections (
+        collection_id,
+        collections:collection_brides (
+          id,
+          name,
+          slug
+        )
+      ),
       product_variants (
         id,
         color_id,
@@ -54,7 +62,7 @@ export class BridesProductsService {
           hex
         )
       ),
-      collection:pbrides_collection_brides!pbrides_products_collection_id_fkey (
+      collection:collection_brides!pbrides_collection_id_fkey (
         id,
         name,
         slug,
