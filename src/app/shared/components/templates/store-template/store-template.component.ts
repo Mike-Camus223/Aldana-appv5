@@ -115,131 +115,9 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
   private lockedHeight = 0;
   private currentFavorites: Set<string> = new Set();
 
-  categories = [
-    {
-      label: 'Camisas', value: 'camisas', subsections: [
-        { label: 'Camisas 1', value: 'camisas 1' },
-        { label: 'Camisas 2', value: 'camisas 2' },
-        { label: 'Camisas 3', value: 'camisas 3' }
-      ]
-    },
-    {
-      label: 'Blusas', value: 'blusas', subsections: [
-        { label: 'Blusas 1', value: 'blusas 1' },
-        { label: 'Blusas 2', value: 'blusas 2' },
-        { label: 'Blusas 3', value: 'blusas 3' }
-      ]
-    },
-    {
-      label: 'Faldas', value: 'faldas', subsections: [
-        { label: 'Faldas 1', value: 'faldas 1' },
-        { label: 'Faldas 2', value: 'faldas 2' },
-        { label: 'Faldas 3', value: 'faldas 3' }
-      ]
-    },
-    {
-      label: 'Pantalón', value: 'pantalon', subsections: [
-        { label: 'Pantalón 1', value: 'pantalon 1' },
-        { label: 'Pantalón 2', value: 'pantalon 2' },
-        { label: 'Pantalón 3', value: 'pantalon 3' }
-      ]
-    },
-    {
-      label: 'Abrigos', value: 'abrigos', subsections: [
-        { label: 'Campera', value: 'campera' },
-        { label: 'Buzos', value: 'buzos' },
-        { label: 'Chalecos', value: 'chalecos' },
-        { label: 'Blazers', value: 'blazers' },
-        { label: 'Tapados', value: 'tapados' }
-      ]
-    },
-    {
-      label: 'Vestidos', value: 'vestidos', subsections: [
-        { label: 'Vestidos 1', value: 'vestidos 1' },
-        { label: 'Vestidos 2', value: 'vestidos 2' },
-        { label: 'Vestidos 3', value: 'vestidos 3' }
-      ]
-    },
-    {
-      label: 'Remeras', value: 'remeras', subsections: [
-        { label: 'Remeras 1', value: 'remeras 1' },
-        { label: 'Remeras 2', value: 'remeras 2' },
-        { label: 'Remeras 3', value: 'remeras 3' }
-      ]
-    }
-  ];
-
-  // Nuevas categorías para Pret a Porter y Novias
-  pretAPorterCategories = [
-    {
-      label: 'Camisas', value: 'camisas', subsections: [
-        { label: 'Camisas 1', value: 'camisas 1' },
-        { label: 'Camisas 2', value: 'camisas 2' },
-        { label: 'Camisas 3', value: 'camisas 3' }
-      ]
-    },
-    {
-      label: 'Blusas', value: 'blusas', subsections: [
-        { label: 'Blusas 1', value: 'blusas 1' },
-        { label: 'Blusas 2', value: 'blusas 2' },
-        { label: 'Blusas 3', value: 'blusas 3' }
-      ]
-    },
-    {
-      label: 'Faldas', value: 'faldas', subsections: [
-        { label: 'Faldas 1', value: 'faldas 1' },
-        { label: 'Faldas 2', value: 'faldas 2' },
-        { label: 'Faldas 3', value: 'faldas 3' }
-      ]
-    },
-    {
-      label: 'Pantalón', value: 'pantalon', subsections: [
-        { label: 'Pantalón 1', value: 'pantalon 1' },
-        { label: 'Pantalón 2', value: 'pantalon 2' },
-        { label: 'Pantalón 3', value: 'pantalon 3' }
-      ]
-    },
-    {
-      label: 'Abrigos', value: 'abrigos', subsections: [
-        { label: 'Campera', value: 'campera' },
-        { label: 'Buzos', value: 'buzos' },
-        { label: 'Chalecos', value: 'chalecos' },
-        { label: 'Blazers', value: 'blazers' },
-        { label: 'Tapados', value: 'tapados' }
-      ]
-    },
-    {
-      label: 'Vestidos', value: 'vestidos', subsections: [
-        { label: 'Vestidos 1', value: 'vestidos 1' },
-        { label: 'Vestidos 2', value: 'vestidos 2' },
-        { label: 'Vestidos 3', value: 'vestidos 3' }
-      ]
-    },
-    {
-      label: 'Remeras', value: 'remeras', subsections: [
-        { label: 'Remeras 1', value: 'remeras 1' },
-        { label: 'Remeras 2', value: 'remeras 2' },
-        { label: 'Remeras 3', value: 'remeras 3' }
-      ]
-    }
-  ];
-
-  noviasCategories = [
-    {
-      label: 'Vestidos de Novia', value: 'vestidos de novia', subsections: [
-        { label: 'Vestidos de Novia 1', value: 'vestidos de novia 1' },
-        { label: 'Vestidos de Novia 2', value: 'vestidos de novia 2' },
-        { label: 'Vestidos de Novia 3', value: 'vestidos de novia 3' }
-      ]
-    },
-    {
-      label: 'Velos', value: 'velos', subsections: [
-        { label: 'Velos 1', value: 'velos 1' },
-        { label: 'Velos 2', value: 'velos 2' },
-        { label: 'Velos 3', value: 'velos 3' }
-      ]
-    }
-  ];
+  categories: any[] = [];
+  pretAPorterCategories: any[] = [];
+  noviasCategories: any[] = [];
 
   constructor(
     private supabaseService: SupabaseService,
@@ -295,6 +173,9 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
       const subcategoriaParam = params.get('subcategoria');
 
       try {
+        // Cargar categorías dinámicas primero
+        await this.loadDynamicFilters();
+
         if (this.allProducts.length === 0) {
           // Cargar colecciones normales
           const collectionsData = await this.supabaseService.getAllCollections();
@@ -1121,5 +1002,56 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
 
   toggleNovias(): void {
     this.noviasOpen = !this.noviasOpen;
+  }
+
+  private async loadDynamicFilters(): Promise<void> {
+    try {
+      // 1. Obtener datos de Supabase (Pret a Porter)
+      const [normalCatsRes, normalSubsRes] = await Promise.all([
+        this.supabaseService.getCategories(),
+        this.supabaseService.getSubcategories()
+      ]);
+
+      if (normalCatsRes.data && normalSubsRes.data) {
+        this.pretAPorterCategories = this.mapCategoriesAndSubcategories(
+          normalCatsRes.data,
+          normalSubsRes.data
+        );
+        // Fallback categories if needed
+        this.categories = [...this.pretAPorterCategories];
+      }
+
+      // 2. Obtener datos de BridesProductsService (Novias)
+      const [bridesCatsRes, bridesSubsRes] = await Promise.all([
+        this.bridesProductsService.getCategories(),
+        this.bridesProductsService.getSubcategories()
+      ]);
+
+      if (bridesCatsRes.data && bridesSubsRes.data) {
+        this.noviasCategories = this.mapCategoriesAndSubcategories(
+          bridesCatsRes.data,
+          bridesSubsRes.data
+        );
+      }
+    } catch (error) {
+      console.error('Error loading dynamic filters:', error);
+    }
+  }
+
+  private mapCategoriesAndSubcategories(categories: any[], subcategories: any[]): any[] {
+    return categories.map(cat => {
+      const catSubs = subcategories
+        .filter(sub => sub.category_id === cat.id)
+        .map(sub => ({
+          label: sub.name,
+          value: ProductUtils.normalize(sub.name)
+        }));
+
+      return {
+        label: cat.name,
+        value: ProductUtils.normalize(cat.name),
+        subsections: catSubs
+      };
+    });
   }
 }

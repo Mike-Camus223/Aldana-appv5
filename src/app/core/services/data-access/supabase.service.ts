@@ -103,6 +103,14 @@ export class SupabaseService {
     );
   }
 
+  async getCategories() {
+    return this.getData<any[]>('categories', 'id, name');
+  }
+
+  async getSubcategories() {
+    return this.getData<any[]>('subcategories', 'id, name, category_id');
+  }
+
   async getContentForPages<T>(slug: string): Promise<T | null> {
     const result = await this.getData<T>(
       'generic_data_pages',

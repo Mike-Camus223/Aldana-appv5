@@ -137,4 +137,12 @@ export class BridesProductsService {
     return this.helper.getData<any>('collection_brides', selectFields);
   }
 
+  async getCategories() {
+    return this.helper.getData<any[]>('pbrides_categories', 'id, name');
+  }
+
+  async getSubcategories() {
+    return this.helper.getData<any[]>('pbrides_subcategories', 'id, name, category_id');
+  }
+
 }
