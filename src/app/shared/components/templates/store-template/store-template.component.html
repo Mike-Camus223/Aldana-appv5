@@ -74,9 +74,9 @@
             (toggled)="onAccordionToggled($event)">
             <div class="space-y-1">
               <!-- Sección Pret a Porter (Dropdown principal) -->
-              <div class="pb-2 mb-2">
+              <div class="mb-2">
                 <button type="button" (click)="togglePretAPorter()"
-                  class="w-full flex items-center cursor-pointer justify-between py-2 px-2 text-xs font-medium text-aldy-green-gray hover:text-aldy-medium transition-colors relative">
+                  class="w-full flex items-center cursor-pointer justify-between py-2 pl-2 pr-4 text-xs font-medium text-aldy-green-gray hover:text-aldy-medium transition-colors relative">
                   <span class="NewAldyFontType4 text-xs font-light tracking-wider uppercase">Pret a Porter</span>
 
                   <span class="relative h-4 w-4 flex items-center justify-center">
@@ -96,7 +96,7 @@
                 <div *ngIf="pretAPorterOpen" class="pl-2 mt-1 space-y-2">
                   <div class="border-l border-aldy-medium/20 pl-2">
                     <button type="button" (click)="toggleCollectionDropdown('normal-general')"
-                      class="w-full cursor-pointer flex items-center justify-between py-1 px-2 text-xs font-light text-aldy-green-gray hover:text-aldy-medium transition-colors">
+                      class="w-full cursor-pointer flex items-center justify-between py-1 pl-2 pr-8 text-xs font-light text-aldy-green-gray hover:text-aldy-medium transition-colors">
                       <span class="NewAldyFontType4 tracking-wider"
                         [ngClass]="{'text-aldy-medium font-medium': selectedCollectionId === 'general'}">General</span>
                         <span class="relative h-4 w-4 flex items-center justify-center">
@@ -131,7 +131,7 @@
                   <!-- Colecciones Dropdowns (Antiguo estilo: solo lista de checkboxes) -->
                   <div *ngFor="let col of topCollections" class="border-l border-aldy-medium/20 pl-2">
                     <button type="button" (click)="toggleCollectionDropdown('normal-' + col.id)"
-                      class="w-full cursor-pointer flex items-center justify-between py-1 px-2 text-xs font-light text-aldy-green-gray hover:text-aldy-medium transition-colors">
+                      class="w-full cursor-pointer flex items-center justify-between py-1 pl-2 pr-8 text-xs font-light text-aldy-green-gray hover:text-aldy-medium transition-colors">
                       <span class="NewAldyFontType4 tracking-wider"
                         [ngClass]="{'text-aldy-medium font-medium': selectedCollectionId === col.id}">{{ col.name
                         }}</span>
@@ -167,95 +167,137 @@
                 </div>
               </div>
               <!-- Sección Novias (Dropdown principal) -->
-              <div class="pb-2 mb-2">
+              <div class="mb-2">
                 <button type="button" (click)="toggleNovias()"
-                  class="w-full cursor-pointer flex items-center justify-between py-2 px-2 text-xs font-medium text-aldy-green-gray hover:text-aldy-medium transition-colors">
-                  <span class="NewAldyFontType4 text-xs font-light tracking-wider uppercase">Novias</span>
+                  class="w-full flex items-center cursor-pointer justify-between py-2 pl-2 pr-4 text-xs font-medium text-aldy-green-gray hover:text-aldy-medium transition-colors relative">
+              
+                  <span class="NewAldyFontType4 text-xs font-light tracking-wider uppercase">
+                    Novias
+                  </span>
+              
                   <span class="relative h-4 w-4 flex items-center justify-center">
-                    <lucide-icon name="Plus" class="absolute h-3 w-3 transition-all duration-300 ease-in-out" [ngClass]="{
-        'opacity-100 scale-100 rotate-0': !noviasOpen,
-        'opacity-0 scale-90 rotate-90': noviasOpen
-      }">
-                    </lucide-icon>
-                    <lucide-icon name="Minus" class="absolute h-3 w-3 transition-all duration-300 ease-in-out"
+                    <lucide-icon name="Plus"
+                      class="absolute h-3 w-3 transition-all duration-300 ease-in-out"
                       [ngClass]="{
-        'opacity-0 scale-90 -rotate-90': !noviasOpen,
-        'opacity-100 scale-100 rotate-0': noviasOpen
-      }">
+                        'opacity-100 scale-100 rotate-0': !noviasOpen,
+                        'opacity-0 scale-90 rotate-90': noviasOpen
+                      }">
+                    </lucide-icon>
+              
+                    <lucide-icon name="Minus"
+                      class="absolute h-3 w-3 transition-all duration-300 ease-in-out"
+                      [ngClass]="{
+                        'opacity-0 scale-90 -rotate-90': !noviasOpen,
+                        'opacity-100 scale-100 rotate-0': noviasOpen
+                      }">
                     </lucide-icon>
                   </span>
                 </button>
+              
                 <div *ngIf="noviasOpen" class="pl-2 mt-1 space-y-2">
+              
+                  <!-- GENERAL NOVIAS -->
                   <div class="border-l border-aldy-medium/20 pl-2">
-                    <button type="button" (click)="toggleCollectionDropdown('bridal-general')"
-                      class="w-full cursor-pointer flex items-center justify-between py-1 px-2 text-xs font-light text-aldy-green-gray hover:text-aldy-medium transition-colors">
+                    <button type="button"
+                      (click)="toggleCollectionDropdown('bridal-general')"
+                      class="w-full cursor-pointer flex items-center justify-between py-1 pl-2 pr-8 text-xs font-light text-aldy-green-gray hover:text-aldy-medium transition-colors">
+              
                       <span class="NewAldyFontType4 tracking-wider"
-                        [ngClass]="{'text-aldy-medium font-medium': selectedBridesCollectionId === 'general'}">General</span>
-                        <span class="relative h-4 w-4 flex items-center justify-center">
-                    <lucide-icon name="Plus" class="absolute h-3 w-3 transition-all duration-300 ease-in-out" [ngClass]="{
-        'opacity-100 scale-100 rotate-0': !isCollectionDropdownOpen('bridal-general'),
-        'opacity-0 scale-90 rotate-90': isCollectionDropdownOpen('bridal-general')
-      }">
-                    </lucide-icon>
-                    <lucide-icon name="Minus" class="absolute h-3 w-3 transition-all duration-300 ease-in-out"
-                      [ngClass]="{
-        'opacity-0 scale-90 -rotate-90': !isCollectionDropdownOpen('bridal-general'),
-        'opacity-100 scale-100 rotate-0': isCollectionDropdownOpen('bridal-general')
-      }">
-                    </lucide-icon>
-                  </span>
-                        
+                        [ngClass]="{'text-aldy-medium font-medium': selectedBridesCollectionId === 'general'}">
+                        General
+                      </span>
+              
+                      <span class="relative h-4 w-4 flex items-center justify-center">
+                        <lucide-icon name="Plus"
+                          class="absolute h-3 w-3 transition-all duration-300 ease-in-out"
+                          [ngClass]="{
+                            'opacity-100 scale-100 rotate-0': !isCollectionDropdownOpen('bridal-general'),
+                            'opacity-0 scale-90 rotate-90': isCollectionDropdownOpen('bridal-general')
+                          }">
+                        </lucide-icon>
+              
+                        <lucide-icon name="Minus"
+                          class="absolute h-3 w-3 transition-all duration-300 ease-in-out"
+                          [ngClass]="{
+                            'opacity-0 scale-90 -rotate-90': !isCollectionDropdownOpen('bridal-general'),
+                            'opacity-100 scale-100 rotate-0': isCollectionDropdownOpen('bridal-general')
+                          }">
+                        </lucide-icon>
+                      </span>
                     </button>
+              
                     <div *ngIf="isCollectionDropdownOpen('bridal-general')" class="pl-4 mt-1 space-y-1">
                       <div *ngFor="let category of getCategoriesForCollection('bridal', 'general')" class="space-y-1">
                         <label
                           class="flex items-center gap-2 py-1 px-2 text-[11px] tracking-wider NewAldyFontType4 cursor-pointer w-full hover:bg-aldy-light">
-                          <input type="checkbox" [checked]="isCategorySelectedInScope('bridal', 'general', category.value)"
-                            (change)="toggleCategoryInScope('bridal', 'general', category.value)" AldyCheckboxV1 />
+              
+                          <input type="checkbox"
+                            [checked]="isCategorySelectedInScope('bridal', 'general', category.value)"
+                            (change)="toggleCategoryInScope('bridal', 'general', category.value)"
+                            AldyCheckboxV1 />
+              
                           <span
-                            [ngClass]="isCategorySelectedInScope('bridal', 'general', category.value) ? 'text-aldy-medium font-semibold' : 'text-aldy-green-gray'">
+                            [ngClass]="isCategorySelectedInScope('bridal', 'general', category.value)
+                              ? 'text-aldy-medium font-semibold'
+                              : 'text-aldy-green-gray'">
                             {{ category.label }}
                           </span>
                         </label>
                       </div>
                     </div>
                   </div>
-
-                  <!-- Colecciones Novias Dropdowns (Antiguo estilo: solo lista de checkboxes) -->
+              
+                  <!-- COLECCIONES NOVIAS-->
                   <div *ngFor="let col of topBridesCollections" class="border-l border-aldy-medium/20 pl-2">
-                    <button type="button" (click)="toggleCollectionDropdown('bridal-' + col.id)"
-                      class="w-full cursor-pointer flex items-center justify-between py-1 px-2 text-xs font-light text-aldy-green-gray hover:text-aldy-medium transition-colors">
+                    <button type="button"
+                      (click)="toggleCollectionDropdown('bridal-' + col.id)"
+                      class="w-full cursor-pointer flex items-center justify-between py-1 pl-2 pr-8 text-xs font-light text-aldy-green-gray hover:text-aldy-medium transition-colors">
+              
                       <span class="NewAldyFontType4 tracking-wider"
-                        [ngClass]="{'text-aldy-medium font-medium': selectedBridesCollectionId === col.id}">{{ col.name
-                        }}</span>
-                         <span class="relative h-4 w-4 flex items-center justify-center">
-                    <lucide-icon name="Plus" class="absolute h-3 w-3 transition-all duration-300 ease-in-out" [ngClass]="{
-        'opacity-100 scale-100 rotate-0': !isCollectionDropdownOpen('bridal-' + col.id),
-        'opacity-0 scale-90 rotate-90': isCollectionDropdownOpen('bridal-' + col.id)
-      }">
-                    </lucide-icon>
-                    <lucide-icon name="Minus" class="absolute h-3 w-3 transition-all duration-300 ease-in-out"
-                      [ngClass]="{
-        'opacity-0 scale-90 -rotate-90': !isCollectionDropdownOpen('bridal-' + col.id),
-        'opacity-100 scale-100 rotate-0': isCollectionDropdownOpen('bridal-' + col.id)
-      }">
-                    </lucide-icon>
-                  </span>
+                        [ngClass]="{'text-aldy-medium font-medium': selectedBridesCollectionId === col.id}">
+                        {{ col.name }}
+                      </span>
+              
+                      <span class="relative h-4 w-4 flex items-center justify-center">
+                        <lucide-icon name="Plus"
+                          class="absolute h-3 w-3 transition-all duration-300 ease-in-out"
+                          [ngClass]="{
+                            'opacity-100 scale-100 rotate-0': !isCollectionDropdownOpen('bridal-' + col.id),
+                            'opacity-0 scale-90 rotate-90': isCollectionDropdownOpen('bridal-' + col.id)
+                          }">
+                        </lucide-icon>
+              
+                        <lucide-icon name="Minus"
+                          class="absolute h-3 w-3 transition-all duration-300 ease-in-out"
+                          [ngClass]="{
+                            'opacity-0 scale-90 -rotate-90': !isCollectionDropdownOpen('bridal-' + col.id),
+                            'opacity-100 scale-100 rotate-0': isCollectionDropdownOpen('bridal-' + col.id)
+                          }">
+                        </lucide-icon>
+                      </span>
                     </button>
+              
                     <div *ngIf="isCollectionDropdownOpen('bridal-' + col.id)" class="pl-4 mt-1 space-y-1">
                       <div *ngFor="let category of getCategoriesForCollection('bridal', col.id)" class="space-y-1">
                         <label
                           class="flex items-center gap-2 py-1 px-2 text-[11px] tracking-wider NewAldyFontType4 cursor-pointer w-full hover:bg-aldy-light">
-                          <input type="checkbox" [checked]="isCategorySelectedInScope('bridal', col.id, category.value)"
-                            (change)="toggleCategoryInScope('bridal', col.id, category.value)" AldyCheckboxV1 />
+              
+                          <input type="checkbox"
+                            [checked]="isCategorySelectedInScope('bridal', col.id, category.value)"
+                            (change)="toggleCategoryInScope('bridal', col.id, category.value)"
+                            AldyCheckboxV1 />
+              
                           <span
-                            [ngClass]="isCategorySelectedInScope('bridal', col.id, category.value) ? 'text-aldy-medium font-semibold' : 'text-aldy-green-gray'">
+                            [ngClass]="isCategorySelectedInScope('bridal', col.id, category.value)
+                              ? 'text-aldy-medium font-semibold'
+                              : 'text-aldy-green-gray'">
                             {{ category.label }}
                           </span>
                         </label>
                       </div>
                     </div>
                   </div>
+              
                 </div>
               </div>
 

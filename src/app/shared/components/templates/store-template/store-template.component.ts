@@ -738,7 +738,7 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
     this.openAccordions.add('categorias');
     this.openCollectionDropdowns.clear();
     this.clearCaches(); // Limpiar cachés
-    this.applyFiltersSync();
+    void this.applyFiltersSync();
     this.location.replaceState('/tienda');
   }
 
@@ -846,7 +846,7 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
   stopSidebarClick(event: MouseEvent): void {
     event.stopPropagation();
   }
-  private applyFiltersSync(): void {
+  private async applyFiltersSync(): Promise<void> {
     // Bloquear altura para evitar salto de scroll durante recalculo
     this.lockProductsContainer();
     const selectedSubUnion = Object.values(this.selectedSubcategoriesMap).flat();
@@ -861,12 +861,10 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
 
     // Si hay categorías de novias, cargar productos desde BridesProductsService
     if (hasBridesContext) {
-      this.loadBridesProducts().then(() => {
-        this.filterProducts(hasAnyCategory, hasAnySub, hasAnySize, selectedSubUnion);
-      });
-    } else {
-      this.filterProducts(hasAnyCategory, hasAnySub, hasAnySize, selectedSubUnion);
+      await this.loadBridesProducts();
     }
+
+    this.filterProducts(hasAnyCategory, hasAnySub, hasAnySize, selectedSubUnion);
 
     this.updatePagination();
     // Desbloquear altura tras recalculo
@@ -1067,7 +1065,7 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
     this.filteredProducts = [];
     this.currentPage = 1;
     await this.delay(500);
-    this.applyFiltersSync();
+    await this.applyFiltersSync();
     this.loading = false;
     this.unlockProductsContainer();
   }
