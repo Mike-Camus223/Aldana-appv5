@@ -8,6 +8,7 @@ import { ProductCarouselComponent } from '../../sections/product-carousel/produc
 import { Product, ProductVariant } from '../../../utils/models/Products-supabase.interface';
 import { CartItem } from '../../../utils/models/cartItems-model';
 import { SupabaseService } from '../../../../core/services/data-access/supabase.service';
+import { BridesProductsService } from '../../../../core/services/data-access/brides-products/brides-products.service';
 import { CartService } from '../../../../core/services/cart.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { FormsModule } from '@angular/forms';
@@ -58,6 +59,7 @@ export class ItemsPurchaseComponent implements OnInit, OnDestroy {
   constructor(
     private route: ActivatedRoute,
     private supabaseService: SupabaseService,
+    private bridesProductsService: BridesProductsService,
     private cartService: CartService,
     private router: Router,
     private notificationService: NotificationService,
@@ -139,11 +141,62 @@ export class ItemsPurchaseComponent implements OnInit, OnDestroy {
 
   async loadProduct(slug: string) {
     this.currentSlug = slug;
-    const { data, error } = await this.supabaseService.getProducts(slug);
-    if (!error && data) {
-      const productArray = Array.isArray(data) ? data : [data];
+    let mappedProduct: Product | null = null;
+
+    // 1) Intentar en módulo normal (Pret a Porter)
+    const normalRes = await this.supabaseService.getProducts(slug);
+    if (!normalRes.error && normalRes.data) {
+      const productArray = Array.isArray(normalRes.data) ? normalRes.data : [normalRes.data];
       const products = ProductUtils.mapProducts(productArray);
-      this.product = products[0];
+      mappedProduct = products[0] || null;
+    }
+
+    // 2) Si no existe en normal, intentar en módulo Novias
+    if (!mappedProduct) {
+      const bridalRes: any = await this.bridesProductsService.getProducts(slug);
+      const bridalData = bridalRes?.data;
+      if (!bridalRes?.error && bridalData) {
+        const b = Array.isArray(bridalData) ? bridalData[0] : bridalData;
+        if (b) {
+          const collections = [
+            ...(b.collection ? [b.collection] : []),
+            ...((b.product_collections || []).map((pc: any) => pc?.collections).filter(Boolean))
+          ];
+          mappedProduct = {
+            id: b.id,
+            name: b.name,
+            description: b.description,
+            details: b.details,
+            price: Number(b.price || 0),
+            main_image: b.main_image || '',
+            additional_images: b.additional_images || [],
+            sizes: b.sizes || [],
+            slug: b.slug || '',
+            wishlisted: false,
+            category: {
+              id: 0,
+              name: b?.categories?.name?.toLowerCase?.() || (String(b?.name || '').toLowerCase().includes('velo') ? 'velos' : 'vestidos de novia')
+            },
+            subcategory: {
+              id: 0,
+              name: b?.subcategories?.name?.toLowerCase?.() || 'general'
+            },
+            variants: (b.product_variants || []).map((v: any) => ({
+              id: v.id,
+              color_name: v.color_name || '',
+              color_hex: v.color_hex || '#000000',
+              avid: v.avid || '',
+              main_image: v.main_image || '',
+              additional_images: v.additional_images || []
+            })),
+            collections
+          } as Product;
+        }
+      }
+    }
+
+    this.product = mappedProduct;
+    if (this.product) {
 
       if (!this.product) return;
 
@@ -178,6 +231,9 @@ export class ItemsPurchaseComponent implements OnInit, OnDestroy {
         }
         this.updateUrlQuery(true);
       }
+    } else {
+      this.product = null;
+      this.relatedProducts = [];
     }
   }
 

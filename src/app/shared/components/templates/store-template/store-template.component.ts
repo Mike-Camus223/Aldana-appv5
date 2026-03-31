@@ -236,6 +236,13 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
         if (qpBridesColl) {
           this.selectedBridesCollectionId = qpBridesColl;
         }
+        if (this.selectedBridesCollectionId) {
+          this.activeCategoryScope = this.buildScopeKey('bridal', this.selectedBridesCollectionId);
+        } else if (this.selectedCollectionId) {
+          this.activeCategoryScope = this.buildScopeKey('normal', this.selectedCollectionId);
+        } else {
+          this.activeCategoryScope = null;
+        }
 
         if (qpCats) {
           const extraCats = qpCats.split(',').map(c => ProductUtils.normalize(c)).filter(Boolean);
@@ -385,6 +392,13 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
     this.subcategoriesCache.clear();
   }
 
+  private isBridalProduct(p: Product): boolean {
+    const source = (p as any)?.source_module;
+    if (source === 'bridal') return true;
+    const catName = ProductUtils.normalize(typeof p.category === 'string' ? p.category : (p.category?.name ?? ''));
+    return catName === 'vestidos de novia' || catName === 'velos';
+  }
+
   getCategoriesForCollection(type: 'normal' | 'bridal', id: string | 'general' | null): { label: string, value: string }[] {
     const cacheKey = `${type}-${id}`;
     if (this.categoriesCache.has(cacheKey)) {
@@ -392,21 +406,17 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
     }
 
     if (id === 'general') {
-      // Para Pret a Porter usamos las categorías precalculadas desde Supabase.
-      if (type === 'normal') {
-        const result = this.pretAPorterCategories;
-        this.categoriesCache.set(cacheKey, result);
-        return result;
-      }
-
-      // Para Novias (bridal) construimos dinámicamente las categorías
-      // a partir de los productos bridal ya cargados.
+      // General debe mostrar solo productos SIN colección asignada.
       const categoryMap = new Map<string, string>();
       this.allProducts.forEach(p => {
-        const isBridal =
-          p?.category?.name === 'vestidos de novia' ||
-          p?.category?.name === 'velos';
-        if (!isBridal) return;
+        const isBridal = this.isBridalProduct(p);
+        const hasCollection = Array.isArray(p?.collections) && p.collections.length > 0;
+
+        if (type === 'normal') {
+          if (isBridal || hasCollection) return;
+        } else {
+          if (!isBridal || hasCollection) return;
+        }
 
         const catName = typeof p.category === 'string' ? p.category : p.category?.name;
         if (catName) {
@@ -424,7 +434,7 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
     }
 
     const products = this.allProducts.filter(p => {
-      const isBridal = p.category?.name === 'vestidos de novia' || p.category?.name === 'velos';
+      const isBridal = this.isBridalProduct(p);
       if (type === 'normal' && isBridal) return false;
       if (type === 'bridal' && !isBridal) return false;
       return p.collections?.some(c => String(c.id) === String(id));
@@ -456,22 +466,17 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
     const catNorm = ProductUtils.normalize(categoryValue);
 
     if (id === 'general') {
-      if (type === 'normal') {
-        const cats = this.pretAPorterCategories;
-        const catObj = cats.find(c => ProductUtils.normalize(c.value) === catNorm);
-        const result = catObj?.subsections || [];
-        this.subcategoriesCache.set(cacheKey, result);
-        return result;
-      }
-
-      // Para Novias (bridal) sin colección específica: obtener subcategorías
-      // desde todos los productos bridal que pertenezcan a esta categoría.
+      // General debe mostrar solo subcategorías de productos SIN colección.
       const subcatMap = new Map<string, string>();
       this.allProducts.forEach(p => {
-        const isBridal =
-          p?.category?.name === 'vestidos de novia' ||
-          p?.category?.name === 'velos';
-        if (!isBridal) return;
+        const isBridal = this.isBridalProduct(p);
+        const hasCollection = Array.isArray(p?.collections) && p.collections.length > 0;
+
+        if (type === 'normal') {
+          if (isBridal || hasCollection) return;
+        } else {
+          if (!isBridal || hasCollection) return;
+        }
 
         const pCatNorm = ProductUtils.normalize(
           typeof p.category === 'string' ? p.category : p.category?.name || ''
@@ -494,7 +499,7 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
     }
 
     const products = this.allProducts.filter(p => {
-      const isBridal = p.category?.name === 'vestidos de novia' || p.category?.name === 'velos';
+      const isBridal = this.isBridalProduct(p);
       if (type === 'normal' && isBridal) return false;
       if (type === 'bridal' && !isBridal) return false;
 
@@ -754,10 +759,15 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
 
   private buildPathAndQuery(): { path: string[]; queryParams: Record<string, any> } {
     const subUnion = Object.values(this.selectedSubcategoriesMap).flat();
+    const hasCollectionContext = !!(this.selectedCollectionId || this.selectedBridesCollectionId);
 
     // SEO-friendly rutas híbridas: preferir path params cuando hay selección única
     let path: string[] = ['/tienda'];
-    if (this.selectedCategories.length === 1 && subUnion.length === 1) {
+    if (hasCollectionContext) {
+      // Con colecciones activas preferimos query params para evitar rutas ambiguas
+      // entre categorías homónimas de General/Colecciones.
+      path = ['/tienda'];
+    } else if (this.selectedCategories.length === 1 && subUnion.length === 1) {
       // /tienda/categoria/:categoria/subcategoria/:subcategoria
       path = ['/tienda', 'categoria', this.selectedCategories[0], 'subcategoria', subUnion[0]];
     } else if (this.selectedCategories.length === 1) {
@@ -769,11 +779,17 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
     }
 
     const queryParams: Record<string, any> = {};
-    if (this.selectedCategories.length > 1) {
+    if (hasCollectionContext && this.selectedCategories.length > 0) {
+      queryParams['categorias'] = this.selectedCategories.join(',');
+    } else if (this.selectedCategories.length > 1) {
       // múltiples categorías como query param legible
       queryParams['categorias'] = this.selectedCategories.join(',');
     }
-    if (subUnion.length > 1 || (this.selectedCategories.length !== 1 && subUnion.length === 1)) {
+    if (
+      (hasCollectionContext && subUnion.length > 0) ||
+      subUnion.length > 1 ||
+      (this.selectedCategories.length !== 1 && subUnion.length === 1)
+    ) {
       // múltiples subcategorías o única sin categoría única
       queryParams['subcategorias'] = subUnion.join(',');
     }
@@ -838,13 +854,13 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
     const hasAnySub = selectedSubUnion.length > 0;
     const hasAnySize = this.selectedSizes.length > 0;
 
-    // Verificar si hay categorías de novias seleccionadas
-    const hasBridesCategories = this.selectedCategories.some(cat => 
-      cat === 'vestidos de novia' || cat === 'velos'
-    );
+    // Detectar contexto bridal sin depender de nombres fijos de categoría.
+    const hasBridesContext =
+      !!this.selectedBridesCollectionId ||
+      this.activeCategoryScope?.startsWith('bridal-') === true;
 
     // Si hay categorías de novias, cargar productos desde BridesProductsService
-    if (hasBridesCategories) {
+    if (hasBridesContext) {
       this.loadBridesProducts().then(() => {
         this.filterProducts(hasAnyCategory, hasAnySub, hasAnySize, selectedSubUnion);
       });
@@ -859,7 +875,7 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
 
   private filterProducts(hasAnyCategory: boolean, hasAnySub: boolean, hasAnySize: boolean, selectedSubUnion: string[]): void {
     this.filteredProducts = this.allProducts.filter(p => {
-      const isBridal = p.category?.name === 'vestidos de novia' || p.category?.name === 'velos';
+      const isBridal = this.isBridalProduct(p);
       
       // Filtro de colección Normal
       if (this.selectedCollectionId) {
@@ -917,13 +933,10 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
   }
 
   private async loadBridesProducts(): Promise<void> {
-    const isBridalProduct = (p: Product) =>
-      p?.category?.name === 'vestidos de novia' || p?.category?.name === 'velos';
-
     // Si ya está marcado como cargado pero por alguna razón no hay productos bridal
     // (p.ej. intento anterior con datos incompletos), reintentar carga.
     if (this.bridesLoaded) {
-      const hasAnyBridal = this.allProducts.some(isBridalProduct);
+      const hasAnyBridal = this.allProducts.some(p => this.isBridalProduct(p));
       if (hasAnyBridal) return;
     }
     if (this.bridesLoadPromise) {
@@ -991,7 +1004,8 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
               slug: product.slug,
               avid: product.avid,
               variants: product.product_variants || [],
-              collections: collections
+              collections: collections,
+              source_module: 'bridal'
             };
           });
           const existingIds = new Set(this.allProducts.map(p => p.id));
