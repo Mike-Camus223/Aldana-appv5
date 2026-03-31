@@ -110,6 +110,9 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
   selectedCollectionId: string | 'general' | null = null;
   selectedBridesCollectionId: string | 'general' | null = null;
 
+  private categoriesCache = new Map<string, any[]>();
+  private subcategoriesCache = new Map<string, any[]>();
+
   @ViewChild('productsContainer') productsContainerRef?: ElementRef<HTMLDivElement>;
   private containerLocked = false;
   private lockedHeight = 0;
@@ -365,25 +368,32 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
     // Reset categories/subcategories when collection changes
     this.selectedCategories = [];
     this.selectedSubcategoriesMap = {};
+    this.clearCaches();
     this.applyFilters();
   }
 
+  private clearCaches(): void {
+    this.categoriesCache.clear();
+    this.subcategoriesCache.clear();
+  }
+
   getCategoriesForCollection(type: 'normal' | 'bridal', id: string | 'general' | null): { label: string, value: string }[] {
-    // Si es "general", devolver las categorías estáticas originales
+    const cacheKey = `${type}-${id}`;
+    if (this.categoriesCache.has(cacheKey)) {
+      return this.categoriesCache.get(cacheKey)!;
+    }
+
     if (id === 'general') {
-      return type === 'normal' ? this.pretAPorterCategories : this.noviasCategories;
+      const result = type === 'normal' ? this.pretAPorterCategories : this.noviasCategories;
+      this.categoriesCache.set(cacheKey, result);
+      return result;
     }
 
     const products = this.allProducts.filter(p => {
       const isBridal = p.category?.name === 'vestidos de novia' || p.category?.name === 'velos';
       if (type === 'normal' && isBridal) return false;
       if (type === 'bridal' && !isBridal) return false;
-
-      if (id !== null) {
-        // Normalizar comparación de IDs por si vienen como string/number
-        return p.collections?.some(c => String(c.id) === String(id));
-      }
-      return true;
+      return p.collections?.some(c => String(c.id) === String(id));
     });
 
     const categoryMap = new Map<string, string>();
@@ -394,20 +404,29 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
       }
     });
 
-    return Array.from(categoryMap.entries()).map(([value, label]) => ({
+    const result = Array.from(categoryMap.entries()).map(([value, label]) => ({
       label: label.charAt(0).toUpperCase() + label.slice(1),
       value
     }));
+
+    this.categoriesCache.set(cacheKey, result);
+    return result;
   }
 
   getSubcategoriesForCollectionCategory(type: 'normal' | 'bridal', id: string | 'general' | null, categoryValue: string): { label: string, value: string }[] {
+    const cacheKey = `${type}-${id}-${categoryValue}`;
+    if (this.subcategoriesCache.has(cacheKey)) {
+      return this.subcategoriesCache.get(cacheKey)!;
+    }
+
     const catNorm = ProductUtils.normalize(categoryValue);
 
-    // Si es "general", devolver las subcategorías estáticas originales
     if (id === 'general') {
       const cats = type === 'normal' ? this.pretAPorterCategories : this.noviasCategories;
       const catObj = cats.find(c => ProductUtils.normalize(c.value) === catNorm);
-      return catObj?.subsections || [];
+      const result = catObj?.subsections || [];
+      this.subcategoriesCache.set(cacheKey, result);
+      return result;
     }
 
     const products = this.allProducts.filter(p => {
@@ -418,11 +437,7 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
       const pCatNorm = ProductUtils.normalize(typeof p.category === 'string' ? p.category : p.category?.name || '');
       if (pCatNorm !== catNorm) return false;
 
-      if (id !== null) {
-        // Normalizar comparación de IDs por si vienen como string/number
-        return p.collections?.some(c => String(c.id) === String(id));
-      }
-      return true;
+      return p.collections?.some(c => String(c.id) === String(id));
     });
 
     const subcatMap = new Map<string, string>();
@@ -433,10 +448,13 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
       }
     });
 
-    return Array.from(subcatMap.entries()).map(([value, label]) => ({
+    const result = Array.from(subcatMap.entries()).map(([value, label]) => ({
       label: label.charAt(0).toUpperCase() + label.slice(1),
       value
     }));
+
+    this.subcategoriesCache.set(cacheKey, result);
+    return result;
   }
 
   // --- NUEVA LÓGICA DE SELECCIÓN ---
@@ -616,8 +634,8 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
     this.openAccordions.clear();
     this.openAccordions.add('categorias');
     this.openCollectionDropdowns.clear();
+    this.clearCaches(); // Limpiar cachés
     this.applyFiltersSync();
-    // Mantener SPA sin recarga total; actualizar solo URL sin navegación
     this.location.replaceState('/tienda');
   }
 
