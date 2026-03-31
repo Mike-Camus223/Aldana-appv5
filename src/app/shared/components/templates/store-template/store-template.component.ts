@@ -949,7 +949,6 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
         }
 
         if (Array.isArray(bridesData)) {
-          console.log('[StoreTemplate] Brides products fetched:', bridesData.length);
           const bridesProducts = bridesData.map(product => {
             const collections: Collection[] = [];
             
@@ -1033,23 +1032,29 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
   }
 
   private getBridesCategoryName(product: any): string {
-    // Determinar categoría basada en el producto
-    if (product.categories && product.categories.name) {
-      return product.categories.name.toLowerCase().includes('velo') ? 'velos' : 'vestidos de novia';
+    const categoryName =
+      product?.categories?.name ??
+      product?.category?.name ??
+      product?.category_name ??
+      product?.category;
+    if (typeof categoryName === 'string' && categoryName.trim().length > 0) {
+      return categoryName;
     }
-    // Lógica por defecto basada en el nombre del producto
-    const name = product.name.toLowerCase();
+    const name = String(product?.name ?? '').toLowerCase();
     if (name.includes('velo')) return 'velos';
     return 'vestidos de novia';
   }
 
   private getBridesSubcategoryName(product: any): string {
-    // Determinar subcategoría basada en el producto
-    if (product.subcategories && product.subcategories.name) {
-      return product.subcategories.name;
+    const subcategoryName =
+      product?.subcategories?.name ??
+      product?.subcategory?.name ??
+      product?.subcategory_name ??
+      product?.subcategory;
+    if (typeof subcategoryName === 'string' && subcategoryName.trim().length > 0) {
+      return subcategoryName;
     }
-    // Lógica por defecto
-    const name = product.name.toLowerCase();
+    const name = String(product?.name ?? '').toLowerCase();
     if (name.includes('velo 1')) return 'velos 1';
     if (name.includes('velo 2')) return 'velos 2';
     if (name.includes('velo 3')) return 'velos 3';

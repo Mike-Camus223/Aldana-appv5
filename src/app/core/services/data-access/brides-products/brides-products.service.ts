@@ -23,6 +23,8 @@ export class BridesProductsService {
       description,
       details,
       price,
+      category_id,
+      subcategory_id,
       main_image,
       additional_images,
       sizes,
@@ -31,6 +33,14 @@ export class BridesProductsService {
       color_id,
       color_name,
       color_hex,
+      categories:pbrides_categories (
+        id,
+        name
+      ),
+      subcategories:pbrides_subcategories (
+        id,
+        name
+      ),
       product_collections:pbrides_product_collections (
         collection_id,
         collections:collection_brides (
