@@ -7,7 +7,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { SupabaseService } from '../../../../core/services/data-access/supabase.service';
 import { BridesProductsService } from '../../../../core/services/data-access/brides-products/brides-products.service';
-import { Product } from '../../../utils/models/Products-supabase.interface';
+import { Product, Collection } from '../../../utils/models/Products-supabase.interface';
 import { ProductUtils } from '../../../utils/dataEx/products-utils';
 import { CardproductComponent } from '../../generic/cardproduct/cardproduct.component';
 import { Funnel, LUCIDE_ICONS, LucideIconProvider, LucideAngularModule, ChevronDown, ChevronUp, Minus, Plus } from 'lucide-angular';
@@ -350,6 +350,12 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
       this.openCollectionDropdowns.delete(id);
     } else {
       this.openCollectionDropdowns.add(id);
+      // Si es una colección de novias, asegurar que los productos estén cargados
+      if (id.startsWith('bridal-')) {
+        this.loadBridesProducts().then(() => {
+          this.clearCaches();
+        });
+      }
     }
   }
 
@@ -384,7 +390,33 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
     }
 
     if (id === 'general') {
-      const result = type === 'normal' ? this.pretAPorterCategories : this.noviasCategories;
+      // Para Pret a Porter usamos las categorías precalculadas desde Supabase.
+      if (type === 'normal') {
+        const result = this.pretAPorterCategories;
+        this.categoriesCache.set(cacheKey, result);
+        return result;
+      }
+
+      // Para Novias (bridal) construimos dinámicamente las categorías
+      // a partir de los productos bridal ya cargados.
+      const categoryMap = new Map<string, string>();
+      this.allProducts.forEach(p => {
+        const isBridal =
+          p?.category?.name === 'vestidos de novia' ||
+          p?.category?.name === 'velos';
+        if (!isBridal) return;
+
+        const catName = typeof p.category === 'string' ? p.category : p.category?.name;
+        if (catName) {
+          categoryMap.set(ProductUtils.normalize(catName), catName);
+        }
+      });
+
+      const result = Array.from(categoryMap.entries()).map(([value, label]) => ({
+        label: label.charAt(0).toUpperCase() + label.slice(1),
+        value
+      }));
+
       this.categoriesCache.set(cacheKey, result);
       return result;
     }
@@ -422,9 +454,39 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
     const catNorm = ProductUtils.normalize(categoryValue);
 
     if (id === 'general') {
-      const cats = type === 'normal' ? this.pretAPorterCategories : this.noviasCategories;
-      const catObj = cats.find(c => ProductUtils.normalize(c.value) === catNorm);
-      const result = catObj?.subsections || [];
+      if (type === 'normal') {
+        const cats = this.pretAPorterCategories;
+        const catObj = cats.find(c => ProductUtils.normalize(c.value) === catNorm);
+        const result = catObj?.subsections || [];
+        this.subcategoriesCache.set(cacheKey, result);
+        return result;
+      }
+
+      // Para Novias (bridal) sin colección específica: obtener subcategorías
+      // desde todos los productos bridal que pertenezcan a esta categoría.
+      const subcatMap = new Map<string, string>();
+      this.allProducts.forEach(p => {
+        const isBridal =
+          p?.category?.name === 'vestidos de novia' ||
+          p?.category?.name === 'velos';
+        if (!isBridal) return;
+
+        const pCatNorm = ProductUtils.normalize(
+          typeof p.category === 'string' ? p.category : p.category?.name || ''
+        );
+        if (pCatNorm !== catNorm) return;
+
+        const subName = typeof p.subcategory === 'string' ? p.subcategory : p.subcategory?.name;
+        if (subName) {
+          subcatMap.set(ProductUtils.normalize(subName), subName);
+        }
+      });
+
+      const result = Array.from(subcatMap.entries()).map(([value, label]) => ({
+        label: label.charAt(0).toUpperCase() + label.slice(1),
+        value
+      }));
+
       this.subcategoriesCache.set(cacheKey, result);
       return result;
     }
@@ -819,38 +881,83 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
   }
 
   private async loadBridesProducts(): Promise<void> {
+    const isBridalProduct = (p: Product) =>
+      p?.category?.name === 'vestidos de novia' || p?.category?.name === 'velos';
+
+    // Si ya está marcado como cargado pero por alguna razón no hay productos bridal
+    // (p.ej. intento anterior con datos incompletos), reintentar carga.
     if (this.bridesLoaded) {
-      return;
+      const hasAnyBridal = this.allProducts.some(isBridalProduct);
+      if (hasAnyBridal) return;
     }
     if (this.bridesLoadPromise) {
       return this.bridesLoadPromise;
     }
     this.bridesLoadPromise = (async () => {
       try {
-        const bridesData = await this.bridesProductsService.getProducts();
-        if (bridesData && Array.isArray(bridesData)) {
-          const bridesProducts = bridesData.map(product => ({
-            id: product.id,
-            name: product.name,
-            description: product.description,
-            details: product.details,
-            price: product.price,
-            category: { 
-              id: product.categories?.[0]?.id || 0,
-              name: this.getBridesCategoryName(product) 
-            },
-            subcategory: { 
-              id: product.subcategories?.[0]?.id || 0,
-              name: this.getBridesSubcategoryName(product) 
-            },
-            main_image: product.main_image,
-            additional_images: product.additional_images,
-            sizes: product.sizes,
-            slug: product.slug,
-            avid: product.avid,
-            variants: product.product_variants || [],
-            collection: product.collection
-          }));
+        const bridesRes: any = await this.bridesProductsService.getProducts();
+        const bridesData: any[] | null = Array.isArray(bridesRes) ? bridesRes : (bridesRes?.data ?? null);
+        if (!Array.isArray(bridesData) && bridesRes?.error) {
+          console.error('BridesProductsService.getProducts error:', bridesRes.error);
+        }
+
+        if (Array.isArray(bridesData)) {
+          console.log('[StoreTemplate] Brides products fetched:', bridesData.length);
+          const bridesProducts = bridesData.map(product => {
+            const collections: Collection[] = [];
+            
+            // Direct collection
+            if (product.collection) {
+              collections.push(product.collection);
+            }
+            
+            // Product collections list
+            if (Array.isArray(product.product_collections)) {
+              product.product_collections.forEach((pc: any) => {
+                // A veces el join anidado puede venir nulo; en ese caso usamos `collection_id`
+                // para que al menos pueda filtrarse por colección.
+                const joined = pc?.collections;
+                const colId = joined?.id ?? pc?.collection_id ?? pc?.collectionId;
+
+                if (colId === undefined || colId === null) return;
+
+                if (!collections.some(c => String((c as any)?.id) === String(colId))) {
+                  if (joined) {
+                    collections.push(joined);
+                  } else {
+                    collections.push({
+                      id: colId,
+                      name: joined?.name ?? '',
+                      slug: joined?.slug ?? ''
+                    } as any);
+                  }
+                }
+              });
+            }
+
+            return {
+              id: product.id,
+              name: product.name,
+              description: product.description,
+              details: product.details,
+              price: product.price,
+              category: { 
+                id: (product.categories as any)?.id || 0,
+                name: this.getBridesCategoryName(product) 
+              },
+              subcategory: { 
+                id: (product.subcategories as any)?.id || 0,
+                name: this.getBridesSubcategoryName(product) 
+              },
+              main_image: product.main_image,
+              additional_images: product.additional_images,
+              sizes: product.sizes,
+              slug: product.slug,
+              avid: product.avid,
+              variants: product.product_variants || [],
+              collections: collections
+            };
+          });
           const existingIds = new Set(this.allProducts.map(p => p.id));
           const newBridesProducts = bridesProducts.filter(p => !existingIds.has(p.id));
           this.allProducts.push(...newBridesProducts);
@@ -859,6 +966,13 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
             unique.set(p.id, p);
           }
           this.allProducts = Array.from(unique.values());
+
+          // Inicializar color seleccionado para nuevos productos (evita filtros de color inconsistentes)
+          newBridesProducts.forEach(p => {
+            if (!this.selectedColors[p.id]) {
+              this.selectedColors[p.id] = p.variants?.[0]?.color_name || '';
+            }
+          });
         }
       } catch (error) {
         console.error('Error loading brides products:', error);
@@ -1020,6 +1134,11 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
 
   toggleNovias(): void {
     this.noviasOpen = !this.noviasOpen;
+    if (this.noviasOpen) {
+      this.loadBridesProducts().then(() => {
+        this.clearCaches();
+      });
+    }
   }
 
   private async loadDynamicFilters(): Promise<void> {

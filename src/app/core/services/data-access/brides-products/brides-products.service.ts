@@ -23,7 +23,6 @@ export class BridesProductsService {
       description,
       details,
       price,
-      collection_id,
       main_image,
       additional_images,
       sizes,
@@ -32,14 +31,6 @@ export class BridesProductsService {
       color_id,
       color_name,
       color_hex,
-      categories:pbrides_categories!pbrides_products_category_id_fkey (
-        id,
-        name
-      ),
-      subcategories:pbrides_subcategories!pbrides_products_subcategory_id_fkey (
-        id,
-        name
-      ),
       product_collections:pbrides_product_collections (
         collection_id,
         collections:collection_brides (
@@ -48,27 +39,14 @@ export class BridesProductsService {
           slug
         )
       ),
-      product_variants (
+      product_variants:pbrides_product_variants (
         id,
         color_id,
         color_name,
         color_hex,
         avid,
         main_image,
-        additional_images,
-        colors:pbrides_colors!pbrides_product_variants_color_id_fkey (
-          code,
-          name,
-          hex
-        )
-      ),
-      collection:collection_brides!pbrides_collection_id_fkey (
-        id,
-        name,
-        slug,
-        cover_image_url,
-        season,
-        release_date
+        additional_images
       )
     `;
 
