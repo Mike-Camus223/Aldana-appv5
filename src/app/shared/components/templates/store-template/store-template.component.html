@@ -117,10 +117,10 @@
                       <div *ngFor="let category of getCategoriesForCollection('normal', 'general')" class="space-y-1">
                         <label
                           class="flex items-center gap-2 py-1 px-2 text-[11px] tracking-wider NewAldyFontType4 cursor-pointer w-full hover:bg-aldy-light">
-                          <input type="checkbox" [checked]="isCategorySelected(category.value)"
-                            (change)="toggleCategory(category.value)" AldyCheckboxV1 />
+                          <input type="checkbox" [checked]="isCategorySelectedInScope('normal', 'general', category.value)"
+                            (change)="toggleCategoryInScope('normal', 'general', category.value)" AldyCheckboxV1 />
                           <span
-                            [ngClass]="isCategorySelected(category.value) ? 'text-aldy-medium font-semibold' : 'text-aldy-green-gray'">
+                            [ngClass]="isCategorySelectedInScope('normal', 'general', category.value) ? 'text-aldy-medium font-semibold' : 'text-aldy-green-gray'">
                             {{ category.label }}
                           </span>
                         </label>
@@ -153,10 +153,10 @@
                       <div *ngFor="let category of getCategoriesForCollection('normal', col.id)" class="space-y-1">
                         <label
                           class="flex items-center gap-2 py-1 px-2 text-[11px] tracking-wider NewAldyFontType4 cursor-pointer w-full hover:bg-aldy-light">
-                          <input type="checkbox" [checked]="isCategorySelected(category.value)"
-                            (change)="toggleCategory(category.value)" AldyCheckboxV1 />
+                          <input type="checkbox" [checked]="isCategorySelectedInScope('normal', col.id, category.value)"
+                            (change)="toggleCategoryInScope('normal', col.id, category.value)" AldyCheckboxV1 />
                           <span
-                            [ngClass]="isCategorySelected(category.value) ? 'text-aldy-medium font-semibold' : 'text-aldy-green-gray'">
+                            [ngClass]="isCategorySelectedInScope('normal', col.id, category.value) ? 'text-aldy-medium font-semibold' : 'text-aldy-green-gray'">
                             {{ category.label }}
                           </span>
                         </label>
@@ -210,10 +210,10 @@
                       <div *ngFor="let category of getCategoriesForCollection('bridal', 'general')" class="space-y-1">
                         <label
                           class="flex items-center gap-2 py-1 px-2 text-[11px] tracking-wider NewAldyFontType4 cursor-pointer w-full hover:bg-aldy-light">
-                          <input type="checkbox" [checked]="isCategorySelected(category.value)"
-                            (change)="toggleCategory(category.value)" AldyCheckboxV1 />
+                          <input type="checkbox" [checked]="isCategorySelectedInScope('bridal', 'general', category.value)"
+                            (change)="toggleCategoryInScope('bridal', 'general', category.value)" AldyCheckboxV1 />
                           <span
-                            [ngClass]="isCategorySelected(category.value) ? 'text-aldy-medium font-semibold' : 'text-aldy-green-gray'">
+                            [ngClass]="isCategorySelectedInScope('bridal', 'general', category.value) ? 'text-aldy-medium font-semibold' : 'text-aldy-green-gray'">
                             {{ category.label }}
                           </span>
                         </label>
@@ -246,10 +246,10 @@
                       <div *ngFor="let category of getCategoriesForCollection('bridal', col.id)" class="space-y-1">
                         <label
                           class="flex items-center gap-2 py-1 px-2 text-[11px] tracking-wider NewAldyFontType4 cursor-pointer w-full hover:bg-aldy-light">
-                          <input type="checkbox" [checked]="isCategorySelected(category.value)"
-                            (change)="toggleCategory(category.value)" AldyCheckboxV1 />
+                          <input type="checkbox" [checked]="isCategorySelectedInScope('bridal', col.id, category.value)"
+                            (change)="toggleCategoryInScope('bridal', col.id, category.value)" AldyCheckboxV1 />
                           <span
-                            [ngClass]="isCategorySelected(category.value) ? 'text-aldy-medium font-semibold' : 'text-aldy-green-gray'">
+                            [ngClass]="isCategorySelectedInScope('bridal', col.id, category.value) ? 'text-aldy-medium font-semibold' : 'text-aldy-green-gray'">
                             {{ category.label }}
                           </span>
                         </label>
@@ -448,10 +448,10 @@
                   <div *ngFor="let category of getCategoriesForCollection('normal', 'general')">
                     <label
                       class="flex items-center gap-2 py-1 px-2 text-xs tracking-wider NewAldyFontType4 cursor-pointer w-full">
-                      <input type="checkbox" [checked]="isCategorySelected(category.value)"
-                        (change)="toggleCategory(category.value)" AldyCheckboxV1 />
+                      <input type="checkbox" [checked]="isCategorySelectedInScope('normal', 'general', category.value)"
+                        (change)="toggleCategoryInScope('normal', 'general', category.value)" AldyCheckboxV1 />
                       <span
-                        [ngClass]="isCategorySelected(category.value) ? 'text-aldy-medium font-semibold' : 'text-aldy-green-gray'">{{
+                        [ngClass]="isCategorySelectedInScope('normal', 'general', category.value) ? 'text-aldy-medium font-semibold' : 'text-aldy-green-gray'">{{
                         category.label }}</span>
                     </label>
                   </div>
@@ -469,10 +469,10 @@
                   <div *ngFor="let category of getCategoriesForCollection('normal', col.id)">
                     <label
                       class="flex items-center gap-2 py-1 px-2 text-xs tracking-wider NewAldyFontType4 cursor-pointer w-full">
-                      <input type="checkbox" [checked]="isCategorySelected(category.value)"
-                        (change)="toggleCategory(category.value)" AldyCheckboxV1 />
+                      <input type="checkbox" [checked]="isCategorySelectedInScope('normal', col.id, category.value)"
+                        (change)="toggleCategoryInScope('normal', col.id, category.value)" AldyCheckboxV1 />
                       <span
-                        [ngClass]="isCategorySelected(category.value) ? 'text-aldy-medium font-semibold' : 'text-aldy-green-gray'">{{
+                        [ngClass]="isCategorySelectedInScope('normal', col.id, category.value) ? 'text-aldy-medium font-semibold' : 'text-aldy-green-gray'">{{
                         category.label }}</span>
                     </label>
                   </div>
@@ -501,10 +501,10 @@
                   <div *ngFor="let category of getCategoriesForCollection('bridal', 'general')">
                     <label
                       class="flex items-center gap-2 py-1 px-2 text-xs tracking-wider NewAldyFontType4 cursor-pointer w-full">
-                      <input type="checkbox" [checked]="isCategorySelected(category.value)"
-                        (change)="toggleCategory(category.value)" AldyCheckboxV1 />
+                      <input type="checkbox" [checked]="isCategorySelectedInScope('bridal', 'general', category.value)"
+                        (change)="toggleCategoryInScope('bridal', 'general', category.value)" AldyCheckboxV1 />
                       <span
-                        [ngClass]="isCategorySelected(category.value) ? 'text-aldy-medium font-semibold' : 'text-aldy-green-gray'">{{
+                        [ngClass]="isCategorySelectedInScope('bridal', 'general', category.value) ? 'text-aldy-medium font-semibold' : 'text-aldy-green-gray'">{{
                         category.label }}</span>
                     </label>
                   </div>
@@ -522,10 +522,10 @@
                   <div *ngFor="let category of getCategoriesForCollection('bridal', col.id)">
                     <label
                       class="flex items-center gap-2 py-1 px-2 text-xs tracking-wider NewAldyFontType4 cursor-pointer w-full">
-                      <input type="checkbox" [checked]="isCategorySelected(category.value)"
-                        (change)="toggleCategory(category.value)" AldyCheckboxV1 />
+                      <input type="checkbox" [checked]="isCategorySelectedInScope('bridal', col.id, category.value)"
+                        (change)="toggleCategoryInScope('bridal', col.id, category.value)" AldyCheckboxV1 />
                       <span
-                        [ngClass]="isCategorySelected(category.value) ? 'text-aldy-medium font-semibold' : 'text-aldy-green-gray'">{{
+                        [ngClass]="isCategorySelectedInScope('bridal', col.id, category.value) ? 'text-aldy-medium font-semibold' : 'text-aldy-green-gray'">{{
                         category.label }}</span>
                     </label>
                   </div>

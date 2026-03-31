@@ -109,6 +109,7 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
   openCollectionDropdowns: Set<string> = new Set();
   selectedCollectionId: string | 'general' | null = null;
   selectedBridesCollectionId: string | 'general' | null = null;
+  activeCategoryScope: string | null = null;
 
   private categoriesCache = new Map<string, any[]>();
   private subcategoriesCache = new Map<string, any[]>();
@@ -371,6 +372,7 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
       this.selectedBridesCollectionId = this.selectedBridesCollectionId === id ? null : id;
       this.selectedCollectionId = null; // Reset normal selection if bridal selected
     }
+    this.activeCategoryScope = `${type}-${String(id ?? 'none')}`;
     // Reset categories/subcategories when collection changes
     this.selectedCategories = [];
     this.selectedSubcategoriesMap = {};
@@ -520,6 +522,39 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
   }
 
   // --- NUEVA LÓGICA DE SELECCIÓN ---
+  private buildScopeKey(type: 'normal' | 'bridal', id: string | 'general' | null): string {
+    return `${type}-${String(id ?? 'none')}`;
+  }
+
+  private setActiveScope(type: 'normal' | 'bridal', id: string | 'general' | null): void {
+    const nextScope = this.buildScopeKey(type, id);
+    if (this.activeCategoryScope && this.activeCategoryScope !== nextScope) {
+      // Evita mezclar categorías homónimas entre General y Colecciones.
+      this.selectedCategories = [];
+      this.selectedSubcategoriesMap = {};
+    }
+    this.activeCategoryScope = nextScope;
+
+    if (type === 'normal') {
+      this.selectedCollectionId = id;
+      this.selectedBridesCollectionId = null;
+    } else {
+      this.selectedBridesCollectionId = id;
+      this.selectedCollectionId = null;
+    }
+  }
+
+  toggleCategoryInScope(type: 'normal' | 'bridal', id: string | 'general' | null, categoryValue: string): void {
+    this.setActiveScope(type, id);
+    this.toggleCategory(categoryValue);
+  }
+
+  isCategorySelectedInScope(type: 'normal' | 'bridal', id: string | 'general' | null, categoryValue: string): boolean {
+    const scope = this.buildScopeKey(type, id);
+    if (this.activeCategoryScope !== scope) return false;
+    return this.isCategorySelected(categoryValue);
+  }
+
   toggleCategory(categoryValue: string): void {
     const cat = ProductUtils.normalize(categoryValue);
     const idx = this.selectedCategories.indexOf(cat);
@@ -688,6 +723,7 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
     this.selectedSubcategory = null;
     this.selectedCollectionId = null;
     this.selectedBridesCollectionId = null;
+    this.activeCategoryScope = null;
     this.selectedSizes = [];
     this.priceMin = 0;
     this.priceMax = 500000;
