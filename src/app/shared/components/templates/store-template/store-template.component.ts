@@ -85,6 +85,9 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
   currentPage: number = 1;
   pagedProducts: Product[] = [];
   pagesArray: number[] = [];
+  private renderVersion: number = 0;
+  private isApplyingFilters = false;
+  private applyFiltersPromise: Promise<void> | null = null;
   allowedSizes: string[] = ['S', 'M', 'L'];
   selectedSizes: string[] = [];
   priceRange: number[] = [0, 500000];
@@ -175,6 +178,7 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
       this.filteredProducts = [];
       const categoriaParam = params.get('categoria');
       const subcategoriaParam = params.get('subcategoria');
+      const scopeParam = params.get('scope');
 
       try {
         // Cargar categorías dinámicas primero
@@ -235,6 +239,13 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
         }
         if (qpBridesColl) {
           this.selectedBridesCollectionId = qpBridesColl;
+        }
+        if (scopeParam === 'general') {
+          this.selectedCollectionId = 'general';
+          this.selectedBridesCollectionId = null;
+        } else if (scopeParam === 'general-novias') {
+          this.selectedBridesCollectionId = 'general';
+          this.selectedCollectionId = null;
         }
         if (this.selectedBridesCollectionId) {
           this.activeCategoryScope = this.buildScopeKey('bridal', this.selectedBridesCollectionId);
@@ -743,10 +754,11 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
   }
 
   applyFiltersAction(isMobile: boolean = false): void {
-    if (this.loading) {
+    if (this.loading || this.isApplyingFilters || this.applyFiltersPromise) {
       return;
     }
-    this.applyFilters().then(() => {
+    this.isApplyingFilters = true;
+    this.applyFiltersPromise = this.applyFilters().then(() => {
       const url = this.buildUrlString();
       // Actualiza la URL sin disparar navegación ni loaders genéricos
       const [base, query] = url.split('?');
@@ -754,16 +766,33 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
       if (isMobile) {
         this.toggleFilters();
       }
+    }).finally(() => {
+      this.isApplyingFilters = false;
+      this.applyFiltersPromise = null;
     });
   }
 
   private buildPathAndQuery(): { path: string[]; queryParams: Record<string, any> } {
     const subUnion = Object.values(this.selectedSubcategoriesMap).flat();
     const hasCollectionContext = !!(this.selectedCollectionId || this.selectedBridesCollectionId);
+    const generalScope = this.selectedCollectionId === 'general'
+      ? 'general'
+      : this.selectedBridesCollectionId === 'general'
+        ? 'general-novias'
+        : null;
+    const hasGeneralScope = !!generalScope;
 
     // SEO-friendly rutas híbridas: preferir path params cuando hay selección única
     let path: string[] = ['/tienda'];
-    if (hasCollectionContext) {
+    if (hasGeneralScope) {
+      if (this.selectedCategories.length === 1 && subUnion.length === 1) {
+        path = ['/tienda', 'categoria', generalScope as string, this.selectedCategories[0], 'subcategoria', subUnion[0]];
+      } else if (this.selectedCategories.length === 1) {
+        path = ['/tienda', 'categoria', generalScope as string, this.selectedCategories[0]];
+      } else {
+        path = ['/tienda'];
+      }
+    } else if (hasCollectionContext) {
       // Con colecciones activas preferimos query params para evitar rutas ambiguas
       // entre categorías homónimas de General/Colecciones.
       path = ['/tienda'];
@@ -779,14 +808,16 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
     }
 
     const queryParams: Record<string, any> = {};
-    if (hasCollectionContext && this.selectedCategories.length > 0) {
+    if (hasCollectionContext && !hasGeneralScope && this.selectedCategories.length > 0) {
+      queryParams['categorias'] = this.selectedCategories.join(',');
+    } else if (hasGeneralScope && this.selectedCategories.length > 1) {
       queryParams['categorias'] = this.selectedCategories.join(',');
     } else if (this.selectedCategories.length > 1) {
       // múltiples categorías como query param legible
       queryParams['categorias'] = this.selectedCategories.join(',');
     }
     if (
-      (hasCollectionContext && subUnion.length > 0) ||
+      (hasCollectionContext && !hasGeneralScope && subUnion.length > 0) ||
       subUnion.length > 1 ||
       (this.selectedCategories.length !== 1 && subUnion.length === 1)
     ) {
@@ -798,10 +829,10 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
       queryParams['tamanos'] = this.selectedSizes.join(',');
     }
     // Colecciones
-    if (this.selectedCollectionId) {
+    if (this.selectedCollectionId && !(hasGeneralScope && this.selectedCollectionId === 'general')) {
       queryParams['coleccion'] = this.selectedCollectionId;
     }
-    if (this.selectedBridesCollectionId) {
+    if (this.selectedBridesCollectionId && !(hasGeneralScope && this.selectedBridesCollectionId === 'general')) {
       queryParams['coleccion_novias'] = this.selectedBridesCollectionId;
     }
     // Precio como query param (evitar defaults para SEO limpio)
@@ -1068,17 +1099,13 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
     this.lockProductsContainer();
     this.loading = true;
     this.filteredProducts = [];
+    this.pagedProducts = [];
     this.currentPage = 1;
-    await this.delay(500);
     await this.applyFiltersSync();
     this.loading = false;
     this.unlockProductsContainer();
   }
 
-
-  private delay(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
 
   // --- Helpers: Paginación ---
   get totalPages(): number {
@@ -1104,6 +1131,7 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
     const start = (this.currentPage - 1) * this.itemsPerPage;
     const end = start + this.itemsPerPage;
     this.pagedProducts = this.filteredProducts.slice(start, end);
+    this.renderVersion++;
   }
 
   goToPage(page: number): void {
@@ -1149,7 +1177,7 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
 
 
   trackByProductId(index: number, product: Product): string {
-    return product.slug || product.id;
+    return `${this.renderVersion}-${product.slug || product.id}`;
   }
 
   public normalize(text: string): string {

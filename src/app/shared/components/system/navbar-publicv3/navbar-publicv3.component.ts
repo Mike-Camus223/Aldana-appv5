@@ -267,7 +267,7 @@ export class NavbarPublicv3Component implements OnInit, OnDestroy {
   goToCategory(item: string): void {
     this.closeDropdown();
     this.onMenuLinkClick();
-    this.router.navigate(['/tienda/categoria', this.normalizeCategory(item)]);
+    this.router.navigate(['/tienda/categoria/general', this.normalizeCategory(item)]);
   }
 
   get iconColorClass(): Record<string, boolean> {

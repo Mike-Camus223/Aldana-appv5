@@ -50,7 +50,7 @@
                 <li *ngFor="let item of tiendaItems">
                   <div class="flex gap-3 items-center">
                     <div class="h-2 w-2 bg-aldy-light rounded-full"></div>
-                    <a [routerLink]="['/tienda/categoria', normalizeCategory(item)]" (click)="closeDropdown()"
+                    <a [routerLink]="['/tienda/categoria/general', normalizeCategory(item)]" (click)="closeDropdown()"
                       class="block transition-all font-light NewAldyFontType4 text-sm duration-200 text-aldy-medium-2 hover:text-aldy-medium-2 hover:translate-x-1">
                       {{ item }}
                     </a>
@@ -65,7 +65,7 @@
               <div class="grid grid-cols-3 gap-6">
 
                 <!-- Vestidos -->
-                <a [routerLink]="['/tienda/categoria','vestidos']" class="group block">
+                <a [routerLink]="['/tienda/categoria/general','vestidos']" class="group block">
                   <div class="relative overflow-hidden mb-3 aspect-[3/4]">
                     <img
                       src="https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/products/vestidos/vestido_gladiolo/1752718247389.jpg"
@@ -83,7 +83,7 @@
                 </a>
 
                 <!-- Abrigos -->
-                <a [routerLink]="['/tienda/categoria','abrigos']" class="group block">
+                <a [routerLink]="['/tienda/categoria/general','abrigos']" class="group block">
                   <div class="relative overflow-hidden mb-3 aspect-[3/4]">
                     <img
                       src="https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/products/abrigos/buzos/buzo%20cactus/1752807793069.jpg"
@@ -101,7 +101,7 @@
                 </a>
 
                 <!-- Pantalones -->
-                <a [routerLink]="['/tienda/categoria','pantalones']" class="group block">
+                <a [routerLink]="['/tienda/categoria/general','pantalones']" class="group block">
                   <div class="relative overflow-hidden mb-3 aspect-[3/4]">
                     <img
                       src="https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/products/pantalones/pantalon_cala/1752716551897.jpg"
@@ -298,7 +298,7 @@
         </button>
         <div *ngIf="mobileDropdownOpen" @expandDropdown
           class="pl-4 mt-2 space-y-3 border-l-2 border-aldy-medium hover:border-aldy-medium-2">
-          <a *ngFor="let item of tiendaItems" [routerLink]="['/tienda/categoria', normalizeCategory(item)]"
+          <a *ngFor="let item of tiendaItems" [routerLink]="['/tienda/categoria/general', normalizeCategory(item)]"
             (click)="onMenuLinkClick()"
             class="block text-md text-gray-600 hover:text-aldy-primary-500 font-light NewAldyFontType4 text-sm transition-colors duration-200 py-2">
             {{ item }}

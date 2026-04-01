@@ -10,7 +10,9 @@ import {
   ViewChild,
   ElementRef,
   Inject,
-  OnDestroy
+  OnDestroy,
+  OnChanges,
+  SimpleChanges
 } from '@angular/core';
 import { CommonModule, isPlatformBrowser, NgOptimizedImage } from '@angular/common';
 import { PLATFORM_ID } from '@angular/core';
@@ -29,9 +31,6 @@ import { FavoritesService } from '../../../../core/services/favorites/favorites.
 import { AuthService } from '../../../../core/services/auth/auth.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { LoaderService } from '../../../../core/services/utils/loader.service';
-import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-cardproduct',
@@ -74,10 +73,8 @@ export class CardproductComponent implements OnInit, AfterViewInit, OnDestroy {
   isMobileView: boolean = false;
   currentImage!: string;
   hoverImage: string | null = null;
-  private destroy$ = new Subject<void>();
-  private fadeupTrigger?: ScrollTrigger;
-  private readonly fadeupDuration = 0.8;
-  private readonly zoomDuration = 1.0;
+  private readonly fadeupDuration = 0.55;
+  private readonly zoomDuration = 0.75;
   private readonly staggerBase = 0.08;
 
 
@@ -87,7 +84,6 @@ export class CardproductComponent implements OnInit, AfterViewInit, OnDestroy {
     @Inject(PLATFORM_ID) private platformId: Object,
     private notificationService: NotificationService,
     private router: Router,
-    private loaderService: LoaderService,
     private hostRef: ElementRef<HTMLElement>
   ) {}
 
@@ -120,25 +116,7 @@ export class CardproductComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngAfterViewInit(): void {
     if (!isPlatformBrowser(this.platformId) || !this.cardRootRef) return;
-    if (typeof window !== 'undefined') {
-      gsap.registerPlugin(ScrollTrigger);
-    }
-    this.loaderService.currentLoader$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((loader) => {
-        if (loader) {
-          this.resetFadeup();
-        }
-      });
-    this.loaderService.animationsEnabled$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((enabled) => {
-        if (enabled) {
-          setTimeout(() => this.createFadeup(), 30);
-        } else {
-          this.resetFadeup();
-        }
-      });
+    requestAnimationFrame(() => this.playEntryAnimation());
   }
 
   @HostListener('window:resize')
@@ -146,54 +124,30 @@ export class CardproductComponent implements OnInit, AfterViewInit, OnDestroy {
     this.updateView();
   }
 
-  private createFadeup(): void {
+  private playEntryAnimation(): void {
     if (!isPlatformBrowser(this.platformId) || !this.cardRootRef) return;
-    if (this.fadeupTrigger) {
-      this.fadeupTrigger.kill(true);
-      this.fadeupTrigger = undefined;
-    }
-    gsap.set(this.cardRootRef.nativeElement, { opacity: 0, y: 30, willChange: 'opacity, transform' });
-    const imgEl = this.getImageEl();
-    if (imgEl) {
-      gsap.set(imgEl, { scale: 1.06, willChange: 'transform' });
-    }
-    const delay = this.computeStaggerDelay();
-    this.fadeupTrigger = ScrollTrigger.create({
-      trigger: this.cardRootRef.nativeElement,
-      start: 'top 95%',
-      once: true,
-      onEnter: () => {
-        const tl = gsap.timeline({ defaults: { ease: 'power2.out' }, delay });
-        tl.to(this.cardRootRef.nativeElement, {
-          opacity: 1,
-          y: 0,
-          duration: this.fadeupDuration,
-          onComplete: () => {
-            (this.cardRootRef.nativeElement as HTMLElement).style.willChange = 'auto';
-          }
-        }, 0);
-        if (imgEl) {
-          tl.to(imgEl, {
-            scale: 1.0,
-            duration: this.zoomDuration
-          }, 0);
-        }
-      }
-    });
-  }
-
-  private resetFadeup(): void {
-    if (!isPlatformBrowser(this.platformId) || !this.cardRootRef) return;
-    if (this.fadeupTrigger) {
-      this.fadeupTrigger.kill(true);
-      this.fadeupTrigger = undefined;
-    }
     gsap.killTweensOf(this.cardRootRef.nativeElement);
     gsap.set(this.cardRootRef.nativeElement, { opacity: 0, y: 30, willChange: 'opacity, transform' });
     const imgEl = this.getImageEl();
     if (imgEl) {
       gsap.killTweensOf(imgEl);
       gsap.set(imgEl, { scale: 1.06, willChange: 'transform' });
+    }
+    const delay = this.computeStaggerDelay();
+    const tl = gsap.timeline({ defaults: { ease: 'power2.out' }, delay });
+    tl.to(this.cardRootRef.nativeElement, {
+      opacity: 1,
+      y: 0,
+      duration: this.fadeupDuration,
+      onComplete: () => {
+        (this.cardRootRef.nativeElement as HTMLElement).style.willChange = 'auto';
+      }
+    }, 0);
+    if (imgEl) {
+      tl.to(imgEl, {
+        scale: 1.0,
+        duration: this.zoomDuration
+      }, 0);
     }
   }
 
@@ -330,11 +284,12 @@ export class CardproductComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-    if (this.fadeupTrigger) {
-      this.fadeupTrigger.kill(true);
-      this.fadeupTrigger = undefined;
+    if (this.cardRootRef?.nativeElement) {
+      gsap.killTweensOf(this.cardRootRef.nativeElement);
+    }
+    const imgEl = this.getImageEl();
+    if (imgEl) {
+      gsap.killTweensOf(imgEl);
     }
   }
 }

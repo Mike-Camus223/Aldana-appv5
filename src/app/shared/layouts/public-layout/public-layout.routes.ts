@@ -38,7 +38,15 @@ export const PUBLIC_ROUTES: Routes = [
         loadComponent: () => import('../../../features/landing/pages/shop/shop.component').then(c => c.ShopComponent),
       },
       {
+        path: 'tienda/categoria/:scope/:categoria',
+        loadComponent: () => import('../../../features/landing/pages/shop/shop.component').then(c => c.ShopComponent),
+      },
+      {
         path: 'tienda/categoria/:categoria/subcategoria/:subcategoria',
+        loadComponent: () => import('../../../features/landing/pages/shop/shop.component').then(c => c.ShopComponent),
+      },
+      {
+        path: 'tienda/categoria/:scope/:categoria/subcategoria/:subcategoria',
         loadComponent: () => import('../../../features/landing/pages/shop/shop.component').then(c => c.ShopComponent),
       },
       {
@@ -61,6 +69,10 @@ export const PUBLIC_ROUTES: Routes = [
       //   loadChildren: () =>
       //     import('../../../features/checkout/checkout.routes').then(m => m.checkoutRoutes),
       // },
+      {
+        path: 'journal',
+        loadComponent: () => import('../../components/templates/journal/journal.component').then(c => c.JournalComponent),
+      },
       {
         path: 'busqueda',
         loadComponent: () => import('../../../features/landing/pages/search-page/search-page.component').then(c => c.SearchPageComponent),
