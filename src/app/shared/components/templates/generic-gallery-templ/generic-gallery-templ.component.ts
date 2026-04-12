@@ -9,11 +9,13 @@ import { RouterModule, Router } from '@angular/router';
 import { Collection } from '../../../utils/models/collection.model';
 import { trigger, transition, style, animate, state } from '@angular/animations';
 import { CollectionService } from '../../../../core/services/data-access/collection/collection.service';
+import { WordRevealDirective } from '../../../utils/directives/word-reveal.directive';
+import { CardInitAnimationDirective } from '../../../utils/directives/card-init-animation.directive';
 
 @Component({
   selector: 'app-generic-gallery-templ',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule,WordRevealDirective,CardInitAnimationDirective],
   animations: [
     trigger('gridAnimation', [
       transition('* => *', [
@@ -38,7 +40,7 @@ import { CollectionService } from '../../../../core/services/data-access/collect
 })
 export class GenericGalleryTemplComponent implements AfterViewInit {
   collections: Collection[] = [];
-  productColumns: number = 3;
+  productColumns: number = 4;
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,

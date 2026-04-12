@@ -11,6 +11,8 @@ export class LinkHoverUnderlineDirective implements OnInit {
   @Input() dynamicColor?: string;
   @Input() defaultColor?: string; // Color cuando no hay hover
   @Input() hoverColor?: string;   // Color cuando hay hover
+  @Input() paddingTop?: string;
+ 
 
   private underline!: HTMLElement;
   private baseColor!: string;
@@ -35,6 +37,7 @@ export class LinkHoverUnderlineDirective implements OnInit {
     // Color base: primero defaultColor, luego underlineColor, luego currentColor
     this.baseColor = this.defaultColor ?? this.underlineColor ?? 'currentColor';
     this.renderer.setStyle(this.underline, 'backgroundColor', this.baseColor);
+    this.renderer.setStyle(this.underline, 'padding-top', this.paddingTop ?? '0');
 
     const parent = this.el.nativeElement;
     this.renderer.setStyle(parent, 'position', 'relative');

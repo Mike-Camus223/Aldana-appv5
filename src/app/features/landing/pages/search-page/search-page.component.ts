@@ -35,6 +35,8 @@ import { AldyCheckboxV1Directive } from '../../../../shared/utils/directives/ald
 import { trigger, transition, style, animate, state, query, stagger } from '@angular/animations';
 import { ProductUtils } from '../../../../shared/utils/dataEx/products-utils';
 import { LinkHoverUnderlineDirective } from '../../../../shared/utils/directives/link-hover-underline.directive';
+import { JournalService } from '../../../../core/services/data-access/journal/journal.service';
+import { JournalPostListRow } from '../../../../core/services/data-access/journal/journal.models';
 
 @Component({
   selector: 'app-search-page',
@@ -109,6 +111,8 @@ export class SearchPageComponent implements OnInit, OnDestroy {
   searchMode: 'input' | 'filters' | null = null;
   @Input() product!: Product;
   filterDescription: string = '';
+
+  journalPosts: JournalPostListRow[] = [];
   
   // Filter & Layout Properties
   showFilters = false;
@@ -292,6 +296,7 @@ export class SearchPageComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private authService: AuthService,
     private favoritesService: FavoritesService,
+    private journalService: JournalService,
     @Inject(PLATFORM_ID) private platformId: Object
   ) { }
 
@@ -433,9 +438,14 @@ export class SearchPageComponent implements OnInit, OnDestroy {
       });
   }
 
+  journalPostPath(post: JournalPostListRow): string | null {
+    return JournalService.buildPostPath(post);
+  }
+
   async fetchProducts() {
     this.loading = true;
     this.noResults = false;
+    this.journalPosts = [];
     
     // Handle empty search input
     if (this.searchMode === 'input' && (!this.searchTerm || !this.searchTerm.trim())) {
@@ -470,6 +480,16 @@ export class SearchPageComponent implements OnInit, OnDestroy {
         p.categories?.name?.toLowerCase().includes(search) ||
         p.subcategories?.name?.toLowerCase().includes(search)
       );
+
+      try {
+        this.journalPosts = await this.journalService.searchPublishedPosts(
+          this.searchTerm.trim(),
+          12
+        );
+      } catch (e) {
+        console.error('Journal search', e);
+        this.journalPosts = [];
+      }
     }
 
     this.originalProducts = ProductUtils.mapProducts(rawProducts);

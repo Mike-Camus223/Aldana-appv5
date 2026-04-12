@@ -1,0 +1,132 @@
+<div class="h-[72px] lg:h-[88px]"></div>
+
+<section class="bg-aldy-white py-16 min-h-[50vh]">
+  <div class="max-w-[900px] mx-auto px-6">
+    <ng-container *ngIf="loading">
+      <div class="w-full flex justify-center items-center py-24">
+        <div class="spinner"></div>
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="!loading && notFound">
+      <p class="text-center NewAldyFontType4 text-aldy-green-gray py-16">
+        No encontramos esta noticia o ya no está publicada.
+      </p>
+      <div class="flex justify-center">
+        <a
+          routerLink="/journal"
+          appLinkHoverUnderline
+          [dynamicColor]="'text-aldy-green-gray-bold'"
+          class="text-sm uppercase tracking-widest NewAldyTitle text-aldy-green-gray-bold"
+        >
+          Volver al diario
+        </a>
+      </div>
+    </ng-container>
+
+    <article *ngIf="!loading && post as p">
+      <nav class="mb-10">
+        <a
+          routerLink="/journal"
+          appLinkHoverUnderline
+          [dynamicColor]="'text-aldy-green-gray-bold'"
+          class="text-xs uppercase tracking-widest NewAldyFontType4 text-aldy-green-gray"
+        >
+          Diario
+        </a>
+        <span class="text-aldy-green-gray text-xs mx-2">/</span>
+        <span class="text-xs uppercase tracking-widest NewAldyFontType4 text-aldy-green-gray-bold">
+          {{ p.category?.name }}
+        </span>
+      </nav>
+
+      <p class="text-xs sm:text-sm font-light NewAldyFontType4 text-aldy-green-gray">
+        {{ formatDate(p) }}
+      </p>
+
+      <h1
+        class="mt-4 text-2xl sm:text-4xl NewAldyTitle font-light text-aldy-green-gray-bold leading-tight"
+      >
+        {{ p.title }}
+      </h1>
+
+      <div *ngIf="p.author" class="mt-8 flex items-center gap-4">
+        <img
+          *ngIf="p.author.avatar_url"
+          [src]="p.author.avatar_url"
+          [alt]="p.author.name"
+          class="w-14 h-14 rounded-full object-cover border border-[#d9e2d8]"
+        />
+        <div>
+          <p class="text-xs uppercase tracking-wider text-aldy-green-gray NewAldyFontType4">Autor</p>
+          <p class="text-sm NewAldyTitle text-aldy-green-gray-bold">{{ p.author.name }}</p>
+        </div>
+      </div>
+
+      <div *ngIf="p.cover_image" class="mt-10 overflow-hidden">
+        <img
+          [src]="p.cover_image"
+          [alt]="p.title"
+          class="w-full max-h-[70vh] object-cover"
+        />
+      </div>
+
+      <p
+        *ngIf="p.excerpt"
+        class="mt-10 text-base sm:text-lg NewAldyFontType4 text-aldy-green-gray-bold tracking-wide leading-relaxed"
+      >
+        {{ p.excerpt }}
+      </p>
+
+      <div class="mt-12 space-y-8 journal-blocks">
+        <ng-container *ngFor="let block of p.blocks">
+          <a
+            *ngIf="isLinkBlock(block)"
+            [href]="block.url"
+            target="_blank"
+            rel="noopener noreferrer"
+            appLinkHoverUnderline
+            [dynamicColor]="'text-aldy-green-gray-bold'"
+            class="inline-block text-aldy-green-gray-bold NewAldyTitle uppercase tracking-wider text-sm"
+          >
+            {{ block.content }}
+          </a>
+
+          <figure *ngIf="isImageBlock(block)" class="m-0">
+            <img
+              *ngIf="block.url"
+              [src]="block.url"
+              [alt]="block.content || ''"
+              class="w-full object-cover max-h-[80vh]"
+            />
+            <figcaption
+              *ngIf="block.content"
+              class="mt-2 text-xs text-aldy-green-gray NewAldyFontType4"
+            >
+              {{ block.content }}
+            </figcaption>
+          </figure>
+
+          <p
+            *ngIf="!isLinkBlock(block) && !isImageBlock(block) && block.content"
+            class="text-sm sm:text-base NewAldyFontType4 text-aldy-green-gray-bold leading-relaxed whitespace-pre-wrap"
+          >
+            {{ block.content }}
+          </p>
+        </ng-container>
+      </div>
+
+      <div class="mt-16 pt-10 border-t border-[#d9e2d8] flex justify-center">
+        <a
+          routerLink="/journal"
+          [queryParams]="p.category?.slug ? { categoria: p.category?.slug } : null"
+          appLinkHoverUnderline
+          [dynamicColor]="'text-aldy-green-gray-bold'"
+          class="tracking-wide text-sm NewAldyTitle uppercase text-aldy-green-gray-bold"
+        >
+          Ver más notas
+        </a>
+      </div>
+    </article>
+  </div>
+</section>

@@ -68,10 +68,20 @@ export const PUBLIC_ROUTES: Routes = [
       //   path: 'checkout',
       //   loadChildren: () =>
       //     import('../../../features/checkout/checkout.routes').then(m => m.checkoutRoutes),
-      // },
+      // },¨
+      {
+        path: 'journal/:categorySlug/:year/:month/:postSlug',
+        loadComponent: () =>
+          import('../../components/templates/journal-post/journal-post.component').then(
+            (c) => c.JournalPostComponent
+          ),
+      },
       {
         path: 'journal',
-        loadComponent: () => import('../../components/templates/journal/journal.component').then(c => c.JournalComponent),
+        loadComponent: () =>
+          import('../../components/templates/journal/journal.component').then(
+            (c) => c.JournalComponent
+          ),
       },
       {
         path: 'busqueda',

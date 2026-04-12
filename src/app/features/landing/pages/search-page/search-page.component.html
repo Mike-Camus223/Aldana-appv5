@@ -17,6 +17,49 @@
       <div class="border-b-1 w-full max-w-[18rem] xs:max-w-sm sm:max-w-xl md:max-w-4xl border-[#AEC2A9]"></div>
     </div>
 
+    <!-- Diario: resultados de notas (búsqueda por texto) -->
+    <div
+      *ngIf="!loading && hasSearched && searchMode === 'input' && journalPosts.length > 0"
+      class="w-full max-w-screen-3xl mx-auto px-2 xs:px-4 mt-10 mb-6"
+    >
+      <p
+        class="text-xs uppercase tracking-widest text-aldy-green-gray NewAldyFontType4 mb-6 text-center"
+      >
+        En el diario
+      </p>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-10">
+        <div *ngFor="let j of journalPosts">
+          <ng-container *ngIf="journalPostPath(j) as path">
+            <a [routerLink]="path" class="block group">
+              <div class="overflow-hidden">
+                <img
+                  *ngIf="j.cover_image"
+                  [src]="j.cover_image"
+                  [alt]="j.title"
+                  class="w-full aspect-[3/4] object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+                <div
+                  *ngIf="!j.cover_image"
+                  class="w-full aspect-[3/4] bg-[#eef4ec]"
+                ></div>
+              </div>
+              <h4
+                class="mt-4 text-sm sm:text-lg NewAldyTitle text-aldy-green-gray-bold leading-snug"
+              >
+                {{ j.title }}
+              </h4>
+              <p
+                *ngIf="j.excerpt"
+                class="mt-2 text-xs NewAldyFontType4 text-aldy-green-gray line-clamp-3 tracking-wide"
+              >
+                {{ j.excerpt }}
+              </p>
+            </a>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+
     <!-- RESULTS INFO -->
     <div *ngIf="!loading && hasSearched && products.length > 0" [@cardEnterAnimation]="products.length"
       class="w-full text-center py-6 NewAldyFontType4 text-sm text-aldy-green-gray">

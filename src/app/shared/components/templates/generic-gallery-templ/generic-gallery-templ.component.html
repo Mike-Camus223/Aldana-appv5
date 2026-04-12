@@ -1,70 +1,133 @@
-<div class="inline-flex justify-end sm:px-6 lg:px-12 xl:px-16 2xl:px-24 items-center py-2 border-b border-[#d9e2d8] w-full h-auto">
+<!-- TOP BAR (COLUMN SELECTOR) -->
+<div
+  class="inline-flex justify-end sm:px-6 lg:px-12 xl:px-16 2xl:px-24 items-center py-2 border-b border-[#d9e2d8] w-full h-auto"
+>
   <div class="w-40 h-auto justify-end gap-2 hidden lg:flex">
-    <button type="button" (click)="setProductColumns(2)" [ngClass]="productColumns === 2 ? 'bg-aldy-medium-2' : ''"
-      class="group py-[7px] px-2 hover:bg-aldy-medium-2 transition-all duration-300 ease-in-out cursor-pointer border border-aldy-medium">
+
+    <!-- 2 COLS -->
+    <button
+      type="button"
+      (click)="setProductColumns(2)"
+      [ngClass]="productColumns === 2 ? 'bg-aldy-medium-2' : ''"
+      class="group py-[7px] px-2 hover:bg-aldy-medium-2 transition-all duration-300 ease-in-out cursor-pointer border border-aldy-medium"
+    >
       <div class="grid grid-cols-2 gap-[2px] grid-rows-2">
-        <span *ngFor="let n of [1,2,3,4]" class="h-[12px] w-[12px] transition-all duration-300 ease-in-out"
-          [ngClass]="productColumns === 2 ? 'bg-aldy-white' : 'bg-aldy-medium-2 group-hover:bg-aldy-white'"></span>
+        <span
+          *ngFor="let n of [1,2,3,4]"
+          class="h-[12px] w-[12px] transition-all duration-300 ease-in-out"
+          [ngClass]="productColumns === 2 ? 'bg-aldy-white' : 'bg-aldy-medium-2 group-hover:bg-aldy-white'"
+        ></span>
       </div>
     </button>
 
-    <button type="button" (click)="setProductColumns(3)" [ngClass]="productColumns === 3 ? 'bg-aldy-medium-2' : ''"
-      class="group py-[7px] px-2 hover:bg-aldy-medium-2 transition-all duration-300 ease-in-out cursor-pointer border border-aldy-medium">
+    <!-- 3 COLS -->
+    <button
+      type="button"
+      (click)="setProductColumns(3)"
+      [ngClass]="productColumns === 3 ? 'bg-aldy-medium-2' : ''"
+      class="group py-[7px] px-2 hover:bg-aldy-medium-2 transition-all duration-300 ease-in-out cursor-pointer border border-aldy-medium"
+    >
       <div class="grid grid-cols-3 gap-[2px] grid-rows-3">
-        <span *ngFor="let n of [1,2,3,4,5,6,7,8,9]" class="h-[8px] w-[8px] transition-all duration-300 ease-in-out"
-          [ngClass]="productColumns === 3 ? 'bg-aldy-white' : 'bg-aldy-medium-2 group-hover:bg-aldy-white'"></span>
+        <span
+          *ngFor="let n of [1,2,3,4,5,6,7,8,9]"
+          class="h-[8px] w-[8px] transition-all duration-300 ease-in-out"
+          [ngClass]="productColumns === 3 ? 'bg-aldy-white' : 'bg-aldy-medium-2 group-hover:bg-aldy-white'"
+        ></span>
       </div>
     </button>
 
-    <button type="button" (click)="setProductColumns(4)" [ngClass]="productColumns === 4 ? 'bg-aldy-medium-2' : ''"
-      class="group py-[7px] px-2 hover:bg-aldy-medium-2 transition-all duration-300 ease-in-out cursor-pointer border border-aldy-medium">
+    <!-- 4 COLS -->
+    <button
+      type="button"
+      (click)="setProductColumns(4)"
+      [ngClass]="productColumns === 4 ? 'bg-aldy-medium-2' : ''"
+      class="group py-[7px] px-2 hover:bg-aldy-medium-2 transition-all duration-300 ease-in-out cursor-pointer border border-aldy-medium"
+    >
       <div class="grid grid-cols-4 gap-[2px] grid-rows-4">
-        <span *ngFor="let n of [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]"
+        <span
+          *ngFor="let n of [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]"
           class="h-[5px] w-[5px] transition-all duration-300 ease-in-out"
-          [ngClass]="productColumns === 4 ? 'bg-aldy-white' : 'bg-aldy-medium-2 group-hover:bg-aldy-white'"></span>
+          [ngClass]="productColumns === 4 ? 'bg-aldy-white' : 'bg-aldy-medium-2 group-hover:bg-aldy-white'"
+        ></span>
       </div>
     </button>
+
   </div>
 </div>
+
+<!-- GALLERY -->
 <div class="px-4 sm:px-6 lg:px-12 xl:px-16 2xl:px-24 py-12 w-full">
   <div class="max-w-screen-3xl mx-auto">
-    <div *ngIf="collections.length === 0" class="text-center NewAldyFontType4 tracking-wider text-sm lg:text-sm text-aldy-green-gray py-16">
+
+    <!-- EMPTY STATE -->
+    <div
+      *ngIf="collections.length === 0"
+      class="text-center NewAldyFontType4 tracking-wider text-sm text-aldy-green-gray py-16"
+    >
       No hay colecciones disponibles en este momento.
     </div>
-    <div [@gridAnimation]="productColumns"
-    class="grid gap-5 transition-all duration-500 ease-in-out" [ngClass]="[
-      productColumns === 2
-        ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-2 mx-0 xl:mx-60'
-        : '',
-      productColumns === 3 ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 mx-0' : '',
-      productColumns === 4 ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 mx-0' : ''
-    ]">
+
+    <!-- GRID -->
+    <div
+      *ngIf="collections.length > 0"
+      [@gridAnimation]="productColumns"
+      class="grid gap-6 transition-all duration-500 ease-in-out"
+      [ngClass]="[
+        productColumns === 2
+          ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-2 mx-0 xl:mx-60'
+          : '',
+        productColumns === 3
+          ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 mx-0'
+          : '',
+        productColumns === 4
+          ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 mx-0'
+          : ''
+      ]"
+    >
+
+      <!-- CARD -->
       <ng-container *ngFor="let collection of collections">
-        <div class="flex flex-col items-center w-full">
-          <a
-            [routerLink]="['/colecciones', collection.slug]"
-            class="group block relative w-full cursor-pointer"
-          >
-            <div class="aspect-[3/4] overflow-hidden w-full bg-gray-100 relative">
+        <a
+          [routerLink]="['/colecciones', collection.slug]"
+          class="flex flex-col items-center w-full group"
+        >
+
+          <!-- IMAGE -->
+          <div class="group block relative w-full cursor-pointer">
+            <div class="aspect-[3/4] overflow-hidden w-full bg-aldy-white relative">
+
               <img
+                appCardInitAnimation="up"
                 [src]="collection.cover_image_url"
                 [alt]="collection.name"
-                class="object-cover object-top w-full h-full transition-transform duration-500 group-hover:scale-110"
+                class="object-cover object-top w-full h-full transition-transform duration-700 ease-out"
               />
-              <div
-                class="absolute inset-0 bg-aldy-medium-2/40 z-20 flex flex-col items-center justify-center text-center px-2 transition-opacity duration-300 group-hover:opacity-0"
-              >
-                <h3 class="text-white text-sm sm:text-base font-semibold uppercase tracking-wide drop-shadow mb-1">
-                  {{ collection.name }}
-                </h3>
-                <p class="text-white text-xs drop-shadow">
-                  {{ collection.season }} - {{ collection.release_date | date: 'yyyy' }}
-                </p>
-              </div>
             </div>
-          </a>
-        </div>
+          </div>
+
+          <!-- TEXT -->
+          <div appWordReveal class="w-full flex flex-col items-center pt-5 text-center">
+
+            <!-- NAME -->
+            <h3
+            
+              class="text-aldy-green-gray-bold text-2xl sm:text-3xl tracking-wider NewAldyTitle leading-none font-light uppercase drop-shadow"
+            >
+              {{ collection.name }}
+            </h3>
+
+            <!-- META -->
+            <p class="text-aldy-green-gray text-xs tracking-widest mt-2 uppercase opacity-70">
+              {{ collection.season }} · {{ collection.release_date | date: 'yyyy' }}
+            </p>
+
+            <!-- DECORATIVE LINE -->
+            <div class="w-8 h-[1px] bg-aldy-green-gray mt-3 opacity-40"></div>
+
+          </div>
+        </a>
       </ng-container>
+
     </div>
   </div>
 </div>
