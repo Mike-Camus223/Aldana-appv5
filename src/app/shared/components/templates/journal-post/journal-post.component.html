@@ -1,13 +1,16 @@
 <div class="h-[72px] lg:h-[88px]"></div>
 
-<section class="bg-aldy-white py-16 min-h-[50vh]">
-  <div class="max-w-[900px] mx-auto px-6">
+<section class="bg-aldy-white py-20">
+  <div class="max-w-[1700px] mx-auto px-6">
+
+    <!-- LOADING -->
     <ng-container *ngIf="loading">
       <div class="w-full flex justify-center items-center py-24">
         <div class="spinner"></div>
       </div>
     </ng-container>
 
+    <!-- NOT FOUND -->
     <ng-container *ngIf="!loading && notFound">
       <p class="text-center NewAldyFontType4 text-aldy-green-gray py-16">
         No encontramos esta noticia o ya no está publicada.
@@ -25,7 +28,9 @@
     </ng-container>
 
     <article *ngIf="!loading && post as p">
-      <nav class="mb-10">
+
+      <!-- BREADCRUMB -->
+      <nav class="mb-12 text-center">
         <a
           routerLink="/journal"
           appLinkHoverUnderline
@@ -40,46 +45,40 @@
         </span>
       </nav>
 
-      <p class="text-xs sm:text-sm font-light NewAldyFontType4 text-aldy-green-gray">
-        {{ formatDate(p) }}
-      </p>
+      <!-- HEADER -->
+      <div class="text-center max-w-[900px] mx-auto">
+        <p appWordReveal class="text-xs NewAldyFontType4 text-aldy-green-gray">
+          {{ formatDate(p) }}
+        </p>
 
-      <h1
-        class="mt-4 text-2xl sm:text-4xl NewAldyTitle font-light text-aldy-green-gray-bold leading-tight"
-      >
-        {{ p.title }}
-      </h1>
+        <h1 appWordReveal  class="mt-6 text-3xl md:text-5xl NewAldyTitle text-aldy-green-gray-bold leading-tight">
+          {{ p.title }}
+        </h1>
 
-      <div *ngIf="p.author" class="mt-8 flex items-center gap-4">
-        <img
-          *ngIf="p.author.avatar_url"
-          [src]="p.author.avatar_url"
-          [alt]="p.author.name"
-          class="w-14 h-14 rounded-full object-cover border border-[#d9e2d8]"
-        />
-        <div>
-          <p class="text-xs uppercase tracking-wider text-aldy-green-gray NewAldyFontType4">Autor</p>
-          <p class="text-sm NewAldyTitle text-aldy-green-gray-bold">{{ p.author.name }}</p>
-        </div>
+        <p 
+          *ngIf="p.excerpt"
+          class="mt-6 text-base md:text-lg NewAldyFontType4 text-aldy-green-gray leading-relaxed"
+        >
+          {{ p.excerpt }}
+        </p>
       </div>
 
-      <div *ngIf="p.cover_image" class="mt-10 overflow-hidden">
+      <!-- HERO -->
+      <div *ngIf="p.cover_image" class="mt-16">
         <img
+        appCardInitAnimation="up"
           [src]="p.cover_image"
           [alt]="p.title"
-          class="w-full max-h-[70vh] object-cover"
+          class="w-full h-[60vh] object-cover"
         />
       </div>
 
-      <p
-        *ngIf="p.excerpt"
-        class="mt-10 text-base sm:text-lg NewAldyFontType4 text-aldy-green-gray-bold tracking-wide leading-relaxed"
-      >
-        {{ p.excerpt }}
-      </p>
+      <!-- BLOQUES -->
+      <div class="mt-20 space-y-28">
 
-      <div class="mt-12 space-y-8 journal-blocks">
         <ng-container *ngFor="let block of p.blocks">
+
+          <!-- LINK -->
           <a
             *ngIf="isLinkBlock(block)"
             [href]="block.url"
@@ -87,39 +86,83 @@
             rel="noopener noreferrer"
             appLinkHoverUnderline
             [dynamicColor]="'text-aldy-green-gray-bold'"
-            class="inline-block text-aldy-green-gray-bold NewAldyTitle uppercase tracking-wider text-sm"
+            class="block text-center text-aldy-green-gray-bold NewAldyTitle uppercase tracking-wider text-sm"
           >
             {{ block.content }}
           </a>
 
-          <figure *ngIf="isImageBlock(block)" class="m-0">
-            <img
-              *ngIf="block.url"
-              [src]="block.url"
-              [alt]="block.content || ''"
-              class="w-full object-cover max-h-[80vh]"
-            />
-            <figcaption
-              *ngIf="block.content"
-              class="mt-2 text-xs text-aldy-green-gray NewAldyFontType4"
-            >
-              {{ block.content }}
-            </figcaption>
-          </figure>
-
-          <p
-            *ngIf="!isLinkBlock(block) && !isImageBlock(block) && block.content"
-            class="text-sm sm:text-base NewAldyFontType4 text-aldy-green-gray-bold leading-relaxed whitespace-pre-wrap"
+          <!-- IMAGEN + TEXTO (FIX FINAL) -->
+          <div
+            *ngIf="isImageBlock(block)"
+            class="flex flex-col md:flex-row items-center gap-16"
+            [ngClass]="{
+              'md:flex-row-reverse': getImageIndex(block) % 2 === 0
+            }"
           >
-            {{ block.content }}
-          </p>
+
+            <!-- IMAGEN -->
+            <div class="w-full md:w-1/2 flex-shrink-0">
+              <img
+              appCardInitAnimation="up"
+                [src]="block.url"
+                [alt]="p.title"
+                class="w-full h-[520px] object-cover"
+              />
+            </div>
+
+            <!-- TEXTO -->
+            <div
+              class="w-full md:w-1/2"
+              [ngClass]="{
+                'md:pl-12 md:pr-0': getImageIndex(block) % 2 !== 0,
+                'md:pr-12 md:pl-0': getImageIndex(block) % 2 === 0
+              }"
+            >
+              <p
+                *ngIf="block.content"
+                class="max-w-[520px] NewAldyFontType4 text-aldy-green-gray leading-relaxed whitespace-pre-wrap"
+                [ngClass]="{
+                  'mr-auto text-left': getImageIndex(block) % 2 !== 0,
+                  'ml-auto text-left': getImageIndex(block) % 2 === 0
+                }"
+              >
+                {{ block.content }}
+              </p>
+            </div>
+
+          </div>
+
+          <!-- TEXTO SOLO -->
+          <div
+            *ngIf="!isLinkBlock(block) && !isImageBlock(block) && block.content"
+            class="max-w-[800px] mx-auto text-center"
+          >
+            <p class="text-base NewAldyFontType4 text-aldy-green-gray leading-relaxed whitespace-pre-wrap">
+              {{ block.content }}
+            </p>
+          </div>
+
         </ng-container>
+
       </div>
 
-      <div class="mt-16 pt-10 border-t border-[#d9e2d8] flex justify-center">
+      <!-- AUTOR -->
+      <div *ngIf="p.author" class="mt-24 flex justify-center items-center gap-4">
+        <img
+        appCardInitAnimation="up"
+          *ngIf="p.author.avatar_url"
+          [src]="p.author.avatar_url"
+          class="w-12 h-12 rounded-full object-cover"
+        />
+        <p class="NewAldyTitle text-aldy-green-gray-bold text-sm">
+          {{ p.author.name }}
+        </p>
+      </div>
+
+      <!-- VOLVER -->
+      <div class="mt-16 text-center">
         <a
           routerLink="/journal"
-          [queryParams]="p.category?.slug ? { categoria: p.category?.slug } : null"
           appLinkHoverUnderline
           [dynamicColor]="'text-aldy-green-gray-bold'"
           class="tracking-wide text-sm NewAldyTitle uppercase text-aldy-green-gray-bold"
@@ -127,6 +170,7 @@
           Ver más notas
         </a>
       </div>
+
     </article>
   </div>
 </section>

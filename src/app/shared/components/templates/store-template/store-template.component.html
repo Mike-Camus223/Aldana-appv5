@@ -70,7 +70,7 @@
           </div>
 
           <!-- Acordeón: Categorías -->
-          <app-acordiongeneric [title]="'Categorías'" [value]="'categorias'" [selectedMultiple]="openAccordionsArray"
+          <app-acordiongeneric [title]="'Temporadas'" [value]="'categorias'" [selectedMultiple]="openAccordionsArray"
             (toggled)="onAccordionToggled($event)">
             <div class="space-y-1">
               <!-- Sección Pret a Porter (Dropdown principal) -->
@@ -94,39 +94,7 @@
                   </span>
                 </button>
                 <div *ngIf="pretAPorterOpen" class="pl-2 mt-1 space-y-2">
-                  <div class="border-l border-aldy-medium/20 pl-2">
-                    <button type="button" (click)="toggleCollectionDropdown('normal-general')"
-                      class="w-full cursor-pointer flex items-center justify-between py-1 pl-2 pr-8 text-xs font-light text-aldy-green-gray hover:text-aldy-medium transition-colors">
-                      <span class="NewAldyFontType4 uppercase tracking-wider"
-                        [ngClass]="{'text-aldy-medium font-medium': selectedCollectionId === 'general'}">General</span>
-                        <span class="relative h-4 w-4 flex items-center justify-center">
-                    <lucide-icon name="Plus" class="absolute h-3 w-3 transition-all duration-300 ease-in-out" [ngClass]="{
-        'opacity-100 scale-100 rotate-0': !isCollectionDropdownOpen('normal-general'),
-        'opacity-0 scale-90 rotate-90': isCollectionDropdownOpen('normal-general')
-      }">
-                    </lucide-icon>
-                    <lucide-icon name="Minus" class="absolute h-3 w-3 transition-all duration-300 ease-in-out"
-                      [ngClass]="{
-        'opacity-0 scale-90 -rotate-90': !isCollectionDropdownOpen('normal-general'),
-        'opacity-100 scale-100 rotate-0': isCollectionDropdownOpen('normal-general')
-      }">
-                    </lucide-icon>
-                  </span>
-                    </button>
-                    <div *ngIf="isCollectionDropdownOpen('normal-general')" class="pl-4 mt-1 space-y-1">
-                      <div *ngFor="let category of getCategoriesForCollection('normal', 'general')" class="space-y-1">
-                        <label
-                          class="flex items-center gap-2 py-1 px-2 text-xs uppercase tracking-wider NewAldyFontType4 cursor-pointer w-full hover:bg-aldy-light">
-                          <input type="checkbox" [checked]="isCategorySelectedInScope('normal', 'general', category.value)"
-                            (change)="toggleCategoryInScope('normal', 'general', category.value)" AldyCheckboxV1 />
-                          <span
-                            [ngClass]="isCategorySelectedInScope('normal', 'general', category.value) ? 'text-aldy-medium font-semibold' : 'text-aldy-green-gray'">
-                            {{ category.label }}
-                          </span>
-                        </label>
-                      </div>
-                    </div>
-                  </div>
+
 
                   <!-- Colecciones Dropdowns (Antiguo estilo: solo lista de checkboxes) -->
                   <div *ngFor="let col of topCollections" class="border-l border-aldy-medium/20 pl-2">
@@ -157,6 +125,41 @@
                             (change)="toggleCategoryInScope('normal', col.id, category.value)" AldyCheckboxV1 />
                           <span
                             [ngClass]="isCategorySelectedInScope('normal', col.id, category.value) ? 'text-aldy-medium font-semibold' : 'text-aldy-green-gray'">
+                            {{ category.label }}
+                          </span>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+
+
+                  <div class="border-l border-aldy-medium/20 pl-2">
+                    <button type="button" (click)="toggleCollectionDropdown('normal-general')"
+                      class="w-full cursor-pointer flex items-center justify-between py-1 pl-2 pr-8 text-xs font-light text-aldy-green-gray hover:text-aldy-medium transition-colors">
+                      <span class="NewAldyFontType4 uppercase tracking-wider"
+                        [ngClass]="{'text-aldy-medium font-medium': selectedCollectionId === 'general'}">Colecciones pasadas</span>
+                        <span class="relative h-4 w-4 flex items-center justify-center">
+                    <lucide-icon name="Plus" class="absolute h-3 w-3 transition-all duration-300 ease-in-out" [ngClass]="{
+        'opacity-100 scale-100 rotate-0': !isCollectionDropdownOpen('normal-general'),
+        'opacity-0 scale-90 rotate-90': isCollectionDropdownOpen('normal-general')
+      }">
+                    </lucide-icon>
+                    <lucide-icon name="Minus" class="absolute h-3 w-3 transition-all duration-300 ease-in-out"
+                      [ngClass]="{
+        'opacity-0 scale-90 -rotate-90': !isCollectionDropdownOpen('normal-general'),
+        'opacity-100 scale-100 rotate-0': isCollectionDropdownOpen('normal-general')
+      }">
+                    </lucide-icon>
+                  </span>
+                    </button>
+                    <div *ngIf="isCollectionDropdownOpen('normal-general')" class="pl-4 mt-1 space-y-1">
+                      <div *ngFor="let category of getCategoriesForCollection('normal', 'general')" class="space-y-1">
+                        <label
+                          class="flex items-center gap-2 py-1 px-2 text-xs uppercase tracking-wider NewAldyFontType4 cursor-pointer w-full hover:bg-aldy-light">
+                          <input type="checkbox" [checked]="isCategorySelectedInScope('normal', 'general', category.value)"
+                            (change)="toggleCategoryInScope('normal', 'general', category.value)" AldyCheckboxV1 />
+                          <span
+                            [ngClass]="isCategorySelectedInScope('normal', 'general', category.value) ? 'text-aldy-medium font-semibold' : 'text-aldy-green-gray'">
                             {{ category.label }}
                           </span>
                         </label>

@@ -54,8 +54,8 @@
             (change)="onSortChange($any($event.target).value)"
             class="appearance-none h-full bg-transparent border border-aldy-medium-2 pl-4 pr-10 text-xs uppercase tracking-wider font-medium text-aldy-green-gray focus:outline-none cursor-pointer hover:bg-aldy-medium-2 hover:text-white transition-colors min-w-[200px]"
           >
-            <option value="desc" class="text-gray-800 bg-white">Más recientes</option>
-            <option value="asc" class="text-gray-800 bg-white">Más antiguas</option>
+            <option value="desc" class="text-gray-800 bg-aldy-white">Más recientes</option>
+            <option value="asc" class="text-gray-800 bg-aldy-white">Más antiguas</option>
           </select>
           <span
             class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-aldy-green-gray text-xs"
@@ -69,11 +69,11 @@
             (change)="onYearChange($any($event.target).value)"
             class="appearance-none h-full bg-transparent border border-aldy-medium-2 pl-4 pr-10 text-xs uppercase tracking-wider font-medium text-aldy-green-gray focus:outline-none cursor-pointer hover:bg-aldy-medium-2 hover:text-white transition-colors min-w-[180px]"
           >
-            <option value="" class="text-gray-800 bg-white">Todos los años</option>
+            <option value="" class="text-gray-800 bg-aldy-white">Todos los años</option>
             <option
               *ngFor="let y of yearOptions"
               [value]="numStr(y)"
-              class="text-gray-800 bg-white"
+              class="text-gray-800 bg-aldy-white"
             >
               {{ y }}
             </option>
@@ -91,11 +91,11 @@
             [disabled]="selectedYear == null || monthOptions.length === 0"
             class="appearance-none h-full bg-transparent border border-aldy-medium-2 pl-4 pr-10 text-xs uppercase tracking-wider font-medium text-aldy-green-gray focus:outline-none cursor-pointer hover:bg-aldy-medium-2 hover:text-white transition-colors min-w-[200px] disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            <option value="" class="text-gray-800 bg-white">Todos los meses</option>
+            <option value="" class="text-gray-800 bg-aldy-white">Todos los meses</option>
             <option
               *ngFor="let m of monthOptions"
               [value]="numStr(m)"
-              class="text-gray-800 bg-white"
+              class="text-gray-800 bg-aldy-white"
             >
               {{ monthLabels[m] || m }}
             </option>
@@ -133,13 +133,15 @@
               class="block overflow-hidden"
             >
               <img
+                appCardInitAnimation="up"
                 [src]="coverSrc(post)"
                 [alt]="post.title"
-                class="w-full aspect-[3/4] object-cover transition-transform duration-700 hover:scale-105"
+                class="w-full aspect-[3/4] object-cover"
               />
             </a>
             <div *ngIf="!postHref(post)" class="block overflow-hidden">
               <img
+                appCardInitAnimation="up"
                 [src]="coverSrc(post)"
                 [alt]="post.title"
                 class="w-full aspect-[3/4] object-cover"

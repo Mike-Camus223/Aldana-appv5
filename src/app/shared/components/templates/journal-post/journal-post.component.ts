@@ -4,11 +4,13 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { JournalService } from '../../../../core/services/data-access/journal/journal.service';
 import { JournalPostBlock, JournalPostDetail } from '../../../../core/services/data-access/journal/journal.models';
 import { LinkHoverUnderlineDirective } from '../../../utils/directives/link-hover-underline.directive';
+import { CardInitAnimationDirective } from '../../../utils/directives/card-init-animation.directive';
+import { WordRevealDirective } from '../../../utils/directives/word-reveal.directive';
 
 @Component({
   selector: 'app-journal-post',
   standalone: true,
-  imports: [CommonModule, RouterLink, LinkHoverUnderlineDirective],
+  imports: [CommonModule, RouterLink, LinkHoverUnderlineDirective, CardInitAnimationDirective ,WordRevealDirective],
   templateUrl: './journal-post.component.html',
   styleUrl: './journal-post.component.css',
 })
@@ -20,11 +22,14 @@ export class JournalPostComponent implements OnInit {
   loading = true;
   notFound = false;
 
+  private imageCounter = 0;
+
   ngOnInit(): void {
     this.route.paramMap.subscribe(async (params) => {
       this.loading = true;
       this.notFound = false;
       this.post = null;
+      this.imageCounter = 0;
 
       const categorySlug = params.get('categorySlug') ?? '';
       const year = Number(params.get('year'));
@@ -51,6 +56,20 @@ export class JournalPostComponent implements OnInit {
         this.loading = false;
       }
     });
+  }
+
+  getImageIndex(block: JournalPostBlock): number {
+    if ((block as any).__imgIndex !== undefined) {
+      return (block as any).__imgIndex;
+    }
+
+    if (this.isImageBlock(block)) {
+      this.imageCounter++;
+      (block as any).__imgIndex = this.imageCounter;
+      return this.imageCounter;
+    }
+
+    return -1;
   }
 
   formatDate(p: JournalPostDetail): string {

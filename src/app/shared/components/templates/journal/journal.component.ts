@@ -20,6 +20,7 @@ import {
   JournalCategory,
   JournalPostListRow,
 } from '../../../../core/services/data-access/journal/journal.models';
+import { CardInitAnimationDirective } from '../../../utils/directives/card-init-animation.directive';
 
 @Component({
   selector: 'app-journal',
@@ -29,6 +30,7 @@ import {
     RouterModule,
     WordRevealDirective,
     LinkHoverUnderlineDirective,
+    CardInitAnimationDirective,
   ],
   templateUrl: './journal.component.html',
   styleUrl: './journal.component.css',

@@ -1,4 +1,5 @@
 import { inject, Injectable } from '@angular/core';
+import { environment } from '../../../../../environments/environment';
 import { getDataHelperService } from '../getDataHelper.service';
 import {
   JournalAuthor,
@@ -24,6 +25,7 @@ const POST_LIST_SELECT = `
   )
 `;
 
+
 function single<T>(rel: T | T[] | null | undefined): T | null {
   if (rel == null) return null;
   return Array.isArray(rel) ? rel[0] ?? null : rel;
@@ -46,7 +48,7 @@ export class JournalService {
       title: r['title'] as string,
       slug: r['slug'] as string,
       excerpt: (r['excerpt'] as string) ?? null,
-      cover_image: (r['cover_image'] as string) ?? null,
+      cover_image: JournalService.normalizeImageUrl((r['cover_image'] as string) ?? null),
       published_at: (r['published_at'] as string) ?? null,
       year: (r['year'] as number) ?? null,
       month: (r['month'] as number) ?? null,
@@ -207,7 +209,7 @@ export class JournalService {
       title: r['title'] as string,
       slug: r['slug'] as string,
       excerpt: (r['excerpt'] as string) ?? null,
-      cover_image: (r['cover_image'] as string) ?? null,
+      cover_image: JournalService.normalizeImageUrl((r['cover_image'] as string) ?? null),
       published_at: (r['published_at'] as string) ?? null,
       year: (r['year'] as number) ?? null,
       month: (r['month'] as number) ?? null,
@@ -218,9 +220,25 @@ export class JournalService {
         r['author'] as JournalAuthor | JournalAuthor[] | null
       ),
       blocks: Array.isArray(r['blocks'])
-        ? (r['blocks'] as JournalPostBlock[])
+        ? (r['blocks'] as JournalPostBlock[]).map((b) => {
+            const isImg =
+              ['image', 'img', 'cover'].includes((b.type || '').toLowerCase());
+            if (isImg) {
+              // If it's an image block, the URL might be in 'url' or 'content' (due to DB constraint)
+              const rawUrl = b.url || b.content;
+              return {
+                ...b,
+                url: JournalService.normalizeImageUrl(rawUrl),
+              };
+            }
+            return b;
+          })
         : [],
     };
+
+    if (row.author) {
+      row.author.avatar_url = JournalService.normalizeImageUrl(row.author.avatar_url);
+    }
 
     const cat = row.category;
     if (!cat || cat.slug !== categorySlug) return null;
@@ -266,5 +284,15 @@ export class JournalService {
     if (!categorySlug) return null;
     const monthSeg = String(m).padStart(2, '0');
     return `/journal/${categorySlug}/${y}/${monthSeg}/${post.slug}`;
+  }
+
+  static normalizeImageUrl(url: string | null | undefined): string | null {
+    if (!url) return null;
+    const u = url.trim();
+    if (!u) return null;
+    if (u.startsWith('http') || u.startsWith('data:')) return u;
+    const base = `${environment.SUPABASE_URL}/storage/v1/object/public/aldana-app/`;
+    const clean = u.startsWith('/') ? u.substring(1) : u;
+    return `${base}${clean}`;
   }
 }
