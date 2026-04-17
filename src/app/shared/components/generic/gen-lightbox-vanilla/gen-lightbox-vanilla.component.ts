@@ -14,12 +14,19 @@ import {
 import { CommonModule } from '@angular/common';
 import { MediaItem } from '../../../utils/models/objectsGallery.model';
 
-import { ChevronLeft, ChevronRight, LUCIDE_ICONS, LucideAngularModule, LucideIconProvider,  Minus, Plus, X } from 'lucide-angular';
+import {
+  ChevronLeft,
+  ChevronRight,
+  LUCIDE_ICONS,
+  LucideAngularModule,
+  LucideIconProvider,
+  X
+} from 'lucide-angular';
 
 @Component({
   selector: 'app-gen-lightbox-vanilla',
   standalone: true,
-  imports: [CommonModule,LucideAngularModule],
+  imports: [CommonModule, LucideAngularModule],
   templateUrl: './gen-lightbox-vanilla.component.html',
   styleUrls: ['./gen-lightbox-vanilla.component.css'],
   providers: [
@@ -27,8 +34,6 @@ import { ChevronLeft, ChevronRight, LUCIDE_ICONS, LucideAngularModule, LucideIco
       provide: LUCIDE_ICONS,
       multi: true,
       useValue: new LucideIconProvider({
-        Plus,
-        Minus,
         ChevronLeft,
         ChevronRight,
         X
@@ -41,6 +46,7 @@ export class GenLightboxVanillaComponent implements OnChanges, AfterViewInit {
   @Input() isOpen = false;
   @Input() items: MediaItem[] = [];
   @Input() startIndex = 0;
+  
 
   @Output() closed = new EventEmitter<void>();
   @Output() indexChange = new EventEmitter<number>();
@@ -50,7 +56,7 @@ export class GenLightboxVanillaComponent implements OnChanges, AfterViewInit {
   activeIndex = 0;
   zoomed = false;
   isClosing = false;
-
+  private isAnimating = false;
   // DRAG ORIGINAL
   isDragging = false;
   private _dragMoved = false;
@@ -89,8 +95,11 @@ export class GenLightboxVanillaComponent implements OnChanges, AfterViewInit {
     });
   }
 
-  // ─── ZOOM ─────────────────
-
+  // VIDEO CHECK
+  isVideo(item: MediaItem): boolean {
+    return item.type === 'video';
+  }
+  // ZOOM
   getImgTransform(): string {
     if (!this.zoomed) return 'scale(1)';
     return `scale(${this.ZOOM_SCALE}) translate(${this.translateX}px, ${this.translateY}px)`;
@@ -106,8 +115,7 @@ export class GenLightboxVanillaComponent implements OnChanges, AfterViewInit {
     this.toggleZoom();
   }
 
-  // ─── DRAG ─────────────────
-
+  // DRAG
   startDrag(e: MouseEvent): void {
     if (!this.zoomed) return;
     e.preventDefault();
@@ -144,7 +152,7 @@ export class GenLightboxVanillaComponent implements OnChanges, AfterViewInit {
     setTimeout(() => { this._dragMoved = false; }, 0);
   }
 
-  //  SCROLL PARA ZOOM (NUEVO)
+  // SCROLL ZOOM
   onWheel(e: WheelEvent): void {
     if (!this.zoomed) return;
     e.preventDefault();
@@ -167,8 +175,7 @@ export class GenLightboxVanillaComponent implements OnChanges, AfterViewInit {
     this.resetDrag();
   }
 
-  // ─── SLIDER ─────────────────
-
+  // SLIDER
   next(): void {
     this.animateSlide('next');
   }
@@ -184,53 +191,64 @@ export class GenLightboxVanillaComponent implements OnChanges, AfterViewInit {
   }
 
   private animateSlide(dir: 'next' | 'prev', targetIndex?: number): void {
+
+    if (this.isAnimating) return; 
+    this.isAnimating = true;
+  
     this.resetZoom();
-
+  
     const slides = this.slideRefs.toArray();
-    if (!slides.length) return;
-
+    if (!slides.length) {
+      this.isAnimating = false;
+      return;
+    }
+  
     const currentIdx = this.activeIndex;
-
+  
     const nextIdx = targetIndex !== undefined
       ? this.clampIndex(targetIndex)
       : this.clampIndex(currentIdx + (dir === 'next' ? 1 : -1));
-
-    if (currentIdx === nextIdx) return;
-
+  
+    if (currentIdx === nextIdx) {
+      this.isAnimating = false;
+      return;
+    }
+  
     const currentEl = slides[currentIdx].nativeElement;
     const nextEl = slides[nextIdx].nativeElement;
-
+  
     const DIST = 1200;
-
+  
     const xOut = dir === 'next' ? -DIST : DIST;
     const xIn  = dir === 'next' ?  DIST : -DIST;
-
+  
     nextEl.style.transition = 'none';
     nextEl.style.transform = `translateX(${xIn}px)`;
     nextEl.style.opacity = '1';
     nextEl.style.zIndex = '2';
-
+  
     requestAnimationFrame(() => {
       const ease = 'cubic-bezier(0.45, 0, 0.25, 1)';
-
       currentEl.style.transition = `transform 0.5s ${ease}`;
       nextEl.style.transition = `transform 0.5s ${ease}`;
-
+  
       currentEl.style.transform = `translateX(${xOut}px)`;
       nextEl.style.transform = `translateX(0px)`;
     });
-
+  
     setTimeout(() => {
       currentEl.style.opacity = '0';
       currentEl.style.transform = 'translateX(0px)';
       currentEl.style.transition = '';
       currentEl.style.zIndex = '0';
-
+  
       nextEl.style.transition = '';
       nextEl.style.zIndex = '1';
-
+  
       this.activeIndex = nextIdx;
       this.indexChange.emit(this.activeIndex);
+  
+      this.isAnimating = false;
     }, 500);
   }
 

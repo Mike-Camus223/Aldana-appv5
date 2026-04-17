@@ -2,28 +2,33 @@
   <div class="fixed inset-0 z-[1000] flex items-center justify-center"
        [ngClass]="{ 'lb-open': !isClosing, 'lb-close': isClosing }">
 
-    <div class="absolute inset-0 bg-[#f3f3f3]"></div>
+    <div class="absolute inset-0 bg-aldy-white"></div>
 
+    <!-- BOTONES -->
     <button (click)="close()" class="absolute w-12 h-12 hover:scale-110 border-1 flex justify-center items-center text-aldy-medium border-aldy-medium transition-all duration-250 cursor-pointer ease-in-out top-6 right-6 z-30">
       <lucide-icon name="x" color="#AEC2A9" [size]="16" [strokeWidth]="1.5"></lucide-icon>
     </button>
-    <button (click)="prev()" class="absolute  w-12 h-12 hover:scale-110 border-1 flex justify-center items-center border-aldy-medium transition-all duration-250 cursor-pointer ease-in-out left-10 top-100 z-30">
+
+    <button (click)="prev()" class="absolute w-12 h-12 hover:scale-110 border-1 flex justify-center items-center border-aldy-medium transition-all duration-250 cursor-pointer ease-in-out left-4 md:left-10 top-1/2 -translate-y-1/2 z-30">
       <lucide-icon name="chevron-left" color="#AEC2A9" [strokeWidth]="1.5"></lucide-icon>
     </button>
-    <button (click)="next()" class="absolute w-12 h-12 flex items-center justify-center hover:scale-110 border-1 border-aldy-medium transition-all duration-250 cursor-pointer ease-in-out right-10 top-100 z-30">
+
+    <button (click)="next()" class="absolute w-12 h-12 flex items-center justify-center hover:scale-110 border-1 border-aldy-medium transition-all duration-250 cursor-pointer ease-in-out right-4 md:right-10 top-1/2 -translate-y-1/2 z-30">
       <lucide-icon name="chevron-right" color="#AEC2A9" [strokeWidth]="1.5"></lucide-icon>
     </button>
 
-    <div class="flex flex-col items-center relative z-10">
+    <div class="flex flex-col items-center relative z-10 w-full">
 
-      <div class="w-[520px] h-[699px] relative flex items-center justify-center"
+      <!-- FRAME (RESPONSIVE SOLO MOBILE) -->
+      <div class="w-[520px] h-[699px] max-w-[95vw] max-h-[75vh] relative flex items-center justify-center"
            (wheel)="onWheel($event)">
 
         <div *ngFor="let item of items; let i = index"
              #slideRef
              class="absolute inset-0 flex items-center justify-center">
 
-          <img
+          <!-- IMAGEN -->
+          <img *ngIf="!isVideo(item)"
             [src]="item.url"
             (click)="onImgClick()"
             (mousedown)="startDrag($event)"
@@ -40,17 +45,38 @@
             }"
             class="lb-img"
           />
+
+          <!-- VIDEO -->
+          <video *ngIf="isVideo(item)"
+            [src]="item.url"
+            controls
+            autoplay
+            muted
+            playsinline
+            class="lb-img video-el">
+          </video>
+
         </div>
       </div>
 
-      <div class="flex gap-4 mt-10 relative z-20">
-        <button *ngFor="let item of items; let i = index"
-                (click)="goTo(i)"
-                class="w-21 h-21 rounded-full hover:scale-105 transition-all duration-250 cursor-pointer ease-in-out overflow-hidden border-2"
-                [class.border-black]="i === activeIndex">
+      <!-- THUMBNAILS -->
+      <div class="flex gap-4 mt-10 relative z-20 px-4">
 
-          <img [src]="item.poster || item.url" class="w-full h-full object-cover"/>
+        <button *ngFor="let item of items; let i = index"
+        (click)="goTo(i)"
+        class="w-21 h-21 flex-shrink-0 rounded-full 
+               transition-all duration-150 ease-out
+               cursor-pointer overflow-hidden border
+               hover:scale-110"
+        [ngClass]="{
+          'border-aldy-medium border-[2px] scale-110': i === activeIndex,
+          'border-transparent': i !== activeIndex
+        }">
+
+          <img [src]="item.poster || item.url"
+               class="w-full h-full object-cover"/>
         </button>
+
       </div>
 
     </div>

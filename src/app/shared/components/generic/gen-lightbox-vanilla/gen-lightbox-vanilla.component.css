@@ -16,6 +16,7 @@
   to   { opacity: 0; }
 }
 
+/* IMAGEN BASE (NO TOCAR DESKTOP) */
 .lb-img {
   width: 520px;
   height: 699px;
@@ -27,7 +28,26 @@
   will-change: transform;
 }
 
+/* VIDEO respeta tamaño */
+.video-el {
+  object-fit: contain;
+  background: black;
+}
+
+/* CURSORES (LOS DEJAMOS COMO TENÍAS) */
 .cursor-zoom-in { cursor: zoom-in; }
 .cursor-zoom-out { cursor: zoom-out; }
 .cursor-crosshair { cursor: crosshair; }
 .cursor-grabbing { cursor: grabbing; }
+
+/* ───────── RESPONSIVE SOLO MOBILE ───────── */
+@media (max-width: 768px) {
+
+  .lb-img {
+    width: 90vw;
+    height: auto;
+    max-height: 70vh;
+  }
+
+}
+
