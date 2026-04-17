@@ -42,6 +42,38 @@
         </div>
       </div>
 
+      <!-- PRODUCTOS (click -> items-collection) -->
+      <section *ngIf="products?.length" class="mb-12">
+        <h2 class="text-md sm:text-xl font-light text-aldy-green-gray-bold NewAldyTitle mb-4 tracking-wider">
+          VESTIDOS
+        </h2>
+
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+          <a
+            *ngFor="let p of products"
+            class="group block w-full"
+            [routerLink]="['/novias-colecciones', collectionSlug, p.slug]"
+          >
+            <div class="aspect-[4/5] overflow-hidden bg-black/5">
+              <img
+                [src]="p.main_image"
+                [alt]="p.name || 'Producto'"
+                class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                loading="lazy"
+              />
+            </div>
+            <div class="pt-3">
+              <div class="text-xs sm:text-sm tracking-widest uppercase NewAldyTitle text-aldy-green-gray-bold">
+                {{ p.name }}
+              </div>
+              <div *ngIf="p.description" class="text-[11px] sm:text-xs NewAldyFontType4 text-aldy-green-gray mt-1 line-clamp-2">
+                {{ p.description }}
+              </div>
+            </div>
+          </a>
+        </div>
+      </section>
+
       <div class="mb-10" *ngFor="let section of sections">
         <h2 class="text-md sm:text-xl font-light text-aldy-green-gray-bold NewAldyTitle mb-4 tracking-wider">
           {{ section.title }}

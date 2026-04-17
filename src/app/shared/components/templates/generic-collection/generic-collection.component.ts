@@ -1,18 +1,24 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
-import { SupabaseService } from '../../../../core/services/data-access/supabase.service';
+import { ActivatedRoute, RouterModule } from '@angular/router';
 import { BettercustomDualComponent } from '../../generic/bettercustom-dual/bettercustom-dual.component';
-import { MediaItem } from '../../../utils/models/objectsGallery.model';
-import { CollectionWithMedia } from '../../../utils/models/collection.model';
 import { BreadcrumbComponent } from '../../system/breadcrump/breadcrump.component';
 import { AppMenuItem } from '../../../utils/models/app-menu-item.model';
-import { GenGalleryVanillaComponent } from '../../generic/gen-gallery-vanilla/gen-gallery-vanilla.component';
+import { CollectionService } from '../../../../core/services/data-access/collection/collection.service';
+
+type CollectionItemCard = {
+  id: string;
+  slug: string;
+  title: string;
+  subtitle?: string | null;
+  description?: string | null;
+  thumbUrl?: string | null;
+};
 
 @Component({
   selector: 'app-generic-collection',
   standalone: true,
-  imports: [CommonModule, BettercustomDualComponent, BreadcrumbComponent,GenGalleryVanillaComponent],
+  imports: [CommonModule, RouterModule, BettercustomDualComponent, BreadcrumbComponent],
   templateUrl: './generic-collection.component.html',
   styleUrls: ['./generic-collection.component.css'],
 })
@@ -21,20 +27,22 @@ export class GenericCollectionComponent implements OnInit {
   collectionSubtitle = '';
   collectionBanner = '';
   collectionDescription = '';
-  sections: { title: string; media: MediaItem[] }[] = [];
   breadcrumbItems: AppMenuItem[] = [];
+  collectionSlug = '';
+  items: CollectionItemCard[] = [];
 
 
   constructor(
-    private supabaseService: SupabaseService,
+    private collections: CollectionService,
     private route: ActivatedRoute
   ) { }
 
   async ngOnInit() {
     const slug = this.route.snapshot.paramMap.get('slug');
     if (!slug) return;
+    this.collectionSlug = slug;
 
-    const collection = await this.supabaseService.getCollectionById(slug) as CollectionWithMedia;
+    const collection = await this.collections.getCollectionBySlug(slug) as any;
     if (!collection) return;
 
     this.breadcrumbItems = [
@@ -48,24 +56,29 @@ export class GenericCollectionComponent implements OnInit {
     this.collectionBanner = collection.banner || '';
     this.collectionDescription = collection.description || '';
 
-    const groupedSections: { [key: string]: MediaItem[] } = {};
-    for (const media of collection.collection_media.sort((a, b) => (a.order ?? 0) - (b.order ?? 0))) {
-      if (!groupedSections[media.section_name]) {
-        groupedSections[media.section_name] = [];
-      }
+    const rows = await this.collections.getCollectionItemsByCollectionId(String(collection.id)) as any[];
 
-      groupedSections[media.section_name].push({
-        url: media.media_url,
-        alt: media.alt || '',
-        type: media.type,
-        fit: 'contain',
-        ...(media.type === 'video' ? { width: 1280, height: 720, poster: media.poster_url } : {}),
-      });
-    }
+    const pickThumb = (mediaItems: any[] | undefined | null): string | null => {
+      const m = Array.isArray(mediaItems) ? mediaItems : [];
+      const sorted = [...m].sort((a, b) => Number(a?.order ?? 0) - Number(b?.order ?? 0));
+      const firstImage = sorted.find(x => String(x?.type) === 'image');
+      const firstAny = sorted[0];
+      return String((firstImage?.media_url || firstAny?.media_url || '')).trim() || null;
+    };
 
-    this.sections = Object.entries(groupedSections).map(([title, media]) => ({ title, media }));
+    this.items = (Array.isArray(rows) ? rows : [])
+      .map((r: any) => ({
+        id: String(r?.id || ''),
+        slug: String(r?.slug || ''),
+        title: String(r?.title || ''),
+        subtitle: r?.subtitle ?? null,
+        description: r?.description ?? null,
+        thumbUrl: pickThumb(r?.collection_media_items),
+      }))
+      .filter(x => Boolean(x.slug) && Boolean(x.title));
   }
 
-  onMediaClick(item: MediaItem) {
+  trackById(_: number, it: CollectionItemCard) {
+    return it.id;
   }
 }

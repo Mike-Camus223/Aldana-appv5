@@ -1,60 +1,62 @@
-<section class="w-full h-screen bg-aldy-white flex items-center">
-    <div class="w-full max-w-[1700px] mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
-  
-      <!-- TEXTO IZQUIERDA -->
-      <div class="space-y-6">
-        <p class="text-xs uppercase tracking-[0.3em] text-aldy-green-gray NewAldyFontType4">
-          Sculpted Elegance 2026
-        </p>
-  
-        <h1 class="text-5xl lg:text-7xl NewAldyTitle text-aldy-green-gray-bold font-light">
-          {{ product.name }}
-        </h1>
-  
-        <p class="text-sm max-w-md text-aldy-green-gray NewAldyFontType4 leading-relaxed">
-          {{ product.description }}
-        </p>
-  
-        <div class="flex items-center gap-6 pt-4">
-          <a
-            [routerLink]="product.slug"
-            class="border border-aldy-green-gray px-6 py-3 text-xs uppercase tracking-widest NewAldyTitle hover:bg-aldy-green-gray hover:text-white transition"
-          >
-            NEED TO TRY
-          </a>
-  
-          <button class="text-xs uppercase tracking-widest NewAldyFontType4 flex items-center gap-2">
-            ▶ VIDEO
-          </button>
-        </div>
-  
-        <p class="text-[11px] text-aldy-green-gray NewAldyFontType4 pt-6">
-          Click below for more information about our appointment.
-        </p>
+<div class="h-[0px] lg:h-[88px]"></div>
+<section>
+  <app-breadcrumb [items]="breadcrumbItems"></app-breadcrumb>
+</section>
+
+<section class="w-full bg-aldy-white">
+  <div class="w-full max-w-[1700px] mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-10 items-start py-10 md:py-16">
+
+    <!-- TEXTO IZQUIERDA -->
+    <div class="space-y-6">
+      <p class="text-xs uppercase tracking-[0.3em] text-aldy-green-gray NewAldyFontType4">
+        {{ sectionLabel }}
+      </p>
+
+      <h1 class="text-5xl lg:text-7xl NewAldyTitle text-aldy-green-gray-bold font-light">
+        {{ mode === 'collections' ? (collectionItem?.title) : (product?.name) }}
+      </h1>
+
+      <p class="text-sm max-w-md text-aldy-green-gray NewAldyFontType4 leading-relaxed">
+        {{ mode === 'collections' ? (collectionItem?.description) : (product?.description) }}
+      </p>
+
+      <div class="flex items-center gap-6 pt-2">
+        <a
+          [routerLink]="backRoute"
+          class="border border-aldy-green-gray px-6 py-3 text-xs uppercase tracking-widest NewAldyTitle hover:bg-aldy-green-gray hover:text-white transition"
+        >
+          VOLVER A LA COLECCIÓN
+        </a>
       </div>
-  
-      <!-- MEDIA DERECHA -->
-      <div class="relative w-full h-[80vh] overflow-hidden">
-  
-        <!-- IMAGEN -->
-        <img
-          *ngIf="!isVideo"
-          [src]="product.media"
-          class="absolute inset-0 w-full h-full object-cover"
-        />
-  
-        <!-- VIDEO -->
-        <video
-          *ngIf="isVideo"
-          [src]="product.media"
-          autoplay
-          muted
-          loop
-          playsinline
-          class="absolute inset-0 w-full h-full object-cover"
-        ></video>
-  
-      </div>
-  
     </div>
-  </section>
+
+    <!-- HERO MEDIA DERECHA -->
+    <div class="relative w-full overflow-hidden" data-items-collection-hero-media>
+      <div class="aspect-[4/5] w-full bg-black/5 overflow-hidden">
+        <img
+          *ngIf="mode === 'collections' ? (collectionItem?.heroImage) : (product?.main_image)"
+          [src]="mode === 'collections' ? (collectionItem?.heroImage) : (product?.main_image)"
+          [alt]="mode === 'collections' ? (collectionItem?.title || 'Item') : (product?.name || 'Producto')"
+          class="w-full h-full object-cover"
+        />
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- GALERÍA -->
+<section class="px-4 sm:px-6 lg:px-12 xl:px-16 2xl:px-24 w-full pb-12">
+  <div class="max-w-screen-3xl mx-auto">
+    <div class="mb-4">
+      <h2 class="text-md sm:text-xl font-light text-aldy-green-gray-bold NewAldyTitle tracking-wider">
+        GALERÍA
+      </h2>
+      <p class="text-xs NewAldyFontType4 text-aldy-green-gray mt-1">
+        Click en una foto o video para abrir el lightbox.
+      </p>
+    </div>
+
+    <app-gen-gallery-vanilla [media]="media" [openIndex]="openIndex"></app-gen-gallery-vanilla>
+  </div>
+</section>

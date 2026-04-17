@@ -21,8 +21,28 @@ export const PUBLIC_ROUTES: Routes = [
           import('../../../shared/components/templates/generic-collection/generic-collection.component').then(c => c.GenericCollectionComponent),
       },
       {
+        path: 'colecciones/:collectionSlug/:itemSlug/:mediaSlug',
+        loadComponent: () =>
+          import('../../../shared/components/templates/items-collection/items-collection.component').then(c => c.ItemsCollectionComponent),
+      },
+      {
+        path: 'colecciones/:collectionSlug/:itemSlug',
+        loadComponent: () =>
+          import('../../../shared/components/templates/items-collection/items-collection.component').then(c => c.ItemsCollectionComponent),
+      },
+      {
         path: 'novias-colecciones',
         loadComponent: () =>  import('../../../features/landing/pages/novias/novias.component').then(c => c.NoviasComponent),
+      },
+      {
+        path: 'novias-colecciones/:collectionSlug/:productSlug/:mediaSlug',
+        loadComponent: () =>
+          import('../../../shared/components/templates/items-collection/items-collection.component').then(c => c.ItemsCollectionComponent),
+      },
+      {
+        path: 'novias-colecciones/:collectionSlug/:productSlug',
+        loadComponent: () =>
+          import('../../../shared/components/templates/items-collection/items-collection.component').then(c => c.ItemsCollectionComponent),
       },
       {
         path: 'novias-colecciones/:slug',

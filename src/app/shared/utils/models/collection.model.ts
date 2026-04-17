@@ -8,17 +8,6 @@ export interface Collection {
   description?: string;
   slug: string;
 }
-export interface CollectionMedia {
-  id: string;
-  collection_id: string;
-  section_name: string;
-  media_url: string;
-  alt?: string;
-  type: 'image' | 'video';
-  order?: number;
-  created_at?: string;
-  poster_url?: string;
-}
 
 export interface CollectionWithMedia {
   id: string;
@@ -31,7 +20,7 @@ export interface CollectionWithMedia {
   banner?: string;
   description?: string;
   slug?: string;
-  collection_media: CollectionMedia[];
+  collection_media: any[];
 }
 
 export interface CollectionBridesWithMedia {
@@ -45,5 +34,29 @@ export interface CollectionBridesWithMedia {
   banner?: string;
   description?: string;
   slug?: string;
-  collection_media_brides: CollectionMedia[];
+  collection_media_brides: any[];
+}
+
+export interface CollectionItem {
+  id: string;
+  collection_id: string;
+  product_id?: string | null;
+  title: string;
+  subtitle?: string | null;
+  description?: string | null;
+  slug: string;
+  order?: number | null;
+  created_at?: string;
+}
+
+export interface CollectionMediaItem {
+  id: string;
+  collection_item_id: string;
+  media_group: string;
+  media_url: string;
+  alt?: string | null;
+  type: 'image' | 'video';
+  order?: number | null;
+  poster_url?: string | null;
+  created_at?: string;
 }
