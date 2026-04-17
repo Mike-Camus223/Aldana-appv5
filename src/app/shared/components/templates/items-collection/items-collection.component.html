@@ -1,0 +1,60 @@
+<section class="w-full h-screen bg-aldy-white flex items-center">
+    <div class="w-full max-w-[1700px] mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+  
+      <!-- TEXTO IZQUIERDA -->
+      <div class="space-y-6">
+        <p class="text-xs uppercase tracking-[0.3em] text-aldy-green-gray NewAldyFontType4">
+          Sculpted Elegance 2026
+        </p>
+  
+        <h1 class="text-5xl lg:text-7xl NewAldyTitle text-aldy-green-gray-bold font-light">
+          {{ product.name }}
+        </h1>
+  
+        <p class="text-sm max-w-md text-aldy-green-gray NewAldyFontType4 leading-relaxed">
+          {{ product.description }}
+        </p>
+  
+        <div class="flex items-center gap-6 pt-4">
+          <a
+            [routerLink]="product.slug"
+            class="border border-aldy-green-gray px-6 py-3 text-xs uppercase tracking-widest NewAldyTitle hover:bg-aldy-green-gray hover:text-white transition"
+          >
+            NEED TO TRY
+          </a>
+  
+          <button class="text-xs uppercase tracking-widest NewAldyFontType4 flex items-center gap-2">
+            ▶ VIDEO
+          </button>
+        </div>
+  
+        <p class="text-[11px] text-aldy-green-gray NewAldyFontType4 pt-6">
+          Click below for more information about our appointment.
+        </p>
+      </div>
+  
+      <!-- MEDIA DERECHA -->
+      <div class="relative w-full h-[80vh] overflow-hidden">
+  
+        <!-- IMAGEN -->
+        <img
+          *ngIf="!isVideo"
+          [src]="product.media"
+          class="absolute inset-0 w-full h-full object-cover"
+        />
+  
+        <!-- VIDEO -->
+        <video
+          *ngIf="isVideo"
+          [src]="product.media"
+          autoplay
+          muted
+          loop
+          playsinline
+          class="absolute inset-0 w-full h-full object-cover"
+        ></video>
+  
+      </div>
+  
+    </div>
+  </section>
