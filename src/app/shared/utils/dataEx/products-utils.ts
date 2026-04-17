@@ -31,6 +31,16 @@ export class ProductUtils {
         })));
       }
 
+      const rawMainImage = String(p.main_image ?? '').trim();
+      const rawAdditionalImages = Array.isArray(p.additional_images) ? p.additional_images : [];
+
+      const variantMainImage =
+        variants.length > 0 ? String(variants[0].main_image ?? '').trim() : '';
+      const variantAdditionalImages =
+        variants.length > 0 && Array.isArray(variants[0].additional_images)
+          ? variants[0].additional_images
+          : [];
+
       // Normal and Bridal collections
       let collections: any[] = [];
       if (Array.isArray(p.product_collections)) {
@@ -46,8 +56,10 @@ export class ProductUtils {
         description: p.description,
         price: p.price || 0,
         variants,
-        main_image: (variants.length > 0 && variants[0].main_image?.trim()) ? variants[0].main_image.trim() : '',
-        additional_images: (variants.length > 0 && variants[0].additional_images) ? variants[0].additional_images : [],
+        // Si no hay variante “base” ni variantes, antes quedaba vacío aunque la fila tuviera main_image.
+        main_image: variantMainImage || rawMainImage,
+        additional_images:
+          variantAdditionalImages.length > 0 ? variantAdditionalImages : rawAdditionalImages,
         sizes: p.sizes || [],
         slug: p.slug || '',
         wishlisted: false,

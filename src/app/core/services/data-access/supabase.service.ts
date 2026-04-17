@@ -103,6 +103,64 @@ export class SupabaseService {
     );
   }
 
+  /** Misma forma que getProducts(), para cargar varios por id (p. ej. thumbnails en collection_items). */
+  async getProductsByIds(ids: string[]): Promise<any[]> {
+    if (!ids.length) return [];
+    const selectProducts = `
+      id,
+      name,
+      description,
+      details,
+      price,
+      category_id,
+      subcategory_id,
+      main_image,
+      additional_images,
+      sizes,
+      slug,
+      avid,
+      color_id,
+      color_name,
+      color_hex,
+      categories:categories!products_category_id_fkey (
+        id,
+        name
+      ),
+      subcategories:subcategories!products_subcategory_id_fkey (
+        id,
+        name
+      ),
+      product_collections (
+        collection_id,
+        collections (
+          id,
+          name,
+          slug
+        )
+      ),
+      product_variants (
+        id,
+        color_id,
+        color_name,
+        color_hex,
+        avid,
+        main_image,
+        additional_images,
+        colors:colors!product_variants_color_id_fkey (
+          code,
+          name,
+          hex
+        )
+      )
+    `;
+    const { data, error } = await this.supabase
+      .from('products')
+      .select(selectProducts)
+      .in('id', ids);
+    if (error) throw error;
+    return (data as any[]) ?? [];
+  }
+
   async getCategories() {
     return this.getData<any[]>('categories', 'id, name');
   }
