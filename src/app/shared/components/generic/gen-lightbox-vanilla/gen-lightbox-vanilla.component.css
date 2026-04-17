@@ -1,9 +1,9 @@
 .lb-open {
-  animation: fadeIn 250ms ease forwards;
+  animation: fadeIn 300ms ease forwards;
 }
 
 .lb-close {
-  animation: fadeOut 250ms ease forwards;
+  animation: fadeOut 300ms ease forwards;
 }
 
 @keyframes fadeIn {
@@ -18,7 +18,7 @@
 
 .lb-img {
   width: 520px;
-  height: 690px;
+  height: 699px;
   object-fit: cover;
   user-select: none;
   -webkit-user-drag: none;
@@ -27,7 +27,6 @@
   will-change: transform;
 }
 
-/* cursores */
 .cursor-zoom-in { cursor: zoom-in; }
 .cursor-zoom-out { cursor: zoom-out; }
 .cursor-crosshair { cursor: crosshair; }

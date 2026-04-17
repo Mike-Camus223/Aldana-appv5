@@ -14,12 +14,27 @@ import {
 import { CommonModule } from '@angular/common';
 import { MediaItem } from '../../../utils/models/objectsGallery.model';
 
+import { ChevronLeft, ChevronRight, LUCIDE_ICONS, LucideAngularModule, LucideIconProvider,  Minus, Plus, X } from 'lucide-angular';
+
 @Component({
   selector: 'app-gen-lightbox-vanilla',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule,LucideAngularModule],
   templateUrl: './gen-lightbox-vanilla.component.html',
   styleUrls: ['./gen-lightbox-vanilla.component.css'],
+  providers: [
+    {
+      provide: LUCIDE_ICONS,
+      multi: true,
+      useValue: new LucideIconProvider({
+        Plus,
+        Minus,
+        ChevronLeft,
+        ChevronRight,
+        X
+      })
+    }
+  ]
 })
 export class GenLightboxVanillaComponent implements OnChanges, AfterViewInit {
 
@@ -36,7 +51,7 @@ export class GenLightboxVanillaComponent implements OnChanges, AfterViewInit {
   zoomed = false;
   isClosing = false;
 
-  // DRAG ORIGINAL (NO TOCADO)
+  // DRAG ORIGINAL
   isDragging = false;
   private _dragMoved = false;
   private dragStartX = 0;
@@ -74,7 +89,7 @@ export class GenLightboxVanillaComponent implements OnChanges, AfterViewInit {
     });
   }
 
-  // ─── ZOOM ORIGINAL ─────────────────
+  // ─── ZOOM ─────────────────
 
   getImgTransform(): string {
     if (!this.zoomed) return 'scale(1)';
@@ -91,7 +106,7 @@ export class GenLightboxVanillaComponent implements OnChanges, AfterViewInit {
     this.toggleZoom();
   }
 
-  // ─── DRAG ORIGINAL (INTACTO) ─────────────────
+  // ─── DRAG ─────────────────
 
   startDrag(e: MouseEvent): void {
     if (!this.zoomed) return;
@@ -129,6 +144,17 @@ export class GenLightboxVanillaComponent implements OnChanges, AfterViewInit {
     setTimeout(() => { this._dragMoved = false; }, 0);
   }
 
+  //  SCROLL PARA ZOOM (NUEVO)
+  onWheel(e: WheelEvent): void {
+    if (!this.zoomed) return;
+    e.preventDefault();
+
+    const maxY = (this.FRAME_H * (this.ZOOM_SCALE - 1)) / (2 * this.ZOOM_SCALE);
+    const delta = e.deltaY / this.ZOOM_SCALE;
+
+    this.translateY = Math.max(-maxY, Math.min(maxY, this.translateY - delta));
+  }
+
   resetDrag(): void {
     this.translateX = 0;
     this.translateY = 0;
@@ -141,7 +167,7 @@ export class GenLightboxVanillaComponent implements OnChanges, AfterViewInit {
     this.resetDrag();
   }
 
-  // ─── SLIDER CORRECTO ─────────────────
+  // ─── SLIDER ─────────────────
 
   next(): void {
     this.animateSlide('next');
@@ -174,7 +200,7 @@ export class GenLightboxVanillaComponent implements OnChanges, AfterViewInit {
     const currentEl = slides[currentIdx].nativeElement;
     const nextEl = slides[nextIdx].nativeElement;
 
-    const DIST = 1200; // 🔥 fuera de vista SIEMPRE
+    const DIST = 1200;
 
     const xOut = dir === 'next' ? -DIST : DIST;
     const xIn  = dir === 'next' ?  DIST : -DIST;
@@ -184,11 +210,11 @@ export class GenLightboxVanillaComponent implements OnChanges, AfterViewInit {
     nextEl.style.opacity = '1';
     nextEl.style.zIndex = '2';
 
-    currentEl.style.zIndex = '1';
-
     requestAnimationFrame(() => {
-      currentEl.style.transition = 'transform 0.45s cubic-bezier(0.4,0,0.2,1)';
-      nextEl.style.transition = 'transform 0.45s cubic-bezier(0.4,0,0.2,1)';
+      const ease = 'cubic-bezier(0.45, 0, 0.25, 1)';
+
+      currentEl.style.transition = `transform 0.5s ${ease}`;
+      nextEl.style.transition = `transform 0.5s ${ease}`;
 
       currentEl.style.transform = `translateX(${xOut}px)`;
       nextEl.style.transform = `translateX(0px)`;
@@ -205,10 +231,8 @@ export class GenLightboxVanillaComponent implements OnChanges, AfterViewInit {
 
       this.activeIndex = nextIdx;
       this.indexChange.emit(this.activeIndex);
-    }, 450);
+    }, 500);
   }
-
-  // ─── KEYBOARD ─────────────────
 
   @HostListener('document:mouseup')
   onMouseUp(): void {
@@ -231,7 +255,7 @@ export class GenLightboxVanillaComponent implements OnChanges, AfterViewInit {
       this.resetDrag();
       this.isOpen = false;
       this.closed.emit();
-    }, 250);
+    }, 300);
   }
 
   private clampIndex(index: number): number {
