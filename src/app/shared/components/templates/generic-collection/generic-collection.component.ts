@@ -2,17 +2,17 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { SupabaseService } from '../../../../core/services/data-access/supabase.service';
-import { GalleryGenComComponent } from '../../sections/gallery-gen-com/gallery-gen-com.component';
 import { BettercustomDualComponent } from '../../generic/bettercustom-dual/bettercustom-dual.component';
 import { MediaItem } from '../../../utils/models/objectsGallery.model';
 import { CollectionWithMedia } from '../../../utils/models/collection.model';
 import { BreadcrumbComponent } from '../../system/breadcrump/breadcrump.component';
 import { AppMenuItem } from '../../../utils/models/app-menu-item.model';
+import { GenGalleryVanillaComponent } from '../../generic/gen-gallery-vanilla/gen-gallery-vanilla.component';
 
 @Component({
   selector: 'app-generic-collection',
   standalone: true,
-  imports: [CommonModule, GalleryGenComComponent, BettercustomDualComponent, BreadcrumbComponent],
+  imports: [CommonModule, BettercustomDualComponent, BreadcrumbComponent,GenGalleryVanillaComponent],
   templateUrl: './generic-collection.component.html',
   styleUrls: ['./generic-collection.component.css'],
 })

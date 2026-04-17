@@ -1,0 +1,34 @@
+.lb-open {
+  animation: fadeIn 250ms ease forwards;
+}
+
+.lb-close {
+  animation: fadeOut 250ms ease forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+
+.lb-img {
+  width: 520px;
+  height: 690px;
+  object-fit: cover;
+  user-select: none;
+  -webkit-user-drag: none;
+  display: block;
+  transform-origin: center center;
+  will-change: transform;
+}
+
+/* cursores */
+.cursor-zoom-in { cursor: zoom-in; }
+.cursor-zoom-out { cursor: zoom-out; }
+.cursor-crosshair { cursor: crosshair; }
+.cursor-grabbing { cursor: grabbing; }

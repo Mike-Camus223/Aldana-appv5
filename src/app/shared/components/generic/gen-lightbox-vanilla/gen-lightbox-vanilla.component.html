@@ -1,0 +1,51 @@
+<ng-container *ngIf="isOpen">
+  <div class="fixed inset-0 z-[1000] flex items-center justify-center">
+
+    <div class="absolute inset-0 bg-[#f3f3f3]"></div>
+
+    <button (click)="close()" class="absolute top-6 right-6 z-30">×</button>
+    <button (click)="prev()" class="absolute left-10 top-1/2 z-30">‹</button>
+    <button (click)="next()" class="absolute right-10 top-1/2 z-30">›</button>
+
+    <div class="flex flex-col items-center relative z-10">
+
+      <!-- SIN overflow hidden -->
+      <div class="w-[520px] h-[699px] relative flex items-center justify-center">
+
+        <div *ngFor="let item of items; let i = index"
+             #slideRef
+             class="absolute inset-0 flex items-center justify-center">
+
+          <img
+            [src]="item.url"
+            (click)="onImgClick()"
+            (mousedown)="startDrag($event)"
+            (mousemove)="onDrag($event)"
+            (mouseup)="stopDrag()"
+            (dragstart)="$event.preventDefault()"
+            [style.transform]="i === activeIndex ? getImgTransform() : 'scale(1)'"
+            [style.transition]="isDragging ? 'none' : 'transform 300ms cubic-bezier(0.4,0,0.2,1)'"
+            [ngClass]="{
+              'cursor-zoom-in': zoomed,
+              'cursor-grabbing': isDragging,
+              'cursor-crosshair': !zoomed,
+              'cursor-zoom-out': zoomed
+            }"
+            class="lb-img"
+          />
+        </div>
+      </div>
+
+      <div class="flex gap-4 mt-10 relative z-20">
+        <button *ngFor="let item of items; let i = index"
+                (click)="goTo(i)"
+                class="w-14 h-14 rounded-full overflow-hidden border-2"
+                [class.border-black]="i === activeIndex">
+
+          <img [src]="item.poster || item.url" class="w-full h-full object-cover"/>
+        </button>
+      </div>
+
+    </div>
+  </div>
+</ng-container>
