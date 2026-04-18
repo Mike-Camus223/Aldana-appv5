@@ -1,15 +1,45 @@
-/* Sticky hero images container */
-.hero-images-container {
+/* =====================================================
+   HERO: Sticky text + scroll image strip (right side)
+   ===================================================== */
+
+/* El contenedor derecho: alto = N imágenes × 100vh para dar espacio al scroll */
+.hero-scroll-track {
+  /* Este div es la "pista" que scroll — su altura define cuánto dura el efecto */
+  /* El JS/GSAP ScrollTrigger pineará el panel izquierdo mientras este trackea */
+}
+
+/* Panel izquierdo fijo mientras dure el hero */
+.hero-sticky-left {
+  position: sticky;
+  top: 88px; /* altura del navbar */
+  height: calc(100vh - 88px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Contenedor derecho sticky que muestra la tira de fotos */
+.hero-sticky-right {
   position: sticky;
   top: 0;
   height: 100vh;
   overflow: hidden;
 }
 
-.hero-images-container img {
+/* La tira de imágenes que se desplaza hacia arriba con scroll */
+.hero-image-strip {
+  display: flex;
+  flex-direction: column;
+  /* Altura total = N imágenes × 100vh — se traslada hacia arriba via JS */
+  will-change: transform;
+}
+
+.hero-image-strip img {
   width: 100%;
-  height: 33.33vh;
+  height: 100vh;
   object-fit: cover;
+  flex-shrink: 0;
+  display: block;
 }
 
 /* Gallery cards styling */
@@ -19,7 +49,6 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
 }
-
 
 .gallery-card:hover {
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
@@ -31,26 +60,30 @@
   transition: transform 0.3s ease;
 }
 
-/* Responsive adjustments */
+/* Responsive: en mobile el efecto se desactiva, layout simple */
 @media (max-width: 1024px) {
-  .hero-images-container {
+  .hero-sticky-left {
+    position: relative;
+    top: auto;
+    height: auto;
+    min-height: auto;
+  }
+
+  .hero-sticky-right {
     position: relative;
     height: auto;
-    min-height: 60vh;
+    overflow: visible;
   }
-  
-  .hero-images-container img {
-    height: 20vh;
-    min-height: 150px;
-  }
-}
 
-@media (max-width: 768px) {
-  .hero-images-container img {
-    height: 25vh;
-    min-height: 120px;
+  .hero-image-strip {
+    transform: none !important; /* deshabilitar el JS transform en mobile */
   }
-  
+
+  .hero-image-strip img {
+    height: 50vw;
+    min-height: 200px;
+  }
+
   .gallery-card {
     border-radius: 4px;
   }

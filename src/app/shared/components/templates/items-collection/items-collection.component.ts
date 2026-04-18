@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { BridesProductsService } from '../../../../core/services/data-access/brides-products/brides-products.service';
 import { CollectionBridesService } from '../../../../core/services/data-access/collection-brides/collection_brides.service';
 import { CollectionService } from '../../../../core/services/data-access/collection/collection.service';
@@ -9,7 +10,8 @@ import { BreadcrumbComponent } from '../../system/breadcrump/breadcrump.componen
 import { AppMenuItem } from '../../../utils/models/app-menu-item.model';
 import { GenGalleryVanillaComponent } from '../../generic/gen-gallery-vanilla/gen-gallery-vanilla.component';
 import { MediaItem } from '../../../utils/models/objectsGallery.model';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
 
 type BridesProduct = {
   name: string;
@@ -42,7 +44,7 @@ type CollectionItemDetail = {
   templateUrl: './items-collection.component.html',
   styleUrl: './items-collection.component.css'
 })
-export class ItemsCollectionComponent implements OnInit {
+export class ItemsCollectionComponent implements OnInit, OnDestroy {
   breadcrumbItems: AppMenuItem[] = [];
   
   collectionSlug = '';
@@ -59,13 +61,14 @@ export class ItemsCollectionComponent implements OnInit {
   sectionLabel = 'NOVIAS COLECCIONES';
   backRoute: any[] = ['/novias-colecciones'];
 
+  private scrollTriggerInstance: ScrollTrigger | null = null;
+
   get isItemDetailLayout(): boolean {
     return this.mode === 'collections' || this.mode === 'bridal-item';
   }
 
   get heroImages(): string[] {
     if (this.isItemDetailLayout && this.collectionItem) {
-      // For collection items, use first 3 media items that are images
       const images = this.collectionItem.media.filter(m => m.type === 'image').slice(0, 3);
       return images.map(img => img.url);
     }
@@ -74,9 +77,9 @@ export class ItemsCollectionComponent implements OnInit {
       const images: string[] = [];
       if (this.product.main_image) images.push(this.product.main_image);
       if (this.product.additional_images && this.product.additional_images.length > 0) {
-        images.push(...this.product.additional_images.slice(0, 2)); // Take first 2 additional images
+        images.push(...this.product.additional_images.slice(0, 2));
       }
-      return images.slice(0, 3); // Ensure max 3 images
+      return images.slice(0, 3);
     }
     
     return [];
@@ -90,7 +93,6 @@ export class ItemsCollectionComponent implements OnInit {
     if (this.product) {
       const items: MediaItem[] = [];
       
-      // Add product images and videos
       const pushImg = (url?: string) => {
         const u = String(url || '').trim();
         if (!u) return;
@@ -111,12 +113,10 @@ export class ItemsCollectionComponent implements OnInit {
         });
       };
 
-      // Add main product images
       pushImg(this.product.main_image);
       (this.product.additional_images || []).forEach(pushImg);
       pushVid(this.product.avid, this.product.main_image);
       
-      // Add variant images and videos
       (this.product.variants || []).forEach(variant => {
         if (variant.main_image) pushImg(variant.main_image);
         if (variant.additional_images) {
@@ -321,11 +321,100 @@ export class ItemsCollectionComponent implements OnInit {
       }
     }
 
-    // 4) Deep-link a media (/imagen-1, /video, /video-2)
+    // Deep-link a media (/imagen-1, /video, /video-2)
     this.openIndex = this.resolveOpenIndex(this.mediaSlug, this.media);
 
-    // 5) Animación (mantengo el look & feel que ya tenías)
-    queueMicrotask(() => this.playIntro());
+    // Setup animations after data is loaded
+    queueMicrotask(() => this.setupHeroScroll());
+  }
+
+  ngOnDestroy(): void {
+    // Limpiar ScrollTrigger al salir del componente
+    if (this.scrollTriggerInstance) {
+      this.scrollTriggerInstance.kill();
+    }
+    ScrollTrigger.getAll().forEach(st => st.kill());
+  }
+
+  /**
+   * Configura el efecto de scroll en el hero:
+   * - El panel izquierdo (texto) queda sticky via CSS.
+   * - La tira de imágenes derecha (hero-image-strip) se desplaza hacia arriba
+   *   a medida que el usuario scrollea dentro del #hero-scroll-track.
+   *
+   * Funcionamiento:
+   * - El track (#hero-scroll-track) tiene height = N × 100vh.
+   * - ScrollTrigger va de start→end del track.
+   * - La tira se mueve de translateY(0) → translateY(-(N-1) × 100vh),
+   *   mostrando así cada imagen de a una durante el scroll.
+   */
+  private setupHeroScroll(): void {
+    const imageCount = this.heroImages.length;
+
+    // Si hay 1 sola imagen o ninguna, no hace falta el efecto
+    if (imageCount <= 1) {
+      this.playIntroAnimation();
+      return;
+    }
+
+    const track = document.getElementById('hero-scroll-track');
+    const strip = document.getElementById('hero-image-strip');
+
+    if (!track || !strip) {
+      this.playIntroAnimation();
+      return;
+    }
+
+    // Solo en desktop (>= 1024px); en mobile el CSS ya lo deshabilita
+    const isDesktop = window.matchMedia('(min-width: 1024px)').matches;
+    if (!isDesktop) {
+      this.playIntroAnimation();
+      return;
+    }
+
+    // La tira comienza en translateY(0).
+    // Al final del track, debe haber avanzado (imageCount - 1) alturas de viewport.
+    const totalTranslate = (imageCount - 1) * 100; // en vh
+
+    this.scrollTriggerInstance = ScrollTrigger.create({
+      trigger: track,
+      start: 'top top',          // cuando el track llega al top de la ventana
+      end: 'bottom bottom',       // cuando el bottom del track toca el bottom de la ventana
+      scrub: true,                // el movimiento sigue exactamente al scroll (sin lerp extra)
+      onUpdate: (self) => {
+        // progress va de 0 → 1 mientras scrolleamos el track
+        const yPercent = -(self.progress * totalTranslate);
+        gsap.set(strip, { yPercent });
+      }
+    });
+
+    this.playIntroAnimation();
+  }
+
+  private playIntroAnimation(): void {
+    const tl = gsap.timeline();
+  
+    tl.from('h1', {
+      y: 100,
+      opacity: 0,
+      duration: 1.2,
+      ease: 'power4.out'
+    });
+  
+    tl.from('p, a', {
+      y: 40,
+      opacity: 0,
+      stagger: 0.08,
+      duration: 0.8,
+      ease: 'power2.out'
+    }, '-=0.8');
+  
+    tl.from('[data-items-collection-hero-media]', {
+      scale: 1.1,
+      opacity: 0,
+      duration: 1.4,
+      ease: 'power3.out'
+    }, '-=1');
   }
 
   private resolveOpenIndex(mediaSlug: string | null, media: MediaItem[]): number | null {
@@ -355,33 +444,5 @@ export class ItemsCollectionComponent implements OnInit {
     }
 
     return null;
-  }
-
-  private playIntro(): void {
-    const root = this.el.nativeElement as HTMLElement;
-  
-    const tl = gsap.timeline();
-  
-    tl.from('h1', {
-      y: 100,
-      opacity: 0,
-      duration: 1.2,
-      ease: 'power4.out'
-    });
-  
-    tl.from('p, a', {
-      y: 40,
-      opacity: 0,
-      stagger: 0.08,
-      duration: 0.8,
-      ease: 'power2.out'
-    }, '-=0.8');
-  
-    tl.from('[data-items-collection-hero-media]', {
-      scale: 1.1,
-      opacity: 0,
-      duration: 1.4,
-      ease: 'power3.out'
-    }, '-=1');
   }
 }

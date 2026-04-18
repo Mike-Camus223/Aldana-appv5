@@ -52,7 +52,7 @@ export class GenLightboxVanillaComponent implements OnChanges, AfterViewInit {
   @Output() indexChange = new EventEmitter<number>();
 
   @ViewChildren('slideRef') slideRefs!: QueryList<ElementRef<HTMLElement>>;
-
+  
   activeIndex = 0;
   zoomed = false;
   isClosing = false;
