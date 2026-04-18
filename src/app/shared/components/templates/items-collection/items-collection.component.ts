@@ -49,9 +49,14 @@ export class ItemsCollectionComponent implements OnInit {
   collectionItem: CollectionItemDetail | null = null;
   media: MediaItem[] = [];
   openIndex: number | null = null;
-  mode: 'brides' | 'collections' = 'brides';
+  /** `colecciones` = lookbook tienda; `bridal-item` = ítem en collection_brides_items; `bridal-product` = producto pbrides por slug (legacy). */
+  mode: 'collections' | 'bridal-item' | 'bridal-product' = 'bridal-product';
   sectionLabel = 'NOVIAS COLECCIONES';
   backRoute: any[] = ['/novias-colecciones'];
+
+  get isItemDetailLayout(): boolean {
+    return this.mode === 'collections' || this.mode === 'bridal-item';
+  }
 
   constructor(
     private el: ElementRef,
@@ -63,7 +68,6 @@ export class ItemsCollectionComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     const routePath = String(this.route.snapshot.routeConfig?.path || '');
-    this.mode = routePath.startsWith('colecciones/') ? 'collections' : 'brides';
 
     this.collectionSlug = this.route.snapshot.paramMap.get('collectionSlug') || '';
     this.productSlug = this.route.snapshot.paramMap.get('productSlug') || '';
@@ -72,15 +76,21 @@ export class ItemsCollectionComponent implements OnInit {
 
     if (!this.collectionSlug) return;
 
-    if (this.mode === 'collections') {
+    this.collectionItem = null;
+    this.product = null;
+
+    if (routePath.startsWith('colecciones/')) {
+      this.mode = 'collections';
       this.sectionLabel = 'COLECCIONES';
       this.backRoute = ['/colecciones', this.collectionSlug];
 
-      // 1) colección + item
       const collection = await this.collections.getCollectionBySlug(this.collectionSlug) as any;
       if (!collection?.id) return;
 
-      const item = await this.collections.getCollectionItemDetail(String(collection.id), this.itemSlug) as any;
+      const slugSeg = this.itemSlug || this.productSlug;
+      if (!slugSeg) return;
+
+      const item = await this.collections.getCollectionItemDetail(String(collection.id), slugSeg) as any;
       if (!item) return;
 
       const mediaRows = Array.isArray(item?.collection_media_items) ? item.collection_media_items : [];
@@ -105,7 +115,7 @@ export class ItemsCollectionComponent implements OnInit {
         title: String(item?.title || ''),
         subtitle: item?.subtitle ?? null,
         description: item?.description ?? null,
-        slug: String(item?.slug || this.itemSlug),
+        slug: String(item?.slug || slugSeg),
         media: mediaItems,
         heroImage: hero
       };
@@ -122,76 +132,120 @@ export class ItemsCollectionComponent implements OnInit {
       this.sectionLabel = 'NOVIAS COLECCIONES';
       this.backRoute = ['/novias-colecciones', this.collectionSlug];
 
-      this.productSlug = this.productSlug || this.itemSlug;
-      if (!this.productSlug) return;
+      const segment = this.productSlug || this.itemSlug;
+      if (!segment) return;
 
-      // 1) Obtener producto (por slug)
-      const res: any = await this.bridesProducts.getProducts(this.productSlug);
-      const row = Array.isArray(res?.data) ? res.data[0] : res?.data;
-      if (!row) return;
+      const cRes = await this.collectionBrides.getCollectionBridesBySlug(this.collectionSlug) as any;
+      const cRow = Array.isArray(cRes) ? cRes[0] : cRes;
+      if (!cRow?.id) return;
 
-      this.product = {
-        name: row?.name || '',
-        description: row?.description || '',
-        details: row?.details || '',
-        slug: row?.slug || this.productSlug,
-        main_image: row?.main_image || '',
-        additional_images: row?.additional_images || [],
-        avid: row?.avid || '',
-        variants: Array.isArray(row?.product_variants) ? row.product_variants : []
-      };
+      const bridalItem = await this.collectionBrides.getCollectionBridesItemDetail(String(cRow.id), segment);
 
-      // 2) Breadcrumb (usa colección real si existe)
-      let collectionName = this.collectionSlug;
-      try {
-        const cRes = await this.collectionBrides.getCollectionBridesBySlug(this.collectionSlug) as any;
-        const cRow = Array.isArray(cRes) ? cRes[0] : cRes;
+      if (bridalItem) {
+        this.mode = 'bridal-item';
+
+        const mediaRows = Array.isArray(bridalItem?.collection_media_brides_items)
+          ? bridalItem.collection_media_brides_items
+          : [];
+        const sorted = [...mediaRows].sort((a, b) => Number(a?.order ?? 0) - Number(b?.order ?? 0));
+
+        const mediaItems: MediaItem[] = sorted
+          .map((m: any) => {
+            const url = String(m?.media_url || '').trim();
+            if (!url) return null;
+            const type = String(m?.type || 'image') as 'image' | 'video';
+            const base: MediaItem = { url, alt: String(m?.alt || bridalItem?.title || ''), type, fit: 'cover' };
+            if (type === 'video') {
+              return { ...base, width: 1280, height: 720, poster: String(m?.poster_url || '').trim() || undefined };
+            }
+            return base;
+          })
+          .filter(Boolean) as MediaItem[];
+
+        const hero = mediaItems.find(m => m.type === 'image')?.url || mediaItems[0]?.url || null;
+
+        this.collectionItem = {
+          title: String(bridalItem?.title || ''),
+          subtitle: bridalItem?.subtitle ?? null,
+          description: bridalItem?.description ?? null,
+          slug: String(bridalItem?.slug || segment),
+          media: mediaItems,
+          heroImage: hero
+        };
+
+        const collectionName = String(cRow?.name || this.collectionSlug).toUpperCase();
+
+        this.breadcrumbItems = [
+          { label: 'INICIO', route: '/home' },
+          { label: 'NOVIAS COLECCIONES', route: '/novias-colecciones' },
+          { label: collectionName, route: `/novias-colecciones/${this.collectionSlug}` },
+          {
+            label: String(this.collectionItem.title || '').toUpperCase(),
+            route: `/novias-colecciones/${this.collectionSlug}/${this.collectionItem.slug}`
+          },
+        ];
+
+        this.media = this.collectionItem.media;
+      } else {
+        this.mode = 'bridal-product';
+        this.productSlug = segment;
+
+        const res: any = await this.bridesProducts.getProducts(this.productSlug);
+        const row = Array.isArray(res?.data) ? res.data[0] : res?.data;
+        if (!row) return;
+
+        this.product = {
+          name: row?.name || '',
+          description: row?.description || '',
+          details: row?.details || '',
+          slug: row?.slug || this.productSlug,
+          main_image: row?.main_image || '',
+          additional_images: row?.additional_images || [],
+          avid: row?.avid || '',
+          variants: Array.isArray(row?.product_variants) ? row.product_variants : []
+        };
+
+        let collectionName = this.collectionSlug;
         if (cRow?.name) collectionName = String(cRow.name).toUpperCase();
-      } catch {
-        // ignore
+
+        this.breadcrumbItems = [
+          { label: 'INICIO', route: '/home' },
+          { label: 'NOVIAS COLECCIONES', route: '/novias-colecciones' },
+          { label: collectionName, route: `/novias-colecciones/${this.collectionSlug}` },
+          { label: String(this.product.name || '').toUpperCase(), route: `/novias-colecciones/${this.collectionSlug}/${this.product.slug}` },
+        ];
+
+        const items: MediaItem[] = [];
+        const pushImg = (url?: string) => {
+          const u = String(url || '').trim();
+          if (!u) return;
+          items.push({ url: u, alt: this.product?.name || '', type: 'image', fit: 'cover' });
+        };
+        const pushVid = (url?: string, poster?: string) => {
+          const u = String(url || '').trim();
+          if (!u) return;
+          items.push({
+            url: u,
+            alt: this.product?.name || '',
+            type: 'video',
+            fit: 'cover',
+            width: 1280,
+            height: 720,
+            poster: String(poster || '').trim() || undefined
+          });
+        };
+
+        pushImg(this.product.main_image);
+        (this.product.additional_images || []).forEach(pushImg);
+        pushVid(this.product.avid, this.product.main_image);
+        const variantAvids = (this.product.variants || [])
+          .map(v => String(v?.avid || '').trim())
+          .filter(Boolean);
+        [...new Set(variantAvids)].forEach(v => pushVid(v, this.product?.main_image));
+
+        this.media = items;
+        this.collectionItem = null;
       }
-
-      this.breadcrumbItems = [
-        { label: 'INICIO', route: '/home' },
-        { label: 'NOVIAS COLECCIONES', route: '/novias-colecciones' },
-        { label: collectionName, route: `/novias-colecciones/${this.collectionSlug}` },
-        { label: String(this.product.name || '').toUpperCase(), route: `/novias-colecciones/${this.collectionSlug}/${this.product.slug}` },
-      ];
-
-      // 3) Media list (imágenes + videos)
-      const items: MediaItem[] = [];
-      const pushImg = (url?: string) => {
-        const u = String(url || '').trim();
-        if (!u) return;
-        items.push({ url: u, alt: this.product?.name || '', type: 'image', fit: 'cover' });
-      };
-      const pushVid = (url?: string, poster?: string) => {
-        const u = String(url || '').trim();
-        if (!u) return;
-        items.push({
-          url: u,
-          alt: this.product?.name || '',
-          type: 'video',
-          fit: 'cover',
-          width: 1280,
-          height: 720,
-          poster: String(poster || '').trim() || undefined
-        });
-      };
-
-      pushImg(this.product.main_image);
-      (this.product.additional_images || []).forEach(pushImg);
-
-      // video principal
-      pushVid(this.product.avid, this.product.main_image);
-
-      // videos por variantes (si existen)
-      const variantAvids = (this.product.variants || [])
-        .map(v => String(v?.avid || '').trim())
-        .filter(Boolean);
-      [...new Set(variantAvids)].forEach(v => pushVid(v, this.product?.main_image));
-
-      this.media = items;
     }
 
     // 4) Deep-link a media (/imagen-1, /video, /video-2)

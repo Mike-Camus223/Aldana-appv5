@@ -13,11 +13,11 @@
       </p>
 
       <h1 class="text-5xl lg:text-7xl NewAldyTitle text-aldy-green-gray-bold font-light">
-        {{ mode === 'collections' ? (collectionItem?.title) : (product?.name) }}
+        {{ isItemDetailLayout ? (collectionItem?.title) : (product?.name) }}
       </h1>
 
       <p class="text-sm max-w-md text-aldy-green-gray NewAldyFontType4 leading-relaxed">
-        {{ mode === 'collections' ? (collectionItem?.description) : (product?.description) }}
+        {{ isItemDetailLayout ? (collectionItem?.description) : (product?.description) }}
       </p>
 
       <div class="flex items-center gap-6 pt-2">
@@ -34,9 +34,9 @@
     <div class="relative w-full overflow-hidden" data-items-collection-hero-media>
       <div class="aspect-[4/5] w-full bg-black/5 overflow-hidden">
         <img
-          *ngIf="mode === 'collections' ? (collectionItem?.heroImage) : (product?.main_image)"
-          [src]="mode === 'collections' ? (collectionItem?.heroImage) : (product?.main_image)"
-          [alt]="mode === 'collections' ? (collectionItem?.title || 'Item') : (product?.name || 'Producto')"
+          *ngIf="isItemDetailLayout ? (collectionItem?.heroImage) : (product?.main_image)"
+          [src]="isItemDetailLayout ? (collectionItem?.heroImage) : (product?.main_image)"
+          [alt]="isItemDetailLayout ? (collectionItem?.title || 'Item') : (product?.name || 'Producto')"
           class="w-full h-full object-cover"
         />
       </div>

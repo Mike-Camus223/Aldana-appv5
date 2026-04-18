@@ -1,32 +1,37 @@
-import { Component } from '@angular/core';
-import { MediaItem } from '../../../utils/models/objectsGallery.model';
-import { CollectionBridesWithMedia } from '../../../utils/models/collection.model';
+import { Component, OnInit } from '@angular/core';
 import { AppMenuItem } from '../../../utils/models/app-menu-item.model';
 import { ActivatedRoute, RouterModule } from '@angular/router';
-import { GalleryGenComComponent } from '../../sections/gallery-gen-com/gallery-gen-com.component';
 import { BettercustomDualComponent } from '../../generic/bettercustom-dual/bettercustom-dual.component';
 import { BreadcrumbComponent } from '../../system/breadcrump/breadcrump.component';
 import { CommonModule } from '@angular/common';
 import { CollectionBridesService } from '../../../../core/services/data-access/collection-brides/collection_brides.service';
 import { BridesProductsService } from '../../../../core/services/data-access/brides-products/brides-products.service';
+import { BridesProductUtils } from '../../../utils/dataEx/brides-products-utils';
+
+type BridesCollectionItemCard = {
+  id: string;
+  slug: string;
+  title: string;
+  subtitle?: string | null;
+  description?: string | null;
+  thumbUrl?: string | null;
+};
 
 @Component({
   selector: 'app-generic-collection-brides',
   standalone: true,
-  imports: [CommonModule, RouterModule, GalleryGenComComponent, BettercustomDualComponent, BreadcrumbComponent],
+  imports: [CommonModule, RouterModule, BettercustomDualComponent, BreadcrumbComponent],
   templateUrl: './generic-collection-brides.component.html',
   styleUrl: './generic-collection-brides.component.css'
 })
-export class GenericCollectionBridesComponent {
+export class GenericCollectionBridesComponent implements OnInit {
   collectionTitle = '';
   collectionSubtitle = '';
   collectionBanner = '';
   collectionDescription = '';
-  sections: { title: string; media: MediaItem[] }[] = [];
   breadcrumbItems: AppMenuItem[] = [];
-  products: { name: string; slug: string; main_image: string; description?: string }[] = [];
   collectionSlug = '';
-
+  items: BridesCollectionItemCard[] = [];
 
   constructor(
     private getData: CollectionBridesService,
@@ -39,58 +44,64 @@ export class GenericCollectionBridesComponent {
     if (!slug) return;
     this.collectionSlug = slug;
 
-    const collectionResult = await this.getData.getCollectionBridesBySlug(slug) as unknown as CollectionBridesWithMedia;
+    const collectionResult = await this.getData.getCollectionBridesBySlug(slug) as any;
     if (!collectionResult) return;
-    
+
+    const col = Array.isArray(collectionResult) ? collectionResult[0] : collectionResult;
+    if (!col?.id) return;
+
     this.breadcrumbItems = [
       { label: 'INICIO', route: '/home' },
       { label: 'NOVIAS COLECCIONES', route: '/novias-colecciones' },
-      { label: collectionResult.name.toUpperCase(), route: `/novias-colecciones/${slug}` }
+      { label: String(col.name || '').toUpperCase(), route: `/novias-colecciones/${slug}` }
     ];
 
-    this.collectionTitle = collectionResult.name;
-    this.collectionSubtitle = `- COLECCIÓN ${new Date(collectionResult.release_date).getFullYear()}`;
-    this.collectionBanner = collectionResult.banner || '';
-    this.collectionDescription = collectionResult.description || '';
+    this.collectionTitle = col.name;
+    this.collectionSubtitle = `- COLECCIÓN ${new Date(col.release_date).getFullYear()}`;
+    this.collectionBanner = col.banner || '';
+    this.collectionDescription = col.description || '';
 
-    // Productos de la colección (cards que navegan a items-collection)
-    try {
-      const res: any = await this.bridesProducts.getProducts();
-      const rows = Array.isArray(res?.data) ? res.data : (res?.data ? [res.data] : []);
-      this.products = rows
-        .filter((p: any) => {
-          const pcs = Array.isArray(p?.product_collections) ? p.product_collections : [];
-          return pcs.some((pc: any) => String(pc?.collections?.slug || '') === slug);
-        })
-        .map((p: any) => ({
-          name: p?.name || '',
-          slug: p?.slug || '',
-          main_image: p?.main_image || '',
-          description: p?.description || ''
-        }))
-        .filter((p: any) => Boolean(p.slug) && Boolean(p.main_image));
-    } catch {
-      this.products = [];
+    const rows = await this.getData.getCollectionBridesItemsByCollectionId(String(col.id)) as any[];
+
+    const pickThumbFromMedia = (mediaItems: any[] | undefined | null): string | null => {
+      const m = Array.isArray(mediaItems) ? mediaItems : [];
+      const sorted = [...m].sort((a, b) => Number(a?.order ?? 0) - Number(b?.order ?? 0));
+      const firstImage = sorted.find(x => String(x?.type) === 'image');
+      return String(firstImage?.media_url || '').trim() || null;
+    };
+
+    const productIds = [
+      ...new Set(
+        (Array.isArray(rows) ? rows : [])
+          .map((r: any) => r?.product_id)
+          .filter((id: unknown) => id != null && String(id).length > 0)
+          .map((id: unknown) => String(id))
+      )
+    ];
+
+    let thumbByProductId = new Map<string, string>();
+    if (productIds.length) {
+      const raw = await this.bridesProducts.getProductsByIds(productIds);
+      thumbByProductId = new Map(
+        raw.map((p: any) => [String(p.id), BridesProductUtils.displayMainImage(p)])
+      );
     }
 
-    const groupedSections: { [key: string]: MediaItem[] } = {};
-    for (const media of collectionResult.collection_media_brides.sort((a, b) => (a.order ?? 0) - (b.order ?? 0))) {
-      if (!groupedSections[media.section_name]) {
-        groupedSections[media.section_name] = [];
-      }
-
-      groupedSections[media.section_name].push({
-        url: media.media_url,
-        alt: media.alt || '',
-        type: media.type,
-        fit: 'contain',
-        ...(media.type === 'video' ? { width: 1280, height: 720, poster: media.poster_url } : {}),
-      });
-    }
-
-    this.sections = Object.entries(groupedSections).map(([title, media]) => ({ title, media }));
+    this.items = (Array.isArray(rows) ? rows : [])
+      .map((r: any) => ({
+        id: String(r?.id || ''),
+        slug: String(r?.slug || ''),
+        title: String(r?.title || ''),
+        subtitle: r?.subtitle ?? null,
+        description: r?.description ?? null,
+        thumbUrl: r?.product_id
+          ? (thumbByProductId.get(String(r.product_id)) || pickThumbFromMedia(r?.collection_media_brides_items))
+          : pickThumbFromMedia(r?.collection_media_brides_items),
+      }))
+      .filter(x => Boolean(x.slug) && Boolean(x.title));
   }
 
-  onMediaClick(item: MediaItem) {
+  trackById(_: number, it: BridesCollectionItemCard) {
+    return it.id;
   }
 }

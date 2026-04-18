@@ -70,6 +70,59 @@ export class BridesProductsService {
     );
   }
 
+  /** Misma forma que getProducts(), para miniaturas en collection_brides_items. */
+  async getProductsByIds(ids: string[]): Promise<any[]> {
+    if (!ids.length) return [];
+    const selectFields = `
+      id,
+      name,
+      description,
+      details,
+      price,
+      category_id,
+      subcategory_id,
+      main_image,
+      additional_images,
+      sizes,
+      slug,
+      avid,
+      color_id,
+      color_name,
+      color_hex,
+      categories:pbrides_categories (
+        id,
+        name
+      ),
+      subcategories:pbrides_subcategories (
+        id,
+        name
+      ),
+      product_collections:pbrides_product_collections (
+        collection_id,
+        collections:collection_brides (
+          id,
+          name,
+          slug
+        )
+      ),
+      product_variants:pbrides_product_variants (
+        id,
+        color_id,
+        color_name,
+        color_hex,
+        avid,
+        main_image,
+        additional_images
+      )
+    `;
+    const { data, error } = await this.helper.client
+      .from('pbrides_products')
+      .select(selectFields)
+      .in('id', ids);
+    if (error) throw error;
+    return (data as any[]) ?? [];
+  }
+
   /**
    * Obtener variantes de un producto específico
    */
@@ -110,16 +163,7 @@ export class BridesProductsService {
       release_date,
       banner,
       description,
-      slug,
-      collection_media_brides (
-        id,
-        section_name,
-        media_url,
-        alt,
-        type,
-        order,
-        poster_url
-      )
+      slug
     `;
 
     return this.helper.getData<any>('collection_brides', selectFields);
