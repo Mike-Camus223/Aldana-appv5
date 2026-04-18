@@ -9,6 +9,7 @@ import { BreadcrumbComponent } from '../../system/breadcrump/breadcrump.componen
 import { AppMenuItem } from '../../../utils/models/app-menu-item.model';
 import { GenGalleryVanillaComponent } from '../../generic/gen-gallery-vanilla/gen-gallery-vanilla.component';
 import { MediaItem } from '../../../utils/models/objectsGallery.model';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 type BridesProduct = {
   name: string;
@@ -18,7 +19,11 @@ type BridesProduct = {
   main_image: string;
   additional_images: string[];
   avid?: string;
-  variants?: { avid?: string }[];
+  variants?: { 
+    avid?: string;
+    main_image?: string;
+    additional_images?: string[];
+  }[];
 };
 
 type CollectionItemDetail = {
@@ -39,7 +44,7 @@ type CollectionItemDetail = {
 })
 export class ItemsCollectionComponent implements OnInit {
   breadcrumbItems: AppMenuItem[] = [];
-
+  
   collectionSlug = '';
   productSlug = ''; // brides mode
   itemSlug = ''; // collections mode
@@ -56,6 +61,74 @@ export class ItemsCollectionComponent implements OnInit {
 
   get isItemDetailLayout(): boolean {
     return this.mode === 'collections' || this.mode === 'bridal-item';
+  }
+
+  get heroImages(): string[] {
+    if (this.isItemDetailLayout && this.collectionItem) {
+      // For collection items, use first 3 media items that are images
+      const images = this.collectionItem.media.filter(m => m.type === 'image').slice(0, 3);
+      return images.map(img => img.url);
+    }
+    
+    if (this.product) {
+      const images: string[] = [];
+      if (this.product.main_image) images.push(this.product.main_image);
+      if (this.product.additional_images && this.product.additional_images.length > 0) {
+        images.push(...this.product.additional_images.slice(0, 2)); // Take first 2 additional images
+      }
+      return images.slice(0, 3); // Ensure max 3 images
+    }
+    
+    return [];
+  }
+
+  get galleryMedia(): MediaItem[] {
+    if (this.isItemDetailLayout && this.collectionItem) {
+      return this.collectionItem.media;
+    }
+    
+    if (this.product) {
+      const items: MediaItem[] = [];
+      
+      // Add product images and videos
+      const pushImg = (url?: string) => {
+        const u = String(url || '').trim();
+        if (!u) return;
+        items.push({ url: u, alt: this.product?.name || '', type: 'image', fit: 'cover' });
+      };
+      
+      const pushVid = (url?: string, poster?: string) => {
+        const u = String(url || '').trim();
+        if (!u) return;
+        items.push({
+          url: u,
+          alt: this.product?.name || '',
+          type: 'video',
+          fit: 'cover',
+          width: 1280,
+          height: 720,
+          poster: String(poster || '').trim() || undefined
+        });
+      };
+
+      // Add main product images
+      pushImg(this.product.main_image);
+      (this.product.additional_images || []).forEach(pushImg);
+      pushVid(this.product.avid, this.product.main_image);
+      
+      // Add variant images and videos
+      (this.product.variants || []).forEach(variant => {
+        if (variant.main_image) pushImg(variant.main_image);
+        if (variant.additional_images) {
+          variant.additional_images.forEach(pushImg);
+        }
+        if (variant.avid) pushVid(variant.avid, variant.main_image || this.product?.main_image);
+      });
+      
+      return items;
+    }
+    
+    return this.media;
   }
 
   constructor(
@@ -286,28 +359,29 @@ export class ItemsCollectionComponent implements OnInit {
 
   private playIntro(): void {
     const root = this.el.nativeElement as HTMLElement;
-    const title = root.querySelector('h1');
-    const blocks = root.querySelectorAll('p, a, button');
-    const mediaEl = root.querySelector('[data-items-collection-hero-media]');
-
+  
     const tl = gsap.timeline();
-
-    if (title) {
-      tl.from(title, { y: 80, opacity: 0, duration: 1, ease: 'power3.out' });
-    }
-
-    if (blocks?.length) {
-      tl.from(blocks, {
-        y: 40,
-        opacity: 0,
-        stagger: 0.08,
-        duration: 0.7,
-        ease: 'power2.out'
-      }, '-=0.6');
-    }
-
-    if (mediaEl) {
-      tl.from(mediaEl, { scale: 1.06, opacity: 0, duration: 1.0, ease: 'power3.out' }, '-=0.8');
-    }
+  
+    tl.from('h1', {
+      y: 100,
+      opacity: 0,
+      duration: 1.2,
+      ease: 'power4.out'
+    });
+  
+    tl.from('p, a', {
+      y: 40,
+      opacity: 0,
+      stagger: 0.08,
+      duration: 0.8,
+      ease: 'power2.out'
+    }, '-=0.8');
+  
+    tl.from('[data-items-collection-hero-media]', {
+      scale: 1.1,
+      opacity: 0,
+      duration: 1.4,
+      ease: 'power3.out'
+    }, '-=1');
   }
 }
