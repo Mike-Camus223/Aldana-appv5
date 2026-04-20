@@ -156,42 +156,9 @@ export class ItemsPurchaseComponent implements OnInit, OnDestroy {
       const bridalRes: any = await this.bridesProductsService.getProducts(slug);
       const bridalData = bridalRes?.data;
       if (!bridalRes?.error && bridalData) {
-        const b = Array.isArray(bridalData) ? bridalData[0] : bridalData;
-        if (b) {
-          const collections = [
-            ...(b.collection ? [b.collection] : []),
-            ...((b.product_collections || []).map((pc: any) => pc?.collections).filter(Boolean))
-          ];
-          mappedProduct = {
-            id: b.id,
-            name: b.name,
-            description: b.description,
-            details: b.details,
-            price: Number(b.price || 0),
-            main_image: b.main_image || '',
-            additional_images: b.additional_images || [],
-            sizes: b.sizes || [],
-            slug: b.slug || '',
-            wishlisted: false,
-            category: {
-              id: 0,
-              name: b?.categories?.name?.toLowerCase?.() || (String(b?.name || '').toLowerCase().includes('velo') ? 'velos' : 'vestidos de novia')
-            },
-            subcategory: {
-              id: 0,
-              name: b?.subcategories?.name?.toLowerCase?.() || 'general'
-            },
-            variants: (b.product_variants || []).map((v: any) => ({
-              id: v.id,
-              color_name: v.color_name || '',
-              color_hex: v.color_hex || '#000000',
-              avid: v.avid || '',
-              main_image: v.main_image || '',
-              additional_images: v.additional_images || []
-            })),
-            collections
-          } as Product;
-        }
+        const productArray = Array.isArray(bridalData) ? bridalData : [bridalData];
+        const products = ProductUtils.mapProducts(productArray);
+        mappedProduct = products[0] || null;
       }
     }
 
@@ -200,9 +167,10 @@ export class ItemsPurchaseComponent implements OnInit, OnDestroy {
 
       if (!this.product) return;
 
+      const productMedia = ProductUtils.getMediaByUse(this.product.media, 'product');
       this.carouselImages = [
         { src: this.product.main_image, thumb: this.product.main_image },
-        ...this.product.additional_images.map(img => ({ src: img, thumb: img }))
+        ...productMedia.map(m => ({ src: m.url, thumb: m.poster || m.url }))
       ];
 
       // Load related products
@@ -244,8 +212,9 @@ export class ItemsPurchaseComponent implements OnInit, OnDestroy {
     this.selectedVariant = newVariant;
     this.selectedSize = null;
     const cleanMainImage = newVariant.main_image?.trim() || null;
-    const hasAdditionalImages = newVariant.additional_images && newVariant.additional_images.length > 0;
-    if (!cleanMainImage && !hasAdditionalImages) {
+    const variantMedia = ProductUtils.getMediaByUse(newVariant.media, 'product');
+    const hasMedia = variantMedia.length > 0;
+    if (!cleanMainImage && !hasMedia) {
       this.carouselImages = [];
       return;
     }
@@ -255,8 +224,8 @@ export class ItemsPurchaseComponent implements OnInit, OnDestroy {
       this.carouselImages.push({ src: cleanMainImage, thumb: cleanMainImage });
     }
 
-    if (hasAdditionalImages) {
-      this.carouselImages.push(...(newVariant.additional_images ?? []).map(img => ({ src: img, thumb: img })));
+    if (hasMedia) {
+      this.carouselImages.push(...variantMedia.map(m => ({ src: m.url, thumb: m.poster || m.url })));
     }
     if (!silent) {
       this.updateUrlQuery();
@@ -279,12 +248,19 @@ export class ItemsPurchaseComponent implements OnInit, OnDestroy {
     const cleanVariantImage = this.selectedVariant.main_image?.trim();
     const variantImage = cleanVariantImage && cleanVariantImage !== '' ? cleanVariantImage : null;
 
+    // Buscar imagen para el carrito (uso 'shop' según requerimiento)
+    const variantShopMedia = ProductUtils.getMediaByUse(this.selectedVariant.media, 'shop');
+    const productShopMedia = ProductUtils.getMediaByUse(this.product.media, 'shop');
+    
+    const shopImage = (variantShopMedia.length > 0) ? variantShopMedia[0].url : 
+                      (productShopMedia.length > 0) ? productShopMedia[0].url : null;
+
     const cartItem: CartItem = {
       id: `${this.product.id}-${this.selectedVariant.color_name}-${this.selectedSize}`,
       name: this.product.name,
       price: this.product.price,
-      image: this.product.main_image,
-      variantMainImage: variantImage ?? undefined,
+      image: shopImage || this.product.main_image,
+      variantMainImage: variantImage || shopImage || undefined,
       color: this.selectedVariant.color_name,
       size: this.selectedSize,
       quantity: this.quantitySelected

@@ -1,8 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, OnInit, OnDestroy } from '@angular/core';
+import { Component, ElementRef, OnInit } from '@angular/core';
 import { ActivatedRoute, RouterModule } from '@angular/router';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { BridesProductsService } from '../../../../core/services/data-access/brides-products/brides-products.service';
 import { CollectionBridesService } from '../../../../core/services/data-access/collection-brides/collection_brides.service';
 import { CollectionService } from '../../../../core/services/data-access/collection/collection.service';
@@ -11,7 +9,8 @@ import { AppMenuItem } from '../../../utils/models/app-menu-item.model';
 import { GenGalleryVanillaComponent } from '../../generic/gen-gallery-vanilla/gen-gallery-vanilla.component';
 import { MediaItem } from '../../../utils/models/objectsGallery.model';
 
-gsap.registerPlugin(ScrollTrigger);
+import { MediaItemJSONB, ProductVariant } from '../../../utils/models/Products-supabase.interface';
+import { ProductUtils } from '../../../utils/dataEx/products-utils';
 
 type BridesProduct = {
   name: string;
@@ -19,13 +18,9 @@ type BridesProduct = {
   details?: string;
   slug: string;
   main_image: string;
-  additional_images: string[];
+  media: MediaItemJSONB[];
   avid?: string;
-  variants?: { 
-    avid?: string;
-    main_image?: string;
-    additional_images?: string[];
-  }[];
+  variants?: ProductVariant[];
 };
 
 type CollectionItemDetail = {
@@ -42,47 +37,53 @@ type CollectionItemDetail = {
   standalone: true,
   imports: [CommonModule, RouterModule, BreadcrumbComponent, GenGalleryVanillaComponent],
   templateUrl: './items-collection.component.html',
-  styleUrl: './items-collection.component.css'
+  styleUrls: ['./items-collection.component.css']
 })
-export class ItemsCollectionComponent implements OnInit, OnDestroy {
+export class ItemsCollectionComponent implements OnInit {
   breadcrumbItems: AppMenuItem[] = [];
-  
+
   collectionSlug = '';
-  productSlug = ''; // brides mode
-  itemSlug = ''; // collections mode
+  productSlug = '';
+  itemSlug = '';
   mediaSlug: string | null = null;
 
   product: BridesProduct | null = null;
   collectionItem: CollectionItemDetail | null = null;
   media: MediaItem[] = [];
   openIndex: number | null = null;
-  /** `colecciones` = lookbook tienda; `bridal-item` = ítem en collection_brides_items; `bridal-product` = producto pbrides por slug (legacy). */
   mode: 'collections' | 'bridal-item' | 'bridal-product' = 'bridal-product';
   sectionLabel = 'NOVIAS COLECCIONES';
   backRoute: any[] = ['/novias-colecciones'];
-
-  private scrollTriggerInstance: ScrollTrigger | null = null;
 
   get isItemDetailLayout(): boolean {
     return this.mode === 'collections' || this.mode === 'bridal-item';
   }
 
   get heroImages(): string[] {
+    let images: string[] = [];
+    
     if (this.isItemDetailLayout && this.collectionItem) {
-      const images = this.collectionItem.media.filter(m => m.type === 'image').slice(0, 3);
-      return images.map(img => img.url);
-    }
-    
-    if (this.product) {
-      const images: string[] = [];
+      images = this.collectionItem.media
+        .filter(m => m.type === 'image')
+        .slice(0, 3)
+        .map(img => img.url);
+    } else if (this.product) {
       if (this.product.main_image) images.push(this.product.main_image);
-      if (this.product.additional_images && this.product.additional_images.length > 0) {
-        images.push(...this.product.additional_images.slice(0, 2));
-      }
-      return images.slice(0, 3);
+      const collectionMedia = ProductUtils.getMediaByUse(this.product.media, 'collection')
+        .filter(m => m.type === 'image');
+      collectionMedia.slice(0, 2).forEach(m => images.push(m.url));
+      images = images.slice(0, 3);
     }
     
-    return [];
+    // Siempre aseguramos 3 imágenes, duplicando si es necesario
+    while (images.length < 3 && images.length > 0) {
+      images.push(images[images.length % images.length]);
+    }
+    
+    // Debug: log para verificar
+    console.log('Hero images count:', images.length, 'Mode:', this.mode, 'Images:', images);
+    
+    return images;
   }
 
   get galleryMedia(): MediaItem[] {
@@ -92,39 +93,36 @@ export class ItemsCollectionComponent implements OnInit, OnDestroy {
     
     if (this.product) {
       const items: MediaItem[] = [];
+      const usedUrls = new Set<string>(); // Para evitar duplicados
       
-      const pushImg = (url?: string) => {
-        const u = String(url || '').trim();
-        if (!u) return;
-        items.push({ url: u, alt: this.product?.name || '', type: 'image', fit: 'cover' });
-      };
-      
-      const pushVid = (url?: string, poster?: string) => {
-        const u = String(url || '').trim();
-        if (!u) return;
-        items.push({
-          url: u,
-          alt: this.product?.name || '',
-          type: 'video',
-          fit: 'cover',
-          width: 1280,
-          height: 720,
-          poster: String(poster || '').trim() || undefined
-        });
+      const pushMedia = (m: MediaItemJSONB) => {
+        const u = String(m.url || '').trim();
+        if (!u || usedUrls.has(u)) return;
+        usedUrls.add(u);
+        if (m.type === 'image') {
+          items.push({ url: u, alt: this.product?.name || '', type: 'image', fit: 'cover' });
+        } else if (m.type === 'video') {
+          items.push({ 
+            url: u, 
+            alt: this.product?.name || '', 
+            type: 'video', 
+            fit: 'cover', 
+            width: 1280, 
+            height: 720, 
+            poster: String(m.poster || '').trim() || undefined 
+          });
+        }
       };
 
-      pushImg(this.product.main_image);
-      (this.product.additional_images || []).forEach(pushImg);
-      pushVid(this.product.avid, this.product.main_image);
+      // 1. Media with use: 'collection' from product
+      ProductUtils.getMediaByUse(this.product.media, 'collection').forEach(pushMedia);
       
+      // 2. Media with use: 'collection' from variants
       (this.product.variants || []).forEach(variant => {
-        if (variant.main_image) pushImg(variant.main_image);
-        if (variant.additional_images) {
-          variant.additional_images.forEach(pushImg);
-        }
-        if (variant.avid) pushVid(variant.avid, variant.main_image || this.product?.main_image);
+        ProductUtils.getMediaByUse(variant.media, 'collection').forEach(pushMedia);
       });
       
+      console.log('Gallery media items:', items.length, 'Unique URLs:', usedUrls.size);
       return items;
     }
     
@@ -137,15 +135,15 @@ export class ItemsCollectionComponent implements OnInit, OnDestroy {
     private bridesProducts: BridesProductsService,
     private collectionBrides: CollectionBridesService,
     private collections: CollectionService
-  ) { }
+  ) {}
 
   async ngOnInit(): Promise<void> {
     const routePath = String(this.route.snapshot.routeConfig?.path || '');
 
     this.collectionSlug = this.route.snapshot.paramMap.get('collectionSlug') || '';
-    this.productSlug = this.route.snapshot.paramMap.get('productSlug') || '';
-    this.itemSlug = this.route.snapshot.paramMap.get('itemSlug') || '';
-    this.mediaSlug = this.route.snapshot.paramMap.get('mediaSlug');
+    this.productSlug    = this.route.snapshot.paramMap.get('productSlug') || '';
+    this.itemSlug       = this.route.snapshot.paramMap.get('itemSlug') || '';
+    this.mediaSlug      = this.route.snapshot.paramMap.get('mediaSlug');
 
     if (!this.collectionSlug) return;
 
@@ -167,22 +165,14 @@ export class ItemsCollectionComponent implements OnInit, OnDestroy {
       if (!item) return;
 
       const mediaRows = Array.isArray(item?.collection_media_items) ? item.collection_media_items : [];
-      const sorted = [...mediaRows].sort((a, b) => Number(a?.order ?? 0) - Number(b?.order ?? 0));
-
-      const mediaItems: MediaItem[] = sorted
-        .map((m: any) => {
-          const url = String(m?.media_url || '').trim();
-          if (!url) return null;
-          const type = String(m?.type || 'image') as 'image' | 'video';
-          const base: MediaItem = { url, alt: String(m?.alt || item?.title || ''), type, fit: 'cover' };
-          if (type === 'video') {
-            return { ...base, width: 1280, height: 720, poster: String(m?.poster_url || '').trim() || undefined };
-          }
-          return base;
-        })
-        .filter(Boolean) as MediaItem[];
-
-      const hero = mediaItems.find(m => m.type === 'image')?.url || mediaItems[0]?.url || null;
+      const sorted = [...mediaRows].sort((a: any, b: any) => Number(a?.order ?? 0) - Number(b?.order ?? 0));
+      const mediaItems: MediaItem[] = sorted.map((m: any) => {
+        const url = String(m?.media_url || '').trim();
+        if (!url) return null;
+        const type = String(m?.type || 'image') as 'image' | 'video';
+        const base: MediaItem = { url, alt: String(m?.alt || item?.title || ''), type, fit: 'cover' };
+        return type === 'video' ? { ...base, width: 1280, height: 720, poster: String(m?.poster_url || '').trim() || undefined } : base;
+      }).filter(Boolean) as MediaItem[];
 
       this.collectionItem = {
         title: String(item?.title || ''),
@@ -190,7 +180,7 @@ export class ItemsCollectionComponent implements OnInit, OnDestroy {
         description: item?.description ?? null,
         slug: String(item?.slug || slugSeg),
         media: mediaItems,
-        heroImage: hero
+        heroImage: mediaItems.find(m => m.type === 'image')?.url || null
       };
 
       this.breadcrumbItems = [
@@ -199,8 +189,8 @@ export class ItemsCollectionComponent implements OnInit, OnDestroy {
         { label: String(collection?.name || this.collectionSlug).toUpperCase(), route: `/colecciones/${this.collectionSlug}` },
         { label: String(this.collectionItem.title || '').toUpperCase(), route: `/colecciones/${this.collectionSlug}/${this.collectionItem.slug}` },
       ];
-
       this.media = this.collectionItem.media;
+
     } else {
       this.sectionLabel = 'NOVIAS COLECCIONES';
       this.backRoute = ['/novias-colecciones', this.collectionSlug];
@@ -217,25 +207,17 @@ export class ItemsCollectionComponent implements OnInit, OnDestroy {
       if (bridalItem) {
         this.mode = 'bridal-item';
 
-        const mediaRows = Array.isArray(bridalItem?.collection_media_brides_items)
-          ? bridalItem.collection_media_brides_items
-          : [];
-        const sorted = [...mediaRows].sort((a, b) => Number(a?.order ?? 0) - Number(b?.order ?? 0));
+        const mediaRows = Array.isArray(bridalItem?.collection_media_brides_items) ? bridalItem.collection_media_brides_items : [];
+        const sorted = [...mediaRows].sort((a: any, b: any) => Number(a?.order ?? 0) - Number(b?.order ?? 0));
+        const mediaItems: MediaItem[] = sorted.map((m: any) => {
+          const url = String(m?.media_url || '').trim();
+          if (!url) return null;
+          const type = String(m?.type || 'image') as 'image' | 'video';
+          const base: MediaItem = { url, alt: String(m?.alt || bridalItem?.title || ''), type, fit: 'cover' };
+          return type === 'video' ? { ...base, width: 1280, height: 720, poster: String(m?.poster_url || '').trim() || undefined } : base;
+        }).filter(Boolean) as MediaItem[];
 
-        const mediaItems: MediaItem[] = sorted
-          .map((m: any) => {
-            const url = String(m?.media_url || '').trim();
-            if (!url) return null;
-            const type = String(m?.type || 'image') as 'image' | 'video';
-            const base: MediaItem = { url, alt: String(m?.alt || bridalItem?.title || ''), type, fit: 'cover' };
-            if (type === 'video') {
-              return { ...base, width: 1280, height: 720, poster: String(m?.poster_url || '').trim() || undefined };
-            }
-            return base;
-          })
-          .filter(Boolean) as MediaItem[];
-
-        const hero = mediaItems.find(m => m.type === 'image')?.url || mediaItems[0]?.url || null;
+        const collectionName = String(cRow?.name || this.collectionSlug).toUpperCase();
 
         this.collectionItem = {
           title: String(bridalItem?.title || ''),
@@ -243,22 +225,17 @@ export class ItemsCollectionComponent implements OnInit, OnDestroy {
           description: bridalItem?.description ?? null,
           slug: String(bridalItem?.slug || segment),
           media: mediaItems,
-          heroImage: hero
+          heroImage: mediaItems.find(m => m.type === 'image')?.url || null
         };
-
-        const collectionName = String(cRow?.name || this.collectionSlug).toUpperCase();
 
         this.breadcrumbItems = [
           { label: 'INICIO', route: '/home' },
           { label: 'NOVIAS COLECCIONES', route: '/novias-colecciones' },
           { label: collectionName, route: `/novias-colecciones/${this.collectionSlug}` },
-          {
-            label: String(this.collectionItem.title || '').toUpperCase(),
-            route: `/novias-colecciones/${this.collectionSlug}/${this.collectionItem.slug}`
-          },
+          { label: String(this.collectionItem.title || '').toUpperCase(), route: `/novias-colecciones/${this.collectionSlug}/${this.collectionItem.slug}` },
         ];
-
         this.media = this.collectionItem.media;
+
       } else {
         this.mode = 'bridal-product';
         this.productSlug = segment;
@@ -273,14 +250,12 @@ export class ItemsCollectionComponent implements OnInit, OnDestroy {
           details: row?.details || '',
           slug: row?.slug || this.productSlug,
           main_image: row?.main_image || '',
-          additional_images: row?.additional_images || [],
+          media: Array.isArray(row?.media) ? row.media : [],
           avid: row?.avid || '',
           variants: Array.isArray(row?.product_variants) ? row.product_variants : []
         };
 
-        let collectionName = this.collectionSlug;
-        if (cRow?.name) collectionName = String(cRow.name).toUpperCase();
-
+        const collectionName = cRow?.name ? String(cRow.name).toUpperCase() : this.collectionSlug;
         this.breadcrumbItems = [
           { label: 'INICIO', route: '/home' },
           { label: 'NOVIAS COLECCIONES', route: '/novias-colecciones' },
@@ -288,161 +263,37 @@ export class ItemsCollectionComponent implements OnInit, OnDestroy {
           { label: String(this.product.name || '').toUpperCase(), route: `/novias-colecciones/${this.collectionSlug}/${this.product.slug}` },
         ];
 
-        const items: MediaItem[] = [];
-        const pushImg = (url?: string) => {
-          const u = String(url || '').trim();
-          if (!u) return;
-          items.push({ url: u, alt: this.product?.name || '', type: 'image', fit: 'cover' });
-        };
-        const pushVid = (url?: string, poster?: string) => {
-          const u = String(url || '').trim();
-          if (!u) return;
-          items.push({
-            url: u,
-            alt: this.product?.name || '',
-            type: 'video',
-            fit: 'cover',
-            width: 1280,
-            height: 720,
-            poster: String(poster || '').trim() || undefined
-          });
-        };
-
-        pushImg(this.product.main_image);
-        (this.product.additional_images || []).forEach(pushImg);
-        pushVid(this.product.avid, this.product.main_image);
-        const variantAvids = (this.product.variants || [])
-          .map(v => String(v?.avid || '').trim())
-          .filter(Boolean);
-        [...new Set(variantAvids)].forEach(v => pushVid(v, this.product?.main_image));
-
-        this.media = items;
+        this.media = this.galleryMedia;
         this.collectionItem = null;
       }
     }
 
-    // Deep-link a media (/imagen-1, /video, /video-2)
     this.openIndex = this.resolveOpenIndex(this.mediaSlug, this.media);
-
-    // Setup animations after data is loaded
-    queueMicrotask(() => this.setupHeroScroll());
   }
 
-  ngOnDestroy(): void {
-    // Limpiar ScrollTrigger al salir del componente
-    if (this.scrollTriggerInstance) {
-      this.scrollTriggerInstance.kill();
-    }
-    ScrollTrigger.getAll().forEach(st => st.kill());
+  onImageLoad(event: Event, index: number): void {
+    console.log(`Hero image ${index + 1} loaded successfully`);
   }
 
-  /**
-   * Configura el efecto de scroll en el hero:
-   * - El panel izquierdo (texto) queda sticky via CSS.
-   * - La tira de imágenes derecha (hero-image-strip) se desplaza hacia arriba
-   *   a medida que el usuario scrollea dentro del #hero-scroll-track.
-   *
-   * Funcionamiento:
-   * - El track (#hero-scroll-track) tiene height = N × 100vh.
-   * - ScrollTrigger va de start→end del track.
-   * - La tira se mueve de translateY(0) → translateY(-(N-1) × 100vh),
-   *   mostrando así cada imagen de a una durante el scroll.
-   */
-  private setupHeroScroll(): void {
-    const imageCount = this.heroImages.length;
-
-    // Si hay 1 sola imagen o ninguna, no hace falta el efecto
-    if (imageCount <= 1) {
-      this.playIntroAnimation();
-      return;
-    }
-
-    const track = document.getElementById('hero-scroll-track');
-    const strip = document.getElementById('hero-image-strip');
-
-    if (!track || !strip) {
-      this.playIntroAnimation();
-      return;
-    }
-
-    // Solo en desktop (>= 1024px); en mobile el CSS ya lo deshabilita
-    const isDesktop = window.matchMedia('(min-width: 1024px)').matches;
-    if (!isDesktop) {
-      this.playIntroAnimation();
-      return;
-    }
-
-    // La tira comienza en translateY(0).
-    // Al final del track, debe haber avanzado (imageCount - 1) alturas de viewport.
-    const totalTranslate = (imageCount - 1) * 100; // en vh
-
-    this.scrollTriggerInstance = ScrollTrigger.create({
-      trigger: track,
-      start: 'top top',          // cuando el track llega al top de la ventana
-      end: 'bottom bottom',       // cuando el bottom del track toca el bottom de la ventana
-      scrub: true,                // el movimiento sigue exactamente al scroll (sin lerp extra)
-      onUpdate: (self) => {
-        // progress va de 0 → 1 mientras scrolleamos el track
-        const yPercent = -(self.progress * totalTranslate);
-        gsap.set(strip, { yPercent });
-      }
-    });
-
-    this.playIntroAnimation();
-  }
-
-  private playIntroAnimation(): void {
-    const tl = gsap.timeline();
-  
-    tl.from('h1', {
-      y: 100,
-      opacity: 0,
-      duration: 1.2,
-      ease: 'power4.out'
-    });
-  
-    tl.from('p, a', {
-      y: 40,
-      opacity: 0,
-      stagger: 0.08,
-      duration: 0.8,
-      ease: 'power2.out'
-    }, '-=0.8');
-  
-    tl.from('[data-items-collection-hero-media]', {
-      scale: 1.1,
-      opacity: 0,
-      duration: 1.4,
-      ease: 'power3.out'
-    }, '-=1');
+  onImageError(event: Event, index: number): void {
+    console.error(`Hero image ${index + 1} failed to load`);
   }
 
   private resolveOpenIndex(mediaSlug: string | null, media: MediaItem[]): number | null {
-    if (!mediaSlug) return null;
-    if (!media?.length) return null;
-
+    if (!mediaSlug || !media?.length) return null;
     const s = String(mediaSlug).toLowerCase();
     const imgMatch = s.match(/^imagen-(\d+)$/);
     if (imgMatch) {
       const n = Number(imgMatch[1]);
-      if (Number.isFinite(n) && n >= 1) return Math.min(media.length - 1, n - 1);
-      return null;
+      return Number.isFinite(n) && n >= 1 ? Math.min(media.length - 1, n - 1) : null;
     }
-
-    const videoIndices = media
-      .map((m, i) => ({ m, i }))
-      .filter(x => x.m.type === 'video')
-      .map(x => x.i);
-
+    const videoIndices = media.map((m, i) => ({ m, i })).filter(x => x.m.type === 'video').map(x => x.i);
     if (s === 'video') return videoIndices[0] ?? null;
-
     const vidMatch = s.match(/^video-(\d+)$/);
     if (vidMatch) {
       const n = Number(vidMatch[1]);
-      if (!Number.isFinite(n) || n < 1) return null;
-      return videoIndices[n - 1] ?? null;
+      return (!Number.isFinite(n) || n < 1) ? null : videoIndices[n - 1] ?? null;
     }
-
     return null;
   }
 }

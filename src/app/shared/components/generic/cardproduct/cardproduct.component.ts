@@ -17,7 +17,8 @@ import {
 import { CommonModule, isPlatformBrowser, NgOptimizedImage } from '@angular/common';
 import { PLATFORM_ID } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
-import { Product } from '../../../utils/models/Products-supabase.interface';
+import { Product, ProductVariant, MediaItemJSONB } from '../../../utils/models/Products-supabase.interface';
+import { ProductUtils } from '../../../utils/dataEx/products-utils';
 import {
   Heart,
   HeartPlus,
@@ -165,10 +166,13 @@ export class CardproductComponent implements OnInit, AfterViewInit, OnDestroy {
       (v) => v.color_name === this.selectedColor
     );
 
-    if (variant?.additional_images?.length) {
-      this.hoverImage = variant.additional_images[0];
-    } else if (this.product.additional_images?.length) {
-      this.hoverImage = this.product.additional_images[0];
+    const variantProductMedia = variant ? ProductUtils.getMediaByUse(variant.media, 'product') : [];
+    const productMedia = ProductUtils.getMediaByUse(this.product.media, 'product');
+
+    if (variantProductMedia.length > 0) {
+      this.hoverImage = variantProductMedia[0].url;
+    } else if (productMedia.length > 0) {
+      this.hoverImage = productMedia[0].url;
     } else {
       this.hoverImage = null;
     }

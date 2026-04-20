@@ -26,7 +26,7 @@ export class BridesProductsService {
       category_id,
       subcategory_id,
       main_image,
-      additional_images,
+      media,
       sizes,
       slug,
       avid,
@@ -56,7 +56,7 @@ export class BridesProductsService {
         color_hex,
         avid,
         main_image,
-        additional_images
+        media
       )
     `;
 
@@ -82,7 +82,7 @@ export class BridesProductsService {
       category_id,
       subcategory_id,
       main_image,
-      additional_images,
+      media,
       sizes,
       slug,
       avid,
@@ -112,7 +112,7 @@ export class BridesProductsService {
         color_hex,
         avid,
         main_image,
-        additional_images
+        media
       )
     `;
     const { data, error } = await this.helper.client
@@ -134,7 +134,7 @@ export class BridesProductsService {
       color_hex,
       avid,
       main_image,
-      additional_images,
+      media,
       colors:pbrides_colors!pbrides_product_variants_color_id_fkey (
         code,
         name,

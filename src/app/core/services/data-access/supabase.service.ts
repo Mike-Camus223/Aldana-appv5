@@ -55,13 +55,13 @@ export class SupabaseService {
       category_id,
       subcategory_id,
       main_image,
-      additional_images,
+      media,
       sizes,
       slug,
       avid,
       color_id,        
-    color_name,       
-    color_hex,        
+      color_name,       
+      color_hex,        
       categories:categories!products_category_id_fkey (
         id,
         name
@@ -79,19 +79,14 @@ export class SupabaseService {
         )
       ),
       product_variants (
-    id,
-    color_id,
-    color_name,
-    color_hex,
-    avid,
-    main_image,
-    additional_images,
-    colors:colors!product_variants_color_id_fkey (
-    code,
-    name,
-    hex
-  )
-)
+        id,
+        color_id,
+        color_name,
+        color_hex,
+        avid,
+        main_image,
+        media
+      )
     `;
 
     return this.getData<any>(
@@ -115,7 +110,7 @@ export class SupabaseService {
       category_id,
       subcategory_id,
       main_image,
-      additional_images,
+      media,
       sizes,
       slug,
       avid,
@@ -145,12 +140,7 @@ export class SupabaseService {
         color_hex,
         avid,
         main_image,
-        additional_images,
-        colors:colors!product_variants_color_id_fkey (
-          code,
-          name,
-          hex
-        )
+        media
       )
     `;
     const { data, error } = await this.supabase

@@ -357,9 +357,9 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
 
     this.selectedColors[productId] = color;
     const selectedVariant = product.variants.find(v => v.color_name === color);
-    if (selectedVariant?.color_name && selectedVariant?.color_hex) {
+    if (selectedVariant) {
       product.main_image = selectedVariant.main_image ?? '';
-      product.additional_images = selectedVariant.additional_images ?? [];
+      product.media = selectedVariant.media ?? [];
     }
   }
 
@@ -980,62 +980,12 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
         }
 
         if (Array.isArray(bridesData)) {
-          const bridesProducts = bridesData.map(product => {
-            const collections: Collection[] = [];
-            
-            // Direct collection
-            if (product.collection) {
-              collections.push(product.collection);
-            }
-            
-            // Product collections list
-            if (Array.isArray(product.product_collections)) {
-              product.product_collections.forEach((pc: any) => {
-                // A veces el join anidado puede venir nulo; en ese caso usamos `collection_id`
-                // para que al menos pueda filtrarse por colección.
-                const joined = pc?.collections;
-                const colId = joined?.id ?? pc?.collection_id ?? pc?.collectionId;
+          const mappedBrides = ProductUtils.mapProducts(bridesData);
+          const bridesProducts = mappedBrides.map(p => ({
+            ...p,
+            source_module: 'bridal'
+          }));
 
-                if (colId === undefined || colId === null) return;
-
-                if (!collections.some(c => String((c as any)?.id) === String(colId))) {
-                  if (joined) {
-                    collections.push(joined);
-                  } else {
-                    collections.push({
-                      id: colId,
-                      name: joined?.name ?? '',
-                      slug: joined?.slug ?? ''
-                    } as any);
-                  }
-                }
-              });
-            }
-
-            return {
-              id: product.id,
-              name: product.name,
-              description: product.description,
-              details: product.details,
-              price: product.price,
-              category: { 
-                id: (product.categories as any)?.id || 0,
-                name: this.getBridesCategoryName(product) 
-              },
-              subcategory: { 
-                id: (product.subcategories as any)?.id || 0,
-                name: this.getBridesSubcategoryName(product) 
-              },
-              main_image: product.main_image,
-              additional_images: product.additional_images,
-              sizes: product.sizes,
-              slug: product.slug,
-              avid: product.avid,
-              variants: product.product_variants || [],
-              collections: collections,
-              source_module: 'bridal'
-            };
-          });
           const existingIds = new Set(this.allProducts.map(p => p.id));
           const newBridesProducts = bridesProducts.filter(p => !existingIds.has(p.id));
           this.allProducts.push(...newBridesProducts);
@@ -1060,39 +1010,6 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
       }
     })();
     return this.bridesLoadPromise;
-  }
-
-  private getBridesCategoryName(product: any): string {
-    const categoryName =
-      product?.categories?.name ??
-      product?.category?.name ??
-      product?.category_name ??
-      product?.category;
-    if (typeof categoryName === 'string' && categoryName.trim().length > 0) {
-      return categoryName;
-    }
-    const name = String(product?.name ?? '').toLowerCase();
-    if (name.includes('velo')) return 'velos';
-    return 'vestidos de novia';
-  }
-
-  private getBridesSubcategoryName(product: any): string {
-    const subcategoryName =
-      product?.subcategories?.name ??
-      product?.subcategory?.name ??
-      product?.subcategory_name ??
-      product?.subcategory;
-    if (typeof subcategoryName === 'string' && subcategoryName.trim().length > 0) {
-      return subcategoryName;
-    }
-    const name = String(product?.name ?? '').toLowerCase();
-    if (name.includes('velo 1')) return 'velos 1';
-    if (name.includes('velo 2')) return 'velos 2';
-    if (name.includes('velo 3')) return 'velos 3';
-    if (name.includes('vestido 1')) return 'vestidos de novia 1';
-    if (name.includes('vestido 2')) return 'vestidos de novia 2';
-    if (name.includes('vestido 3')) return 'vestidos de novia 3';
-    return 'vestidos de novia 1'; // valor por defecto
   }
 
   public async applyFilters(): Promise<void> {

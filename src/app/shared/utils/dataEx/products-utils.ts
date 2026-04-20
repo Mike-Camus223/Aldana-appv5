@@ -1,4 +1,4 @@
-import { Product, ProductVariant } from '../models/Products-supabase.interface';
+import { Product, ProductVariant, MediaItemJSONB } from '../models/Products-supabase.interface';
 
 
 export class ProductUtils {
@@ -7,6 +7,8 @@ export class ProductUtils {
       const hasValidBaseColor = p.color_name && p.color_name.trim() !== '' && p.color_hex && p.color_hex !== '#000000';
       const variants: ProductVariant[] = [];
 
+      const rawProductMedia = Array.isArray(p.media) ? (p.media as MediaItemJSONB[]) : [];
+
       if (hasValidBaseColor) {
         variants.push({
           id: p.id,
@@ -14,68 +16,76 @@ export class ProductUtils {
           color_hex: p.color_hex,
           avid: p.avid || '',
           main_image: p.main_image?.trim() || '',
-          additional_images: p.additional_images || [],
+          media: rawProductMedia,
           isBase: true
         });
       }
 
-      if (Array.isArray(p.product_variants)) {
-        variants.push(...p.product_variants.map((v: any) => ({
+      // Handle product_variants (aliased or not)
+      const rawVariants = p.product_variants || p.pbrides_product_variants || [];
+      if (Array.isArray(rawVariants)) {
+        variants.push(...rawVariants.map((v: any) => ({
           id: v.id,
           color_name: v.color_name,
           color_hex: v.color_hex,
           avid: v.avid,
           main_image: v.main_image?.trim() || '',
-          additional_images: v.additional_images || [],
+          media: Array.isArray(v.media) ? (v.media as MediaItemJSONB[]) : [],
           isBase: false
         })));
       }
 
       const rawMainImage = String(p.main_image ?? '').trim();
-      const rawAdditionalImages = Array.isArray(p.additional_images) ? p.additional_images : [];
-
       const variantMainImage =
         variants.length > 0 ? String(variants[0].main_image ?? '').trim() : '';
-      const variantAdditionalImages =
-        variants.length > 0 && Array.isArray(variants[0].additional_images)
-          ? variants[0].additional_images
-          : [];
 
       // Normal and Bridal collections
       let collections: any[] = [];
-      if (Array.isArray(p.product_collections)) {
-        collections = p.product_collections
-          .map((pc: any) => pc.collections)
+      const rawCollections = p.product_collections || p.pbrides_product_collections || [];
+      if (Array.isArray(rawCollections)) {
+        collections = rawCollections
+          .map((pc: any) => pc.collections || pc.collection_brides || pc.collection)
           .filter(Boolean);
       }
+
+      // Handle Category
+      const catObj = p.categories || p.pbrides_categories || p.category;
+      const category = {
+        id: catObj?.id || 0,
+        name: catObj?.name?.toLowerCase() || (String(p.name || '').toLowerCase().includes('velo') ? 'velos' : 'vestidos de novia')
+      };
+
+      // Handle Subcategory
+      const subcatObj = p.subcategories || p.pbrides_subcategories || p.subcategory;
+      const subcategory = subcatObj ? {
+        id: subcatObj?.id || 0,
+        name: subcatObj?.name?.toLowerCase() || 'general'
+      } : undefined;
 
       return {
         id: p.id,
         name: p.name,
         details: p.details || '',
         description: p.description,
-        price: p.price || 0,
+        price: Number(p.price || 0),
         variants,
-        // Si no hay variante “base” ni variantes, antes quedaba vacío aunque la fila tuviera main_image.
         main_image: variantMainImage || rawMainImage,
-        additional_images:
-          variantAdditionalImages.length > 0 ? variantAdditionalImages : rawAdditionalImages,
+        media: rawProductMedia,
         sizes: p.sizes || [],
         slug: p.slug || '',
         wishlisted: false,
-        category: {
-          id: p.categories?.id || 0,
-          name: p.categories?.name?.toLowerCase() || ''
-        },
-        subcategory: p.subcategories ? {
-          id: p.subcategories?.id || 0,
-          name: p.subcategories?.name?.toLowerCase() || ''
-        } : undefined,
+        category,
+        subcategory,
         collections
       };
-
     });
   }
+
+  static getMediaByUse(media: MediaItemJSONB[], use: 'shop' | 'product' | 'collection'): MediaItemJSONB[] {
+    if (!Array.isArray(media)) return [];
+    return media.filter(m => Array.isArray(m.use) && m.use.includes(use));
+  }
+
   static normalize(text: string): string {
     return text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
   }

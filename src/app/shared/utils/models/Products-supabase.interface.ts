@@ -9,13 +9,20 @@ export interface ProductSize {
   size: string;
 }
 
+export interface MediaItemJSONB {
+  url: string;
+  type: 'image' | 'video';
+  use: ('shop' | 'product' | 'collection')[];
+  poster?: string;
+}
+
 export interface ProductVariant {
   id: string;
   color_name: string;
   color_hex: string;
   avid: string;
   main_image?: string;
-  additional_images?: string[]; 
+  media: MediaItemJSONB[]; 
   isBase?: boolean; 
 
 }
@@ -44,7 +51,7 @@ export interface Product {
   price: number;
   variants: ProductVariant[];
   main_image: string;
-  additional_images: string[];
+  media: MediaItemJSONB[];
   sizes: string[];
   slug: string;
   category: Category;

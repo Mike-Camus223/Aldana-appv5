@@ -49,6 +49,7 @@
           <!-- VIDEO -->
           <video *ngIf="isVideo(item) && i === activeIndex"
             [src]="item.url"
+            [poster]="item.poster"
             controls
             autoplay
             muted

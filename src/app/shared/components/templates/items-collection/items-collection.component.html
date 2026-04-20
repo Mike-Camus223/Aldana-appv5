@@ -4,25 +4,16 @@
   <app-breadcrumb [items]="breadcrumbItems"></app-breadcrumb>
 </section>
 
-<!-- ============================================================
-     HERO EDITORIAL
-     Estructura:
-     - Un wrapper exterior (#hero-scroll-track) con altura = heroImages.length × 100vh
-       para que haya "recorrido" de scroll.
-     - Dentro: grid de 2 columnas.
-       · Izquierda (.hero-sticky-left): sticky, centrado verticalmente.
-       · Derecha (.hero-sticky-right): sticky overflow:hidden, con una
-         "tira" (.hero-image-strip) que GSAP desplaza hacia arriba.
-     ============================================================ -->
-<section
-  id="hero-scroll-track"
-  class="w-full bg-aldy-white"
-  [style.height.px]="heroImages.length > 1 ? (heroImages.length * 100) + 'vh' : '100vh'"
->
-  <div class="max-w-[1800px] mx-auto grid grid-cols-1 lg:grid-cols-2 lg:h-full">
+<!--
+  HERO EDITORIAL - IMÁGENES EN COLUMNA ESTÁTICAS
+  ____________________________________________________________________
+  Grid layout con texto a la izquierda y 3 imágenes en columna a la derecha
+-->
+<section class="w-full bg-aldy-white">
+  <div class="max-w-[1800px] mx-auto grid grid-cols-1 lg:grid-cols-2 min-h-[85vh]">
 
-    <!-- TEXTO (sticky izquierda) -->
-    <div class="hero-sticky-left px-8 lg:px-16 py-16 space-y-6">
+    <!-- TEXTO -->
+    <div class="flex flex-col justify-center px-8 lg:px-16 py-16 space-y-6">
       <p class="text-[10px] tracking-[0.4em] uppercase text-aldy-green-gray NewAldyFontType4">
         {{ sectionLabel }}
       </p>
@@ -45,13 +36,16 @@
       </div>
     </div>
 
-    <!-- IMÁGENES (sticky derecha, scroll strip) -->
-    <div class="hero-sticky-right" data-items-collection-hero-media>
-      <div class="hero-image-strip" id="hero-image-strip">
+    <!-- IMÁGENES HERO EN COLUMNA -->
+    <div class="relative h-[70vh] lg:h-auto overflow-hidden" data-items-collection-hero-media>
+      <div class="flex flex-col h-full space-y-0">
         <img
           *ngFor="let img of heroImages; let i = index"
           [src]="img"
           [alt]="'Hero image ' + (i + 1)"
+          class="w-full h-[33.33vh] lg:h-[28vh] object-cover"
+          (load)="onImageLoad($event, i)"
+          (error)="onImageError($event, i)"
         />
       </div>
     </div>
@@ -63,7 +57,7 @@
 <section class="px-6 lg:px-16 w-full pb-20 bg-aldy-white">
   <div class="max-w-[1800px] mx-auto">
 
-    <div class="mb-6 pt-16">
+    <div class="mb-8 pt-16">
       <h2 class="text-xl tracking-widest NewAldyTitle text-aldy-green-gray-bold">
         GALERÍA
       </h2>
@@ -72,42 +66,41 @@
       </p>
     </div>
 
-    <!-- Galería personalizada con 4 imágenes por fila -->
-    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-8">
+    <!-- Grid portrait: 4 columnas desktop, 2 mobile con Tailwind -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
       <div
         *ngFor="let item of galleryMedia; let i = index"
-        class="gallery-card relative aspect-square overflow-hidden cursor-pointer group"
+        class="group cursor-pointer overflow-hidden transition-all duration-300 hover:transform hover:-translate-y-1"
         (click)="openIndex = i">
 
         <img
           *ngIf="item.type === 'image'"
           [src]="item.url"
           [alt]="item.alt"
-          class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110">
+          class="w-full h-full object-cover aspect-[2/3] transition-transform duration-500 group-hover:scale-105">
 
-        <video
-          *ngIf="item.type === 'video'"
-          [src]="item.url"
-          [poster]="item.poster"
-          class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-          muted
-          loop>
-        </video>
-
-        <!-- Overlay para videos -->
-        <div
-          *ngIf="item.type === 'video'"
-          class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
-          <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-            <svg class="w-6 h-6 text-gray-800 ml-1" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/>
-            </svg>
+        <div *ngIf="item.type === 'video'" class="relative w-full h-full aspect-[2/3]">
+          <video
+            [src]="item.url"
+            [poster]="item.poster"
+            muted
+            loop
+            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+          </video>
+          <!-- Play overlay -->
+          <div class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300">
+            <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              <svg class="w-5 h-5 text-gray-800 ml-1" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/>
+              </svg>
+            </div>
           </div>
         </div>
+
       </div>
     </div>
 
-    <!--  NO TOCAR: este mantiene el lightbox -->
+    <!-- NO TOCAR: mantiene el lightbox -->
     <app-gen-gallery-vanilla
       [media]="galleryMedia"
       [openIndex]="openIndex">
