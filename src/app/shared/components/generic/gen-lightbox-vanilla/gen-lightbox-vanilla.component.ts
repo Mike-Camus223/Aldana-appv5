@@ -52,6 +52,7 @@ export class GenLightboxVanillaComponent implements OnChanges, AfterViewInit {
 
   @ViewChildren('slideRef') slideRefs!: QueryList<ElementRef<HTMLElement>>;
 
+  
   activeIndex = 0;
   zoomed = false;
   isClosing = false;
@@ -94,6 +95,20 @@ export class GenLightboxVanillaComponent implements OnChanges, AfterViewInit {
       el.style.zIndex = i === this.activeIndex ? '1' : '0';
     });
   }
+
+  trackByIndex(index: number): number {
+  return index;
+}
+
+private forceResetInteractionState(): void {
+  this.zoomed = false;
+
+  this.isDragging = false;
+  this._dragMoved = false;
+
+  this.translateX = 0;
+  this.translateY = 0;
+}
 
   // =========================
   // MEDIA TYPE CHECK
@@ -144,26 +159,27 @@ export class GenLightboxVanillaComponent implements OnChanges, AfterViewInit {
   }
 
   onDrag(e: MouseEvent): void {
-    if (!this.isDragging) return;
-    e.preventDefault();
-    this._dragMoved = true;
+  if (!this.isDragging) return;
+  e.preventDefault();
+  this._dragMoved = true;
 
-    const dx = (e.clientX - this.dragStartX) / this.ZOOM_SCALE;
-    const dy = (e.clientY - this.dragStartY) / this.ZOOM_SCALE;
+  const dx = (e.clientX - this.dragStartX) / this.ZOOM_SCALE;
+  const dy = (e.clientY - this.dragStartY) / this.ZOOM_SCALE;
 
-    const maxX = (this.FRAME_W * (this.ZOOM_SCALE - 1)) / (2 * this.ZOOM_SCALE);
-    const maxY = (this.FRAME_H * (this.ZOOM_SCALE - 1)) / (2 * this.ZOOM_SCALE);
+  const maxX = (this.FRAME_W * (this.ZOOM_SCALE - 1)) / (2 * this.ZOOM_SCALE);
+  const maxY = (this.FRAME_H * (this.ZOOM_SCALE - 1)) / (2 * this.ZOOM_SCALE);
 
-    this.translateX = Math.max(-maxX, Math.min(maxX, this.dragOriginX + dx));
-    this.translateY = Math.max(-maxY, this.translateY + dy);
-  }
+  this.translateX = Math.max(-maxX, Math.min(maxX, this.dragOriginX + dx));
+  this.translateY = Math.max(-maxY, Math.min(maxY, this.dragOriginY + dy)); // ← dragOriginY, no translateY
+}
 
   stopDrag(): void {
-    this.isDragging = false;
-    this.translateX = 0;
-    this.translateY = 0;
-    setTimeout(() => (this._dragMoved = false), 0);
-  }
+  this.isDragging = false;
+  // ← NO resetear translateX/Y acá. El HostListener mouseup dispara esto
+  // en cualquier click (incluyendo botones prev/next), lo que rompía el zoom.
+  // resetDrag() sigue encargándose cuando realmente corresponde.
+  setTimeout(() => (this._dragMoved = false), 0);
+}
 
   // =========================
   // WHEEL ZOOM
@@ -249,18 +265,21 @@ export class GenLightboxVanillaComponent implements OnChanges, AfterViewInit {
     });
 
     setTimeout(() => {
-      currentEl.style.opacity = '0';
-      currentEl.style.transition = '';
-      currentEl.style.zIndex = '0';
+  currentEl.style.opacity = '0';
+  currentEl.style.transition = '';
+  currentEl.style.zIndex = '0';
 
-      nextEl.style.transition = '';
-      nextEl.style.zIndex = '1';
+  nextEl.style.transition = '';
+  nextEl.style.zIndex = '1';
 
-      this.activeIndex = nextIdx;
-      this.indexChange.emit(this.activeIndex);
+  this.activeIndex = nextIdx;
+  this.indexChange.emit(this.activeIndex);
 
-      this.isAnimating = false;
-    }, 500);
+  // 🔥 FIX CLAVE
+  this.forceResetInteractionState();
+
+  this.isAnimating = false;
+}, 500);
   }
 
   @HostListener('document:mouseup')

@@ -2,11 +2,13 @@ import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MediaItem } from '../../../utils/models/objectsGallery.model';
 import { GenLightboxVanillaComponent } from '../gen-lightbox-vanilla/gen-lightbox-vanilla.component';
+import { CardInitAnimationDirective } from '../../../utils/directives/card-init-animation.directive';
+
 
 @Component({
   selector: 'app-gen-gallery-vanilla',
   standalone: true,
-  imports: [CommonModule, GenLightboxVanillaComponent],
+  imports: [CommonModule, GenLightboxVanillaComponent, CardInitAnimationDirective],
   templateUrl: './gen-gallery-vanilla.component.html',
 })
 export class GenGalleryVanillaComponent {

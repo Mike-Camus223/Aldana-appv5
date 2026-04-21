@@ -10,22 +10,31 @@
          (click)="openLightbox(row.items, i)"
          class="cursor-pointer overflow-hidden group">
 
-      <div class="aspect-[2/3] w-full overflow-hidden">
+      <div class="aspect-[2/3] w-full overflow-hidden relative">
 
         <img *ngIf="item.type === 'image'"
              [src]="item.url"
              loading="lazy"
+             appCardInitAnimation="up"
              decoding="async"
-             class="w-full h-full object-cover group-hover:scale-105 transition"/>
+             class="w-full h-full object-cover"/>
 
         <video *ngIf="item.type === 'video'"
                [src]="item.url"
                [poster]="item.poster"
                muted
                loop
+               appCardInitAnimation="up"
                preload="metadata"
                class="w-full h-full object-cover">
         </video>
+
+        <!-- Etiqueta de Video -->
+        <div *ngIf="item.type === 'video'" 
+             class="absolute top-3 right-3 bg-white/80 backdrop-blur-sm px-2 py-1 rounded-full flex items-center gap-1.5 shadow-sm">
+          <div class="w-1.5 h-1.5 rounded-full bg-aldy-green-gray animate-pulse"></div>
+          <span class="text-[8px] tracking-[0.2em] uppercase text-aldy-green-gray font-medium">Video</span>
+        </div>
 
       </div>
 

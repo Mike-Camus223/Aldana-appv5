@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, AfterViewInit, ElementRef, ViewChild } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ElementRef, ViewChild, OnDestroy } from '@angular/core';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 
 import gsap from 'gsap';
@@ -30,7 +30,7 @@ type BridesProduct = {
   imports: [CommonModule, RouterModule, BreadcrumbComponent, GenGalleryVanillaComponent],
   templateUrl: './items-collection.component.html',
 })
-export class ItemsCollectionComponent implements OnInit, AfterViewInit {
+export class ItemsCollectionComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChild('stickyText') stickyText!: ElementRef;
   @ViewChild('imagesContainer') imagesContainer!: ElementRef;
@@ -41,38 +41,52 @@ export class ItemsCollectionComponent implements OnInit, AfterViewInit {
   collectionSlug = '';
   productSlug = '';
   product: BridesProduct | null = null;
+  heroImages: string[] = [];
+  galleryRows: { label: string; items: MediaItem[] }[] = [];
 
   sectionLabel = 'NOVIAS COLECCIONES';
   backRoute: any[] = ['/novias-colecciones'];
+
+  private triggers: ScrollTrigger[] = [];
 
   constructor(
     private route: ActivatedRoute,
     private bridesProducts: BridesProductsService
   ) {}
 
+  ngOnDestroy(): void {
+    this.cleanupTriggers();
+  }
+
+  private cleanupTriggers(): void {
+    this.triggers.forEach(t => t.kill());
+    this.triggers = [];
+    ScrollTrigger.getAll().forEach(st => st.kill());
+  }
+
   private normalizeMedia(media: any): MediaItemJSONB[] {
     if (!Array.isArray(media)) return [];
     return Array.isArray(media[0]) ? media.flat() : media;
   }
 
-  get heroImages(): string[] {
-    if (!this.product) return [];
+  private updateImagesData(): void {
+    if (!this.product) {
+      this.heroImages = [];
+      this.galleryRows = [];
+      return;
+    }
 
+    // Actualizar Hero Images
     const main = this.product.main_image;
-
     const collectionImages = this.normalizeMedia(this.product.media)
       .filter(m => m.type === 'image' && m.use?.includes('collection'))
       .map(m => m.url);
 
-    return [main, ...collectionImages]
+    this.heroImages = [main, ...collectionImages.slice(0, 2)]
       .filter(Boolean)
-      .filter((v, i, arr) => arr.indexOf(v) === i)
-      .slice(0, 6);
-  }
+      .filter((v, i, arr) => arr.indexOf(v) === i);
 
-  get galleryRows(): { label: string; items: MediaItem[] }[] {
-    if (!this.product) return [];
-
+    // Actualizar Gallery Rows
     const rows: { label: string; items: MediaItem[] }[] = [];
     const used = new Set<string>();
 
@@ -95,14 +109,13 @@ export class ItemsCollectionComponent implements OnInit, AfterViewInit {
 
     for (let i = 0; i < base.length; i += 5) {
       rows.push({
-        label: i === 0 ? 'Producto Principal' : 'Producto Principal (Cont.)',
+        label: i === 0 ? this.product.name : `${this.product.name} (Cont.)`,
         items: base.slice(i, i + 5)
       });
     }
 
     (this.product.variants || []).forEach((v, idx) => {
       const media = this.normalizeMedia(v.media);
-
       const items = media
         .filter(m => m.use?.includes('collection'))
         .filter(m => {
@@ -114,13 +127,13 @@ export class ItemsCollectionComponent implements OnInit, AfterViewInit {
 
       for (let i = 0; i < items.length; i += 5) {
         rows.push({
-          label: `Variante: ${v.color_name || idx + 1}`,
+          label: i === 0 ? `${this.product?.name} - ${v.color_name || idx + 1}` : `${this.product?.name} - ${v.color_name || idx + 1} (Cont.)`,
           items: items.slice(i, i + 5)
         });
       }
     });
 
-    return rows;
+    this.galleryRows = rows;
   }
 
   async ngOnInit(): Promise<void> {
@@ -144,6 +157,8 @@ export class ItemsCollectionComponent implements OnInit, AfterViewInit {
       }))
     };
 
+    this.updateImagesData();
+
     this.breadcrumbItems = [
       { label: 'INICIO', route: '/home' },
       { label: 'NOVIAS COLECCIONES', route: '/novias-colecciones' },
@@ -153,29 +168,63 @@ export class ItemsCollectionComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    // Espera render completo + imágenes
     setTimeout(() => {
       this.initScroll();
-    }, 50);
+    }, 500); // Mayor delay para estabilidad
   }
 
   initScroll() {
-  const text = this.stickyText.nativeElement;
-  const images = this.imagesContainer.nativeElement;
-  const hero = this.heroSection.nativeElement;
+    if (!this.stickyText || !this.imagesContainer || !this.heroSection) return;
+    
+    this.cleanupTriggers();
 
-  ScrollTrigger.killAll();
+    const text = this.stickyText.nativeElement;
+    const images = this.imagesContainer.nativeElement;
+    const hero = this.heroSection.nativeElement;
 
-  ScrollTrigger.create({
-    trigger: hero,
-    start: "top top+=88",
-    end: () => `+=${images.offsetHeight - text.offsetHeight}`,
-    pin: text,
-    pinSpacing: false,
-    invalidateOnRefresh: true,
-  });
+    // Pinning del texto
+    const pinTrigger = ScrollTrigger.create({
+      trigger: hero,
+      start: "top top+=88",
+      end: () => `+=${images.offsetHeight - text.offsetHeight}`,
+      pin: text,
+      pinSpacing: false,
+      invalidateOnRefresh: true,
+    });
+    this.triggers.push(pinTrigger);
 
-  ScrollTrigger.refresh();
-}
+    // Animaciones de las imágenes
+    const heroImgs = images.querySelectorAll('.hero-image-reveal');
+    heroImgs.forEach((imgNode: Element, i: number) => {
+      const img = imgNode as HTMLElement;
+      
+      const anim = gsap.fromTo(img, 
+        { 
+          opacity: 0, 
+          y: 40,
+          clipPath: 'inset(100% 0 0 0)' 
+        }, 
+        {
+          opacity: 1,
+          y: 0,
+          clipPath: 'inset(0% 0 0 0)',
+          duration: 1.2,
+          ease: 'power2.out',
+          scrollTrigger: {
+            trigger: img,
+            start: "top 90%",
+            toggleActions: "play none none none"
+          },
+          delay: i * 0.1
+        }
+      );
+      
+      if (anim.scrollTrigger) {
+        this.triggers.push(anim.scrollTrigger);
+      }
+    });
+
+    ScrollTrigger.refresh();
+  }
   
 }
