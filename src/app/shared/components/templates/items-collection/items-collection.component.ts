@@ -1,12 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, AfterViewInit, ElementRef, ViewChild, OnDestroy } from '@angular/core';
 import { ActivatedRoute, RouterModule } from '@angular/router';
+import { LucideAngularModule, ChevronLeft, ChevronRight, LUCIDE_ICONS } from 'lucide-angular';
 
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 import { BridesProductsService } from '../../../../core/services/data-access/brides-products/brides-products.service';
 import { CollectionService } from '../../../../core/services/data-access/collection/collection.service';
+import { CollectionBridesService } from '../../../../core/services/data-access/collection-brides/collection_brides.service';
 import { BreadcrumbComponent } from '../../system/breadcrump/breadcrump.component';
 import { GenGalleryVanillaComponent } from '../../generic/gen-gallery-vanilla/gen-gallery-vanilla.component';
 
@@ -28,8 +30,11 @@ type BridesProduct = {
 @Component({
   selector: 'app-items-collection',
   standalone: true,
-  imports: [CommonModule, RouterModule, BreadcrumbComponent, GenGalleryVanillaComponent],
+  imports: [CommonModule, RouterModule, BreadcrumbComponent, GenGalleryVanillaComponent, LucideAngularModule],
   templateUrl: './items-collection.component.html',
+  providers: [
+    { provide: LUCIDE_ICONS, useValue: { ChevronLeft, ChevronRight } }
+  ]
 })
 export class ItemsCollectionComponent implements OnInit, AfterViewInit, OnDestroy {
 
@@ -45,6 +50,11 @@ export class ItemsCollectionComponent implements OnInit, AfterViewInit, OnDestro
   heroImages: string[] = [];
   galleryRows: { label: string; items: MediaItem[] }[] = [];
 
+  relatedProducts: any[] = [];
+  carouselIndex = 0;
+  visibleProducts = 4;
+  isBrides = false;
+
   sectionLabel = 'NOVIAS COLECCIONES';
   backRoute: any[] = ['/novias-colecciones'];
 
@@ -53,7 +63,8 @@ export class ItemsCollectionComponent implements OnInit, AfterViewInit, OnDestro
   constructor(
     private route: ActivatedRoute,
     private bridesProducts: BridesProductsService,
-    private collections: CollectionService
+    private collections: CollectionService,
+    private collectionBrides: CollectionBridesService
   ) {}
 
   ngOnDestroy(): void {
@@ -139,27 +150,54 @@ export class ItemsCollectionComponent implements OnInit, AfterViewInit, OnDestro
   }
 
   async ngOnInit(): Promise<void> {
+    this.route.paramMap.subscribe(params => {
+      this.loadProductData();
+    });
+  }
+
+  async loadProductData(): Promise<void> {
     const url = this.route.snapshot.url;
-    const isBrides = url.some(seg => seg.path === 'novias-colecciones');
+    this.isBrides = url.some(seg => seg.path === 'novias-colecciones');
 
     this.collectionSlug = this.route.snapshot.paramMap.get('collectionSlug') || '';
-    this.productSlug = this.route.snapshot.paramMap.get(isBrides ? 'productSlug' : 'itemSlug') || '';
+    this.productSlug = this.route.snapshot.paramMap.get(this.isBrides ? 'productSlug' : 'itemSlug') || '';
+
+    // Resetear estado antes de cargar
+    this.product = null;
+    this.heroImages = [];
+    this.galleryRows = [];
+    this.carouselIndex = 0;
+    this.cleanupTriggers();
 
     let row: any = null;
 
-    if (isBrides) {
-      this.sectionLabel = 'NOVIAS COLECCIONES';
+    if (this.isBrides) {
       this.backRoute = ['/novias-colecciones'];
       const res: any = await this.bridesProducts.getProducts(this.productSlug);
       row = Array.isArray(res?.data) ? res.data[0] : res?.data;
-    } else {
-      this.sectionLabel = 'COLECCIONES';
-      this.backRoute = ['/colecciones'];
-      // Para colecciones normales, primero necesitamos el ID de la colección o usar el slug para buscar el producto
-      const collection = await this.collections.getCollectionBySlug(this.collectionSlug);
+
+      // Cargar info de la colección y productos relacionados
+      const collection: any = await this.collectionBrides.getCollectionBridesBySlug(this.collectionSlug);
       if (collection) {
+        this.sectionLabel = collection.name;
+        const items = await this.collectionBrides.getCollectionBridesItemsByCollectionId(String(collection.id));
+        this.relatedProducts = items
+          .map((i: any) => i.pbrides_products)
+          .filter((p: any) => p && p.slug !== this.productSlug);
+      }
+    } else {
+      this.backRoute = ['/colecciones'];
+      const collection: any = await this.collections.getCollectionBySlug(this.collectionSlug);
+      if (collection) {
+        this.sectionLabel = collection.name;
         const detailRes = await this.collections.getCollectionItemDetail(String(collection.id), this.productSlug);
         row = detailRes?.products;
+
+        // Cargar productos relacionados
+        const items = await this.collections.getCollectionItemsByCollectionId(String(collection.id));
+        this.relatedProducts = items
+          .map((i: any) => i.products)
+          .filter((p: any) => p && p.slug !== this.productSlug);
       }
     }
 
@@ -179,7 +217,7 @@ export class ItemsCollectionComponent implements OnInit, AfterViewInit, OnDestro
 
     this.updateImagesData();
 
-    if (isBrides) {
+    if (this.isBrides) {
       this.breadcrumbItems = [
         { label: 'INICIO', route: '/home' },
         { label: 'NOVIAS COLECCIONES', route: '/novias-colecciones' },
@@ -194,6 +232,12 @@ export class ItemsCollectionComponent implements OnInit, AfterViewInit, OnDestro
         { label: this.product.name.toUpperCase(), route: `/colecciones/${this.collectionSlug}/${this.product.slug}` }
       ];
     }
+
+    // Asegurar que ScrollTrigger se reinicie después de cargar los nuevos datos
+    setTimeout(() => {
+      this.initScroll();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 100);
   }
 
   ngAfterViewInit(): void {
@@ -254,6 +298,22 @@ export class ItemsCollectionComponent implements OnInit, AfterViewInit, OnDestro
     });
 
     ScrollTrigger.refresh();
+  }
+
+  get maxIndex(): number {
+    return Math.max(0, this.relatedProducts.length - this.visibleProducts);
+  }
+
+  next() {
+    this.carouselIndex = this.carouselIndex >= this.maxIndex ? 0 : this.carouselIndex + 1;
+  }
+
+  prev() {
+    this.carouselIndex = this.carouselIndex <= 0 ? this.maxIndex : this.carouselIndex - 1;
+  }
+
+  get translate(): string {
+    return `translateX(-${this.carouselIndex * (100 / this.visibleProducts)}%)`;
   }
   
 }

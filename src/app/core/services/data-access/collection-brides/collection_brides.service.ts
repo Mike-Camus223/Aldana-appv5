@@ -43,7 +43,7 @@ export class CollectionBridesService {
             slug
         `;
 
-        const result = await this.dataHelper.getData<any[]>(
+        const result = await this.dataHelper.getData<any>(
             'collection_brides',
             selectFieldsCollectionBrides,
             'slug',

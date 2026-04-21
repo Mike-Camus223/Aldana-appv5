@@ -70,3 +70,69 @@
 
   </div>
 </section>
+
+<!-- CAROUSEL DE PRODUCTOS RELACIONADOS -->
+<section *ngIf="relatedProducts.length > 0" class="px-6 lg:px-16 w-full pb-20 bg-aldy-white overflow-hidden">
+  <div class="max-w-[1800px] mx-auto">
+    <div class="flex flex-col lg:flex-row justify-between lg:items-end mb-12 gap-6">
+      <h2 class="text-4xl lg:text-5xl font-light text-aldy-green-gray-bold NewAldyTitle">
+        MIRA MÁS DE ESTA COLECCIÓN
+      </h2>
+    </div>
+
+    <div class="relative group/carousel">
+      <div class="overflow-hidden">
+        <div 
+          class="flex transition-transform duration-500 ease-out gap-6"
+          [style.transform]="translate"
+        >
+          <div 
+            *ngFor="let item of relatedProducts" 
+            [style.flex]="'0 0 calc(' + (100 / visibleProducts) + '% - ' + (24 * (visibleProducts - 1) / visibleProducts) + 'px)'"
+            class="group"
+          >
+            <a [routerLink]="isBrides ? ['/novias-colecciones', collectionSlug, item.slug] : ['/colecciones', collectionSlug, item.slug]" class="block">
+              <div class="aspect-[3/5] overflow-hidden mb-4 bg-gray-100">
+                <img 
+                  [src]="item.main_image" 
+                  [alt]="item.name"
+                  class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                />
+              </div>
+              <h3 class="text-xl text-aldy-green-gray-bold NewAldyTitle mb-1 uppercase">{{ item.name }}</h3>
+              <p class="text-xs text-aldy-green-gray NewAldyFontType4 uppercase tracking-[0.2em]">VER DETALLE</p>
+            </a>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Controles Desktop (Sides) -->
+      <button 
+        (click)="prev()" 
+        class="hidden lg:flex absolute left-[-2rem] top-1/2 -translate-y-1/2 w-12 h-12 border border-aldy-green-gray items-center justify-center text-aldy-green-gray hover:bg-aldy-green-gray hover:text-white transition-all z-10 bg-white"
+        [class.opacity-0]="carouselIndex === 0"
+        [class.pointer-events-none]="carouselIndex === 0"
+      >
+        <lucide-icon name="chevron-left"></lucide-icon>
+      </button>
+      <button 
+        (click)="next()" 
+        class="hidden lg:flex absolute right-[-2rem] top-1/2 -translate-y-1/2 w-12 h-12 border border-aldy-green-gray items-center justify-center text-aldy-green-gray hover:bg-aldy-green-gray hover:text-white transition-all z-10 bg-white"
+        [class.opacity-0]="carouselIndex === maxIndex"
+        [class.pointer-events-none]="carouselIndex === maxIndex"
+      >
+        <lucide-icon name="chevron-right"></lucide-icon>
+      </button>
+
+      <!-- Controles Mobile -->
+      <div class="lg:hidden flex justify-center gap-8 mt-8">
+        <button (click)="prev()" class="w-10 h-10 border border-aldy-green-gray flex items-center justify-center text-aldy-green-gray">
+          <lucide-icon name="chevron-left"></lucide-icon>
+        </button>
+        <button (click)="next()" class="w-10 h-10 border border-aldy-green-gray flex items-center justify-center text-aldy-green-gray">
+          <lucide-icon name="chevron-right"></lucide-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
