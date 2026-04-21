@@ -164,10 +164,11 @@ export class ItemsPurchaseComponent implements OnInit, OnDestroy {
 
     this.product = mappedProduct;
     if (this.product) {
-
-      if (!this.product) return;
-
-      const productMedia = ProductUtils.getMediaByUse(this.product.media, 'product');
+      // Intentar obtener media de uso 'product' o 'collection' (para bridal)
+      const productMedia = this.product.media.filter(m => 
+        m.use?.includes('product') || m.use?.includes('collection')
+      );
+      
       this.carouselImages = [
         { src: this.product.main_image, thumb: this.product.main_image },
         ...productMedia.map(m => ({ src: m.url, thumb: m.poster || m.url }))
@@ -212,7 +213,12 @@ export class ItemsPurchaseComponent implements OnInit, OnDestroy {
     this.selectedVariant = newVariant;
     this.selectedSize = null;
     const cleanMainImage = newVariant.main_image?.trim() || null;
-    const variantMedia = ProductUtils.getMediaByUse(newVariant.media, 'product');
+    
+    // Intentar obtener media de uso 'product' o 'collection' (para bridal)
+    const variantMedia = newVariant.media.filter(m => 
+      m.use?.includes('product') || m.use?.includes('collection')
+    );
+    
     const hasMedia = variantMedia.length > 0;
     if (!cleanMainImage && !hasMedia) {
       this.carouselImages = [];
