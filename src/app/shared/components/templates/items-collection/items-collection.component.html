@@ -4,26 +4,23 @@
   <app-breadcrumb [items]="breadcrumbItems"></app-breadcrumb>
 </section>
 
-<!--
-  HERO EDITORIAL - IMÁGENES EN COLUMNA ESTÁTICAS
-  ____________________________________________________________________
-  Grid layout con texto a la izquierda y 3 imágenes en columna a la derecha
--->
-<section class="w-full bg-aldy-white">
-  <div class="max-w-[1800px] mx-auto grid grid-cols-1 lg:grid-cols-2 min-h-[85vh]">
+<!-- HERO -->
+<section #heroSection class="w-full bg-aldy-white">
+  <div class="max-w-[1800px] mx-auto grid grid-cols-1 lg:grid-cols-2">
 
-    <!-- TEXTO -->
-    <div class="flex flex-col justify-center px-8 lg:px-16 py-16 space-y-6">
+    <!-- TEXTO (PINNED) -->
+    <div #stickyText class="flex flex-col justify-center px-8 lg:px-16 py-16 space-y-6 lg:h-screen">
+      
       <p class="text-[10px] tracking-[0.4em] uppercase text-aldy-green-gray NewAldyFontType4">
         {{ sectionLabel }}
       </p>
 
       <h1 class="text-6xl lg:text-8xl leading-[1.05] font-light text-aldy-green-gray-bold NewAldyTitle max-w-xl">
-        {{ isItemDetailLayout ? (collectionItem?.title) : (product?.name) }}
+        {{ product?.name }}
       </h1>
 
       <p class="text-sm text-aldy-green-gray max-w-sm leading-relaxed NewAldyFontType4">
-        {{ isItemDetailLayout ? (collectionItem?.description) : (product?.description) }}
+        {{ product?.description }}
       </p>
 
       <div class="pt-4 flex gap-4">
@@ -36,17 +33,20 @@
       </div>
     </div>
 
-    <!-- IMÁGENES HERO EN COLUMNA -->
-    <div class="relative h-[70vh] lg:h-auto overflow-hidden" data-items-collection-hero-media>
-      <div class="flex flex-col h-full space-y-0">
-        <img
-          *ngFor="let img of heroImages; let i = index"
-          [src]="img"
-          [alt]="'Hero image ' + (i + 1)"
-          class="w-full h-[33.33vh] lg:h-[28vh] object-cover"
-          (load)="onImageLoad($event, i)"
-          (error)="onImageError($event, i)"
-        />
+    <!-- IMÁGENES -->
+    <div #imagesContainer class="relative">
+      <div class="flex flex-col">
+
+        <div
+          *ngFor="let img of heroImages"
+          class="w-full h-[90vh] lg:h-screen"
+        >
+          <img
+            [src]="img"
+            class="w-full h-full object-cover"
+          />
+        </div>
+
       </div>
     </div>
 
@@ -61,49 +61,14 @@
       <h2 class="text-xl tracking-widest NewAldyTitle text-aldy-green-gray-bold">
         GALERÍA
       </h2>
+
       <p class="text-xs text-aldy-green-gray NewAldyFontType4 mt-1">
         Click en una imagen o video
       </p>
     </div>
 
-    <!-- Grid portrait: 4 columnas desktop, 2 mobile con Tailwind -->
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
-      <div
-        *ngFor="let item of galleryMedia; let i = index"
-        class="group cursor-pointer overflow-hidden transition-all duration-300 hover:transform hover:-translate-y-1"
-        (click)="openIndex = i">
-
-        <img
-          *ngIf="item.type === 'image'"
-          [src]="item.url"
-          [alt]="item.alt"
-          class="w-full h-full object-cover aspect-[2/3] transition-transform duration-500 group-hover:scale-105">
-
-        <div *ngIf="item.type === 'video'" class="relative w-full h-full aspect-[2/3]">
-          <video
-            [src]="item.url"
-            [poster]="item.poster"
-            muted
-            loop
-            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
-          </video>
-          <!-- Play overlay -->
-          <div class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300">
-            <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              <svg class="w-5 h-5 text-gray-800 ml-1" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/>
-              </svg>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- NO TOCAR: mantiene el lightbox -->
     <app-gen-gallery-vanilla
-      [media]="galleryMedia"
-      [openIndex]="openIndex">
+      [rows]="galleryRows">
     </app-gen-gallery-vanilla>
 
   </div>

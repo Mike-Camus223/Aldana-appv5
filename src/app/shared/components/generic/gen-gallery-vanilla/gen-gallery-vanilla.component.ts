@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MediaItem } from '../../../utils/models/objectsGallery.model';
 import { GenLightboxVanillaComponent } from '../gen-lightbox-vanilla/gen-lightbox-vanilla.component';
@@ -8,35 +8,22 @@ import { GenLightboxVanillaComponent } from '../gen-lightbox-vanilla/gen-lightbo
   standalone: true,
   imports: [CommonModule, GenLightboxVanillaComponent],
   templateUrl: './gen-gallery-vanilla.component.html',
-  styleUrl: './gen-gallery-vanilla.component.css',
 })
-export class GenGalleryVanillaComponent implements OnChanges {
-  @Input() media: MediaItem[] = [];
-  /**
-   * Si viene definido, abre el lightbox en ese índice.
-   * Útil para deep-links tipo /imagen-1 o /video.
-   */
-  @Input() openIndex: number | null = null;
+export class GenGalleryVanillaComponent {
+
+  @Input() rows: { label: string; items: MediaItem[] }[] = [];
 
   lightboxOpen = false;
   lightboxIndex = 0;
+  lightboxItems: MediaItem[] = [];
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['openIndex']) {
-      const idx = this.openIndex;
-      if (idx === null || idx === undefined) return;
-      if (!Array.isArray(this.media) || this.media.length === 0) return;
-      const clamped = Math.max(0, Math.min(this.media.length - 1, idx));
-      this.openLightbox(clamped);
-    }
-  }
-
-  openLightbox(index: number): void {
+  openLightbox(items: MediaItem[], index: number) {
+    this.lightboxItems = items;
     this.lightboxIndex = index;
     this.lightboxOpen = true;
   }
 
-  closeLightbox(): void {
+  closeLightbox() {
     this.lightboxOpen = false;
   }
 }

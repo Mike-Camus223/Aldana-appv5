@@ -65,40 +65,33 @@ export class GenericCollectionBridesComponent implements OnInit {
 
     const pickThumbFromMedia = (mediaItems: any[] | undefined | null): string | null => {
       const m = Array.isArray(mediaItems) ? mediaItems : [];
+      // Intentar encontrar primero una imagen con use 'collection' o 'shop'
+      const collectionMedia = m.find(x => x.type === 'image' && Array.isArray(x.use) && x.use.includes('collection'));
+      if (collectionMedia) return collectionMedia.url;
+      
+      const shopMedia = m.find(x => x.type === 'image' && Array.isArray(x.use) && x.use.includes('shop'));
+      if (shopMedia) return shopMedia.url;
+
+      // Fallback al comportamiento antiguo de orden
       const sorted = [...m].sort((a, b) => Number(a?.order ?? 0) - Number(b?.order ?? 0));
       const firstImage = sorted.find(x => String(x?.type) === 'image');
-      return String(firstImage?.media_url || '').trim() || null;
+      return String(firstImage?.media_url || firstImage?.url || '').trim() || null;
     };
 
-    const productIds = [
-      ...new Set(
-        (Array.isArray(rows) ? rows : [])
-          .map((r: any) => r?.product_id)
-          .filter((id: unknown) => id != null && String(id).length > 0)
-          .map((id: unknown) => String(id))
-      )
-    ];
-
-    let thumbByProductId = new Map<string, string>();
-    if (productIds.length) {
-      const raw = await this.bridesProducts.getProductsByIds(productIds);
-      thumbByProductId = new Map(
-        raw.map((p: any) => [String(p.id), BridesProductUtils.displayMainImage(p)])
-      );
-    }
-
     this.items = (Array.isArray(rows) ? rows : [])
-      .map((r: any) => ({
-        id: String(r?.id || ''),
-        slug: String(r?.slug || ''),
-        title: String(r?.title || ''),
-        subtitle: r?.subtitle ?? null,
-        description: r?.description ?? null,
-        thumbUrl: r?.product_id
-          ? (thumbByProductId.get(String(r.product_id)) || pickThumbFromMedia(r?.collection_media_brides_items))
-          : pickThumbFromMedia(r?.collection_media_brides_items),
-      }))
-      .filter(x => Boolean(x.slug) && Boolean(x.title));
+      .map((r: any) => {
+        const product = r.pbrides_products;
+        if (!product) return null;
+        return {
+          id: String(product.id || ''),
+          slug: String(product.slug || ''),
+          title: String(product.name || ''),
+          subtitle: null,
+          description: product.description ?? null,
+          thumbUrl: product.main_image || pickThumbFromMedia(product.media)
+        };
+      })
+      .filter(x => x !== null && Boolean(x.slug) && Boolean(x.title)) as BridesCollectionItemCard[];
   }
 
   trackById(_: number, it: BridesCollectionItemCard) {

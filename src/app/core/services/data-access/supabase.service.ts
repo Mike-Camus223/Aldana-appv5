@@ -189,11 +189,9 @@ export class SupabaseService {
   async getInstagramReels() {
     try {      
       // Intentar primero con el ID de Instagram directo
+      // Eliminamos 'Content-Type' para evitar problemas de CORS en GET
       const response = await fetch('https://graph.facebook.com/v18.0/17841444599332423/media?fields=id,caption,media_type,media_url,thumbnail_url,permalink,timestamp,like_count,comments_count&limit=20&access_token=EAAI user token aqui', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json'
-        }
+        method: 'GET'
       });
       
       if (!response.ok) {

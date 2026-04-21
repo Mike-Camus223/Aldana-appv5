@@ -46,24 +46,24 @@ export class GenLightboxVanillaComponent implements OnChanges, AfterViewInit {
   @Input() isOpen = false;
   @Input() items: MediaItem[] = [];
   @Input() startIndex = 0;
-  
 
   @Output() closed = new EventEmitter<void>();
   @Output() indexChange = new EventEmitter<number>();
 
   @ViewChildren('slideRef') slideRefs!: QueryList<ElementRef<HTMLElement>>;
-  
+
   activeIndex = 0;
   zoomed = false;
   isClosing = false;
   private isAnimating = false;
-  // DRAG ORIGINAL
+
   isDragging = false;
   private _dragMoved = false;
   private dragStartX = 0;
   private dragStartY = 0;
   private dragOriginX = 0;
   private dragOriginY = 0;
+
   translateX = 0;
   translateY = 0;
 
@@ -95,11 +95,25 @@ export class GenLightboxVanillaComponent implements OnChanges, AfterViewInit {
     });
   }
 
-  // VIDEO CHECK
+  // =========================
+  // MEDIA TYPE CHECK
+  // =========================
   isVideo(item: MediaItem): boolean {
     return item.type === 'video';
   }
+
+  getThumb(item: MediaItem): string {
+    if (item.type === 'video') {
+      return item.poster && item.poster.trim() !== ''
+        ? item.poster
+        : item.url;
+    }
+    return item.url;
+  }
+
+  // =========================
   // ZOOM
+  // =========================
   getImgTransform(): string {
     if (!this.zoomed) return 'scale(1)';
     return `scale(${this.ZOOM_SCALE}) translate(${this.translateX}px, ${this.translateY}px)`;
@@ -115,7 +129,9 @@ export class GenLightboxVanillaComponent implements OnChanges, AfterViewInit {
     this.toggleZoom();
   }
 
+  // =========================
   // DRAG
+  // =========================
   startDrag(e: MouseEvent): void {
     if (!this.zoomed) return;
     e.preventDefault();
@@ -139,20 +155,19 @@ export class GenLightboxVanillaComponent implements OnChanges, AfterViewInit {
     const maxY = (this.FRAME_H * (this.ZOOM_SCALE - 1)) / (2 * this.ZOOM_SCALE);
 
     this.translateX = Math.max(-maxX, Math.min(maxX, this.dragOriginX + dx));
-    this.translateY = Math.max(-maxY, Math.min(maxY, this.dragOriginY + dy));
+    this.translateY = Math.max(-maxY, this.translateY + dy);
   }
 
   stopDrag(): void {
-    if (!this.isDragging) return;
     this.isDragging = false;
-
     this.translateX = 0;
     this.translateY = 0;
-
-    setTimeout(() => { this._dragMoved = false; }, 0);
+    setTimeout(() => (this._dragMoved = false), 0);
   }
 
-  // SCROLL ZOOM
+  // =========================
+  // WHEEL ZOOM
+  // =========================
   onWheel(e: WheelEvent): void {
     if (!this.zoomed) return;
     e.preventDefault();
@@ -175,7 +190,9 @@ export class GenLightboxVanillaComponent implements OnChanges, AfterViewInit {
     this.resetDrag();
   }
 
+  // =========================
   // SLIDER
+  // =========================
   next(): void {
     this.animateSlide('next');
   }
@@ -191,63 +208,57 @@ export class GenLightboxVanillaComponent implements OnChanges, AfterViewInit {
   }
 
   private animateSlide(dir: 'next' | 'prev', targetIndex?: number): void {
-
-    if (this.isAnimating) return; 
+    if (this.isAnimating) return;
     this.isAnimating = true;
-  
+
     this.resetZoom();
-  
+
     const slides = this.slideRefs.toArray();
-    if (!slides.length) {
-      this.isAnimating = false;
-      return;
-    }
-  
     const currentIdx = this.activeIndex;
-  
-    const nextIdx = targetIndex !== undefined
-      ? this.clampIndex(targetIndex)
-      : this.clampIndex(currentIdx + (dir === 'next' ? 1 : -1));
-  
+
+    const nextIdx =
+      targetIndex !== undefined
+        ? this.clampIndex(targetIndex)
+        : this.clampIndex(currentIdx + (dir === 'next' ? 1 : -1));
+
     if (currentIdx === nextIdx) {
       this.isAnimating = false;
       return;
     }
-  
+
     const currentEl = slides[currentIdx].nativeElement;
     const nextEl = slides[nextIdx].nativeElement;
-  
+
     const DIST = 1200;
-  
+
     const xOut = dir === 'next' ? -DIST : DIST;
-    const xIn  = dir === 'next' ?  DIST : -DIST;
-  
+    const xIn = dir === 'next' ? DIST : -DIST;
+
     nextEl.style.transition = 'none';
     nextEl.style.transform = `translateX(${xIn}px)`;
     nextEl.style.opacity = '1';
     nextEl.style.zIndex = '2';
-  
+
     requestAnimationFrame(() => {
       const ease = 'cubic-bezier(0.45, 0, 0.25, 1)';
       currentEl.style.transition = `transform 0.5s ${ease}`;
       nextEl.style.transition = `transform 0.5s ${ease}`;
-  
+
       currentEl.style.transform = `translateX(${xOut}px)`;
       nextEl.style.transform = `translateX(0px)`;
     });
-  
+
     setTimeout(() => {
       currentEl.style.opacity = '0';
-      currentEl.style.transform = 'translateX(0px)';
       currentEl.style.transition = '';
       currentEl.style.zIndex = '0';
-  
+
       nextEl.style.transition = '';
       nextEl.style.zIndex = '1';
-  
+
       this.activeIndex = nextIdx;
       this.indexChange.emit(this.activeIndex);
-  
+
       this.isAnimating = false;
     }, 500);
   }
@@ -260,6 +271,7 @@ export class GenLightboxVanillaComponent implements OnChanges, AfterViewInit {
   @HostListener('document:keydown', ['$event'])
   onKeydown(evt: KeyboardEvent): void {
     if (!this.isOpen) return;
+
     if (evt.key === 'Escape') this.close();
     if (evt.key === 'ArrowRight') this.next();
     if (evt.key === 'ArrowLeft') this.prev();
@@ -267,6 +279,7 @@ export class GenLightboxVanillaComponent implements OnChanges, AfterViewInit {
 
   close(): void {
     this.isClosing = true;
+
     setTimeout(() => {
       this.isClosing = false;
       this.zoomed = false;

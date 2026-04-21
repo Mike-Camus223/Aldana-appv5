@@ -61,25 +61,30 @@
       </div>
 
       <!-- THUMBNAILS -->
-      <div class="flex gap-4 mt-10 relative z-20 px-4">
+<div class="flex gap-4 mt-10 relative z-20 px-4">
 
-        <button *ngFor="let item of items; let i = index"
-        (click)="goTo(i)"
-        class="w-21 h-21 flex-shrink-0 rounded-full 
-               transition-all duration-150 ease-out
-               cursor-pointer overflow-hidden border
-               hover:scale-110"
-        [ngClass]="{
-          'border-aldy-medium border-[2px] scale-110': i === activeIndex,
-          'border-transparent': i !== activeIndex
-        }">
+  <button
+    *ngFor="let item of items; let i = index"
+    (click)="goTo(i)"
+    class="w-21 h-21 flex-shrink-0 rounded-full 
+           transition-all duration-150 ease-out
+           cursor-pointer overflow-hidden border
+           hover:scale-110"
+    [ngClass]="{
+      'border-aldy-medium border-[2px] scale-110': i === activeIndex,
+      'border-transparent': i !== activeIndex
+    }"
+  >
 
-          <img [src]="item.poster || item.url"
-               class="w-full h-full object-cover"/>
-        </button>
+    <img
+      [src]="getThumb(item)"
+      class="w-full h-full object-cover"
+      loading="lazy"
+    />
 
-      </div>
+  </button>
 
+</div>
     </div>
   </div>
 </ng-container>

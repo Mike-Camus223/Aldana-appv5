@@ -1,47 +1,44 @@
-<div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-5 gap-4 mb-8">
-  <ng-container *ngFor="let item of media; let i = index">
-    <button
-      type="button"
-      class="group block overflow-hidden relative w-full text-left"
-      (click)="openLightbox(i)"
-      [attr.aria-label]="'Abrir media ' + (i + 1)"
-    >
-      <div
-        [ngClass]="{
-          'aspect-[4/4] overflow-hidden': item.fit === 'cover' || !item.fit,
-          'h-auto': item.fit === 'contain'
-        }"
-        class="w-full"
-      >
-        <img
-          [src]="item.poster || item.url"
-          [alt]="item.alt || 'Media de galería'"
-          [ngClass]="{
-            'object-cover w-full h-full': item.fit === 'cover' || !item.fit,
-            'object-contain w-auto h-auto': item.fit === 'contain'
-          }"
-          class="transition-transform duration-500 group-hover:scale-105"
-        />
+<div *ngFor="let row of rows" class="mb-12">
+
+  <h3 class="text-sm tracking-widest text-aldy-green-gray mb-4 uppercase">
+    {{ row.label }}
+  </h3>
+
+  <div class="grid grid-cols-2 lg:grid-cols-5 gap-4">
+
+    <div *ngFor="let item of row.items; let i = index"
+         (click)="openLightbox(row.items, i)"
+         class="cursor-pointer overflow-hidden group">
+
+      <div class="aspect-[2/3] w-full overflow-hidden">
+
+        <img *ngIf="item.type === 'image'"
+             [src]="item.url"
+             loading="lazy"
+             decoding="async"
+             class="w-full h-full object-cover group-hover:scale-105 transition"/>
+
+        <video *ngIf="item.type === 'video'"
+               [src]="item.url"
+               [poster]="item.poster"
+               muted
+               loop
+               preload="metadata"
+               class="w-full h-full object-cover">
+        </video>
+
       </div>
 
-      <div
-        class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition duration-300 pointer-events-none"
-      ></div>
+    </div>
 
-      <div
-        *ngIf="item.type === 'video'"
-        class="absolute bottom-2 right-2 px-2 py-1 rounded-full text-[10px] tracking-widest bg-black/60 text-white"
-      >
-        VIDEO
-      </div>
-    </button>
-  </ng-container>
+  </div>
+
 </div>
 
 <app-gen-lightbox-vanilla
+  *ngIf="lightboxOpen"
   [isOpen]="lightboxOpen"
-  [items]="media"
+  [items]="lightboxItems"
   [startIndex]="lightboxIndex"
-  (closed)="closeLightbox()"
-  (indexChange)="lightboxIndex = $event"
-></app-gen-lightbox-vanilla>
+  (closed)="closeLightbox()">
+</app-gen-lightbox-vanilla>

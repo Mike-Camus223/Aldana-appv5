@@ -19,7 +19,6 @@ interface LoginAttempt {
   providedIn: 'root'
 })
 export class AuthService {
-  private static supabaseInstance: SupabaseClient | null = null;
   private supabase: SupabaseClient;
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   private sessionSubject = new BehaviorSubject<Session | null>(null);
@@ -35,11 +34,7 @@ export class AuthService {
   private readonly LOGIN_ATTEMPTS_KEY = 'auth_login_attempts';
 
   constructor(private router: Router) {
-    // Usar singleton para evitar múltiples instancias
-    if (!AuthService.supabaseInstance) {
-      AuthService.supabaseInstance = createSupabaseClient();
-    }
-    this.supabase = AuthService.supabaseInstance;
+    this.supabase = createSupabaseClient();
 
     // Solo inicializar auth en el navegador o con cuidado en SSR
     if (this.isBrowser) {
