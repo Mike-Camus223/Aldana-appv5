@@ -7,6 +7,7 @@ import { CommonModule } from '@angular/common';
 import { CollectionBridesService } from '../../../../core/services/data-access/collection-brides/collection_brides.service';
 import { BridesProductsService } from '../../../../core/services/data-access/brides-products/brides-products.service';
 import { BridesProductUtils } from '../../../utils/dataEx/brides-products-utils';
+import { CardInitAnimationDirective } from '../../../utils/directives/card-init-animation.directive';
 
 type BridesCollectionItemCard = {
   id: string;
@@ -20,7 +21,7 @@ type BridesCollectionItemCard = {
 @Component({
   selector: 'app-generic-collection-brides',
   standalone: true,
-  imports: [CommonModule, RouterModule, BettercustomDualComponent, BreadcrumbComponent],
+  imports: [CommonModule, RouterModule, BettercustomDualComponent, BreadcrumbComponent,CardInitAnimationDirective],
   templateUrl: './generic-collection-brides.component.html',
   styleUrl: './generic-collection-brides.component.css'
 })

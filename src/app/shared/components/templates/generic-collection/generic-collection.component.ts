@@ -7,6 +7,7 @@ import { AppMenuItem } from '../../../utils/models/app-menu-item.model';
 import { CollectionService } from '../../../../core/services/data-access/collection/collection.service';
 import { SupabaseService } from '../../../../core/services/data-access/supabase.service';
 import { ProductUtils } from '../../../utils/dataEx/products-utils';
+import { CardInitAnimationDirective } from '../../../utils/directives/card-init-animation.directive';
 
 type CollectionItemCard = {
   id: string;
@@ -20,7 +21,7 @@ type CollectionItemCard = {
 @Component({
   selector: 'app-generic-collection',
   standalone: true,
-  imports: [CommonModule, RouterModule, BettercustomDualComponent, BreadcrumbComponent],
+  imports: [CommonModule, RouterModule, BettercustomDualComponent, BreadcrumbComponent,CardInitAnimationDirective],
   templateUrl: './generic-collection.component.html',
   styleUrls: ['./generic-collection.component.css'],
 })
