@@ -6,6 +6,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 import { BridesProductsService } from '../../../../core/services/data-access/brides-products/brides-products.service';
+import { CollectionService } from '../../../../core/services/data-access/collection/collection.service';
 import { BreadcrumbComponent } from '../../system/breadcrump/breadcrump.component';
 import { GenGalleryVanillaComponent } from '../../generic/gen-gallery-vanilla/gen-gallery-vanilla.component';
 
@@ -51,7 +52,8 @@ export class ItemsCollectionComponent implements OnInit, AfterViewInit, OnDestro
 
   constructor(
     private route: ActivatedRoute,
-    private bridesProducts: BridesProductsService
+    private bridesProducts: BridesProductsService,
+    private collections: CollectionService
   ) {}
 
   ngOnDestroy(): void {
@@ -137,11 +139,29 @@ export class ItemsCollectionComponent implements OnInit, AfterViewInit, OnDestro
   }
 
   async ngOnInit(): Promise<void> {
-    this.collectionSlug = this.route.snapshot.paramMap.get('collectionSlug') || '';
-    this.productSlug = this.route.snapshot.paramMap.get('productSlug') || '';
+    const url = this.route.snapshot.url;
+    const isBrides = url.some(seg => seg.path === 'novias-colecciones');
 
-    const res: any = await this.bridesProducts.getProducts(this.productSlug);
-    const row = Array.isArray(res?.data) ? res.data[0] : res?.data;
+    this.collectionSlug = this.route.snapshot.paramMap.get('collectionSlug') || '';
+    this.productSlug = this.route.snapshot.paramMap.get(isBrides ? 'productSlug' : 'itemSlug') || '';
+
+    let row: any = null;
+
+    if (isBrides) {
+      this.sectionLabel = 'NOVIAS COLECCIONES';
+      this.backRoute = ['/novias-colecciones'];
+      const res: any = await this.bridesProducts.getProducts(this.productSlug);
+      row = Array.isArray(res?.data) ? res.data[0] : res?.data;
+    } else {
+      this.sectionLabel = 'COLECCIONES';
+      this.backRoute = ['/colecciones'];
+      // Para colecciones normales, primero necesitamos el ID de la colección o usar el slug para buscar el producto
+      const collection = await this.collections.getCollectionBySlug(this.collectionSlug);
+      if (collection) {
+        const detailRes = await this.collections.getCollectionItemDetail(String(collection.id), this.productSlug);
+        row = detailRes?.products;
+      }
+    }
 
     if (!row) return;
 
@@ -159,12 +179,21 @@ export class ItemsCollectionComponent implements OnInit, AfterViewInit, OnDestro
 
     this.updateImagesData();
 
-    this.breadcrumbItems = [
-      { label: 'INICIO', route: '/home' },
-      { label: 'NOVIAS COLECCIONES', route: '/novias-colecciones' },
-      { label: this.collectionSlug.toUpperCase(), route: `/novias-colecciones/${this.collectionSlug}` },
-      { label: this.product.name.toUpperCase(), route: `/novias-colecciones/${this.collectionSlug}/${this.product.slug}` }
-    ];
+    if (isBrides) {
+      this.breadcrumbItems = [
+        { label: 'INICIO', route: '/home' },
+        { label: 'NOVIAS COLECCIONES', route: '/novias-colecciones' },
+        { label: this.collectionSlug.toUpperCase(), route: `/novias-colecciones/${this.collectionSlug}` },
+        { label: this.product.name.toUpperCase(), route: `/novias-colecciones/${this.collectionSlug}/${this.product.slug}` }
+      ];
+    } else {
+      this.breadcrumbItems = [
+        { label: 'INICIO', route: '/home' },
+        { label: 'COLECCIONES', route: '/colecciones' },
+        { label: this.collectionSlug.toUpperCase(), route: `/colecciones/${this.collectionSlug}` },
+        { label: this.product.name.toUpperCase(), route: `/colecciones/${this.collectionSlug}/${this.product.slug}` }
+      ];
+    }
   }
 
   ngAfterViewInit(): void {
