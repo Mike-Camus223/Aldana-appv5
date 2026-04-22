@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, AfterViewInit, ElementRef, ViewChild, OnDestroy } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ElementRef, ViewChild, OnDestroy, HostListener } from '@angular/core';
 import { ActivatedRoute, RouterModule } from '@angular/router';
-import { LucideAngularModule, ChevronLeft, ChevronRight, LUCIDE_ICONS } from 'lucide-angular';
+import { LucideAngularModule, ChevronLeft, ChevronRight, LUCIDE_ICONS, LucideIconProvider } from 'lucide-angular';
 
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -33,7 +33,11 @@ type BridesProduct = {
   imports: [CommonModule, RouterModule, BreadcrumbComponent, GenGalleryVanillaComponent, LucideAngularModule],
   templateUrl: './items-collection.component.html',
   providers: [
-    { provide: LUCIDE_ICONS, useValue: { ChevronLeft, ChevronRight } }
+    {
+      provide: LUCIDE_ICONS,
+      multi: true,
+      useValue: new LucideIconProvider({ ChevronLeft, ChevronRight })
+    }
   ]
 })
 export class ItemsCollectionComponent implements OnInit, AfterViewInit, OnDestroy {
@@ -58,6 +62,27 @@ export class ItemsCollectionComponent implements OnInit, AfterViewInit, OnDestro
   sectionLabel = 'NOVIAS COLECCIONES';
   backRoute: any[] = ['/novias-colecciones'];
 
+@HostListener('window:resize')
+onResize() {
+  this.updateVisibleProducts();
+}
+
+private updateVisibleProducts() {
+  const width = window.innerWidth;
+
+  if (width < 640) {
+    this.visibleProducts = 2; 
+  } else if (width < 1024) {
+    this.visibleProducts = 3; 
+  } else if (width < 1440) {
+    this.visibleProducts = 4; 
+  } else {
+    this.visibleProducts = 5; 
+  }
+}
+
+
+
   private triggers: ScrollTrigger[] = [];
 
   constructor(
@@ -75,6 +100,7 @@ export class ItemsCollectionComponent implements OnInit, AfterViewInit, OnDestro
     this.triggers.forEach(t => t.kill());
     this.triggers = [];
     ScrollTrigger.getAll().forEach(st => st.kill());
+    ScrollTrigger.clearMatchMedia();
   }
 
   private normalizeMedia(media: any): MediaItemJSONB[] {
@@ -150,6 +176,7 @@ export class ItemsCollectionComponent implements OnInit, AfterViewInit, OnDestro
   }
 
   async ngOnInit(): Promise<void> {
+    this.updateVisibleProducts();
     this.route.paramMap.subscribe(params => {
       this.loadProductData();
     });
@@ -247,58 +274,69 @@ export class ItemsCollectionComponent implements OnInit, AfterViewInit, OnDestro
   }
 
   initScroll() {
-    if (!this.stickyText || !this.imagesContainer || !this.heroSection) return;
-    
-    this.cleanupTriggers();
+  if (!this.stickyText || !this.imagesContainer || !this.heroSection) return;
 
-    const text = this.stickyText.nativeElement;
-    const images = this.imagesContainer.nativeElement;
-    const hero = this.heroSection.nativeElement;
+  this.cleanupTriggers();
 
-    // Pinning del texto
-    const pinTrigger = ScrollTrigger.create({
-      trigger: hero,
-      start: "top top+=88",
-      end: () => `+=${images.offsetHeight - text.offsetHeight}`,
-      pin: text,
-      pinSpacing: false,
-      invalidateOnRefresh: true,
-    });
-    this.triggers.push(pinTrigger);
+  const text = this.stickyText.nativeElement;
+  const images = this.imagesContainer.nativeElement;
+  const hero = this.heroSection.nativeElement;
 
-    // Animaciones de las imágenes
-    const heroImgs = images.querySelectorAll('.hero-image-reveal');
-    heroImgs.forEach((imgNode: Element, i: number) => {
-      const img = imgNode as HTMLElement;
-      
-      const anim = gsap.fromTo(img, 
-        { 
-          opacity: 0, 
-          y: 40,
-          clipPath: 'inset(100% 0 0 0)' 
-        }, 
-        {
-          opacity: 1,
-          y: 0,
-          clipPath: 'inset(0% 0 0 0)',
-          duration: 1.2,
-          ease: 'power2.out',
-          scrollTrigger: {
-            trigger: img,
-            start: "top 90%",
-            toggleActions: "play none none none"
-          },
-          delay: i * 0.1
-        }
-      );
-      
-      if (anim.scrollTrigger) {
-        this.triggers.push(anim.scrollTrigger);
+  ScrollTrigger.matchMedia({
+
+    "(min-width: 1024px)": () => {
+
+      const pinTrigger = ScrollTrigger.create({
+        trigger: hero,
+        start: "top top+=88",
+        end: () => `+=${images.offsetHeight - text.offsetHeight}`,
+        pin: text,
+        pinSpacing: false,
+        invalidateOnRefresh: true,
+      });
+
+      this.triggers.push(pinTrigger);
+    },
+
+    "(max-width: 1023px)": () => {
+    }
+
+  });
+
+  const heroImgs = images.querySelectorAll('.hero-image-reveal');
+
+  heroImgs.forEach((imgNode: Element, i: number) => {
+    const img = imgNode as HTMLElement;
+
+    const anim = gsap.fromTo(
+      img,
+      {
+        opacity: 0,
+        y: 40,
+        clipPath: 'inset(100% 0 0 0)'
+      },
+      {
+        opacity: 1,
+        y: 0,
+        clipPath: 'inset(0% 0 0 0)',
+        duration: 1.2,
+        ease: 'power2.out',
+        scrollTrigger: {
+          trigger: img,
+          start: "top 90%",
+          toggleActions: "play none none none"
+        },
+        delay: i * 0.1
       }
-    });
+    );
 
-    ScrollTrigger.refresh();
-  }
+    if (anim.scrollTrigger) {
+      this.triggers.push(anim.scrollTrigger);
+    }
+  });
+
+  ScrollTrigger.refresh();
+}
 
   get maxIndex(): number {
     return Math.max(0, this.relatedProducts.length - this.visibleProducts);

@@ -1,4 +1,4 @@
-<div class="h-[0px] lg:h-[88px]"></div>
+<div class="h-[72px] lg:h-[88px]"></div>
 
 <section>
   <app-breadcrumb [items]="breadcrumbItems"></app-breadcrumb>
@@ -6,39 +6,41 @@
 
 <!-- HERO -->
 <section #heroSection class="w-full bg-aldy-white">
-  <div class="max-w-[1800px] mx-auto grid grid-cols-1 lg:grid-cols-2">
+  <div class="grid grid-cols-1 lg:grid-cols-2">
 
     <!-- TEXTO (PINNED) -->
-    <div #stickyText class="flex flex-col justify-center px-8 lg:px-16 py-16 space-y-6 lg:h-screen">
+    <div #stickyText class="flex ms-0 lg:ms-12 flex-col justify-center items-center lg:items-start text-center lg:text-left px-6 sm:px-8 lg:px-16 py-10 sm:py-14 lg:py-16 space-y-5 lg:space-y-6 lg:h-screen">
       
-      <p class="text-[12px] tracking-[0.4em] uppercase text-aldy-green-gray NewAldyFontType4">
-        {{ sectionLabel }}
-      </p>
+  <p class="text-[10px] sm:text-[11px] tracking-[0.35em] uppercase text-aldy-green-gray-bold NewAldyFontType4">
+    {{ sectionLabel }}
+  </p>
 
-      <h1 class="text-6xl lg:text-8xl leading-[1.05] font-light text-aldy-green-gray-bold NewAldyTitle max-w-xl">
-        {{ product?.name }}
-      </h1>
+  <h1 class="text-4xl sm:text-4xl md:text-5xl lg:text-7xl xl:text-8xl leading-[1.1] font-light text-aldy-green-gray-bold NewAldyTitle max-w-md sm:max-w-lg lg:max-w-xl">
+    {{ product?.name }}
+  </h1>
 
-      <p class="text-md text-aldy-green-gray max-w-xl leading-relaxed NewAldyFontType4">
-        {{ product?.description }}
-      </p>
+  <p class="text-sm sm:text-base text-aldy-green-gray-bold max-w-md sm:max-w-lg lg:max-w-xl leading-relaxed NewAldyFontType4">
+    {{ product?.description }}
+  </p>
 
-      <div class="pt-4 flex flex-wrap gap-4">
-        <a
-          [routerLink]="backRoute"
-          class="px-6 py-4 border border-aldy-green-gray text-aldy-green-gray  text-sm NewAldyFontType4 tracking-widest uppercase hover:bg-aldy-green-gray hover:text-white transition-all duration-300"
-        >
-          VOLVER
-        </a>
-        <a
-          *ngIf="product"
-          [routerLink]="['/producto', product.slug]"
-          class="px-6 py-4 border border-aldy-green-gray bg-aldy-green-gray text-white text-sm NewAldyFontType4 tracking-widest uppercase hover:bg-aldy-white hover:text-aldy-green-gray transition-all duration-300"
-        >
-          VER PRODUCTO
-        </a>
-      </div>
-    </div>
+  <div class="pt-3 sm:pt-4 flex flex-wrap justify-center lg:justify-start gap-3 sm:gap-4">
+    <a
+      [routerLink]="backRoute"
+      class="px-4 sm:px-5 lg:px-6 py-2.5 sm:py-3 lg:py-4 border border-aldy-medium text-aldy-green-gray-bold text-[10px] sm:text-xs lg:text-sm NewAldyFontType4 tracking-widest uppercase hover:bg-aldy-medium hover:border-aldy-medium hover:text-white transition-all duration-300"
+    >
+      VOLVER
+    </a>
+
+    <a
+      *ngIf="product"
+      [routerLink]="['/producto', product.slug]"
+      class="px-4 sm:px-5 lg:px-6 py-2.5 sm:py-3 lg:py-4 border border-aldy-medium bg-aldy-medium text-white text-[10px] sm:text-xs lg:text-sm NewAldyFontType4 tracking-widest uppercase hover:bg-aldy-white hover:text-aldy-green-gray-bold transition-all duration-300"
+    >
+      VER PRODUCTO
+    </a>
+  </div>
+
+</div>
 
     <!-- IMÁGENES -->
     <div #imagesContainer class="relative">
@@ -46,7 +48,7 @@
 
         <div
           *ngFor="let img of heroImages"
-          class="w-full h-[90vh] lg:h-screen hero-image-reveal"
+          class="w-full h-[60vh] sm:h-[70vh] lg:h-screen hero-image-reveal"
         >
           <img
             [src]="img"
@@ -61,7 +63,7 @@
 </section>
 
 <!-- GALERÍA -->
-<section class="px-6 lg:px-16 w-full pb-20 bg-aldy-white">
+<section class="px-4 sm:px-6 lg:px-16 w-full mt-8 sm:mt-10 bg-aldy-white">
   <div class="max-w-[1800px] mx-auto">
 
     <app-gen-gallery-vanilla
@@ -72,52 +74,67 @@
 </section>
 
 <!-- CAROUSEL DE PRODUCTOS RELACIONADOS -->
-<section *ngIf="relatedProducts.length > 0" class="px-6 lg:px-16 w-full pb-20 bg-aldy-white overflow-hidden">
+<section *ngIf="relatedProducts.length > 0" class="px-4 sm:px-6 lg:px-16 w-full pb-10 bg-aldy-white overflow-hidden">
   <div class="max-w-[1800px] mx-auto">
-    <div class="flex flex-col lg:flex-row justify-between lg:items-end mb-12 gap-6">
-      <h2 class="text-4xl lg:text-5xl font-light text-aldy-green-gray-bold NewAldyTitle">
+    
+    <div class="flex flex-col lg:flex-row justify-between items-center lg:items-end mb-8 sm:mb-10 gap-6">
+      <h2 class="text-lg sm:text-xl NewAldyTitle tracking-widest text-aldy-green-gray-bold">
         MIRA MÁS DE ESTA COLECCIÓN
       </h2>
     </div>
 
     <div class="relative group/carousel">
+      
       <div class="overflow-hidden">
         <div 
-          class="flex transition-transform duration-500 ease-out gap-6"
+          class="flex transition-transform duration-500 ease-out gap-4 sm:gap-6"
           [style.transform]="translate"
         >
           <div 
             *ngFor="let item of relatedProducts" 
-            [style.flex]="'0 0 calc(' + (100 / visibleProducts) + '% - ' + (24 * (visibleProducts - 1) / visibleProducts) + 'px)'"
+            [style.flex]="'0 0 calc(' + (100 / visibleProducts) + '% - 1rem)'"
             class="group"
           >
-            <a [routerLink]="isBrides ? ['/novias-colecciones', collectionSlug, item.slug] : ['/colecciones', collectionSlug, item.slug]" class="block">
-              <div class="aspect-[3/5] overflow-hidden mb-4 bg-gray-100">
+            <a 
+              [routerLink]="isBrides 
+                ? ['/novias-colecciones', collectionSlug, item.slug] 
+                : ['/colecciones', collectionSlug, item.slug]" 
+              class="block"
+            >
+              <div class="aspect-[3/5] overflow-hidden mb-3 sm:mb-4">
                 <img 
                   [src]="item.main_image" 
                   [alt]="item.name"
-                  class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  appCardInitAnimation="up"
+                  class="w-full h-full object-cover"
                 />
               </div>
-              <h3 class="text-xl text-aldy-green-gray-bold NewAldyTitle mb-1 uppercase">{{ item.name }}</h3>
-              <p class="text-xs text-aldy-green-gray NewAldyFontType4 uppercase tracking-[0.2em]">VER DETALLE</p>
+
+              <h3 class="text-sm sm:text-base lg:text-lg text-aldy-green-gray-bold NewAldyTitle mb-1 uppercase">
+                {{ item.name }}
+              </h3>
+
+              <p class="text-[10px] sm:text-[11px] text-aldy-green-gray-bold NewAldyFontType4 uppercase tracking-[0.2em]">
+                VER DETALLE
+              </p>
             </a>
           </div>
         </div>
       </div>
       
-      <!-- Controles Desktop (Sides) -->
+      <!-- Controles Desktop -->
       <button 
         (click)="prev()" 
-        class="hidden lg:flex absolute left-[-2rem] top-1/2 -translate-y-1/2 w-12 h-12 border border-aldy-green-gray items-center justify-center text-aldy-green-gray hover:bg-aldy-green-gray hover:text-white transition-all z-10 bg-white"
+        class="hidden lg:flex absolute left-[-2rem] top-1/2 -translate-y-1/2 w-12 h-12 border border-aldy-green-gray items-center justify-center text-aldy-green-gray-bold hover:bg-aldy-green-gray hover:text-white transition-all z-10 bg-white"
         [class.opacity-0]="carouselIndex === 0"
         [class.pointer-events-none]="carouselIndex === 0"
       >
         <lucide-icon name="chevron-left"></lucide-icon>
       </button>
+
       <button 
         (click)="next()" 
-        class="hidden lg:flex absolute right-[-2rem] top-1/2 -translate-y-1/2 w-12 h-12 border border-aldy-green-gray items-center justify-center text-aldy-green-gray hover:bg-aldy-green-gray hover:text-white transition-all z-10 bg-white"
+        class="hidden lg:flex absolute right-[-2rem] top-1/2 -translate-y-1/2 w-12 h-12 border border-aldy-green-gray items-center justify-center text-aldy-green-gray-bold hover:bg-aldy-green-gray hover:text-white transition-all z-10 bg-white"
         [class.opacity-0]="carouselIndex === maxIndex"
         [class.pointer-events-none]="carouselIndex === maxIndex"
       >
@@ -125,14 +142,15 @@
       </button>
 
       <!-- Controles Mobile -->
-      <div class="lg:hidden flex justify-center gap-8 mt-8">
-        <button (click)="prev()" class="w-10 h-10 border border-aldy-green-gray flex items-center justify-center text-aldy-green-gray">
+      <div class="lg:hidden flex justify-center gap-6 sm:gap-8 mt-6 sm:mt-8">
+        <button (click)="prev()" class="w-10 h-10 border border-aldy-green-gray flex items-center justify-center text-aldy-green-gray-bold">
           <lucide-icon name="chevron-left"></lucide-icon>
         </button>
-        <button (click)="next()" class="w-10 h-10 border border-aldy-green-gray flex items-center justify-center text-aldy-green-gray">
+        <button (click)="next()" class="w-10 h-10 border border-aldy-green-gray flex items-center justify-center text-aldy-green-gray-bold">
           <lucide-icon name="chevron-right"></lucide-icon>
         </button>
       </div>
+
     </div>
   </div>
 </section>

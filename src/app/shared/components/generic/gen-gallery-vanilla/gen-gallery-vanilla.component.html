@@ -1,6 +1,6 @@
-<div *ngFor="let row of rows" class="mb-12">
+<div *ngFor="let row of rows" class="mb-10">
 
-  <h3 class="text-sm tracking-widest text-aldy-green-gray mb-4 uppercase">
+  <h3 class="text-xl NewAldyTitle tracking-widest text-aldy-green-gray-bold mb-10 uppercase">
     {{ row.label }}
   </h3>
 
@@ -31,9 +31,9 @@
 
         <!-- Etiqueta de Video -->
         <div *ngIf="item.type === 'video'" 
-             class="absolute top-3 right-3 bg-black px-2 py-1 rounded-full flex items-center gap-1.5 shadow-sm">
-          <div class="w-1.5 h-1.5 rounded-full bg-aldy-white animate-pulse"></div>
-          <span class="text-[10px] tracking-[0.2em] uppercase text-white font-medium">Video</span>
+             class="absolute top-3 right-3 bg-black px-1 py-0.5  lg:px-2 lg:py-1 rounded-full flex items-center gap-1.5 shadow-sm">
+          <div class="h-1 w-1 lg:w-1.5 lg:h-1.5 rounded-full bg-aldy-white animate-pulse"></div>
+          <span class="text-[8px] lg:text-[10px] tracking-[0.2em] uppercase text-white font-medium">Video</span>
         </div>
 
       </div>
