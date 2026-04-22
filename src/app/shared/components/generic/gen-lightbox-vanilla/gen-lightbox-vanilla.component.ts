@@ -73,7 +73,8 @@ export class GenLightboxVanillaComponent implements OnChanges, AfterViewInit {
   private readonly ZOOM_SCALE = 2;
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (this.isOpen && (changes['startIndex'] || changes['items'])) {
+    const openChanged = changes['isOpen'] && changes['isOpen'].currentValue === true;
+    if (this.isOpen && (openChanged || changes['startIndex'] || changes['items'])) {
       this.activeIndex = this.clampIndex(this.startIndex);
       setTimeout(() => this.initSlides(), 0);
     }
