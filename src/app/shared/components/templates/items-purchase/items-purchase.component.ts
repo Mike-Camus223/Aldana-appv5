@@ -26,7 +26,6 @@ import { Subscription } from 'rxjs';
     CommonModule,
     AccordionModule,
     FancyCarouselComponent,
-    ProductCarouselComponent,
     RouterModule,
     ToastModule,
     FormsModule,
