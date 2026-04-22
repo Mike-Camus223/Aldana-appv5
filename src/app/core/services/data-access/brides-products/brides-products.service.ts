@@ -70,6 +70,43 @@ export class BridesProductsService {
     );
   }
 
+  async getProductsByCategory(categoryId: string, limit: number = 6) {
+    const selectFields = `
+      id,
+      name,
+      description,
+      details,
+      price,
+      category_id,
+      subcategory_id,
+      main_image,
+      media,
+      sizes,
+      slug,
+      avid,
+      color_id,
+      color_name,
+      color_hex,
+      product_variants:pbrides_product_variants (
+        id,
+        color_id,
+        color_name,
+        color_hex,
+        avid,
+        main_image,
+        media
+      )
+    `;
+
+    const { data, error } = await this.helper.client
+      .from('pbrides_products')
+      .select(selectFields)
+      .eq('category_id', categoryId)
+      .limit(limit);
+
+    return { data, error };
+  }
+
   /** Misma forma que getProducts(), para miniaturas en collection_brides_items. */
   async getProductsByIds(ids: string[]): Promise<any[]> {
     if (!ids.length) return [];

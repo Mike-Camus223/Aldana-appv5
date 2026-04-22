@@ -78,7 +78,6 @@ export class ItemsPurchaseComponent implements OnInit, OnDestroy {
         this.initialQuantityParam = Math.min(5, Math.max(1, v));
       }
     }
-    if (id) this.loadProduct(id);
 
     this.paramSub = this.route.paramMap.subscribe(pm => {
       const slug = pm.get('slug');
@@ -173,8 +172,8 @@ export class ItemsPurchaseComponent implements OnInit, OnDestroy {
         ...productMedia.map(m => ({ src: m.url, thumb: m.poster || m.url }))
       ];
 
-      // Load related products
-      await this.loadRelatedProducts();
+      // Load related products (non-blocking)
+      this.loadRelatedProducts();
 
       if (this.product.variants.length > 0) {
         // Intentar aplicar color desde query param usando valor real (sin normalizar)
@@ -350,59 +349,36 @@ export class ItemsPurchaseComponent implements OnInit, OnDestroy {
     if (!this.product) return;
 
     try {
-      // Get all products to filter related ones
-      const { data, error } = await this.supabaseService.getProducts();
-      if (error || !data) return;
+      let data: any = null;
+      let error: any = null;
+
+      // Intentar obtener productos relacionados por categoría en ambos servicios (en paralelo)
+      if (this.product.category_id) {
+        const [resNormal, resBridal] = await Promise.all([
+          this.supabaseService.getProductsByCategory(String(this.product.category_id), 12),
+          this.bridesProductsService.getProductsByCategory(String(this.product.category_id), 12)
+        ]);
+
+        const combinedData = [
+          ...(resNormal.data || []),
+          ...(resBridal.data || [])
+        ];
+        
+        data = combinedData;
+      }
+
+      if (!data || data.length === 0) return;
 
       const allProducts = ProductUtils.mapProducts(Array.isArray(data) ? data : [data]);
       
-      // Filter related products based on current product characteristics
-      const related = allProducts.filter(p => {
-        // Don't include the current product
-        if (p.id === this.product!.id) return false;
-        
-        // Simple recommendation logic for now
-        // 1. Same category/brand (if product name contains similar words)
-        const currentProductName = this.product!.name.toLowerCase();
-        const candidateProductName = p.name.toLowerCase();
-        
-        // Check for common words (brand, type, etc.)
-        const currentWords = currentProductName.split(' ');
-        const candidateWords = candidateProductName.split(' ');
-        
-        const commonWords = currentWords.filter(word => 
-          word.length > 3 && candidateWords.includes(word)
-        );
-        
-        // If they share significant words, they're related
-        if (commonWords.length >= 1) return true;
-        
-        // 2. Similar price range (within 30% of current product price)
-        const priceDiff = Math.abs(p.price - this.product!.price);
-        const priceThreshold = this.product!.price * 0.3;
-        if (priceDiff <= priceThreshold) return true;
-        
-        return false;
-      });
+      // Filter related products
+      const related = allProducts.filter(p => p.id !== this.product!.id);
 
-      // Sort by relevance (products with more common words first)
-      related.sort((a, b) => {
-        const aCommonWords = this.countCommonWords(this.product!.name, a.name);
-        const bCommonWords = this.countCommonWords(this.product!.name, b.name);
-        return bCommonWords - aCommonWords;
-      });
-
-      this.relatedProducts = related.slice(0, 6); // Limit to 6 products
+      this.relatedProducts = related.slice(0, 6);
     } catch (error) {
       console.error('Error loading related products:', error);
       this.relatedProducts = [];
     }
-  }
-
-  private countCommonWords(productName1: string, productName2: string): number {
-    const words1 = productName1.toLowerCase().split(' ').filter(w => w.length > 3);
-    const words2 = productName2.toLowerCase().split(' ').filter(w => w.length > 3);
-    return words1.filter(word => words2.includes(word)).length;
   }
 
   ngOnDestroy(): void {

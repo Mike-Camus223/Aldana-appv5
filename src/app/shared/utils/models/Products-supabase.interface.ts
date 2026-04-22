@@ -54,7 +54,9 @@ export interface Product {
   media: MediaItemJSONB[];
   sizes: string[];
   slug: string;
+  category_id: number;
   category: Category;
+  subcategory_id?: number;
   subcategory?: Subcategory;
   wishlisted?: boolean;
   collections?: Collection[];

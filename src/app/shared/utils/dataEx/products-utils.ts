@@ -74,7 +74,9 @@ export class ProductUtils {
         sizes: p.sizes || [],
         slug: p.slug || '',
         wishlisted: false,
+        category_id: category.id,
         category,
+        subcategory_id: subcategory?.id,
         subcategory,
         collections
       };
