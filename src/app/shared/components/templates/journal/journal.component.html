@@ -1,169 +1,332 @@
 <section class="bg-aldy-white py-20">
   <div class="max-w-[1700px] mx-auto px-6">
-    <!-- Titulo -->
-    <div class="mb-14 mt-14">
+    <header class="mb-14 mt-14">
       <div class="flex w-full justify-center items-center">
-        <h1 appWordReveal
-          class="uppercase tracking-widest relative text-3xl text-center lg:text-start lg:text-5xl NewAldyTitle font-light text-aldy-green-gray-bold leading-relaxed">
+        <h1
+          appWordReveal
+          class="uppercase tracking-widest relative text-3xl text-center lg:text-start lg:text-5xl NewAldyTitle font-light text-aldy-green-gray-bold leading-relaxed"
+        >
           Diario
         </h1>
       </div>
-
-      <!-- Categorias -->
-      <div class="flex flex-wrap justify-center gap-8 mt-8 dress">
-        <button type="button" (click)="selectCategory(null)" appLinkHoverUnderline
+      <nav class="flex flex-wrap justify-center gap-8 mt-8 dress">
+        <button
+          type="button"
+          (click)="selectCategory(null)"
+          appLinkHoverUnderline
           [dynamicColor]="'text-aldy-green-gray-bold'"
-          class="text-lg NewAldyTitle tracking-widest uppercase bg-transparent border-0 cursor-pointer" [ngClass]="
+          class="text-lg NewAldyTitle tracking-widest uppercase bg-transparent border-0 cursor-pointer"
+          [ngClass]="
             isCategoryActive(null)
               ? 'text-aldy-green-gray-bold'
               : 'text-aldy-green-gray'
-          ">
+          "
+        >
           Ver todo
         </button>
-        <button *ngFor="let cat of categories" type="button" (click)="selectCategory(cat.slug)" appLinkHoverUnderline
+        <button
+          *ngFor="let cat of categories"
+          type="button"
+          (click)="selectCategory(cat.slug)"
+          appLinkHoverUnderline
           [dynamicColor]="'text-aldy-green-gray-bold'"
-          class="text-lg NewAldyTitle tracking-widest uppercase bg-transparent border-0 cursor-pointer" [ngClass]="
+          class="text-lg NewAldyTitle tracking-widest uppercase bg-transparent border-0 cursor-pointer"
+          [ngClass]="
             isCategoryActive(cat.slug)
               ? 'text-aldy-green-gray-bold'
               : 'text-aldy-green-gray'
-          ">
+          "
+        >
           {{ cat.name }}
         </button>
-      </div>
-
-      <!-- Filtros / orden -->
-      <div class="mt-10 flex flex-wrap justify-center gap-4 sm:gap-6 items-center border-y border-[#aec2a9] py-4 px-2">
+      </nav>
+      <div
+        class="mt-10 flex flex-wrap justify-center gap-4 sm:gap-6 items-center border-y border-[#aec2a9] py-4 px-2"
+      >
         <div class="relative group h-[42px]">
-          <select [value]="sortOrder" (change)="onSortChange($any($event.target).value)"
-            class="appearance-none h-full bg-transparent border border-aldy-medium-2 pl-4 pr-10 text-xs uppercase tracking-wider font-medium text-aldy-green-gray focus:outline-none cursor-pointer hover:bg-aldy-medium-2 hover:text-white transition-colors min-w-[200px]">
-            <option value="desc" class="text-gray-800 bg-aldy-white">Más recientes</option>
-            <option value="asc" class="text-gray-800 bg-aldy-white">Más antiguas</option>
-          </select>
-          <span
-            class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-aldy-green-gray text-xs">▾</span>
-        </div>
-
-        <div class="relative group h-[42px]">
-          <select [value]="numStr(selectedYear)" (change)="onYearChange($any($event.target).value)"
-            class="appearance-none h-full bg-transparent border border-aldy-medium-2 pl-4 pr-10 text-xs uppercase tracking-wider font-medium text-aldy-green-gray focus:outline-none cursor-pointer hover:bg-aldy-medium-2 hover:text-white transition-colors min-w-[180px]">
-            <option value="" class="text-gray-800 bg-aldy-white">Todos los años</option>
-            <option *ngFor="let y of yearOptions" [value]="numStr(y)" class="text-gray-800 bg-aldy-white">
-              {{ y }}
+          <select
+            [value]="sortOrder"
+            (change)="onSortChange($any($event.target).value)"
+            class="appearance-none h-full bg-transparent border border-aldy-medium-2 pl-4 pr-10 text-xs uppercase tracking-wider font-medium text-aldy-green-gray focus:outline-none cursor-pointer hover:bg-aldy-medium-2 hover:text-white transition-all duration-300 min-w-[200px]"
+          >
+            <option
+              value="desc"
+              class="text-aldy-green-gray bg-aldy-white"
+            >
+              Más recientes
+            </option>
+            <option
+              value="asc"
+              class="text-aldy-green-gray bg-aldy-white"
+            >
+              Más antiguas
             </option>
           </select>
-          <span
-            class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-aldy-green-gray text-xs">▾</span>
+          <lucide-icon
+            name="chevron-down"
+            [strokeWidth]="1.5"
+            [size]="18"
+            class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-aldy-green-gray group-hover:text-white transition-colors"
+          >
+          </lucide-icon>
         </div>
-
         <div class="relative group h-[42px]">
-          <select [value]="numStr(selectedMonth)" (change)="onMonthChange($any($event.target).value)"
-            [disabled]="selectedYear == null || monthOptions.length === 0"
-            class="appearance-none h-full bg-transparent border border-aldy-medium-2 pl-4 pr-10 text-xs uppercase tracking-wider font-medium text-aldy-green-gray focus:outline-none cursor-pointer hover:bg-aldy-medium-2 hover:text-white transition-colors min-w-[200px] disabled:opacity-40 disabled:cursor-not-allowed">
-            <option value="" class="text-gray-800 bg-aldy-white">Todos los meses</option>
-            <option *ngFor="let m of monthOptions" [value]="numStr(m)" class="text-gray-800 bg-aldy-white">
-              {{ monthLabels[m] || m }}
+          <select
+            [value]="numStr(selectedYear)"
+            (change)="onYearChange($any($event.target).value)"
+            class="appearance-none h-full bg-transparent border border-aldy-medium-2 pl-4 pr-10 text-xs uppercase tracking-wider font-medium text-aldy-green-gray focus:outline-none cursor-pointer hover:bg-aldy-medium-2 hover:text-white transition-colors min-w-[180px]"
+          >
+            <option
+              value=""
+              class="text-aldy-green-gray bg-aldy-white"
+            >
+              Todos los años
+            </option>
+            <option
+              *ngFor="let year of yearOptions"
+              [value]="numStr(year)"
+              class="text-aldy-green-gray bg-aldy-white"
+            >
+              {{ year }}
             </option>
           </select>
-          <span
-            class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-aldy-green-gray text-xs">▾</span>
+          <lucide-icon
+            name="chevron-down"
+            [strokeWidth]="1.5"
+            [size]="18"
+            class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-aldy-green-gray group-hover:text-white transition-colors"
+          >
+          </lucide-icon>
         </div>
-      </div>
-    </div>
-
-    <!-- Grid + spinner -->
-    <div class="relative journal-list-wrap min-h-[320px]">
-      <div class="transition-opacity duration-500 ease-out" [class.journal-content-dim]="loading"
-        [class.journal-content-full]="!loading">
-        <div *ngIf="!loading && posts.length === 0"
-          class="text-center py-20 NewAldyFontType4 text-aldy-green-gray text-sm">
-          No hay notas publicadas con estos filtros.
-        </div>
-
-        <!-- REEMPLAZÁ SOLO ESTE BLOQUE DEL GRID (MISMO DISEÑO, MENOS LAG) -->
-        <div *ngIf="posts.length > 0" class="grid md:grid-cols-3 gap-x-12 gap-y-14">
-          <div *ngFor="let post of posts; trackBy: trackByPostId">
-            <a *ngIf="post.cachedHref as href" [routerLink]="href" class="block overflow-hidden">
-              <img appCardInitAnimation="up" [src]="post.cachedCover" [alt]="post.title" loading="lazy" decoding="async"
-                fetchpriority="low" width="900" height="1200" class="w-full aspect-[3/4] object-cover" />
-            </a>
-
-            <div *ngIf="!post.cachedHref" class="block overflow-hidden">
-              <img appCardInitAnimation="up" [src]="post.cachedCover" [alt]="post.title" loading="lazy" decoding="async"
-                fetchpriority="low" width="900" height="1200" class="w-full aspect-[3/4] object-cover" />
-            </div>
-
-            <div>
-              <p class="text-xs mt-6 sm:text-sm font-light NewAldyFontType4 text-aldy-green-gray">
-                {{ post.formattedDate }}
-              </p>
-
-              <h2 class="mt-2 text-lg sm:text-2xl NewAldyTitle text-aldy-green-gray-bold">
-                {{ post.title }}
-              </h2>
-
-              <p *ngIf="post.excerpt"
-                class="mt-4 mb-6 max-w-xl text-sm text-aldy-green-gray-bold NewAldyFontType4 tracking-wider">
-                {{ post.excerpt }}
-              </p>
-
-              <a *ngIf="post.cachedHref as link" [routerLink]="link" appLinkHoverUnderline
-                [dynamicColor]="'text-aldy-green-gray-bold'"
-                class="tracking-wide text-md NewAldyTitle uppercase text-aldy-green-gray-bold inline-block">
-                Ver m<span class="text-[21px] lg:text-[17px] NewAldyFontTypeAccent relative -top-[0.5px]">á</span>s
-              </a>
-            </div>
+        <div
+          class="relative h-[42px]"
+          [class.group]="!isMonthDisabled"
+        >
+          <select
+            [value]="numStr(selectedMonth)"
+            (change)="onMonthChange($any($event.target).value)"
+            [disabled]="isMonthDisabled"
+            class="appearance-none h-full w-full bg-transparent border border-aldy-medium-2 pl-4 pr-10 text-xs uppercase tracking-wider font-medium focus:outline-none transition-colors min-w-[200px] text-aldy-green-gray"
+            [ngClass]="
+              isMonthDisabled
+                ? 'opacity-40 cursor-not-allowed'
+                : 'cursor-pointer hover:bg-aldy-medium-2 hover:text-white'
+            "
+          >
+            <option
+              value=""
+              class="text-aldy-green-gray bg-aldy-white"
+            >
+              Todos los meses
+            </option>
+            <option
+              *ngFor="let month of monthOptions"
+              [value]="numStr(month)"
+              class="text-aldy-green-gray bg-aldy-white"
+            >
+              {{ monthLabels[month] || month }}
+            </option>
+          </select>
+          <div
+            class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-aldy-green-gray transition-colors"
+            [ngClass]="
+              isMonthDisabled
+                ? 'opacity-40'
+                : 'group-hover:text-white'
+            "
+          >
+            <lucide-icon
+              name="chevron-down"
+              [strokeWidth]="1.5"
+              [size]="18"
+              color="currentColor"
+            >
+            </lucide-icon>
           </div>
         </div>
-
-        <div *ngIf="!loading && posts.length > 0 && totalPages > 1"
-          class="flex justify-center items-center gap-2 mt-14 select-none text-aldy-medium-2">
-          <button type="button" (click)="prevPage()" [disabled]="currentPage === 1"
-            class="w-10 h-10 border border-aldy-medium-2 text-aldy-medium-2 rounded-none flex items-center justify-center NewAldyFontType4 text-sm cursor-pointer disabled:opacity-40 disabled:cursor-default"
-            aria-label="Página anterior">
+      </div>
+    </header>
+    <div
+      class="relative flex justify-center items-center journal-list-wrap min-h-[320px]"
+    >
+      <div
+        class="transition-opacity duration-500 ease-out"
+        [class.journal-content-dim]="loading"
+        [class.journal-content-full]="!loading"
+      >
+        <div
+          *ngIf="!loading && posts.length === 0"
+          class="text-center NewAldyFontType4 text-aldy-green-gray text-sm"
+        >
+          No hay notas publicadas con estos filtros.
+        </div>
+        <div
+          *ngIf="posts.length > 0"
+          class="grid md:grid-cols-3 gap-x-12 gap-y-14"
+        >
+          <article
+            *ngFor="let post of posts; trackBy: trackByPostId"
+          >
+            <ng-container *ngIf="post.cachedHref as href; else staticImage">
+              <a
+                [routerLink]="href"
+                class="block overflow-hidden"
+              >
+                <img
+                  appCardInitAnimation="up"
+                  [src]="post.cachedCover"
+                  [alt]="post.title"
+                  loading="lazy"
+                  decoding="async"
+                  fetchpriority="low"
+                  width="900"
+                  height="1200"
+                  class="w-full aspect-[3/4] object-cover"
+                />
+              </a>
+            </ng-container>
+            <ng-template #staticImage>
+              <div class="block overflow-hidden">
+                <img
+                  appCardInitAnimation="up"
+                  [src]="post.cachedCover"
+                  [alt]="post.title"
+                  loading="lazy"
+                  decoding="async"
+                  fetchpriority="low"
+                  width="900"
+                  height="1200"
+                  class="w-full aspect-[3/4] object-cover"
+                />
+              </div>
+            </ng-template>
+            <div>
+              <p
+                class="text-xs mt-6 sm:text-sm font-light NewAldyFontType4 text-aldy-green-gray"
+              >
+                {{ post.formattedDate }}
+              </p>
+              <h2
+                class="mt-2 text-lg sm:text-2xl NewAldyTitle text-aldy-green-gray-bold"
+              >
+                {{ post.title }}
+              </h2>
+              <p
+                *ngIf="post.excerpt"
+                class="mt-4 mb-6 max-w-xl text-sm text-aldy-green-gray-bold NewAldyFontType4 tracking-wider"
+              >
+                {{ post.excerpt }}
+              </p>
+              <a
+                *ngIf="post.cachedHref as link"
+                [routerLink]="link"
+                appLinkHoverUnderline
+                [dynamicColor]="'text-aldy-green-gray-bold'"
+                class="tracking-wide text-md NewAldyTitle uppercase text-aldy-green-gray-bold inline-block"
+              >
+                Ver novedad
+              </a>
+            </div>
+          </article>
+        </div>
+        <div
+          *ngIf="!loading && posts.length > 0 && totalPages > 1"
+          class="flex justify-center items-center gap-2 mt-14 select-none text-aldy-medium-2"
+        >
+          <button
+            type="button"
+            (click)="prevPage()"
+            [disabled]="currentPage === 1"
+            class="w-10 h-10 border border-aldy-medium-2 rounded-none flex items-center justify-center NewAldyFontType4 text-sm cursor-pointer disabled:opacity-40 disabled:cursor-default"
+            aria-label="Página anterior"
+          >
             ‹
           </button>
-          <ng-container *ngIf="pagesArray.length <= 8; else manyJournalPages">
-            <button *ngFor="let p of pagesArray" type="button" (click)="goToPage(p)"
-              class="w-10 h-10 border border-aldy-medium-2 text-aldy-medium-2 rounded-none flex items-center justify-center NewAldyFontType4 text-sm cursor-pointer disabled:opacity-40 disabled:cursor-default"
-              [ngClass]="p === currentPage ? 'font-semibold' : ''">
-              {{ p }}
+          <ng-container
+            *ngIf="pagesArray.length <= 8; else complexPagination"
+          >
+            <button
+              *ngFor="let page of pagesArray"
+              type="button"
+              (click)="goToPage(page)"
+              class="w-10 h-10 border border-aldy-medium-2 rounded-none flex items-center justify-center NewAldyFontType4 text-sm cursor-pointer"
+              [ngClass]="page === currentPage ? 'font-semibold' : ''"
+            >
+              {{ page }}
             </button>
           </ng-container>
-          <ng-template #manyJournalPages>
-            <button type="button" (click)="goToPage(1)"
-              class="w-10 h-10 border border-aldy-medium-2 text-aldy-medium-2 rounded-none flex items-center justify-center NewAldyFontType4 text-sm cursor-pointer disabled:opacity-40 disabled:cursor-default"
-              [ngClass]="currentPage === 1 ? 'font-semibold' : ''">
+          <ng-template #complexPagination>
+            <button
+              type="button"
+              (click)="goToPage(1)"
+              class="w-10 h-10 border border-aldy-medium-2 rounded-none flex items-center justify-center NewAldyFontType4 text-sm cursor-pointer"
+              [ngClass]="currentPage === 1 ? 'font-semibold' : ''"
+            >
               1
             </button>
-            <span class="px-2 NewAldyFontType4 text-sm text-aldy-medium-2">...</span>
-            <button *ngIf="currentPage > 2" type="button" (click)="goToPage(currentPage - 1)"
-              class="w-10 h-10 border border-aldy-medium-2 text-aldy-medium-2 rounded-none flex items-center justify-center NewAldyFontType4 text-sm cursor-pointer disabled:opacity-40 disabled:cursor-default">
+            <span
+              class="px-2 NewAldyFontType4 text-sm"
+            >
+              ...
+            </span>
+            <button
+              *ngIf="currentPage > 2"
+              type="button"
+              (click)="goToPage(currentPage - 1)"
+              class="w-10 h-10 border border-aldy-medium-2 rounded-none flex items-center justify-center NewAldyFontType4 text-sm cursor-pointer"
+            >
               {{ currentPage - 1 }}
             </button>
-            <button type="button" (click)="goToPage(currentPage)"
-              class="w-10 h-10 border border-aldy-medium-2 text-aldy-medium-2 rounded-none flex items-center justify-center NewAldyFontType4 text-sm cursor-pointer font-semibold disabled:opacity-40 disabled:cursor-default">
+            <button
+              type="button"
+              (click)="goToPage(currentPage)"
+              class="w-10 h-10 border border-aldy-medium-2 rounded-none flex items-center justify-center NewAldyFontType4 text-sm cursor-pointer font-semibold"
+            >
               {{ currentPage }}
             </button>
-            <button *ngIf="currentPage < totalPages - 1" type="button" (click)="goToPage(currentPage + 1)"
-              class="w-10 h-10 border border-aldy-medium-2 text-aldy-medium-2 rounded-none flex items-center justify-center NewAldyFontType4 text-sm cursor-pointer disabled:opacity-40 disabled:cursor-default">
+            <button
+              *ngIf="currentPage < totalPages - 1"
+              type="button"
+              (click)="goToPage(currentPage + 1)"
+              class="w-10 h-10 border border-aldy-medium-2 rounded-none flex items-center justify-center NewAldyFontType4 text-sm cursor-pointer"
+            >
               {{ currentPage + 1 }}
             </button>
-            <span class="px-2 NewAldyFontType4 text-sm text-aldy-medium-2">...</span>
-            <button type="button" (click)="goToPage(totalPages)"
-              class="w-10 h-10 border border-aldy-medium-2 text-aldy-medium-2 rounded-none flex items-center justify-center NewAldyFontType4 text-sm cursor-pointer disabled:opacity-40 disabled:cursor-default"
-              [ngClass]="currentPage === totalPages ? 'font-semibold' : ''">
+
+            <span
+              class="px-2 NewAldyFontType4 text-sm"
+            >
+              ...
+            </span>
+            <button
+              type="button"
+              (click)="goToPage(totalPages)"
+              class="w-10 h-10 border border-aldy-medium-2 rounded-none flex items-center justify-center NewAldyFontType4 text-sm cursor-pointer"
+              [ngClass]="
+                currentPage === totalPages
+                  ? 'font-semibold'
+                  : ''
+              "
+            >
               {{ totalPages }}
             </button>
+
           </ng-template>
-          <button type="button" (click)="nextPage()" [disabled]="currentPage === totalPages"
-            class="w-10 h-10 border border-aldy-medium-2 text-aldy-medium-2 rounded-none flex items-center justify-center NewAldyFontType4 text-sm cursor-pointer disabled:opacity-40 disabled:cursor-default"
-            aria-label="Página siguiente">
+          <button
+            type="button"
+            (click)="nextPage()"
+            [disabled]="currentPage === totalPages"
+            class="w-10 h-10 border border-aldy-medium-2 rounded-none flex items-center justify-center NewAldyFontType4 text-sm cursor-pointer disabled:opacity-40 disabled:cursor-default"
+            aria-label="Página siguiente"
+          >
             ›
           </button>
         </div>
       </div>
-
-      <div *ngIf="loading" class="journal-spinner-overlay">
+      <div
+        *ngIf="loading"
+        class="journal-spinner-overlay"
+      >
         <div class="spinner"></div>
       </div>
     </div>
