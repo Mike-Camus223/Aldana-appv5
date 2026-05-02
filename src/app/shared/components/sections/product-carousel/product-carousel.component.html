@@ -1,43 +1,30 @@
 <div *ngIf="hasProducts" class="w-full overflow-hidden">
-
-  <!-- header -->
-  <div class="flex justify-between items-center mb-6">
-
-    <h2 class="NewAldyFontType4 tracking-wider">
-      {{ title }}
-    </h2>
-
-    <div class="flex gap-2">
-      <button (click)="prev()" class="w-9 h-9 border rounded">‹</button>
-      <button (click)="next()" class="w-9 h-9 border rounded">›</button>
+  <div class="flex flex-col items-center mb-10">
+    <div class="inline-flex flex-col items-center">
+      <h2 class="text-md sm:text-lg scale-y-90 uppercase NewAldyTitle tracking-widest text-aldy-green-gray-bold">
+        {{ carouselTitle }}
+      </h2>
+      <span class="w-[105%] border-b border-aldy-green-gray-bold"></span>
     </div>
-
   </div>
-
-  <!-- viewport -->
-  <div class="overflow-hidden">
-
-    <!-- track -->
-    <div
-      class="flex transition-transform duration-300 ease-out"
-      [style.transform]="translate"
-    >
-
-      <!-- card -->
-      <div
-        *ngFor="let product of displayProducts"
-        class="shrink-0 px-2"
-        [style.width.%]="100 / visibleProducts"
-      >
-        <app-cardproduct
-          [product]="product"
-          [mobileMode]="'isdesktop'"
-          [desktopMode]="'isdesktop'">
-        </app-cardproduct>
+  <div class="relative group">
+    <button (click)="prev(); $event.stopPropagation()"
+      class="hidden md:flex cursor-pointer absolute top-1/2 left-[30px] z-30 w-10 h-10 bg-aldy-white items-center justify-center -translate-y-1/2 -translate-x-[30px] opacity-0 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 ease-out">
+      <lucide-icon name="chevron-left" [size]="28" [strokeWidth]="1"
+        class="text-gray-400 hover:text-aldy-medium transition-colors duration-200"></lucide-icon>
+    </button>
+    <button (click)="next(); $event.stopPropagation()"
+      class="hidden md:flex cursor-pointer absolute top-1/2 right-[30px] z-30 w-10 h-10 bg-aldy-white items-center justify-center -translate-y-1/2 translate-x-[30px] opacity-0 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 ease-out">
+      <lucide-icon name="chevron-right" [size]="28" [strokeWidth]="1"
+        class="text-gray-400 hover:text-aldy-medium transition-colors duration-200"></lucide-icon>
+    </button>
+    <div class="overflow-hidden">
+      <div class="flex transition-transform duration-300 ease-out" [style.transform]="translate">
+        <div *ngFor="let product of displayProducts" class="shrink-0 px-2" [style.width.%]="100 / visibleProducts">
+          <app-cardproduct [product]="product" [mobileMode]="'isdesktop'" [desktopMode]="'isdesktop'">
+          </app-cardproduct>
+        </div>
       </div>
-
     </div>
-
   </div>
-
 </div>

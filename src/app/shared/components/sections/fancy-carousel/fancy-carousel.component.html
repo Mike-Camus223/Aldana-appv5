@@ -1,119 +1,152 @@
 <div class="flex w-full justify-center lg:justify-end">
-  <div class="product-container relative w-full max-w-full sm:max-w-[100%] md:max-w-[90%] lg:max-w-[640px]"
-       [style.--f-thumb-width]="'75px'"
-       [style.--f-thumb-height]="'75px'"
-       [style.--aspect-ratio]="aspectRatio"
-       [style.--product-view-height]="'820px'">
-    
-    <div class="transition-opacity duration-[1000ms] ease-out"
-         [class.opacity-0]="!isComponentReady"
-         [class.opacity-100]="isComponentReady">
-      
+  <div
+    class="product-gallery relative w-full max-w-full sm:max-w-[100%] md:max-w-[90%] lg:max-w-[640px]"
+    [ngStyle]="{
+      '--thumb-width': '75px',
+      '--thumb-height': '75px',
+      '--gallery-aspect-ratio': aspectRatio,
+      '--gallery-height': '820px'
+    }"
+  >
+    <div
+      class="transition-opacity duration-[1000ms] ease-out"
+      [class.opacity-0]="!isComponentReady"
+      [class.opacity-100]="isComponentReady"
+    >
       <div class="flex flex-col md:grid md:gap-2 md:grid-cols-[106px_minmax(0px,_1fr)] relative">
-        
-        <!-- Desktop Thumbnails (Vertical) -->
-        <div class="hidden md:flex flex-col gap-2 h-full overflow-y-auto pr-2 custom-scrollbar" 
-             [style.height]="'var(--product-view-height)'">
-          <div *ngFor="let image of images; let i = index"
-               (click)="goToSlide(i)"
-               class="relative flex-shrink-0 cursor-pointer transition-all duration-300 border-2"
-               [class.border-aldy-medium]="isThumbActive(i)"
-               [class.border-transparent]="!isThumbActive(i)"
-               [style.width]="'75px'"
-               [style.height]="'75px'">
-            <img [src]="image.thumb || image.src" 
-                 class="w-full h-full object-cover" 
-                 alt="Thumbnail">
-            <div *ngIf="isVideo(image.src)" class="absolute inset-0 flex items-center justify-center bg-black/20">
+        <div
+          class="hidden md:flex flex-col gap-2 h-full overflow-y-auto pr-2 custom-scrollbar"
+          [style.height]="'var(--gallery-height)'"
+        >
+          <div
+            *ngFor="let image of images; let i = index"
+            (click)="goToSlide(i)"
+            class="relative flex-shrink-0 cursor-pointer transition-all duration-300 border-2"
+            [class.border-aldy-medium]="isThumbActive(i)"
+            [class.border-transparent]="!isThumbActive(i)"
+            [style.width]="'var(--thumb-width)'"
+            [style.height]="'var(--thumb-height)'"
+          >
+            <img
+              [src]="image.thumb || image.src"
+              class="w-full h-full object-cover"
+              alt="Thumbnail"
+            />
+            <div
+              *ngIf="isVideo(image.src)"
+              class="absolute inset-0 flex items-center justify-center bg-black/20"
+            >
               <lucide-icon name="play" color="white" [size]="20"></lucide-icon>
             </div>
           </div>
         </div>
-
-        <!-- Desktop Indicator Line -->
-        <div class="hidden md:block thumbnail-indicators-container">
-          <div *ngFor="let image of images; let i = index"
-               class="thumbnail-indicator"
-               [class.active]="isThumbActive(i)"
-               [style.top.px]="i * (75 + 8) + (75 / 2) - (45 / 2) - 3"
-               [style.height.px]="45">
+        <div class="hidden md:block gallery-indicators-wrap">
+          <div
+            *ngFor="let image of images; let i = index"
+            class="gallery-indicator"
+            [class.active]="isThumbActive(i)"
+            [style.top.px]="i * (75 + 8) + (75 / 2) - (45 / 2) - 3"
+            [style.height.px]="45"
+          >
             <div class="indicator-line"></div>
           </div>
         </div>
-        
-        <!-- Main Carousel -->
-        <div class="f-carousel overflow-hidden w-full md:order-last relative group">
-          <div class="flex transition-transform duration-500 ease-out h-full"
-               [style.transform]="'translateX(' + (-currentSlideIndex * 100) + '%)'">
-            <div *ngFor="let image of images; let i = index"
-                 class="f-carousel__slide flex-shrink-0 w-full flex justify-center items-center bg-aldy-white overflow-hidden">
-              <div class="w-full h-full image-container relative">
-                <!-- Video Display -->
+        <div class="gallery-slider overflow-hidden w-full md:order-last relative group">
+          <div
+            class="flex transition-transform duration-500 ease-out h-full"
+            [style.transform]="'translateX(' + (-currentSlideIndex * 100) + '%)'"
+          >
+            <div
+              *ngFor="let image of images; let i = index"
+              class="gallery-slide flex-shrink-0 w-full flex justify-center items-center bg-aldy-white overflow-hidden"
+            >
+              <div class="w-full h-full gallery-image-frame relative">
                 <ng-container *ngIf="isVideo(image.src); else imageTemplate">
                   <div class="w-full h-full relative group/video">
-                    <video [src]="image.src"
-                           [poster]="image.thumb || image.poster"
-                           controls
-                           class="w-full h-full object-cover">
-                    </video>
-                    <!-- Expand button for video -->
-                    <button (click)="openLightbox(i)" 
-                            class="absolute top-4 right-4 z-10 p-2 bg-white/20 backdrop-blur-md rounded-full hover:bg-white/40 transition-all opacity-0 group-hover/video:opacity-100">
-                      <lucide-icon name="maximize" color="white" [size]="20"></lucide-icon>
+                    <video
+                      [src]="image.src"
+                      [poster]="image.thumb || image.poster"
+                      controls
+                      class="w-full h-full cursor-plus object-cover"
+                    ></video>
+                    <button
+                      (click)="openLightbox(i)"
+                      class="absolute top-4 right-4 z-10 p-2 bg-white/20 backdrop-blur-md rounded-full transition-all opacity-0 group-hover/video:opacity-100"
+                    >
+                      <lucide-icon
+                        name="maximize"
+                        color="white"
+                        [size]="20"
+                      ></lucide-icon>
                     </button>
                   </div>
                 </ng-container>
-
-                <!-- Image Display -->
                 <ng-template #imageTemplate>
-                  <img [src]="image.src"
-                       (click)="openLightbox(i)"
-                       alt=""
-                       class="w-full h-full object-cover object-top transition duration-300 ease-in-out cursor-pointer" />
+                  <img
+                    [src]="image.src"
+                    (click)="openLightbox(i)"
+                    alt=""
+                    class="w-full h-full cursor-plus object-cover object-top transition duration-300 ease-in-out cursor-pointer"
+                  />
                 </ng-template>
               </div>
             </div>
           </div>
-
-          <!-- Navigation Arrows -->
-          <button (click)="prevSlide(); $event.stopPropagation()" 
-                  class="f-button is-prev opacity-0 group-hover:opacity-100 transition-opacity">
-            <lucide-icon name="chevron-left" [size]="28"></lucide-icon>
+          <button
+            (click)="prevSlide(); $event.stopPropagation()"
+            class="hidden md:flex cursor-pointer absolute top-1/2 left-[30px] z-30 w-10 h-10 bg-aldy-white items-center justify-center -translate-y-1/2 -translate-x-[30px] opacity-0 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 ease-out"
+          >
+            <lucide-icon
+              name="chevron-left"
+              [size]="28"
+              [strokeWidth]="1"
+              class="text-gray-400 hover:text-aldy-medium transition-colors duration-200"
+            ></lucide-icon>
           </button>
-          <button (click)="nextSlide(); $event.stopPropagation()" 
-                  class="f-button is-next opacity-0 group-hover:opacity-100 transition-opacity">
-            <lucide-icon name="chevron-right" [size]="28"></lucide-icon>
+          <button
+            (click)="nextSlide(); $event.stopPropagation()"
+            class="hidden md:flex cursor-pointer absolute top-1/2 right-[30px] z-30 w-10 h-10 bg-aldy-white items-center justify-center -translate-y-1/2 translate-x-[30px] opacity-0 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 ease-out"
+          >
+            <lucide-icon
+              name="chevron-right"
+              [size]="28"
+              [strokeWidth]="1"
+              class="text-gray-400 hover:text-aldy-medium transition-colors duration-200"
+            ></lucide-icon>
           </button>
         </div>
-
-        <!-- Mobile Thumbnails (Horizontal) -->
         <div class="flex md:hidden gap-2 mt-4 overflow-x-auto pb-2 custom-scrollbar">
-          <div *ngFor="let image of images; let i = index"
-               (click)="goToSlide(i)"
-               class="relative flex-shrink-0 cursor-pointer transition-all duration-300 border-2"
-               [class.border-aldy-medium]="isThumbActive(i)"
-               [class.border-transparent]="!isThumbActive(i)"
-               [style.width]="'75px'"
-               [style.height]="'75px'">
-            <img [src]="image.thumb || image.src" 
-                 class="w-full h-full object-cover" 
-                 alt="Thumbnail">
-            <div *ngIf="isVideo(image.src)" class="absolute inset-0 flex items-center justify-center bg-black/20">
+          <div
+            *ngFor="let image of images; let i = index"
+            (click)="goToSlide(i)"
+            class="relative flex-shrink-0 cursor-pointer transition-all duration-300 border-2"
+            [class.border-aldy-medium]="isThumbActive(i)"
+            [class.border-transparent]="!isThumbActive(i)"
+            [style.width]="'var(--thumb-width)'"
+            [style.height]="'var(--thumb-height)'"
+          >
+            <img
+              [src]="image.thumb || image.src"
+              class="w-full h-full cursor-plus object-cover"
+              alt="Thumbnail"
+            />
+            <div
+              *ngIf="isVideo(image.src)"
+              class="absolute inset-0 flex items-center justify-center bg-black/20"
+            >
               <lucide-icon name="play" color="white" [size]="20"></lucide-icon>
             </div>
           </div>
         </div>
-        
       </div>
     </div>
   </div>
 </div>
-
-<!-- Lightbox -->
 <app-gen-lightbox-vanilla
   [isOpen]="lightboxOpen"
   [items]="lightboxItems"
   [startIndex]="currentSlideIndex"
   (closed)="onLightboxClose()"
-  (indexChange)="onLightboxIndexChange($event)">
+  (indexChange)="onLightboxIndexChange($event)"
+>
 </app-gen-lightbox-vanilla>

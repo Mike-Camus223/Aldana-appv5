@@ -3,16 +3,33 @@ import { Component, Input, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { Product } from '../../../utils/models/Products-supabase.interface';
 import { CardproductComponent } from '../../generic/cardproduct/cardproduct.component';
+import {
+  ChevronLeft,
+  ChevronRight,
+  LUCIDE_ICONS,
+  LucideAngularModule,
+  LucideIconProvider,
+} from 'lucide-angular';
 
 @Component({
   selector: 'app-product-carousel',
   standalone: true,
-  imports: [CommonModule, RouterModule, CardproductComponent],
-  templateUrl: './product-carousel.component.html'
+  imports: [CommonModule, RouterModule, CardproductComponent,LucideAngularModule],
+  templateUrl: './product-carousel.component.html',
+  providers: [
+      {
+        provide: LUCIDE_ICONS,
+        multi: true,
+        useValue: new LucideIconProvider({
+          ChevronLeft,
+          ChevronRight,
+        })
+      }
+    ]
 })
 export class ProductCarouselComponent implements OnInit {
   @Input() products: Product[] = [];
-  @Input() title = '';
+  @Input() carouselTitle = '';
   @Input() maxProducts = 6;
   @Input() visibleProducts = 4;
 

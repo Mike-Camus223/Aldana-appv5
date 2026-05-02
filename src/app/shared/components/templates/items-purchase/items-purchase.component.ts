@@ -30,7 +30,8 @@ import { Subscription } from 'rxjs';
     ToastModule,
     FormsModule,
     AcordiongenericComponent,
-    LucideAngularModule
+    LucideAngularModule,
+    ProductCarouselComponent
   ],
   providers: [
     {
