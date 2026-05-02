@@ -13,14 +13,22 @@ import {
   RouterModule,
 } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
+
 import { WordRevealDirective } from '../../../utils/directives/word-reveal.directive';
 import { LinkHoverUnderlineDirective } from '../../../utils/directives/link-hover-underline.directive';
+import { CardInitAnimationDirective } from '../../../utils/directives/card-init-animation.directive';
+
 import { JournalService } from '../../../../core/services/data-access/journal/journal.service';
 import {
   JournalCategory,
   JournalPostListRow,
 } from '../../../../core/services/data-access/journal/journal.models';
-import { CardInitAnimationDirective } from '../../../utils/directives/card-init-animation.directive';
+
+type OptimizedJournalPost = JournalPostListRow & {
+  cachedHref: string | null;
+  formattedDate: string;
+  cachedCover: string;
+};
 
 @Component({
   selector: 'app-journal',
@@ -42,7 +50,7 @@ export class JournalComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   categories: JournalCategory[] = [];
-  posts: JournalPostListRow[] = [];
+  posts: OptimizedJournalPost[] = [];
   totalCount = 0;
 
   selectedCategorySlug: string | null = null;
@@ -79,29 +87,36 @@ export class JournalComponent implements OnInit, OnDestroy {
     void this.bootstrap();
   }
 
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
   private async bootstrap(): Promise<void> {
     this.loading = true;
+
     try {
-      this.categories = await this.journalService.getCategories();
-      this.yearOptions = await this.journalService.getPublishedYears();
-    } catch (e) {
-      console.error(e);
+      const [categories, years] = await Promise.all([
+        this.journalService.getCategories(),
+        this.journalService.getPublishedYears(),
+      ]);
+
+      this.categories = categories;
+      this.yearOptions = years;
+    } catch (error) {
+      console.error(error);
       this.categories = [];
       this.yearOptions = [];
     }
+
     this.metaLoaded = true;
 
     this.route.queryParamMap
       .pipe(takeUntil(this.destroy$))
-      .subscribe((q) => {
-        this.applyRouteQuery(q);
+      .subscribe((params) => {
+        this.applyRouteQuery(params);
         void this.runQueryLoad();
       });
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
   }
 
   private applyRouteQuery(q: ParamMap): void {
@@ -110,18 +125,18 @@ export class JournalComponent implements OnInit, OnDestroy {
 
     const y = q.get('anio');
     this.selectedYear =
-      y != null && y !== '' && !Number.isNaN(Number(y)) ? Number(y) : null;
+      y && !Number.isNaN(Number(y)) ? Number(y) : null;
 
     const m = q.get('mes');
     this.selectedMonth =
-      m != null && m !== '' && !Number.isNaN(Number(m)) ? Number(m) : null;
+      m && !Number.isNaN(Number(m)) ? Number(m) : null;
 
     const ord = q.get('orden');
     this.sortOrder = ord === 'asc' ? 'asc' : 'desc';
 
     const p = q.get('pagina');
     this.currentPage =
-      p != null && p !== '' && !Number.isNaN(Number(p))
+      p && !Number.isNaN(Number(p))
         ? Math.max(1, Number(p))
         : 1;
   }
@@ -130,19 +145,26 @@ export class JournalComponent implements OnInit, OnDestroy {
     if (!this.metaLoaded) return;
 
     this.loading = true;
+
     try {
       let effectiveMonth = this.selectedMonth;
+
       if (this.selectedYear != null) {
-        this.monthOptions = await this.journalService.getPublishedMonthsForYear(
-          this.selectedYear
-        );
+        this.monthOptions =
+          await this.journalService.getPublishedMonthsForYear(
+            this.selectedYear
+          );
+
         if (
           effectiveMonth != null &&
           !this.monthOptions.includes(effectiveMonth)
         ) {
           effectiveMonth = null;
+
           if (this.route.snapshot.queryParamMap.get('mes')) {
-            queueMicrotask(() => this.patchQuery({ mes: null }));
+            queueMicrotask(() =>
+              this.patchQuery({ mes: null })
+            );
           }
         }
       } else {
@@ -152,27 +174,38 @@ export class JournalComponent implements OnInit, OnDestroy {
 
       const categoryId = this.resolveCategoryId();
 
-      const { rows, total } = await this.journalService.listPublishedPosts({
-        categoryId,
-        year: this.selectedYear,
-        month: effectiveMonth,
-        order: this.sortOrder,
-        page: this.currentPage,
-        pageSize: this.pageSize,
-      });
+      const { rows, total } =
+        await this.journalService.listPublishedPosts({
+          categoryId,
+          year: this.selectedYear,
+          month: effectiveMonth,
+          order: this.sortOrder,
+          page: this.currentPage,
+          pageSize: this.pageSize,
+        });
 
-      this.posts = rows;
+      this.posts = rows.map((post) => ({
+        ...post,
+        cachedHref: JournalService.buildPostPath(post),
+        formattedDate: this.formatPublished(post),
+        cachedCover: post.cover_image || '',
+      }));
+
       this.totalCount = total;
 
-      const tp = this.totalPages;
-      if (this.currentPage > tp) {
-        this.currentPage = tp;
-        this.patchQuery({ pagina: tp > 1 ? tp : null });
+      const totalPages = this.totalPages;
+
+      if (this.currentPage > totalPages) {
+        this.currentPage = totalPages;
+
+        this.patchQuery({
+          pagina: totalPages > 1 ? totalPages : null,
+        });
       }
 
       this.rebuildPagesArray();
-    } catch (e) {
-      console.error(e);
+    } catch (error) {
+      console.error(error);
       this.posts = [];
       this.totalCount = 0;
     } finally {
@@ -182,19 +215,29 @@ export class JournalComponent implements OnInit, OnDestroy {
 
   private resolveCategoryId(): string | undefined {
     if (!this.selectedCategorySlug) return undefined;
-    return this.categories.find((c) => c.slug === this.selectedCategorySlug)
-      ?.id;
+
+    return this.categories.find(
+      (c) => c.slug === this.selectedCategorySlug
+    )?.id;
   }
 
   get totalPages(): number {
-    return Math.max(1, Math.ceil(this.totalCount / this.pageSize));
+    return Math.max(
+      1,
+      Math.ceil(this.totalCount / this.pageSize)
+    );
   }
 
   private rebuildPagesArray(): void {
-    this.pagesArray = Array.from({ length: this.totalPages }, (_, i) => i + 1);
+    this.pagesArray = Array.from(
+      { length: this.totalPages },
+      (_, i) => i + 1
+    );
   }
 
-  private navigateQuery(partial: Record<string, string | number | null>): void {
+  private navigateQuery(
+    partial: Record<string, string | number | null>
+  ): void {
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams: partial,
@@ -203,7 +246,9 @@ export class JournalComponent implements OnInit, OnDestroy {
     });
   }
 
-  private patchQuery(partial: Record<string, string | number | null>): void {
+  private patchQuery(
+    partial: Record<string, string | number | null>
+  ): void {
     this.navigateQuery(partial);
   }
 
@@ -215,33 +260,50 @@ export class JournalComponent implements OnInit, OnDestroy {
   }
 
   onYearChange(value: string): void {
-    const y = value === '' ? null : Number(value);
+    const year = value === '' ? null : Number(value);
+
     this.navigateQuery({
-      anio: y,
+      anio: year,
       mes: null,
       pagina: null,
     });
   }
 
   onMonthChange(value: string): void {
-    const m = value === '' ? null : Number(value);
+    const month = value === '' ? null : Number(value);
+
     this.navigateQuery({
-      mes: m,
+      mes: month,
       pagina: null,
     });
   }
 
   onSortChange(value: string): void {
-    const ord = value === 'asc' ? 'asc' : 'desc';
+    const order = value === 'asc' ? 'asc' : 'desc';
+
     this.navigateQuery({
-      orden: ord === 'desc' ? null : 'asc',
+      orden: order === 'desc' ? null : 'asc',
       pagina: null,
     });
   }
 
   isCategoryActive(slug: string | null): boolean {
-    if (slug === null) return this.selectedCategorySlug === null;
+    if (slug === null) {
+      return this.selectedCategorySlug === null;
+    }
+
     return this.selectedCategorySlug === slug;
+  }
+
+  trackByPostId(
+    index: number,
+    post: OptimizedJournalPost
+  ): string {
+    return (
+      post.id ||
+      post.slug ||
+      `${post.year}-${post.month}-${index}`
+    );
   }
 
   postHref(post: JournalPostListRow): string | null {
@@ -250,22 +312,31 @@ export class JournalComponent implements OnInit, OnDestroy {
 
   formatPublished(post: JournalPostListRow): string {
     if (post.published_at) {
-      const d = new Date(post.published_at);
-      return d.toLocaleDateString('es-AR', {
+      const date = new Date(post.published_at);
+
+      return date.toLocaleDateString('es-AR', {
         day: '2-digit',
         month: '2-digit',
         year: 'numeric',
       });
     }
+
     if (post.year != null && post.month != null) {
-      return `01.${String(post.month).padStart(2, '0')}.${post.year}`;
+      return `01.${String(post.month).padStart(
+        2,
+        '0'
+      )}.${post.year}`;
     }
+
     return '';
   }
 
   goToPage(page: number): void {
     if (page < 1 || page > this.totalPages) return;
-    this.navigateQuery({ pagina: page > 1 ? page : null });
+
+    this.navigateQuery({
+      pagina: page > 1 ? page : null,
+    });
   }
 
   prevPage(): void {
@@ -276,11 +347,8 @@ export class JournalComponent implements OnInit, OnDestroy {
     this.goToPage(this.currentPage + 1);
   }
 
-  coverSrc(post: JournalPostListRow): string {
-    return (
-      post.cover_image ||
-      'https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=800&q=80'
-    );
+  coverSrc(post: OptimizedJournalPost): string {
+    return post.cachedCover;
   }
 
   numStr(n: number | null): string {
