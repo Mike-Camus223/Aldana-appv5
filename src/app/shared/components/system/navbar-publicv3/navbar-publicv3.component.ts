@@ -142,7 +142,7 @@ export class NavbarPublicv3Component implements OnInit, OnDestroy {
     private authService: AuthService
   ) {
     this.isBrowser = isPlatformBrowser(platformId);
-    
+
     this.router.events
       .pipe(filter(e => e instanceof NavigationEnd))
       .subscribe(() => {
@@ -155,7 +155,7 @@ export class NavbarPublicv3Component implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.isHomePage = this.router.url === '/' || this.router.url === '/home';
-    
+
     this.cartService.cartItems$.subscribe(items => {
       this.cartItems = items;
       this.cartItemCount = items.reduce((acc, item) => acc + item.quantity, 0);
@@ -208,7 +208,7 @@ export class NavbarPublicv3Component implements OnInit, OnDestroy {
     this.hoverNavbar = true;
   }
 
-   onNavbarLeave() {
+  onNavbarLeave() {
     // Solo quitar el hover si no estamos en el dropdown
     if (!this.dropdownOpen && this.isHomePage && !this.MoverScroll) {
       this.hoverNavbar = false;
@@ -235,7 +235,7 @@ export class NavbarPublicv3Component implements OnInit, OnDestroy {
     if (!this.menuOpen) {
       this.mobileDropdownOpen = false;
     }
-    
+
     document.body.style.overflow = this.menuOpen ? 'hidden' : '';
   }
 
@@ -292,7 +292,7 @@ export class NavbarPublicv3Component implements OnInit, OnDestroy {
     this.menuOpen = false;
     this.dropdownOpen = false;
     this.mobileDropdownOpen = false;
-    
+
     if (this.isBrowser) {
       document.body.style.overflow = '';
     }
@@ -307,7 +307,7 @@ export class NavbarPublicv3Component implements OnInit, OnDestroy {
       }
     } else {
       // Usuario no autenticado
-    this.router.navigate(['/cuenta/iniciar-sesion']);
+      this.router.navigate(['/cuenta/iniciar-sesion']);
     }
   }
 

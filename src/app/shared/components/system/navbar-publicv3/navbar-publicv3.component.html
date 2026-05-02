@@ -58,9 +58,6 @@
                 </li>
               </ul>
             </div>
-
-            <!-- Tienda seccion con imagenes -->
-
             <div class="w-2/3 p-8">
               <div class="grid grid-cols-3 gap-6">
 
@@ -123,6 +120,13 @@
           </div>
         </div>
       </div>
+      <a routerLink="/journal" appLinkHoverUnderline
+        (mouseenter)="onInteractiveEnter()" [ngClass]="{
+          'text-white hover:text-gray-300 border-white': isHomePage && !MoverScroll && !hoverNavbar,
+          'text-aldy-medium hover:text-aldy-medium-2 border-aldy-medium hover:border-aldy-medium-2': !isHomePage || MoverScroll || hoverNavbar
+        }" class="transition-colors font-light NewAldyFontType4 text-sm tracking-wider border-transparent pb-[1px]">
+        Journal
+      </a>
     </div>
     <div class="flex justify-center items-center">
       <a href="/" class="flex justify-center items-center relative w-[4.5rem] h-[4.5rem]">
