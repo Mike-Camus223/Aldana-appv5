@@ -2,15 +2,32 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { JournalService } from '../../../../core/services/data-access/journal/journal.service';
-import { JournalPostBlock, JournalPostDetail } from '../../../../core/services/data-access/journal/journal.models';
+import {
+  JournalPostBlock,
+  JournalPostDetail,
+} from '../../../../core/services/data-access/journal/journal.models';
+
 import { LinkHoverUnderlineDirective } from '../../../utils/directives/link-hover-underline.directive';
 import { CardInitAnimationDirective } from '../../../utils/directives/card-init-animation.directive';
 import { WordRevealDirective } from '../../../utils/directives/word-reveal.directive';
 
+interface SectionGroup {
+  group: number;
+  layout: string;
+  background: string;
+  blocks: JournalPostBlock[];
+}
+
 @Component({
   selector: 'app-journal-post',
   standalone: true,
-  imports: [CommonModule, RouterLink, LinkHoverUnderlineDirective, CardInitAnimationDirective ,WordRevealDirective],
+  imports: [
+    CommonModule,
+    RouterLink,
+    LinkHoverUnderlineDirective,
+    CardInitAnimationDirective,
+    WordRevealDirective,
+  ],
   templateUrl: './journal-post.component.html',
   styleUrl: './journal-post.component.css',
 })
@@ -22,14 +39,14 @@ export class JournalPostComponent implements OnInit {
   loading = true;
   notFound = false;
 
-  private imageCounter = 0;
+  sections: SectionGroup[] = [];
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(async (params) => {
       this.loading = true;
       this.notFound = false;
       this.post = null;
-      this.imageCounter = 0;
+      this.sections = [];
 
       const categorySlug = params.get('categorySlug') ?? '';
       const year = Number(params.get('year'));
@@ -49,7 +66,12 @@ export class JournalPostComponent implements OnInit {
           month,
           postSlug
         );
-        this.notFound = !this.post;
+
+        if (!this.post) {
+          this.notFound = true;
+        } else {
+          this.buildSections();
+        }
       } catch {
         this.notFound = true;
       } finally {
@@ -58,18 +80,32 @@ export class JournalPostComponent implements OnInit {
     });
   }
 
-  getImageIndex(block: JournalPostBlock): number {
-    if ((block as any).__imgIndex !== undefined) {
-      return (block as any).__imgIndex;
+  buildSections(): void {
+    if (!this.post?.blocks?.length) {
+      this.sections = [];
+      return;
     }
 
-    if (this.isImageBlock(block)) {
-      this.imageCounter++;
-      (block as any).__imgIndex = this.imageCounter;
-      return this.imageCounter;
+    const grouped = new Map<number, JournalPostBlock[]>();
+
+    for (const block of this.post.blocks) {
+      const group = (block as any).section_group ?? 1;
+
+      if (!grouped.has(group)) {
+        grouped.set(group, []);
+      }
+
+      grouped.get(group)!.push(block);
     }
 
-    return -1;
+    this.sections = Array.from(grouped.entries())
+      .sort((a, b) => a[0] - b[0])
+      .map(([group, blocks]) => ({
+        group,
+        layout: (blocks[0] as any).layout_variant || 'full',
+        background: (blocks[0] as any).background_style || 'white',
+        blocks: blocks.sort((a, b) => a.position - b.position),
+      }));
   }
 
   formatDate(p: JournalPostDetail): string {
@@ -81,19 +117,37 @@ export class JournalPostComponent implements OnInit {
         year: 'numeric',
       });
     }
+
     if (p.year != null && p.month != null) {
       const mm = String(p.month).padStart(2, '0');
       return `01.${mm}.${p.year}`;
     }
-    return '';
-  }
 
-  isLinkBlock(block: JournalPostBlock): boolean {
-    return block.type === 'link';
+    return '';
   }
 
   isImageBlock(block: JournalPostBlock): boolean {
     const t = (block.type || '').toLowerCase();
     return t === 'image' || t === 'img' || t === 'cover';
+  }
+
+  isTextBlock(block: JournalPostBlock): boolean {
+    return !this.isImageBlock(block) && !this.isButtonBlock(block);
+  }
+
+  isButtonBlock(block: JournalPostBlock): boolean {
+    return block.type === 'button' || (block as any).layout_variant === 'cta';
+  }
+
+  getImage(section: SectionGroup): JournalPostBlock | undefined {
+    return section.blocks.find((b) => this.isImageBlock(b));
+  }
+
+  getText(section: SectionGroup): JournalPostBlock | undefined {
+    return section.blocks.find((b) => this.isTextBlock(b));
+  }
+
+  getButton(section: SectionGroup): JournalPostBlock | undefined {
+    return section.blocks.find((b) => this.isButtonBlock(b));
   }
 }
