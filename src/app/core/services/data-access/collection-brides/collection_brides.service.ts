@@ -56,28 +56,30 @@ export class CollectionBridesService {
     }
 
     async getCollectionBridesItemsByCollectionId(collectionId: string) {
-        const { data, error } = await this.dataHelper.client
-            .from('pbrides_product_collections')
-            .select(`
+    const { data, error } = await this.dataHelper.client
+        .from('pbrides_product_collections')
+        .select(`
+            id,
+            product_id,
+            collection_id,
+            display_order,
+            pbrides_products (
                 id,
-                product_id,
-                collection_id,
-                pbrides_products (
-                    id,
-                    name,
-                    slug,
-                    description,
-                    details,
-                    main_image,
-                    media,
-                    price
-                )
-            `)
-            .eq('collection_id', collectionId);
+                name,
+                slug,
+                description,
+                details,
+                main_image,
+                media,
+                price
+            )
+        `)
+        .eq('collection_id', collectionId)
+        .order('display_order', { ascending: true });
 
-        if (error) throw error;
-        return data as any[];
-    }
+    if (error) throw error;
+    return data as any[];
+}
 
     async getCollectionBridesItemDetail(collectionId: string, productSlug: string) {
         const { data, error } = await this.dataHelper.client

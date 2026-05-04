@@ -326,7 +326,7 @@ private updateVisibleProducts() {
           start: "top 90%",
           toggleActions: "play none none none"
         },
-        delay: i * 0.1
+        delay: i * 0.4
       }
     );
 

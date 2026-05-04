@@ -6,7 +6,7 @@
         <app-fancy-carousel [images]="carouselImages" [id]="'carousel-' + product.id"></app-fancy-carousel>
       </div>
       <div class="relative max-w-[550px] ml-0 sm:ml-13 space-y-5">
-        <h1 class="text-md sm:text-3xl NewAldyTitle text-aldy-green-gray-bold ">{{ product.name }}</h1>
+        <h1 class="text-md sm:text-3xl uppercase NewAldyTitle text-aldy-green-gray-bold ">{{ product.name }}</h1>
         <p class="text-sm sm:text-sm font-light NewAldyFontType4 text-aldy-green-gray mt-1">
           {{ product.price | currency: 'ARS':'symbol-narrow':'1.2-2':'es-AR' }}
         </p>
@@ -75,7 +75,7 @@
           </div>
         </app-acordiongeneric>
 
-        <app-acordiongeneric  [title]="'Talla y ajuste'"
+        <app-acordiongeneric  [title]="'Talle y ajustes'"
   [value]="'talla'" [selected]="openAccordion"
           (toggled)="toggleAccordion($event)">
           <div class="space-y-1">
@@ -108,7 +108,7 @@
         </app-acordiongeneric>
 
         
-        <app-acordiongeneric [title]="'Envío y cronograma'"
+        <app-acordiongeneric [title]="'Tabla de medidas'"
   [value]="'envio'" [selected]="openAccordion"
           (toggled)="toggleAccordion($event)">
           <div class="space-y-1">
@@ -117,7 +117,7 @@
             </p>
           </div>
         </app-acordiongeneric>
-        <div class="text-sm sm:text-sm text-aldy-green-gray NewAldyFontType4 tracking-wider mt-4">
+        <!-- <div class="text-sm sm:text-sm text-aldy-green-gray NewAldyFontType4 tracking-wider mt-4">
           <p>
             Para más detalles sobre métodos de pago haz clic
             <a href="#" class="underline hover:text-aldy-medium transition-colors duration-300">aquí</a>.
@@ -126,7 +126,7 @@
             Para tasas e impuestos haz clic
             <a href="#" class="underline hover:text-aldy-medium transition-colors duration-300">aquí</a>.
           </p>
-        </div>
+        </div> -->
       </div>
     </div>
   </div>

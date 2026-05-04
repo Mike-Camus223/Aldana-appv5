@@ -16,24 +16,20 @@ export interface JournalAuthor {
 export interface JournalPostBlock {
   id: string;
   post_id: string;
-
   type: string;
   content?: string | null;
   url?: string | null;
-
   position: number;
-
   /* NUEVO SISTEMA DINÁMICO */
   section_group?: number | null;
   layout_variant?: 'full' | 'split-left' | 'split-right' | 'centered' | 'cta' | null;
   width?: 'full' | 'half' | null;
   alignment?: 'left' | 'center' | 'right' | null;
-
   button_label?: string | null;
   button_slug?: string | null;
-
+  title: string;
+  subtitle: string;
   open_in_new_tab?: boolean | null;
-
   background_style?: string | null;
 }
 
@@ -47,6 +43,7 @@ export interface JournalPostListRow {
   year?: number | null;
   month?: number | null;
   category?: JournalCategory | null;
+  image_position?: string | null;
 }
 
 export interface JournalPostDetail extends JournalPostListRow {

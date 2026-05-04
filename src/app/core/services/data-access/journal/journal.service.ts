@@ -19,6 +19,7 @@ const POST_LIST_SELECT = `
   published_at,
   year,
   month,
+  image_position,
   category:journal_categories!journal_posts_category_id_fkey (
     id,
     name,
@@ -55,6 +56,7 @@ export class JournalService {
       published_at: (r['published_at'] as string) ?? null,
       year: (r['year'] as number) ?? null,
       month: (r['month'] as number) ?? null,
+      image_position: (r['image_position'] as string) ?? null,
       category: single<JournalCategory>(
         r['category'] as JournalCategory | JournalCategory[] | null
       ),
@@ -195,6 +197,7 @@ export class JournalService {
         published_at,
         year,
         month,
+        image_position,
 
         category:journal_categories!journal_posts_category_id_fkey (
           id,
@@ -226,6 +229,8 @@ export class JournalService {
 
           button_label,
           button_slug,
+          title,
+          subtitle,
 
           open_in_new_tab,
           background_style
@@ -275,25 +280,18 @@ export class JournalService {
 
             return {
               ...b,
-
               url: isImg
                 ? JournalService.normalizeImageUrl(b.url || b.content)
                 : b.url,
-
               section_group: b.section_group ?? 1,
-
               layout_variant: b.layout_variant ?? 'full',
-
               width: b.width ?? 'full',
-
               alignment: b.alignment ?? 'left',
-
               button_label: b.button_label ?? null,
-
               button_slug: b.button_slug ?? null,
-
+              title: b.title ?? null,
+              subtitle: b.subtitle ?? null,
               open_in_new_tab: b.open_in_new_tab ?? false,
-
               background_style: b.background_style ?? 'white',
             };
           })
