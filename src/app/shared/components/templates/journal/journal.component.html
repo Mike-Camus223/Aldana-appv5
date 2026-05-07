@@ -98,14 +98,14 @@
               <a [routerLink]="href" class="block overflow-hidden">
                 <img appCardInitAnimation="up" [src]="post.cachedCover" [alt]="post.title" loading="lazy"
                   decoding="async" fetchpriority="low" width="900" height="1200"
-                  class="w-full aspect-[3/4] object-cover object-[50%_75%]" [ngClass]="post.image_position" />
+                  class="w-full aspect-[3/4] object-cover" [ngClass]="post.image_position" />
               </a>
             </ng-container>
             <ng-template #staticImage>
               <div class="block overflow-hidden">
                 <img appCardInitAnimation="up" [src]="post.cachedCover" [alt]="post.title" loading="lazy"
                   decoding="async" fetchpriority="low" width="900" height="1200"
-                  class="w-full aspect-[3/4] object-cover object-[50%_75%]" [ngClass]="post.image_position" />
+                  class="w-full aspect-[3/4] object-cover" [ngClass]="post.image_position" />
               </div>
             </ng-template>
             <div>

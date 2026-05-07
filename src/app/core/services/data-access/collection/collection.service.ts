@@ -70,6 +70,7 @@ export class CollectionService {
         id,
         product_id,
         collection_id,
+        display_order,
         products (
           id,
           name,
@@ -81,7 +82,8 @@ export class CollectionService {
           price
         )
       `)
-      .eq('collection_id', collectionId);
+      .eq('collection_id', collectionId)
+      .order('display_order', { ascending: true });
 
     if (error) throw error;
     return data as any[];

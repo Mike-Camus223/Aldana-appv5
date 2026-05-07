@@ -226,15 +226,11 @@ export class JournalService {
           layout_variant,
           width,
           alignment,
-
           button_label,
           button_slug,
-          title,
-          subtitle,
-
-          open_in_new_tab,
-          background_style
-        )
+          paragraph_meta,
+          section_link_meta,
+          open_in_new_tab)
       `
       )
       .eq('slug', postSlug)
@@ -280,6 +276,8 @@ export class JournalService {
 
             return {
               ...b,
+              section_link_meta: b.section_link_meta ?? null,
+              paragraph_meta: b.paragraph_meta ?? null,
               url: isImg
                 ? JournalService.normalizeImageUrl(b.url || b.content)
                 : b.url,
@@ -289,10 +287,7 @@ export class JournalService {
               alignment: b.alignment ?? 'left',
               button_label: b.button_label ?? null,
               button_slug: b.button_slug ?? null,
-              title: b.title ?? null,
-              subtitle: b.subtitle ?? null,
               open_in_new_tab: b.open_in_new_tab ?? false,
-              background_style: b.background_style ?? 'white',
             };
           })
         : [],

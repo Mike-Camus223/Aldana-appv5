@@ -20,17 +20,36 @@ export interface JournalPostBlock {
   content?: string | null;
   url?: string | null;
   position: number;
-  /* NUEVO SISTEMA DINÁMICO */
   section_group?: number | null;
-  layout_variant?: 'full' | 'split-left' | 'split-right' | 'centered' | 'cta' | null;
+  layout_variant?: 'full' | 'split-left' | 'split-right' | 'centered' | 'cta' | 'collection-carousel' | null;
   width?: 'full' | 'half' | null;
   alignment?: 'left' | 'center' | 'right' | null;
   button_label?: string | null;
   button_slug?: string | null;
-  title: string;
-  subtitle: string;
   open_in_new_tab?: boolean | null;
-  background_style?: string | null;
+  paragraph_meta?: ParagraphMeta | null;
+  section_link_meta?: SectionLinkMeta | null;
+  // Para collection-carousel
+  collection_slug?: string | null;
+  collection_type?: 'standard' | 'brides' | null;
+}
+
+export interface ParagraphMeta {
+  heading?: {
+    text: string;
+    enabled: boolean;
+  };
+  subheading?: {
+    text: string;
+    enabled: boolean;
+  };
+}
+
+export interface SectionLinkMeta {
+  sl_position?: 'inline-start' | 'inline-end';
+  sl_link?: string;
+  sl_link_name?: string;
+  sl_style?: string;
 }
 
 export interface JournalPostListRow {

@@ -31,16 +31,6 @@
   --color-aldy-prueba: #D2E4CC;
 }
 
-.titles2 {
-  font-family: "Cormorant", serif;
-  font-optical-sizing: auto;
-  background-color: #ebebeb;
-}
-
-.timesRoman {
-  font-family: 'Times New Roman', Times, serif;
-}
-
 @font-face {
   font-family: 'aldyfont';
   src: url('assets/fonts/Futura Lt BT Light.ttf') format('truetype');
@@ -83,9 +73,6 @@
   src: url('./assets/fonts/freight-big-pro-light-regular.ttf') format('truetype');
 }
 
-.titlev3 {
-  font-family: "Lavishly Yours", cursive;
-}
 
 .NewAldyTitle {
   font-family: 'NewAldyFont', sans-serif;
