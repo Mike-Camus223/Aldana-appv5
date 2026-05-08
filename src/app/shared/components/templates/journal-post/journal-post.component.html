@@ -1,307 +1,114 @@
 <div class="h-[72px] lg:h-[88px]"></div>
-
 <section class="bg-aldy-white py-20">
   <div class="max-w-[1700px] mx-auto px-6">
-
     <ng-container *ngIf="loading">
       <div class="w-full flex justify-center items-center py-24">
         <div class="spinner"></div>
       </div>
     </ng-container>
-
     <ng-container *ngIf="!loading && notFound">
       <p class="text-center NewAldyFontType4 text-aldy-green-gray py-16">
         No encontramos esta noticia o ya no está publicada.
       </p>
       <div class="flex justify-center">
-        <a
-          routerLink="/journal"
-          appLinkHoverUnderline
-          [dynamicColor]="'text-aldy-green-gray-bold'"
-          class="text-sm uppercase tracking-widest NewAldyTitle text-aldy-green-gray-bold"
-        >
+        <a routerLink="/journal" appLinkHoverUnderline [dynamicColor]="'text-aldy-green-gray-bold'"
+          class="text-sm uppercase tracking-widest NewAldyTitle text-aldy-green-gray-bold">
           Volver al diario
         </a>
       </div>
     </ng-container>
-
     <article *ngIf="!loading && post as p">
-
       <div class="text-center max-w-[950px] mx-auto mb-24">
         <p appWordReveal class="text-xs NewAldyFontType4 text-aldy-green-gray">
           {{ formatDate(p) }}
         </p>
-        <h1
-          appWordReveal
-          class="mt-6 text-4xl md:text-6xl NewAldyTitle text-aldy-green-gray-bold leading-tight"
-        >
+        <h1 appWordReveal class="mt-6 text-4xl md:text-6xl NewAldyTitle text-aldy-green-gray-bold leading-tight">
           {{ p.title }}
         </h1>
-        <p
-          *ngIf="p.excerpt"
-          class="mt-8 text-lg md:text-xl NewAldyFontType4 text-aldy-green-gray leading-relaxed"
-        >
+        <p *ngIf="p.excerpt" class="mt-8 text-lg md:text-xl NewAldyFontType4 text-aldy-green-gray leading-relaxed">
           {{ p.excerpt }}
         </p>
       </div>
-
       <div *ngIf="p.cover_image" class="mb-28">
         <div class="overflow-hidden w-full">
-          <img
-            appCardInitAnimation="up"
-            [src]="p.cover_image"
-            [alt]="p.title"
-            class="w-full h-[78vh] object-contain"
-          />
+          <img appCardInitAnimation="up" [src]="p.cover_image" [alt]="p.title" class="w-full h-[78vh] object-contain" />
         </div>
       </div>
-
       <div class="space-y-32">
         <ng-container *ngFor="let section of sections">
-
-          <!-- SPLIT LEFT -->
-          <div
-            *ngIf="section.layout === 'split-left'"
-            class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center"
-          >
-            <div *ngIf="getImage(section)" class="w-full overflow-hidden">
-              <img
-                appCardInitAnimation="up"
-                [src]="getImage(section)?.url"
-                class="w-full h-[720px] object-cover"
-              />
+          <div *ngIf="section.layout === 'split-left'" class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            <div *ngIf="getImage(section) as imgBlock" class="w-full overflow-hidden">
+              <img appCardInitAnimation="up" [src]="imgBlock.content"
+                [alt]="getText(section)?.metadata?.paragraph?.heading?.text || ''"
+                class="w-full h-[720px] object-cover" />
             </div>
             <div class="max-w-[520px] mx-auto">
               <ng-container *ngTemplateOutlet="textBlock; context: { $implicit: section }"></ng-container>
             </div>
           </div>
-
-          <!-- SPLIT RIGHT -->
-          <div
-            *ngIf="section.layout === 'split-right'"
-            class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center"
-          >
+          <div *ngIf="section.layout === 'split-right'" class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div class="max-w-[520px] mx-auto">
               <ng-container *ngTemplateOutlet="textBlock; context: { $implicit: section }"></ng-container>
             </div>
-            <div *ngIf="getImage(section)" class="order-1 lg:order-2 w-full overflow-hidden">
-              <img
-                appCardInitAnimation="up"
-                [src]="getImage(section)?.url"
-                class="w-full h-[720px] object-cover"
-              />
+            <div *ngIf="getImage(section) as imgBlock" class="order-1 lg:order-2 w-full overflow-hidden">
+              <img appCardInitAnimation="up" [src]="imgBlock.content"
+                [alt]="getText(section)?.metadata?.paragraph?.heading?.text || ''"
+                class="w-full h-[720px] object-cover" />
             </div>
           </div>
-
-          <!-- CENTERED -->
-          <div
-            *ngIf="section.layout === 'centered'"
-            class="max-w-[900px] mx-auto text-center"
-          >
-            <ng-container *ngIf="getText(section) as block">
-              <p
-                appFadeUpLetter
-                *ngIf="block.paragraph_meta?.subheading?.enabled"
-                class="mb-4 text-sm md:text-base tracking-widest uppercase text-aldy-green-gray NewAldyFontType4"
-              >
-                {{ block.paragraph_meta?.subheading?.text }}
-              </p>
-              <h3
-                appWordReveal
-                *ngIf="block.paragraph_meta?.heading?.enabled"
-                class="mb-6 text-xl md:text-5xl NewAldyTitle text-aldy-green-gray-bold"
-              >
-                {{ block.paragraph_meta?.heading?.text }}
-              </h3>
-              <p
-                *ngIf="block.content"
-                class="NewAldyFontType4 text-aldy-green-gray leading-relaxed whitespace-pre-wrap text-lg md:text-xl"
-              >
-                {{ block.content }}
-              </p>
+          <div *ngIf="section.layout === 'centered'" class="max-w-[900px] mx-auto text-center">
+            <ng-container *ngFor="let block of section.blocks">
+              <ng-container *ngIf="!isImageBlock(block)">
+                <p appFadeUpLetter *ngIf="block.metadata?.paragraph?.subheading?.enabled"
+                  class="mb-4 text-sm md:text-base tracking-widest uppercase text-aldy-green-gray NewAldyFontType4">
+                  {{ block.metadata?.paragraph?.subheading?.text }}
+                </p>
+                <h3 appWordReveal *ngIf="block.metadata?.paragraph?.heading?.enabled"
+                  class="mb-6 text-xl md:text-5xl NewAldyTitle text-aldy-green-gray-bold">
+                  {{ block.metadata?.paragraph?.heading?.text }}
+                </h3>
+                <p *ngIf="block.content"
+                  class="NewAldyFontType4 text-aldy-green-gray leading-relaxed whitespace-pre-wrap text-lg md:text-xl"
+                  [class.mb-10]="!!block.metadata?.button?.url">
+                  {{ block.content }}
+                </p>
+                <a *ngIf="block.metadata?.button?.url" [routerLink]="block.metadata?.button?.url"
+                  [target]="block.metadata?.button?.newTab ? '_blank' : '_self'" appLinkHoverUnderline
+                  [dynamicColor]="'text-aldy-green-gray-bold'"
+                  class="inline-block uppercase tracking-[0.3em] text-sm NewAldyTitle text-aldy-green-gray-bold">
+                  {{ block.metadata?.button?.label || 'Ver más' }}
+                </a>
+              </ng-container>
             </ng-container>
           </div>
-
-          <!-- CTA -->
-          <div
-            *ngIf="section.layout === 'cta'"
-            class="text-center max-w-[900px] mx-auto"
-          >
-            <ng-container *ngIf="getText(section) as block">
-              <p
-                appFadeUpLetter
-                *ngIf="block.paragraph_meta?.subheading?.enabled"
-                class="mb-4 text-sm md:text-base tracking-widest uppercase text-aldy-green-gray NewAldyFontType4"
-              >
-                {{ block.paragraph_meta?.subheading?.text }}
-              </p>
-              <h3
-                appWordReveal
-                *ngIf="block.paragraph_meta?.heading?.enabled"
-                class="mb-6 text-xl md:text-5xl NewAldyTitle text-aldy-green-gray-bold"
-              >
-                {{ block.paragraph_meta?.heading?.text }}
-              </h3>
-              <p
-                *ngIf="block.content"
-                class="mb-10 NewAldyFontType4 text-aldy-green-gray text-lg leading-relaxed whitespace-pre-wrap"
-              >
-                {{ block.content }}
-              </p>
-              <a
-                *ngIf="block.button_slug"
-                [routerLink]="block.button_slug"
-                [target]="block.open_in_new_tab ? '_blank' : '_self'"
-                appLinkHoverUnderline
-                [dynamicColor]="'text-aldy-green-gray-bold'"
-                class="inline-block uppercase tracking-[0.3em] text-sm NewAldyTitle text-aldy-green-gray-bold"
-              >
-                {{ block.button_label || 'Ver más' }}
-              </a>
-            </ng-container>
+          <div *ngIf="section.layout === 'full' && getImage(section) as imgBlock" class="w-full overflow-hidden">
+            <img appCardInitAnimation="up" [src]="imgBlock.content" class="w-full h-[80vh] object-cover" />
           </div>
-
-          <!-- FULL -->
-          <div
-            *ngIf="section.layout === 'full' && getImage(section)"
-            class="w-full overflow-hidden"
-          >
-            <img
-              appCardInitAnimation="up"
-              [src]="getImage(section)?.url"
-              class="w-full h-[80vh] object-cover"
-            />
-          </div>
-
-          <!-- COLLECTION CAROUSEL -->
-          <div
-            *ngIf="section.layout === 'collection-carousel' && section.carouselProducts?.length"
-            class="w-full overflow-hidden"
-          >
-            <h2 class="mb-10 text-lg NewAldyTitle tracking-widest text-aldy-green-gray-bold">
-              {{ getText(section)?.content || 'MIRA MÁS DE ESTA COLECCIÓN' }}
-            </h2>
-
-            <div class="relative group/carousel">
-
-              <div class="overflow-hidden">
-                <div
-                  class="flex transition-transform duration-500 ease-out gap-4 sm:gap-6"
-                  [style.transform]="carouselTranslate(section)"
-                >
-                  <div
-                    *ngFor="let item of section.carouselProducts"
-                    [style.flex]="'0 0 calc(' + (100 / visibleProducts) + '% - 1rem)'"
-                    class="group"
-                  >
-                    <a
-                      [routerLink]="
-                        section.carouselIsBrides
-                          ? ['/novias-colecciones', section.carouselCollectionSlug, item.slug]
-                          : ['/colecciones', section.carouselCollectionSlug, item.slug]
-                      "
-                      class="block"
-                    >
-                      <div class="aspect-[3/5] overflow-hidden mb-3 sm:mb-4">
-                        <img
-                          [src]="item.main_image"
-                          [alt]="item.name"
-                          appCardInitAnimation="up"
-                          class="w-full h-full object-cover"
-                        />
-                      </div>
-                      <h3 class="text-sm sm:text-base lg:text-lg text-aldy-green-gray-bold NewAldyTitle mb-1 uppercase">
-                        {{ item.name }}
-                      </h3>
-                      <p class="text-[10px] sm:text-[11px] text-aldy-green-gray-bold NewAldyFontType4 uppercase tracking-[0.2em]">
-                        VER DETALLE
-                      </p>
-                    </a>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Desktop: botón prev -->
-              <button
-                (click)="carouselPrev(section)"
-                [class.opacity-0]="section.carouselIndex === 0"
-                [class.pointer-events-none]="section.carouselIndex === 0"
-                class="hidden lg:flex absolute left-[-2rem] top-1/2 -translate-y-1/2 w-12 h-12 border border-aldy-green-gray items-center justify-center text-aldy-green-gray-bold hover:bg-aldy-green-gray hover:text-white transition-all z-10 bg-white"
-              >
-                <lucide-icon name="chevron-left"></lucide-icon>
-              </button>
-
-              <!-- Desktop: botón next -->
-              <button
-                (click)="carouselNext(section)"
-                [class.opacity-0]="section.carouselIndex === getMaxIndex(section)"
-                [class.pointer-events-none]="section.carouselIndex === getMaxIndex(section)"
-                class="hidden lg:flex absolute right-[-2rem] top-1/2 -translate-y-1/2 w-12 h-12 border border-aldy-green-gray items-center justify-center text-aldy-green-gray-bold hover:bg-aldy-green-gray hover:text-white transition-all z-10 bg-white"
-              >
-                <lucide-icon name="chevron-right"></lucide-icon>
-              </button>
-
-              <!-- Mobile: controles -->
-              <div class="lg:hidden flex justify-center gap-6 mt-6">
-                <button
-                  (click)="carouselPrev(section)"
-                  class="w-10 h-10 border border-aldy-green-gray flex items-center justify-center text-aldy-green-gray-bold"
-                >
-                  <lucide-icon name="chevron-left"></lucide-icon>
-                </button>
-                <button
-                  (click)="carouselNext(section)"
-                  class="w-10 h-10 border border-aldy-green-gray flex items-center justify-center text-aldy-green-gray-bold"
-                >
-                  <lucide-icon name="chevron-right"></lucide-icon>
-                </button>
-              </div>
-
-            </div>
-          </div>
-
         </ng-container>
       </div>
-
     </article>
   </div>
 </section>
-
-<!-- TEMPLATE: bloque de texto reutilizable (split-left / split-right) -->
 <ng-template #textBlock let-section>
   <ng-container *ngIf="getText(section) as block">
-    <p
-      appFadeUpLetter
-      *ngIf="block.paragraph_meta?.subheading?.enabled"
-      class="mb-4 text-sm md:text-base tracking-widest uppercase text-aldy-green-gray"
-    >
-      {{ block.paragraph_meta?.subheading?.text }}
+    <p appFadeUpLetter *ngIf="block.metadata?.paragraph?.subheading?.enabled"
+      class="mb-4 text-sm md:text-base tracking-widest uppercase text-aldy-green-gray NewAldyFontType4">
+      {{ block.metadata?.paragraph?.subheading?.text }}
     </p>
-    <h3
-      appWordReveal
-      *ngIf="block.paragraph_meta?.heading?.enabled"
-      class="mb-4 text-xl md:text-5xl NewAldyTitle text-aldy-green-gray-bold"
-    >
-      {{ block.paragraph_meta?.heading?.text }}
+    <h3 appWordReveal *ngIf="block.metadata?.paragraph?.heading?.enabled"
+      class="mb-4 text-xl md:text-5xl NewAldyTitle text-aldy-green-gray-bold">
+      {{ block.metadata?.paragraph?.heading?.text }}
     </h3>
-    <p
-      appFadeUpLetter
-      class="NewAldyFontType4 text-aldy-green-gray leading-relaxed whitespace-pre-wrap text-base md:text-lg"
-    >
-      <a
-        *ngIf="block.section_link_meta?.sl_position === 'inline-start'"
-        [routerLink]="block.section_link_meta?.sl_link"
-        [class]="block.section_link_meta?.sl_style"
-      >
-        {{ block.section_link_meta?.sl_link_name }}
+    <p appFadeUpLetter
+      class="NewAldyFontType4 text-aldy-green-gray leading-relaxed whitespace-pre-wrap text-base md:text-lg">
+      <a *ngIf="block.metadata?.inlineLink?.sl_position === 'inline-start'"
+        [routerLink]="block.metadata?.inlineLink?.sl_link" [class]="block.metadata?.inlineLink?.sl_style">
+        {{ block.metadata?.inlineLink?.sl_link_name }}
       </a>
       {{ block.content }}
-      <a
-        *ngIf="block.section_link_meta?.sl_position === 'inline-end'"
-        [routerLink]="block.section_link_meta?.sl_link"
-        [class]="block.section_link_meta?.sl_style"
-      >
-        {{ block.section_link_meta?.sl_link_name }}
+      <a *ngIf="block.metadata?.inlineLink?.sl_position === 'inline-end'"
+        [routerLink]="block.metadata?.inlineLink?.sl_link" [class]="block.metadata?.inlineLink?.sl_style">
+        {{ block.metadata?.inlineLink?.sl_link_name }}
       </a>
     </p>
   </ng-container>

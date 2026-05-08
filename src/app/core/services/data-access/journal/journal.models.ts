@@ -13,43 +13,33 @@ export interface JournalAuthor {
   bio?: string | null;
 }
 
+export interface BlockMetadata {
+  button?: {
+    url?: string | null;
+    label?: string | null;
+    newTab?: boolean | null;
+  } | null;
+  paragraph?: {
+    heading?: { text: string; enabled: boolean } | null;
+    subheading?: { text: string; enabled: boolean } | null;
+  } | null;
+  inlineLink?: {
+    sl_position?: 'inline-start' | 'inline-end';
+    sl_link?: string;
+    sl_link_name?: string;
+    sl_style?: string;
+  } | null;
+}
+
 export interface JournalPostBlock {
   id: string;
   post_id: string;
   type: string;
   content?: string | null;
-  url?: string | null;
   position: number;
   section_group?: number | null;
-  layout_variant?: 'full' | 'split-left' | 'split-right' | 'centered' | 'cta' | 'collection-carousel' | null;
-  width?: 'full' | 'half' | null;
-  alignment?: 'left' | 'center' | 'right' | null;
-  button_label?: string | null;
-  button_slug?: string | null;
-  open_in_new_tab?: boolean | null;
-  paragraph_meta?: ParagraphMeta | null;
-  section_link_meta?: SectionLinkMeta | null;
-  // Para collection-carousel
-  collection_slug?: string | null;
-  collection_type?: 'standard' | 'brides' | null;
-}
-
-export interface ParagraphMeta {
-  heading?: {
-    text: string;
-    enabled: boolean;
-  };
-  subheading?: {
-    text: string;
-    enabled: boolean;
-  };
-}
-
-export interface SectionLinkMeta {
-  sl_position?: 'inline-start' | 'inline-end';
-  sl_link?: string;
-  sl_link_name?: string;
-  sl_style?: string;
+  layout?: 'left' | 'right' | 'center' | null;
+  metadata?: BlockMetadata | null;
 }
 
 export interface JournalPostListRow {

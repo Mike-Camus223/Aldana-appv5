@@ -82,7 +82,6 @@ export class JournalPostComponent implements OnInit {
 
   ngOnInit(): void {
     this.updateVisibleProducts();
-
     this.route.paramMap.subscribe(async (params) => {
       this.loading = true;
       this.notFound = false;
@@ -94,12 +93,7 @@ export class JournalPostComponent implements OnInit {
       const month = Number(params.get('month'));
       const postSlug = params.get('postSlug') ?? '';
 
-      if (
-        !categorySlug ||
-        !postSlug ||
-        Number.isNaN(year) ||
-        Number.isNaN(month)
-      ) {
+      if (!categorySlug || !postSlug || Number.isNaN(year) || Number.isNaN(month)) {
         this.loading = false;
         this.notFound = true;
         return;
@@ -107,12 +101,8 @@ export class JournalPostComponent implements OnInit {
 
       try {
         this.post = await this.journalService.getPublishedPostDetail(
-          categorySlug,
-          year,
-          month,
-          postSlug
+          categorySlug, year, month, postSlug
         );
-
         if (!this.post) {
           this.notFound = true;
         } else {
@@ -127,83 +117,45 @@ export class JournalPostComponent implements OnInit {
   }
 
   async buildSections(): Promise<void> {
-    if (!this.post?.blocks?.length) {
-      this.sections = [];
-      return;
-    }
-
-    const grouped = new Map<number, JournalPostBlock[]>();
-
-    for (const block of this.post.blocks) {
-      const group = block.section_group ?? 1;
-      if (!grouped.has(group)) grouped.set(group, []);
-      grouped.get(group)!.push(block);
-    }
-
-    const raw: SectionGroup[] = Array.from(grouped.entries())
-      .sort((a, b) => a[0] - b[0])
-      .map(([group, blocks]) => ({
-        group,
-        layout: blocks[0].layout_variant ?? 'full',
-        blocks: blocks.sort((a, b) => a.position - b.position),
-        carouselIndex: 0,
-      }));
-
-    for (const section of raw) {
-      if (section.layout !== 'collection-carousel') continue;
-
-      const block = section.blocks[0];
-      const slug = block.collection_slug ?? '';
-      const isBrides = block.collection_type === 'brides';
-
-      section.carouselCollectionSlug = slug;
-      section.carouselIsBrides = isBrides;
-
-      if (!slug) {
-        section.carouselProducts = [];
-        continue;
-      }
-
-      try {
-        if (isBrides) {
-          const col =
-            await this.collectionBridesService.getCollectionBridesBySlug(slug);
-          if (col) {
-            const items =
-              await this.collectionBridesService.getCollectionBridesItemsByCollectionId(
-                String(col.id)
-              );
-            section.carouselProducts = items
-              .map((i: any) => i.pbrides_products)
-              .filter(Boolean);
-          }
-        } else {
-          const col = await this.collectionService.getCollectionBySlug(slug);
-          if (col) {
-            const items =
-              await this.collectionService.getCollectionItemsByCollectionId(
-                String(col.id)
-              );
-            section.carouselProducts = items
-              .map((i: any) => i.products)
-              .filter(Boolean);
-          }
-        }
-      } catch {
-        section.carouselProducts = [];
-      }
-    }
-
-    this.sections = raw;
+  if (!this.post?.blocks?.length) {
+    this.sections = [];
+    return;
   }
 
-  // ── Carousel helpers ────────────────────────────────────────────────────────
+  const grouped = new Map<number, JournalPostBlock[]>();
+  for (const block of this.post.blocks) {
+    const group = block.section_group ?? 1;
+    if (!grouped.has(group)) grouped.set(group, []);
+    grouped.get(group)!.push(block);
+  }
+
+  const raw: SectionGroup[] = Array.from(grouped.entries())
+    .sort((a, b) => a[0] - b[0])
+    .map(([group, blocks]) => {
+      const sorted = blocks.sort((a, b) => a.position - b.position);
+      const hasImage = sorted.some((b) => this.isImageBlock(b));
+      const hasText = sorted.some((b) => !this.isImageBlock(b));
+      const dbLayout = sorted[0].layout ?? 'center';
+
+      let layout: string;
+      if (dbLayout === 'left' && hasImage && hasText) {
+        layout = 'split-left';
+      } else if (dbLayout === 'right' && hasImage && hasText) {
+        layout = 'split-right';
+      } else if (dbLayout === 'center' && hasText) {
+        layout = 'centered';
+      } else {
+        layout = 'full';
+      }
+
+      return { group, layout, blocks: sorted, carouselIndex: 0 };
+    });
+
+  this.sections = raw;
+}
 
   getMaxIndex(section: SectionGroup): number {
-    return Math.max(
-      0,
-      (section.carouselProducts?.length ?? 0) - this.visibleProducts
-    );
+    return Math.max(0, (section.carouselProducts?.length ?? 0) - this.visibleProducts);
   }
 
   carouselTranslate(section: SectionGroup): string {
@@ -220,14 +172,8 @@ export class JournalPostComponent implements OnInit {
     section.carouselIndex = section.carouselIndex <= 0 ? max : section.carouselIndex - 1;
   }
 
-  // ── Block helpers ────────────────────────────────────────────────────────────
-
   isImageBlock(block: JournalPostBlock): boolean {
     return ['image', 'img', 'cover'].includes((block.type ?? '').toLowerCase());
-  }
-
-  isTextBlock(block: JournalPostBlock): boolean {
-    return !this.isImageBlock(block);
   }
 
   getImage(section: SectionGroup): JournalPostBlock | undefined {
@@ -235,17 +181,18 @@ export class JournalPostComponent implements OnInit {
   }
 
   getText(section: SectionGroup): JournalPostBlock | undefined {
-    return section.blocks.find((b) => this.isTextBlock(b));
+    return section.blocks.find((b) => !this.isImageBlock(b));
   }
-
-  // ── Date ─────────────────────────────────────────────────────────────────────
+  getCtaBlock(section: SectionGroup): JournalPostBlock | undefined {
+    return section.blocks.find(
+      (b) => !this.isImageBlock(b) && !!b.metadata?.button?.url
+    );
+  }
 
   formatDate(p: JournalPostDetail): string {
     if (p.published_at) {
       return new Date(p.published_at).toLocaleDateString('es-AR', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
+        day: '2-digit', month: '2-digit', year: 'numeric',
       });
     }
     if (p.year != null && p.month != null) {
