@@ -19,7 +19,7 @@
        class="absolute top-4 right-4 flex gap-2 z-20">
     <button
       type="button"
-      class="bg-white/20 hover:bg-white/30 text-white p-2 rounded-full w-10 h-10 flex items-center justify-center backdrop-blur-sm transition-all duration-200"
+      class="bg-white/20 cursor-pointer hover:bg-white/30 text-white p-2 rounded-full w-10 h-10 flex items-center justify-center backdrop-blur-sm transition-all duration-200"
       (click)="togglePlay()"
       [attr.aria-label]="isPlaying() ? 'Pausar video' : 'Reproducir video'"
     >
@@ -33,7 +33,7 @@
     
     <button
       type="button"
-      class="bg-white/20 hover:bg-white/30 text-white p-2 rounded-full w-10 h-10 flex items-center justify-center backdrop-blur-sm transition-all duration-200"
+      class="bg-white/20  cursor-pointer  hover:bg-white/30 text-white p-2 rounded-full w-10 h-10 flex items-center justify-center backdrop-blur-sm transition-all duration-200"
       (click)="toggleMute()"
       [attr.aria-label]="isMutedIcon() ? 'Activar sonido' : 'Silenciar'"
     >
