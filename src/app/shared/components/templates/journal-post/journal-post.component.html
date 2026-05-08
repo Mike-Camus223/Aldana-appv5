@@ -59,11 +59,13 @@
           <div *ngIf="section.layout === 'centered'" class="max-w-[900px] mx-auto text-center">
             <ng-container *ngFor="let block of section.blocks">
               <ng-container *ngIf="!isImageBlock(block)">
-                <p appFadeUpLetter *ngIf="block.metadata?.paragraph?.subheading?.enabled"
+                <p appFadeUpLetter
+                  *ngIf="block.metadata?.paragraph?.subheading?.enabled"
                   class="mb-4 text-sm md:text-base tracking-widest uppercase text-aldy-green-gray NewAldyFontType4">
                   {{ block.metadata?.paragraph?.subheading?.text }}
                 </p>
-                <h3 appWordReveal *ngIf="block.metadata?.paragraph?.heading?.enabled"
+                <h3 appWordReveal
+                  *ngIf="block.metadata?.paragraph?.heading?.enabled"
                   class="mb-6 text-xl md:text-5xl NewAldyTitle text-aldy-green-gray-bold">
                   {{ block.metadata?.paragraph?.heading?.text }}
                 </h3>
@@ -72,12 +74,7 @@
                   [class.mb-10]="!!block.metadata?.button?.url">
                   {{ block.content }}
                 </p>
-                <a *ngIf="block.metadata?.button?.url" [routerLink]="block.metadata?.button?.url"
-                  [target]="block.metadata?.button?.newTab ? '_blank' : '_self'" appLinkHoverUnderline
-                  [dynamicColor]="'text-aldy-green-gray-bold'"
-                  class="inline-block uppercase tracking-[0.3em] text-sm NewAldyTitle text-aldy-green-gray-bold">
-                  {{ block.metadata?.button?.label || 'Ver más' }}
-                </a>
+                <ng-container *ngTemplateOutlet="buttonBlock; context: { $implicit: block }"></ng-container>
               </ng-container>
             </ng-container>
           </div>
@@ -89,27 +86,51 @@
     </article>
   </div>
 </section>
+<ng-template #buttonBlock let-block>
+  <ng-container *ngIf="block.metadata?.button?.url">
+    <a *ngIf="(block.metadata?.button?.button_style ?? 'underline') === 'underline'"
+      [routerLink]="block.metadata?.button?.url"
+      [target]="block.metadata?.button?.newTab ? '_blank' : '_self'"
+      appLinkHoverUnderline
+      [dynamicColor]="'text-aldy-green-gray-bold'"
+      class="inline-block uppercase tracking-[0.3em] text-sm NewAldyTitle text-aldy-green-gray-bold">
+      {{ block.metadata?.button?.label || 'Ver más' }}
+    </a>
+    <a appFadeUpLetter *ngIf="block.metadata?.button?.button_style === 'normal'"
+      [routerLink]="block.metadata?.button?.url"
+      [target]="block.metadata?.button?.newTab ? '_blank' : '_self'"
+      class="bg-aldy-medium text-white text-xs tracking-widest py-3 px-8 uppercase hover:bg-aldy-medium-2 transition-colors duration-200 ease-in-out cursor-pointer inline-block">
+      {{ block.metadata?.button?.label || 'Ver más' }}
+    </a>
+  </ng-container>
+</ng-template>
 <ng-template #textBlock let-section>
   <ng-container *ngIf="getText(section) as block">
-    <p appFadeUpLetter *ngIf="block.metadata?.paragraph?.subheading?.enabled"
+    <p appFadeUpLetter
+      *ngIf="block.metadata?.paragraph?.subheading?.enabled"
       class="mb-4 text-sm md:text-base tracking-widest uppercase text-aldy-green-gray NewAldyFontType4">
       {{ block.metadata?.paragraph?.subheading?.text }}
     </p>
-    <h3 appWordReveal *ngIf="block.metadata?.paragraph?.heading?.enabled"
+    <h3 appWordReveal
+      *ngIf="block.metadata?.paragraph?.heading?.enabled"
       class="mb-4 text-xl md:text-5xl NewAldyTitle text-aldy-green-gray-bold">
       {{ block.metadata?.paragraph?.heading?.text }}
     </h3>
     <p appFadeUpLetter
-      class="NewAldyFontType4 text-aldy-green-gray leading-relaxed whitespace-pre-wrap text-base md:text-lg">
+      class="NewAldyFontType4 text-aldy-green-gray leading-relaxed whitespace-pre-wrap text-base md:text-lg"
+      [class.mb-10]="!!block.metadata?.button?.url">
       <a *ngIf="block.metadata?.inlineLink?.sl_position === 'inline-start'"
-        [routerLink]="block.metadata?.inlineLink?.sl_link" [class]="block.metadata?.inlineLink?.sl_style">
+        [routerLink]="block.metadata?.inlineLink?.sl_link"
+        [class]="block.metadata?.inlineLink?.sl_style">
         {{ block.metadata?.inlineLink?.sl_link_name }}
       </a>
       {{ block.content }}
       <a *ngIf="block.metadata?.inlineLink?.sl_position === 'inline-end'"
-        [routerLink]="block.metadata?.inlineLink?.sl_link" [class]="block.metadata?.inlineLink?.sl_style">
+        [routerLink]="block.metadata?.inlineLink?.sl_link"
+        [class]="block.metadata?.inlineLink?.sl_style">
         {{ block.metadata?.inlineLink?.sl_link_name }}
       </a>
     </p>
+    <ng-container *ngTemplateOutlet="buttonBlock; context: { $implicit: block }"></ng-container>
   </ng-container>
 </ng-template>

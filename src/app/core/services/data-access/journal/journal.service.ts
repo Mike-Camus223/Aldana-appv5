@@ -207,17 +207,17 @@ export class JournalService {
       author: single<JournalAuthor>(r['author'] as JournalAuthor | JournalAuthor[] | null),
       blocks: Array.isArray(r['blocks'])
         ? (r['blocks'] as JournalPostBlock[]).map((b) => {
-            const isImg = ['image', 'img', 'cover'].includes((b.type || '').toLowerCase());
-            return {
-              ...b,
-              section_group: b.section_group ?? 1,
-              layout: b.layout ?? 'center',
-              content: isImg
-                ? (JournalService.normalizeImageUrl(b.content) ?? b.content)
-                : b.content,
-              metadata: b.metadata ?? {},
-            };
-          })
+          const isImg = ['image', 'img', 'cover'].includes((b.type || '').toLowerCase());
+          return {
+            ...b,
+            section_group: b.section_group ?? 1,
+            layout: b.layout ?? 'center',
+            content: isImg
+              ? (JournalService.normalizeImageUrl(b.content) ?? b.content)
+              : b.content,
+            metadata: b.metadata ?? {},
+          };
+        })
         : [],
     };
 

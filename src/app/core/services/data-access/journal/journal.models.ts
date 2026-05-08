@@ -18,6 +18,7 @@ export interface BlockMetadata {
     url?: string | null;
     label?: string | null;
     newTab?: boolean | null;
+    button_style?: 'normal' | 'underline' | null;
   } | null;
   paragraph?: {
     heading?: { text: string; enabled: boolean } | null;
