@@ -339,7 +339,7 @@
     </div>
     
     <!-- MODAL: NOTAS -->
-    <app-modalv2 [(open)]="modalNotesOpen">
+    <app-modal [(open)]="modalNotesOpen">
       <h2 class="text-lg font-bold mb-4">Notas de pedido</h2>
       <app-textarea
         [(ngModel)]="orderNotes"
@@ -364,16 +364,16 @@
           Agregar
         </button>
       </div>
-    </app-modalv2>
+    </app-modal>
     
     <!-- MODAL: DIRECCIÓN -->
-    <app-modalv2 [(open)]="modalAddressOpen">
+    <app-modal [(open)]="modalAddressOpen">
       <h2 class="text-lg font-bold mb-4">Cambiar datos de envío</h2>
       <p>Formulario futuro</p>
-    </app-modalv2>
+    </app-modal>
     
     <!-- MODAL: RETIRO -->
-    <app-modalv2 [(open)]="modalPickupOpen">
+    <app-modal [(open)]="modalPickupOpen">
       <div class="space-y-4">
         <div class="flex justify-between items-center">
           <h2 class="text-lg font-bold">Entrega</h2>
@@ -472,7 +472,7 @@
           </button>
         </div>
       </div>
-    </app-modalv2>
+    </app-modal>
 
   </div>
 </div>

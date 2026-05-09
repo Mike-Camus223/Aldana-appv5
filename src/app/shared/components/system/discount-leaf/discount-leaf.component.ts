@@ -1,12 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { Modalv2Component } from '../../generic/modalv2/modalv2.component';
+import { ModalComponent} from '../../generic/modal/modal.component';
 import { ModalAdsService } from '../../../../core/services/modal-ads.service';
 
 @Component({
   selector: 'app-discount-leaf',
   standalone: true,
-  imports: [CommonModule, Modalv2Component],
+  imports: [CommonModule, ModalComponent],
   templateUrl: './discount-leaf.component.html',
   styleUrl: './discount-leaf.component.css'
 })

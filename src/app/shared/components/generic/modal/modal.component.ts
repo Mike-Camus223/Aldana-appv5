@@ -1,113 +1,41 @@
-import { CommonModule, isPlatformBrowser } from '@angular/common';
-import {
-  Component,
-  Input,
-  Output,
-  EventEmitter,
-  ContentChild,
-  TemplateRef,
-  ViewChild,
-  ChangeDetectorRef,
-  OnChanges,
-  SimpleChanges,
-  AfterViewInit,
-  HostListener,
-  Inject,
-  PLATFORM_ID
-} from '@angular/core';
-import { DialogModule } from 'primeng/dialog';
-import { ButtonModule } from 'primeng/button';
-import { Dialog } from 'primeng/dialog';
+import { CommonModule } from '@angular/common';
+import { Component, Input, Output, EventEmitter, HostListener, ElementRef, OnChanges, SimpleChanges, OnDestroy } from '@angular/core';
+import { trigger, transition, style, animate } from '@angular/animations';
 
 @Component({
   selector: 'app-modal',
   standalone: true,
-  imports: [CommonModule, DialogModule, ButtonModule],
-  templateUrl: './modal.component.html'
+  imports: [CommonModule],
+  templateUrl: './modal.component.html',
+  animations: [
+    trigger('backdropAnim', [
+      transition(':enter', [
+        style({ opacity: 0 }),
+        animate('200ms ease-out', style({ opacity: 1 }))
+      ]),
+      transition(':leave', [
+        animate('200ms ease-in', style({ opacity: 0 }))
+      ])
+    ]),
+
+    trigger('modalAnim', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'scale(0.95) translateY(10px)' }),
+        animate('250ms ease-out', style({ opacity: 1, transform: 'scale(1) translateY(0)' }))
+      ]),
+      transition(':leave', [
+        animate('200ms ease-in', style({ opacity: 0, transform: 'scale(0.95) translateY(10px)' }))
+      ])
+    ])
+  ]
 })
-export class ModalComponent implements OnChanges, AfterViewInit {
-  @ViewChild('dialog') dialog!: Dialog;
+export class ModalComponent {
+  @Input() open = false;
+  @Output() openChange = new EventEmitter<boolean>();
+  @Input() Mostyles: string = 'p-0';
 
-  @Input() visible: boolean = false;
-  @Output() visibleChange = new EventEmitter<boolean>();
-  @Input() maximizable: boolean = false;
-  @Input() width: string = '280px';
-  @Input() height: string = 'auto';
-  @Input() maxWidth: string = '90vw';
-  @Input() maxHeight: string = '90vh';
-  @Input() breakpoints: { [key: string]: string } = {
-    '960px': '90vw',
-    '640px': '100vw'
-  };
-  @Input() contentPadding: string = '0.5rem';
-  @Input() header: string = '';
-  @Input() forceMaximize: boolean = false;
-
-  @ContentChild('modalContent', { static: false }) modalContent!: TemplateRef<any>;
-
-  maximizeState: boolean = false;
-  isMobileScreen: boolean = false;
-
-  constructor(
-    private cd: ChangeDetectorRef,
-    @Inject(PLATFORM_ID) private platformId: Object
-  ) {}
-
-  ngAfterViewInit() {
-    this.updateMobileState();
-  }
-
-  @HostListener('window:resize')
-  updateMobileState() {
-    if (isPlatformBrowser(this.platformId)) {
-      this.isMobileScreen = window.innerWidth < 1024;
-      this.cd.detectChanges();
-    }
-  }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['visible'] && this.visible && this.forceMaximize && this.isMobileScreen) {
-      this.maximizeState = true;
-      this.cd.detectChanges();
-    }
-  }
-
-  get dialogStyle() {
-    if (this.maximizeState) {
-      return {
-        width: '100vw',
-        height: '100vh',
-        maxWidth: '100vw',
-        maxHeight: '100vh',
-        top: '0',
-        left: '0'
-      };
-    }
-    return {
-      width: this.width,
-      height: this.height,
-      maxWidth: this.maxWidth,
-      maxHeight: this.maxHeight
-    };
-  }
-
-  toggleMaximize() {
-    this.maximizeState = !this.maximizeState;
-
-    setTimeout(() => {
-      if (this.dialog) {
-        this.cd.detectChanges();
-      }
-    }, 0);
-  }
-
-  onHide() {
-    this.maximizeState = false;
-    this.closeModal();
-  }
-
-  closeModal() {
-    this.visible = false;
-    this.visibleChange.emit(this.visible);
+  close() {
+    this.open = false;
+    this.openChange.emit(false);
   }
 }

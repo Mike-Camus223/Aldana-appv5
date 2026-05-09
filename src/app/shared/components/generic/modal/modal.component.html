@@ -1,45 +1,22 @@
-<p-dialog
-  #dialog
-  [(visible)]="visible"
-  [modal]="true"
-  [closable]="false"
-  [maximizable]="false"
-  [dismissableMask]="true"
-  [showHeader]="true"
-  [blockScroll]="true"
-  [closeOnEscape]="true"
-  (onHide)="onHide()"
-  [breakpoints]="breakpoints"
-  [style]="dialogStyle"
-  [contentStyle]="{
-    padding: contentPadding,
-    height: '100%',
-    overflow: 'auto'
-  }"
+<div
+  *ngIf="open"
+  @backdropAnim
+  class="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm  z-50 will-change-transform"
+  (click)="close()"
 >
-  <ng-template pTemplate="header">
-    <div class="flex justify-between items-center w-full">
-      <span class="text-lg font-semibold">{{ header }}</span>
-      <div class="flex gap-2">
-        <button
-          *ngIf="maximizable && isMobileScreen"
-          pButton
-          type="button"
-          [icon]="maximizeState ? 'pi pi-window-minimize' : 'pi pi-window-maximize'"
-          (click)="toggleMaximize()"
-          class="p-button-text p-button-rounded p-button-plain"
-        ></button>
+  <div
+    @modalAnim
+    class="relative bg-white shadow-2xl overflow-hidden will-change-transform"
+    [ngClass]="[Mostyles]"
+    (click)="$event.stopPropagation()"
+  >
+    <button
+      (click)="close()"
+      class="absolute top-3 right-3 cursor-pointer transition-colors duration-200 z-10"
+    >
+      <i class="fa-solid fa-xmark text-md text-aldy-green-gray-bold"></i>
+    </button>
 
-        <button
-          pButton
-          type="button"
-          icon="pi pi-times"
-          (click)="closeModal()"
-          class="p-button-text p-button-rounded p-button-plain"
-        ></button>
-      </div>
-    </div>
-  </ng-template>
-
-  <ng-container *ngTemplateOutlet="modalContent"></ng-container>
-</p-dialog>
+    <ng-content></ng-content>
+  </div>
+</div>

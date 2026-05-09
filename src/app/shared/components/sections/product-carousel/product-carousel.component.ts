@@ -1,5 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnInit } from '@angular/core';
+import {
+  Component,
+  Input,
+  OnInit,
+  HostListener
+} from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { Product } from '../../../utils/models/Products-supabase.interface';
 import { CardproductComponent } from '../../generic/cardproduct/cardproduct.component';
@@ -14,44 +19,73 @@ import {
 @Component({
   selector: 'app-product-carousel',
   standalone: true,
-  imports: [CommonModule, RouterModule, CardproductComponent,LucideAngularModule],
+  imports: [
+    CommonModule,
+    RouterModule,
+    CardproductComponent,
+    LucideAngularModule
+  ],
   templateUrl: './product-carousel.component.html',
   providers: [
-      {
-        provide: LUCIDE_ICONS,
-        multi: true,
-        useValue: new LucideIconProvider({
-          ChevronLeft,
-          ChevronRight,
-        })
-      }
-    ]
+    {
+      provide: LUCIDE_ICONS,
+      multi: true,
+      useValue: new LucideIconProvider({
+        ChevronLeft,
+        ChevronRight,
+      })
+    }
+  ]
 })
 export class ProductCarouselComponent implements OnInit {
   @Input() products: Product[] = [];
   @Input() carouselTitle = '';
   @Input() maxProducts = 6;
-  @Input() visibleProducts = 4;
+  @Input() visibleProducts = 3;
 
   displayProducts: Product[] = [];
   index = 0;
 
   ngOnInit() {
     this.displayProducts = this.products.slice(0, this.maxProducts);
+    this.updateVisibleProducts();
+  }
+
+  @HostListener('window:resize')
+  onResize() {
+    this.updateVisibleProducts();
+  }
+
+  private updateVisibleProducts() {
+    const width = window.innerWidth;
+
+    if (width < 1024) {
+      this.visibleProducts = 2;
+    }    else {
+      this.visibleProducts = 3;
+    }
+    if (this.index > this.maxIndex) {
+      this.index = this.maxIndex;
+    }
   }
 
   get maxIndex(): number {
-    return Math.max(0, this.displayProducts.length - this.visibleProducts);
+    return Math.max(
+      0,
+      this.displayProducts.length - this.visibleProducts
+    );
   }
 
   next() {
-    // Si ya estamos al final, volvemos al inicio
-    this.index = this.index >= this.maxIndex ? 0 : this.index + 1;
+    this.index = this.index >= this.maxIndex
+      ? 0
+      : this.index + 1;
   }
 
   prev() {
-    // Si ya estamos al inicio, saltamos al final
-    this.index = this.index <= 0 ? this.maxIndex : this.index - 1;
+    this.index = this.index <= 0
+      ? this.maxIndex
+      : this.index - 1;
   }
 
   get translate(): string {

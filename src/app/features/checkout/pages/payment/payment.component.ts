@@ -26,7 +26,7 @@ import { AcordiongenericComponent } from '../../../../shared/components/generic/
 import { environment } from '../../../../../environments/environment';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { ButtonPrimaryDirective } from '../../../../shared/utils/directives/button-primary.directive';
-import { Modalv2Component } from '../../../../shared/components/generic/modalv2/modalv2.component';
+import { ModalComponent } from '../../../../shared/components/generic/modal/modal.component';
 import { TextareaComponent } from '../../../../shared/components/generic/forms/textarea/textarea.component';
 import { LUCIDE_ICONS, LucideAngularModule, LucideIconProvider, ShoppingBag } from 'lucide-angular';
 
@@ -42,7 +42,7 @@ import { LUCIDE_ICONS, LucideAngularModule, LucideIconProvider, ShoppingBag } fr
     FormsModule,
     AcordiongenericComponent,
     ButtonPrimaryDirective,
-    Modalv2Component,
+    ModalComponent,
     TextareaComponent,
     LucideAngularModule,
   ],

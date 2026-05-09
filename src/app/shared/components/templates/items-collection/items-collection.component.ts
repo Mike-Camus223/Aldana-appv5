@@ -15,6 +15,8 @@ import { GenGalleryVanillaComponent } from '../../generic/gen-gallery-vanilla/ge
 import { AppMenuItem } from '../../../utils/models/app-menu-item.model';
 import { MediaItem } from '../../../utils/models/objectsGallery.model';
 import { MediaItemJSONB, ProductVariant } from '../../../utils/models/Products-supabase.interface';
+import { WordRevealDirective } from '../../../utils/directives/word-reveal.directive';
+import { FadeUpLetterDirective } from '../../../utils/directives/fadeupletter.directive';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -30,7 +32,7 @@ type BridesProduct = {
 @Component({
   selector: 'app-items-collection',
   standalone: true,
-  imports: [CommonModule, RouterModule, BreadcrumbComponent, GenGalleryVanillaComponent, LucideAngularModule],
+  imports: [CommonModule, RouterModule, BreadcrumbComponent, GenGalleryVanillaComponent, LucideAngularModule, WordRevealDirective, FadeUpLetterDirective],
   templateUrl: './items-collection.component.html',
   providers: [
     {
@@ -56,7 +58,7 @@ export class ItemsCollectionComponent implements OnInit, AfterViewInit, OnDestro
 
   relatedProducts: any[] = [];
   carouselIndex = 0;
-  visibleProducts = 4;
+  visibleProducts = 3;
   isBrides = false;
 
   sectionLabel = 'NOVIAS COLECCIONES';
@@ -69,20 +71,16 @@ onResize() {
 
 private updateVisibleProducts() {
   const width = window.innerWidth;
-
-  if (width < 640) {
-    this.visibleProducts = 2; 
-  } else if (width < 1024) {
-    this.visibleProducts = 3; 
-  } else if (width < 1440) {
-    this.visibleProducts = 4; 
-  } else {
-    this.visibleProducts = 5; 
+  if (width < 1024) {
+    this.visibleProducts = 2;
+  }
+  else {
+    this.visibleProducts = 3;
+  }
+  if (this.carouselIndex > this.maxIndex) {
+    this.carouselIndex = this.maxIndex;
   }
 }
-
-
-
   private triggers: ScrollTrigger[] = [];
 
   constructor(
@@ -115,7 +113,6 @@ private updateVisibleProducts() {
       return;
     }
 
-    // Actualizar Hero Images
     const main = this.product.main_image;
     const collectionImages = this.normalizeMedia(this.product.media)
       .filter(m => m.type === 'image' && m.use?.includes('collection'))
@@ -125,7 +122,6 @@ private updateVisibleProducts() {
       .filter(Boolean)
       .filter((v, i, arr) => arr.indexOf(v) === i);
 
-    // Actualizar Gallery Rows
     const rows: { label: string; items: MediaItem[] }[] = [];
     const used = new Set<string>();
 
@@ -260,17 +256,17 @@ private updateVisibleProducts() {
       ];
     }
 
-    // Asegurar que ScrollTrigger se reinicie después de cargar los nuevos datos
-    setTimeout(() => {
-      this.initScroll();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }, 100);
+    //  Asegurar que ScrollTrigger se reinicie después de cargar los nuevos datos
+     setTimeout(() => {
+       this.initScroll();
+       window.scrollTo({ top: 0, behavior: 'smooth' });
+     }, 500);
   }
 
   ngAfterViewInit(): void {
-    setTimeout(() => {
-      this.initScroll();
-    }, 500); // Mayor delay para estabilidad
+     setTimeout(() => {
+       this.initScroll();
+     }, 500); // Mayor delay para estabilidad
   }
 
   initScroll() {

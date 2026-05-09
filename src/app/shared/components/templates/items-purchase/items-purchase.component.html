@@ -12,7 +12,8 @@
         </p>
 
         <div class="flex items-center gap-3">
-          <span class="text-sm sm:text-sm font-light text-aldy-green-gray NewAldyFontType4 tracking-wider me-3">Colores:</span>
+          <span
+            class="text-sm sm:text-sm font-light text-aldy-green-gray NewAldyFontType4 tracking-wider me-3">Colores:</span>
           <button *ngFor="let variant of product.variants" (click)="selectColor(variant.color_name)"
             [ngStyle]="{ backgroundColor: variant.color_hex }" class="w-4 h-4 rounded-sm transition-all border"
             [ngClass]="{
@@ -23,7 +24,8 @@
         </div>
 
         <div class="flex items-center flex-wrap gap-2">
-          <span class="text-sm sm:text-sm font-light text-aldy-green-gray NewAldyFontType4 tracking-wider me-3">Tallas:</span>
+          <span
+            class="text-sm sm:text-sm font-light text-aldy-green-gray NewAldyFontType4 tracking-wider me-3">Tallas:</span>
           <ng-container *ngFor="let size of product.sizes">
             <button (click)="selectSize(size)"
               class="text-sm sm:text-sm font-light px-3 py-1 border-b-2 transition-all cursor-pointer" [ngClass]="{
@@ -51,12 +53,12 @@
             class="flex-1 cursor-pointer flex items-center justify-center gap-3 bg-aldy-medium border border-aldy-medium text-white uppercase  py-3 px-4 text-center transition-colors hover:bg-aldy-medium-2 hover:border-aldy-medium-2"
             (click)="addToCartItems()">
             <span class="tracking-wider NewAldyFontType4 text-sm lg:text-sm font-light">Añadir al carrito</span>
-            <lucide-icon [size]="20" [strokeWidth]="1.5" name="shopping-bag" class="text-white relative -top-[0.7px]"></lucide-icon>
+            <lucide-icon [size]="20" [strokeWidth]="1.5" name="shopping-bag"
+              class="text-white relative -top-[0.7px]"></lucide-icon>
           </button>
         </div>
 
-        <app-acordiongeneric [title]="'Descripción'"
-  [value]="'descripcion'" [selected]="openAccordion"
+        <app-acordiongeneric [title]="'Descripción'" [value]="'descripcion'" [selected]="openAccordion"
           (toggled)="toggleAccordion($event)">
           <div class="space-y-1">
             <p class="flex items-center gap-2 py-2 px-3 text-xs tracking-wider NewAldyFontType4 w-full rounded-md">
@@ -65,8 +67,7 @@
           </div>
         </app-acordiongeneric>
 
-        <app-acordiongeneric [title]="'Detalles del producto'"
-  [value]="'detalles'" [selected]="openAccordion"
+        <app-acordiongeneric [title]="'Detalles del producto'" [value]="'detalles'" [selected]="openAccordion"
           (toggled)="toggleAccordion($event)">
           <div class="space-y-1">
             <p class="flex items-center gap-2 py-2 px-3 text-xs tracking-wider NewAldyFontType4 w-full rounded-md">
@@ -75,8 +76,7 @@
           </div>
         </app-acordiongeneric>
 
-        <app-acordiongeneric  [title]="'Talle y ajustes'"
-  [value]="'talla'" [selected]="openAccordion"
+        <app-acordiongeneric [title]="'Talle y ajustes'" [value]="'talla'" [selected]="openAccordion"
           (toggled)="toggleAccordion($event)">
           <div class="space-y-1">
             <p class="flex items-center gap-2 py-2 px-3 text-xs tracking-wider NewAldyFontType4 w-full rounded-md">
@@ -85,9 +85,8 @@
           </div>
         </app-acordiongeneric>
 
-        
-        <app-acordiongeneric [title]="'Fabricación'"
-  [value]="'fabricacion'" [selected]="openAccordion"
+
+        <app-acordiongeneric [title]="'Fabricación'" [value]="'fabricacion'" [selected]="openAccordion"
           (toggled)="toggleAccordion($event)">
           <div class="space-y-1">
             <p class="flex items-center gap-2 py-2 px-3 text-xs tracking-wider NewAldyFontType4 w-full rounded-md">
@@ -96,9 +95,8 @@
           </div>
         </app-acordiongeneric>
 
-        
-        <app-acordiongeneric [title]="'Citas y pruebas'"
-  [value]="'citas'" [selected]="openAccordion"
+
+        <app-acordiongeneric [title]="'Citas y pruebas'" [value]="'citas'" [selected]="openAccordion"
           (toggled)="toggleAccordion($event)">
           <div class="space-y-1">
             <p class="flex items-center gap-2 py-2 px-3 text-xs tracking-wider NewAldyFontType4 w-full rounded-md">
@@ -107,9 +105,8 @@
           </div>
         </app-acordiongeneric>
 
-        
-        <app-acordiongeneric [title]="'Tabla de medidas'"
-  [value]="'envio'" [selected]="openAccordion"
+
+        <app-acordiongeneric [title]="'Tabla de medidas'" [value]="'envio'" [selected]="openAccordion"
           (toggled)="toggleAccordion($event)">
           <div class="space-y-1">
             <p class="flex items-center gap-2 py-2 px-3 text-xs tracking-wider NewAldyFontType4 w-full rounded-md">
@@ -117,27 +114,14 @@
             </p>
           </div>
         </app-acordiongeneric>
-        <!-- <div class="text-sm sm:text-sm text-aldy-green-gray NewAldyFontType4 tracking-wider mt-4">
-          <p>
-            Para más detalles sobre métodos de pago haz clic
-            <a href="#" class="underline hover:text-aldy-medium transition-colors duration-300">aquí</a>.
-          </p>
-          <p>
-            Para tasas e impuestos haz clic
-            <a href="#" class="underline hover:text-aldy-medium transition-colors duration-300">aquí</a>.
-          </p>
-        </div> -->
       </div>
     </div>
   </div>
 </div>
 <div class="px-4 sm:px-6 lg:px-12 xl:px-16 2xl:px-24 py-8 sm:py-12 w-full" *ngIf="relatedProducts.length > 0">
   <div class="max-w-screen-xl mx-auto">
-    <app-product-carousel 
-  [products]="relatedProducts" 
-  [carouselTitle]="'Puede que también te guste'"
-  [maxProducts]="6"
-  [visibleProducts]="3">
-</app-product-carousel>
+    <app-product-carousel [products]="relatedProducts" [carouselTitle]="'Puede que también te guste'" [maxProducts]="6"
+      [visibleProducts]="3">
+    </app-product-carousel>
   </div>
-</div> 
+</div>

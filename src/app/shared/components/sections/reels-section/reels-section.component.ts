@@ -9,7 +9,7 @@ import {
   ChangeDetectorRef,
 } from '@angular/core';
 import { PLATFORM_ID } from '@angular/core';
-import { Modalv2Component } from '../../generic/modalv2/modalv2.component';
+import { ModalComponent, } from '../../generic/modal/modal.component';
 import { SupabaseService } from '../../../../core/services/data-access/supabase.service';
 import { CarouselImagesGenericv2Component } from '../../generic/carousel-images-genericv2/carousel-images-genericv2.component';
 import { Subject } from 'rxjs';
@@ -18,10 +18,10 @@ import { debounceTime, takeUntil } from 'rxjs/operators';
 @Component({
   selector: 'app-reels-section',
   standalone: true,
-  imports: [CommonModule, Modalv2Component, CarouselImagesGenericv2Component],
+  imports: [CommonModule, ModalComponent, CarouselImagesGenericv2Component],
   templateUrl: './reels-section.component.html',
   styleUrls: ['./reels-section.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush, // ⚡ OPTIMIZACIÓN
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ReelsSectionComponent implements OnInit, OnDestroy {
   showModal = false;
