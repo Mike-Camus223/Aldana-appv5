@@ -64,15 +64,13 @@
 
 .cursor-plus {
   cursor:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 24 24' fill='none' stroke='%23778a72' stroke-width='1' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14'/%3E%3Cpath d='M12 5v14'/%3E%3C/svg%3E")
-      18 18,
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 24 24' fill='none' stroke='%23778a72' stroke-width='1' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14'/%3E%3Cpath d='M12 5v14'/%3E%3C/svg%3E") 18 18,
     crosshair;
 }
 
 .cursor-minus {
   cursor:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 24 24' fill='none' stroke='%23778a72' stroke-width='1' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14'/%3E%3C/svg%3E")
-      18 18,
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 24 24' fill='none' stroke='%23778a72' stroke-width='1' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14'/%3E%3C/svg%3E") 18 18,
     zoom-out;
 }
 
@@ -84,8 +82,6 @@
   cursor: zoom-out;
 }
 
-/* PC */
-
 @media (min-width: 768px) {
   .lb-img {
     width: auto;
@@ -96,16 +92,12 @@
   }
 }
 
-/* PANTALLAS GIGANTES */
-
 @media (min-width: 1536px) {
   .lb-img {
     max-width: 1300px;
     max-height: 84vh;
   }
 }
-
-/* OCULTAR COMPLETAMENTE CONTROLES NATIVOS DEL VIDEO */
 
 video::-webkit-media-controls {
   display: none !important;
@@ -129,4 +121,49 @@ video::-moz-media-controls {
 
 video {
   outline: none;
+}
+
+.video-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 20;
+  animation: videoOverlayFade 900ms ease forwards;
+}
+
+.video-overlay lucide-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 90px;
+  height: 90px;
+  border-radius: 9999px;
+  background: #00000073;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+@keyframes videoOverlayFade {
+  0% {
+    opacity: 0;
+    transform: scale(0.82);
+  }
+
+  15% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  75% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(1.08);
+  }
 }

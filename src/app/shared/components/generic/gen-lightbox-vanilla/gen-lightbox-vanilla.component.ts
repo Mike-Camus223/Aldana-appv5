@@ -20,6 +20,8 @@ import {
   LUCIDE_ICONS,
   LucideAngularModule,
   LucideIconProvider,
+  Pause,
+  Play,
   X
 } from 'lucide-angular';
 
@@ -36,7 +38,9 @@ import {
       useValue: new LucideIconProvider({
         ChevronLeft,
         ChevronRight,
-        X
+        X,
+        Pause,
+        Play,
       })
     }
   ]
@@ -46,31 +50,28 @@ export class GenLightboxVanillaComponent implements OnChanges, AfterViewInit {
   @Input() isOpen = false;
   @Input() items: MediaItem[] = [];
   @Input() startIndex = 0;
-
   @Output() closed = new EventEmitter<void>();
   @Output() indexChange = new EventEmitter<number>();
-
   @ViewChildren('slideRef') slideRefs!: QueryList<ElementRef<HTMLElement>>;
-
-  
   activeIndex = 0;
   zoomed = false;
   isClosing = false;
   private isAnimating = false;
-
   isDragging = false;
   private _dragMoved = false;
   private dragStartX = 0;
   private dragStartY = 0;
   private dragOriginX = 0;
   private dragOriginY = 0;
-
   translateX = 0;
   translateY = 0;
-
   private readonly FRAME_W = 520;
   private readonly FRAME_H = 690;
   private readonly ZOOM_SCALE = 2;
+  videoPaused = false;
+  showVideoOverlay = false;
+  videoOverlayIcon: 'play' | 'pause' = 'pause';
+  private videoOverlayTimeout?: ReturnType<typeof setTimeout>;
 
   ngOnChanges(changes: SimpleChanges): void {
     const openChanged = changes['isOpen'] && changes['isOpen'].currentValue === true;
@@ -87,7 +88,6 @@ export class GenLightboxVanillaComponent implements OnChanges, AfterViewInit {
   private initSlides(): void {
     const slides = this.slideRefs?.toArray();
     if (!slides?.length) return;
-
     slides.forEach((s, i) => {
       const el = s.nativeElement;
       el.style.opacity = i === this.activeIndex ? '1' : '0';
@@ -98,22 +98,45 @@ export class GenLightboxVanillaComponent implements OnChanges, AfterViewInit {
   }
 
   trackByIndex(index: number): number {
-  return index;
-}
+    return index;
+  }
 
-private forceResetInteractionState(): void {
-  this.zoomed = false;
+  private forceResetInteractionState(): void {
+    this.zoomed = false;
+    this.isDragging = false;
+    this._dragMoved = false;
+    this.translateX = 0;
+    this.translateY = 0;
+  }
 
-  this.isDragging = false;
-  this._dragMoved = false;
+  toggleVideo(video: HTMLVideoElement): void {
+    if (video.paused) {
+      video.play();
+      this.videoPaused = false;
+      this.showVideoFeedback('pause');
+      return;
+    }
 
-  this.translateX = 0;
-  this.translateY = 0;
-}
+    video.pause();
+    this.videoPaused = true;
+    this.showVideoFeedback('play');
+  }
 
-  // =========================
-  // MEDIA TYPE CHECK
-  // =========================
+  private showVideoFeedback(icon: 'pause' | 'play'): void {
+    if (this.videoOverlayTimeout) {
+      clearTimeout(this.videoOverlayTimeout);
+    }
+
+    this.showVideoOverlay = false;
+    requestAnimationFrame(() => {
+      this.videoOverlayIcon = icon;
+      this.showVideoOverlay = true;
+      this.videoOverlayTimeout = setTimeout(() => {
+        this.showVideoOverlay = false;
+      }, 900);
+    });
+  }
+
   isVideo(item: MediaItem): boolean {
     return item.type === 'video';
   }
@@ -127,9 +150,6 @@ private forceResetInteractionState(): void {
     return item.url;
   }
 
-  // =========================
-  // ZOOM
-  // =========================
   getImgTransform(): string {
     if (!this.zoomed) return 'scale(1)';
     return `scale(${this.ZOOM_SCALE}) translate(${this.translateX}px, ${this.translateY}px)`;
@@ -145,9 +165,6 @@ private forceResetInteractionState(): void {
     this.toggleZoom();
   }
 
-  // =========================
-  // DRAG
-  // =========================
   startDrag(e: MouseEvent): void {
     if (!this.zoomed) return;
     e.preventDefault();
@@ -160,31 +177,25 @@ private forceResetInteractionState(): void {
   }
 
   onDrag(e: MouseEvent): void {
-  if (!this.isDragging) return;
-  e.preventDefault();
-  this._dragMoved = true;
+    if (!this.isDragging) return;
+    e.preventDefault();
+    this._dragMoved = true;
 
-  const dx = (e.clientX - this.dragStartX) / this.ZOOM_SCALE;
-  const dy = (e.clientY - this.dragStartY) / this.ZOOM_SCALE;
+    const dx = (e.clientX - this.dragStartX) / this.ZOOM_SCALE;
+    const dy = (e.clientY - this.dragStartY) / this.ZOOM_SCALE;
 
-  const maxX = (this.FRAME_W * (this.ZOOM_SCALE - 1)) / (2 * this.ZOOM_SCALE);
-  const maxY = (this.FRAME_H * (this.ZOOM_SCALE - 1)) / (2 * this.ZOOM_SCALE);
+    const maxX = (this.FRAME_W * (this.ZOOM_SCALE - 1)) / (2 * this.ZOOM_SCALE);
+    const maxY = (this.FRAME_H * (this.ZOOM_SCALE - 1)) / (2 * this.ZOOM_SCALE);
 
-  this.translateX = Math.max(-maxX, Math.min(maxX, this.dragOriginX + dx));
-  this.translateY = Math.max(-maxY, Math.min(maxY, this.dragOriginY + dy)); // ← dragOriginY, no translateY
-}
+    this.translateX = Math.max(-maxX, Math.min(maxX, this.dragOriginX + dx));
+    this.translateY = Math.max(-maxY, Math.min(maxY, this.dragOriginY + dy));
+  }
 
   stopDrag(): void {
-  this.isDragging = false;
-  // ← NO resetear translateX/Y acá. El HostListener mouseup dispara esto
-  // en cualquier click (incluyendo botones prev/next), lo que rompía el zoom.
-  // resetDrag() sigue encargándose cuando realmente corresponde.
-  setTimeout(() => (this._dragMoved = false), 0);
-}
+    this.isDragging = false;
+    setTimeout(() => (this._dragMoved = false), 0);
+  }
 
-  // =========================
-  // WHEEL ZOOM
-  // =========================
   onWheel(e: WheelEvent): void {
     if (!this.zoomed) return;
     e.preventDefault();
@@ -207,9 +218,6 @@ private forceResetInteractionState(): void {
     this.resetDrag();
   }
 
-  // =========================
-  // SLIDER
-  // =========================
   next(): void {
     this.animateSlide('next');
   }
@@ -266,21 +274,18 @@ private forceResetInteractionState(): void {
     });
 
     setTimeout(() => {
-  currentEl.style.opacity = '0';
-  currentEl.style.transition = '';
-  currentEl.style.zIndex = '0';
+      currentEl.style.opacity = '0';
+      currentEl.style.transition = '';
+      currentEl.style.zIndex = '0';
 
-  nextEl.style.transition = '';
-  nextEl.style.zIndex = '1';
+      nextEl.style.transition = '';
+      nextEl.style.zIndex = '1';
 
-  this.activeIndex = nextIdx;
-  this.indexChange.emit(this.activeIndex);
-
-  // 🔥 FIX CLAVE
-  this.forceResetInteractionState();
-
-  this.isAnimating = false;
-}, 500);
+      this.activeIndex = nextIdx;
+      this.indexChange.emit(this.activeIndex);
+      this.forceResetInteractionState();
+      this.isAnimating = false;
+    }, 500);
   }
 
   @HostListener('document:mouseup')
