@@ -1,152 +1,207 @@
-<div class="flex w-full justify-center lg:justify-end">
-  <div
-    class="product-gallery relative w-full max-w-full sm:max-w-[100%] md:max-w-[90%] lg:max-w-[640px]"
-    [ngStyle]="{
-      '--thumb-width': '75px',
-      '--thumb-height': '75px',
-      '--gallery-aspect-ratio': aspectRatio,
-      '--gallery-height': '820px'
-    }"
-  >
+<!-- =====================================================================
+     FancyCarousel
+     - Drag thumbs mobile: solución del código antiguo (overflow-x:scroll
+       + touchstart/touchmove/touchend + mousedown + inercia)
+     - Lo demás: igual que la versión actual
+     ===================================================================== -->
+
+<div class="flex w-full justify-center md:justify-end">
+  <div class="relative w-full max-w-full md:max-w-[640px]">
     <div
-      class="transition-opacity duration-[1000ms] ease-out"
+      class="transition-opacity duration-1000 ease-out"
       [class.opacity-0]="!isComponentReady"
       [class.opacity-100]="isComponentReady"
     >
-      <div class="flex flex-col md:grid md:gap-2 md:grid-cols-[106px_minmax(0px,_1fr)] relative">
-        <div
-          class="hidden md:flex flex-col gap-2 h-full overflow-y-auto pr-2 custom-scrollbar"
-          [style.height]="'var(--gallery-height)'"
-        >
+      <div class="flex flex-col md:grid md:grid-cols-[106px_minmax(0,1fr)] md:gap-2 relative">
+
+        <!-- THUMBNAILS DESKTOP -->
+        <div class="hidden md:flex flex-col gap-2 h-[820px] overflow-y-auto pr-2 scrollbar-hide">
           <div
             *ngFor="let image of images; let i = index"
             (click)="goToSlide(i)"
-            class="relative flex-shrink-0 cursor-pointer transition-all duration-300 border-2"
+            class="relative flex-shrink-0 w-[75px] h-[75px] cursor-pointer transition-all duration-300 border-2"
             [class.border-aldy-medium]="isThumbActive(i)"
             [class.border-transparent]="!isThumbActive(i)"
-            [style.width]="'var(--thumb-width)'"
-            [style.height]="'var(--thumb-height)'"
           >
-            <img
-              [src]="image.thumb || image.src"
-              class="w-full h-full object-cover"
-              alt="Thumbnail"
-            />
-            <div
-              *ngIf="isVideo(image.src)"
-              class="absolute inset-0 flex items-center justify-center bg-black/20"
-            >
+            <img [src]="image.thumb || image.src" alt="Thumbnail" class="w-full h-full object-cover" />
+            <div *ngIf="isVideo(image.src)" class="absolute inset-0 flex items-center justify-center bg-black/20">
               <lucide-icon name="play" color="white" [size]="20"></lucide-icon>
             </div>
           </div>
         </div>
-        <div class="hidden md:block gallery-indicators-wrap">
+
+        <!-- INDICADORES DESKTOP -->
+        <div class="hidden md:block absolute left-[-7px] top-0 w-1 h-full pointer-events-none z-10">
           <div
             *ngFor="let image of images; let i = index"
-            class="gallery-indicator"
-            [class.active]="isThumbActive(i)"
-            [style.top.px]="i * (75 + 8) + (75 / 2) - (45 / 2) - 3"
+            class="absolute left-0 w-[2px] flex items-center z-20 transition-opacity duration-300"
+            [class.opacity-100]="isThumbActive(i)"
+            [class.opacity-0]="!isThumbActive(i)"
+            [style.top.px]="i * 83 + 12"
             [style.height.px]="45"
           >
-            <div class="indicator-line"></div>
+            <div class="w-[2px] h-[45px] bg-aldy-medium rounded-l-sm"></div>
           </div>
         </div>
-        <div class="gallery-slider overflow-hidden w-full md:order-last relative group">
+
+        <!-- SLIDER PRINCIPAL -->
+        <div class="relative w-full overflow-hidden bg-aldy-white md:max-h-[820px] px-2 md:px-0">
           <div
-            class="flex transition-transform duration-500 ease-out h-full"
+            class="flex transition-transform duration-300 ease-out"
+            style="will-change: transform;"
             [style.transform]="'translateX(' + (-currentSlideIndex * 100) + '%)'"
           >
             <div
               *ngFor="let image of images; let i = index"
-              class="gallery-slide flex-shrink-0 w-full flex justify-center items-center bg-aldy-white overflow-hidden"
+              class="w-full flex-shrink-0 bg-aldy-white"
+              style="min-width: 100%;"
             >
-              <div class="w-full h-full gallery-image-frame relative">
+              <div class="relative w-full">
+
+                <!-- VIDEO -->
                 <ng-container *ngIf="isVideo(image.src); else imageTemplate">
-                  <div class="w-full h-full relative group/video">
+                  <div class="relative w-full group/slide">
                     <video
+                      #videoPlayer
                       [src]="image.src"
                       [poster]="image.thumb || image.poster"
-                      controls
-                      class="w-full h-full cursor-plus object-cover"
+                      autoplay
+                      (click)="toggleVideo(videoPlayer)"
+                      class="block w-full h-auto object-contain md:max-h-[820px] cursor-pointer"
                     ></video>
+
+                    <!-- Overlay animado play/pause -->
+                    <div *ngIf="showVideoOverlay && currentSlideIndex === i" class="video-overlay">
+                      <lucide-icon [name]="videoOverlayIcon" color="#fff" [size]="50" [strokeWidth]="1.5"></lucide-icon>
+                    </div>
+
+                    <!-- Maximize solo desktop -->
                     <button
+                      *ngIf="isDesktop"
                       (click)="openLightbox(i)"
-                      class="absolute top-4 right-4 z-10 p-2 bg-white/20 backdrop-blur-md rounded-full transition-all opacity-0 group-hover/video:opacity-100"
+                      class="absolute top-3 right-3 z-20 p-2 rounded-full bg-white/20 backdrop-blur-md
+                             opacity-0 group-hover/slide:opacity-100 transition-all"
                     >
-                      <lucide-icon
-                        name="maximize"
-                        color="white"
-                        [size]="20"
-                      ></lucide-icon>
+                      <lucide-icon name="maximize" color="white" [size]="20"></lucide-icon>
+                    </button>
+
+                    <!-- Flechas desktop centradas sobre el video -->
+                    <button
+                      (click)="prevSlide(); $event.stopPropagation()"
+                      class="hidden md:flex absolute left-2 top-1/2 -translate-y-1/2 z-30
+                             w-10 h-10 bg-aldy-white shadow-sm items-center justify-center
+                             opacity-0 group-hover/slide:opacity-100 transition-all duration-300 cursor-pointer"
+                    >
+                      <lucide-icon name="chevron-left" [size]="28" [strokeWidth]="1" class="text-gray-400 hover:text-aldy-medium"></lucide-icon>
+                    </button>
+                    <button
+                      (click)="nextSlide(); $event.stopPropagation()"
+                      class="hidden md:flex absolute right-2 top-1/2 -translate-y-1/2 z-30
+                             w-10 h-10 bg-aldy-white shadow-sm items-center justify-center
+                             opacity-0 group-hover/slide:opacity-100 transition-all duration-300 cursor-pointer"
+                    >
+                      <lucide-icon name="chevron-right" [size]="28" [strokeWidth]="1" class="text-gray-400 hover:text-aldy-medium"></lucide-icon>
                     </button>
                   </div>
                 </ng-container>
+
+                <!-- IMAGEN -->
                 <ng-template #imageTemplate>
-                  <img
-                    [src]="image.src"
-                    (click)="openLightbox(i)"
-                    alt=""
-                    class="w-full h-full cursor-plus object-cover object-top transition duration-300 ease-in-out cursor-pointer"
-                  />
+                  <div class="relative w-full group/slide">
+                    <img
+                      [src]="image.src"
+                      (click)="openLightbox(i)"
+                      alt=""
+                      class="block w-full h-auto object-contain md:max-h-[820px] transition duration-300 ease-in-out"
+                      [class.cursor-pointer]="isDesktop"
+                      draggable="false"
+                    />
+
+                    <!-- Flechas desktop centradas sobre la imagen -->
+                    <button
+                      (click)="prevSlide(); $event.stopPropagation()"
+                      class="hidden md:flex absolute left-2 top-1/2 -translate-y-1/2 z-30
+                             w-10 h-10 bg-aldy-white shadow-sm items-center justify-center
+                             opacity-0 group-hover/slide:opacity-100 transition-all duration-300 cursor-pointer"
+                    >
+                      <lucide-icon name="chevron-left" [size]="28" [strokeWidth]="1" class="text-gray-400 hover:text-aldy-medium"></lucide-icon>
+                    </button>
+                    <button
+                      (click)="nextSlide(); $event.stopPropagation()"
+                      class="hidden md:flex absolute right-2 top-1/2 -translate-y-1/2 z-30
+                             w-10 h-10 bg-aldy-white shadow-sm items-center justify-center
+                             opacity-0 group-hover/slide:opacity-100 transition-all duration-300 cursor-pointer"
+                    >
+                      <lucide-icon name="chevron-right" [size]="28" [strokeWidth]="1" class="text-gray-400 hover:text-aldy-medium"></lucide-icon>
+                    </button>
+                  </div>
                 </ng-template>
+
               </div>
             </div>
           </div>
-          <button
-            (click)="prevSlide(); $event.stopPropagation()"
-            class="hidden md:flex cursor-pointer absolute top-1/2 left-[30px] z-30 w-10 h-10 bg-aldy-white items-center justify-center -translate-y-1/2 -translate-x-[30px] opacity-0 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 ease-out"
-          >
-            <lucide-icon
-              name="chevron-left"
-              [size]="28"
-              [strokeWidth]="1"
-              class="text-gray-400 hover:text-aldy-medium transition-colors duration-200"
-            ></lucide-icon>
-          </button>
-          <button
-            (click)="nextSlide(); $event.stopPropagation()"
-            class="hidden md:flex cursor-pointer absolute top-1/2 right-[30px] z-30 w-10 h-10 bg-aldy-white items-center justify-center -translate-y-1/2 translate-x-[30px] opacity-0 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 ease-out"
-          >
-            <lucide-icon
-              name="chevron-right"
-              [size]="28"
-              [strokeWidth]="1"
-              class="text-gray-400 hover:text-aldy-medium transition-colors duration-200"
-            ></lucide-icon>
-          </button>
         </div>
-        <div class="flex md:hidden gap-2 mt-4 overflow-x-auto pb-2 custom-scrollbar">
+
+        <!-- THUMBNAILS MOBILE — solución del código antiguo que funciona -->
+        <div class="flex flex-col md:hidden w-full mt-3 px-2">
+
           <div
-            *ngFor="let image of images; let i = index"
-            (click)="goToSlide(i)"
-            class="relative flex-shrink-0 cursor-pointer transition-all duration-300 border-2"
-            [class.border-aldy-medium]="isThumbActive(i)"
-            [class.border-transparent]="!isThumbActive(i)"
-            [style.width]="'var(--thumb-width)'"
-            [style.height]="'var(--thumb-height)'"
+            #thumbContainer
+            class="flex gap-2 overflow-x-auto pb-2 select-none"
+            style="
+              scrollbar-width: none;
+              -ms-overflow-style: none;
+              -webkit-overflow-scrolling: touch;
+              cursor: grab;
+              overflow-x: scroll;
+            "
+            (mousedown)="onThumbMouseDown($event)"
+            (touchstart)="onThumbTouchStart($event)"
+            (touchmove)="onThumbTouchMove($event)"
+            (touchend)="onThumbTouchEnd($event)"
+            (scroll)="onThumbScroll($event)"
           >
-            <img
-              [src]="image.thumb || image.src"
-              class="w-full h-full cursor-plus object-cover"
-              alt="Thumbnail"
-            />
             <div
-              *ngIf="isVideo(image.src)"
-              class="absolute inset-0 flex items-center justify-center bg-black/20"
+              *ngFor="let image of images; let i = index"
+              (click)="onThumbClick(i)"
+              class="relative flex-shrink-0 cursor-pointer transition-colors duration-300 border-2"
+              [class.border-aldy-medium]="isThumbActive(i)"
+              [class.border-transparent]="!isThumbActive(i)"
+              style="width: calc(25% - 6px); aspect-ratio: 1 / 1;"
             >
-              <lucide-icon name="play" color="white" [size]="20"></lucide-icon>
+              <img [src]="image.thumb || image.src" alt="Thumbnail" class="w-full h-full object-cover pointer-events-none" />
+              <div *ngIf="isVideo(image.src)" class="absolute inset-0 flex items-center justify-center bg-black/20">
+                <lucide-icon name="play" color="white" [size]="18"></lucide-icon>
+              </div>
             </div>
           </div>
+
+          <!-- Indicadores de página -->
+          <div class="flex justify-center gap-1.5 mt-2">
+            <button
+              *ngFor="let page of getPages(); let i = index"
+              type="button"
+              (click)="goToPage(i)"
+              class="h-1 rounded-sm transition-all duration-300 focus:outline-none"
+              [ngClass]="{
+                'w-6 bg-aldy-medium': i === currentPageIndex,
+                'w-2 bg-gray-300 hover:bg-gray-400': i !== currentPageIndex
+              }"
+              [attr.aria-label]="'Página ' + (i + 1)"
+            ></button>
+          </div>
         </div>
+
       </div>
     </div>
   </div>
 </div>
+
+<!-- Lightbox: guard en openLightbox() bloquea mobile -->
 <app-gen-lightbox-vanilla
   [isOpen]="lightboxOpen"
   [items]="lightboxItems"
   [startIndex]="currentSlideIndex"
   (closed)="onLightboxClose()"
   (indexChange)="onLightboxIndexChange($event)"
->
-</app-gen-lightbox-vanilla>
+></app-gen-lightbox-vanilla>

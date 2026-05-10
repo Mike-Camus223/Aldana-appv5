@@ -113,16 +113,16 @@ export class GenLightboxVanillaComponent implements OnChanges, AfterViewInit {
     if (video.paused) {
       video.play();
       this.videoPaused = false;
-      this.showVideoFeedback('pause');
+      this.showVideoFeedback('play');
       return;
     }
 
     video.pause();
     this.videoPaused = true;
-    this.showVideoFeedback('play');
+    this.showVideoFeedback('pause');
   }
 
-  private showVideoFeedback(icon: 'pause' | 'play'): void {
+  private showVideoFeedback(icon: 'play' | 'pause'): void {
     if (this.videoOverlayTimeout) {
       clearTimeout(this.videoOverlayTimeout);
     }

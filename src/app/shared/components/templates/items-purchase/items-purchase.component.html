@@ -1,7 +1,7 @@
-<div *ngIf="product" class="h-[72px] lg:h-[88px]"></div>
-<div *ngIf="product" class="px-4 sm:px-6 lg:px-12 xl:px-16 2xl:px-24 py-4 sm:py-8 w-full">
+<div *ngIf="product" class="h-[72px] md:h-[88px]"></div>
+<div *ngIf="product" class="px-4 sm:px-6 md:px-12 xl:px-16 2xl:px-24 py-4 sm:py-8 w-full">
   <div class="max-w-screen-3xl mx-auto">
-    <div class="grid lg:grid-cols-2 gap-4 sm:gap-0 text-gray-800">
+    <div class="grid md:grid-cols-2 gap-4 sm:gap-0 text-gray-800">
       <div class="relative overflow-hidden">
         <app-fancy-carousel [images]="carouselImages" [id]="'carousel-' + product.id"></app-fancy-carousel>
       </div>
@@ -52,7 +52,7 @@
           <button
             class="flex-1 cursor-pointer flex items-center justify-center gap-3 bg-aldy-medium border border-aldy-medium text-white uppercase  py-3 px-4 text-center transition-colors hover:bg-aldy-medium-2 hover:border-aldy-medium-2"
             (click)="addToCartItems()">
-            <span class="tracking-wider NewAldyFontType4 text-sm lg:text-sm font-light">Añadir al carrito</span>
+            <span class="tracking-wider NewAldyFontType4 text-sm md:text-sm font-light">Añadir al carrito</span>
             <lucide-icon [size]="20" [strokeWidth]="1.5" name="shopping-bag"
               class="text-white relative -top-[0.7px]"></lucide-icon>
           </button>
@@ -118,7 +118,7 @@
     </div>
   </div>
 </div>
-<div class="px-4 sm:px-6 lg:px-12 xl:px-16 2xl:px-24 py-8 sm:py-12 w-full" *ngIf="relatedProducts.length > 0">
+<div class="px-4 sm:px-6 md:px-12 xl:px-16 2xl:px-24 py-8 sm:py-12 w-full" *ngIf="relatedProducts.length > 0">
   <div class="max-w-screen-xl mx-auto">
     <app-product-carousel [products]="relatedProducts" [carouselTitle]="'Puede que también te guste'" [maxProducts]="6"
       [visibleProducts]="3">
