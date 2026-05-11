@@ -37,8 +37,6 @@
   <div class="overflow-hidden"
     [ngClass]="disableTransition ? 'transition-none' : 'transition-all duration-300 ease-in-out'"
     [style.maxHeight]="disableTransition && isOpen() ? 'none' : contentHeight + 'px'" #contentWrapper>
-    <div class="px-3">
-      <ng-content></ng-content>
-    </div>
+    <ng-content></ng-content>
   </div>
 </div>

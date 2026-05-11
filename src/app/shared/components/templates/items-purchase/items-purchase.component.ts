@@ -14,7 +14,7 @@ import { NotificationService } from '../../../../core/services/notification.serv
 import { FormsModule } from '@angular/forms';
 import { ProductUtils } from '../../../utils/dataEx/products-utils';
 import { AcordiongenericComponent } from '../../generic/acordiongeneric/acordiongeneric.component';
-import { LUCIDE_ICONS, LucideAngularModule, LucideIconProvider, ShoppingBag } from 'lucide-angular';
+import { LUCIDE_ICONS, LucideAngularModule, LucideIconProvider, Package, ShoppingBag } from 'lucide-angular';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -37,7 +37,7 @@ import { Subscription } from 'rxjs';
     {
       provide: LUCIDE_ICONS,
       multi: true,
-      useValue: new LucideIconProvider({ShoppingBag})
+      useValue: new LucideIconProvider({ShoppingBag,Package})
     }
   ]
 })
