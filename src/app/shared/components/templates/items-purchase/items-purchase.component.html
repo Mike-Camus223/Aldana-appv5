@@ -1,19 +1,19 @@
 <div *ngIf="product" class="h-[72px] md:h-[88px]"></div>
-<div *ngIf="product" class="px-4 sm:px-6 md:px-12 xl:px-16 2xl:px-24 py-4 sm:py-8 w-full">
+<div *ngIf="product" class="px-5 md:px-6 md:px-12 xl:px-16 2xl:px-24 py-5 md:py-8 w-full">
   <div class="max-w-screen-3xl mx-auto">
-    <div class="grid md:grid-cols-2 gap-4 sm:gap-0 text-gray-800">
+    <div class="grid md:grid-cols-2 gap-5 md:gap-0 text-gray-800">
       <div class="relative overflow-hidden">
         <app-fancy-carousel [images]="carouselImages" [id]="'carousel-' + product.id"></app-fancy-carousel>
       </div>
-      <div class="relative max-w-[550px] ml-0 sm:ml-13 space-y-5">
-        <h1 class="text-md sm:text-3xl uppercase NewAldyTitle text-aldy-green-gray-bold ">{{ product.name }}</h1>
-        <p class="text-sm sm:text-sm font-light NewAldyFontType4 text-aldy-green-gray mt-1">
+      <div class="relative max-w-full md:max-w-[550px] ml-0 md:ml-13 space-y-5">
+        <h1 class="text-xl md:text-2xl md:text-3xl uppercase NewAldyTitle text-aldy-green-gray-bold ">{{ product.name }}</h1>
+        <p class="text-sm md:text-sm font-light NewAldyFontType4 text-aldy-green-gray mt-1">
           {{ product.price | currency: 'ARS':'symbol-narrow':'1.2-2':'es-AR' }}
         </p>
 
         <div class="flex items-center gap-3">
           <span
-            class="text-sm sm:text-sm font-light text-aldy-green-gray NewAldyFontType4 tracking-wider me-3">Colores:</span>
+            class="text-sm md:text-sm font-light text-aldy-green-gray NewAldyFontType4 tracking-wider me-3">Colores:</span>
           <button *ngFor="let variant of product.variants" (click)="selectColor(variant.color_name)"
             [ngStyle]="{ backgroundColor: variant.color_hex }" class="w-4 h-4 rounded-sm transition-all border"
             [ngClass]="{
@@ -25,10 +25,10 @@
 
         <div class="flex items-center flex-wrap gap-2">
           <span
-            class="text-sm sm:text-sm font-light text-aldy-green-gray NewAldyFontType4 tracking-wider me-3">Tallas:</span>
+            class="text-sm md:text-sm font-light text-aldy-green-gray NewAldyFontType4 tracking-wider me-3">Tallas:</span>
           <ng-container *ngFor="let size of product.sizes">
             <button (click)="selectSize(size)"
-              class="text-sm sm:text-sm font-light px-3 py-1 border-b-2 transition-all cursor-pointer" [ngClass]="{
+              class="text-sm md:text-sm font-light px-3 py-1 border-b-2 transition-all cursor-pointer" [ngClass]="{
                 'border-aldy-medium text-aldy-medium font-semibold': selectedSize === size,
                 'border-transparent text-aldy-green-gray tracking-wider hover:border-gray-400': selectedSize !== size
               }">
@@ -118,7 +118,7 @@
     </div>
   </div>
 </div>
-<div class="px-4 sm:px-6 md:px-12 xl:px-16 2xl:px-24 py-8 sm:py-12 w-full" *ngIf="relatedProducts.length > 0">
+<div class="px-4 md:px-6 md:px-12 xl:px-16 2xl:px-24 py-8 md:py-12 w-full" *ngIf="relatedProducts.length > 0">
   <div class="max-w-screen-xl mx-auto">
     <app-product-carousel [products]="relatedProducts" [carouselTitle]="'Puede que también te guste'" [maxProducts]="6"
       [visibleProducts]="3">
