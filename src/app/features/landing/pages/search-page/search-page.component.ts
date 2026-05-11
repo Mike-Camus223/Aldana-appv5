@@ -35,6 +35,7 @@ import { AldyCheckboxV1Directive } from '../../../../shared/utils/directives/ald
 import { trigger, transition, style, animate, state, query, stagger } from '@angular/animations';
 import { ProductUtils } from '../../../../shared/utils/dataEx/products-utils';
 import { LinkHoverUnderlineDirective } from '../../../../shared/utils/directives/link-hover-underline.directive';
+import { BridesProductsService } from '../../../../core/services/data-access/brides-products/brides-products.service';
 import { JournalService } from '../../../../core/services/data-access/journal/journal.service';
 import { JournalPostListRow } from '../../../../core/services/data-access/journal/journal.models';
 
@@ -292,6 +293,7 @@ export class SearchPageComponent implements OnInit, OnDestroy {
 
   constructor(
     private supabase: SupabaseService,
+    private bridesProductsService: BridesProductsService,
     private router: Router,
     private route: ActivatedRoute,
     private authService: AuthService,
@@ -461,24 +463,38 @@ export class SearchPageComponent implements OnInit, OnDestroy {
     this.displayedSearchTerm = this.searchTerm;
     
     const delayMin = new Promise<void>(resolve => setTimeout(resolve, 1000));
-    const { data, error } = await this.supabase.getProducts();
-    await delayMin;
+    
+    // Fetch from both normal and bridal modules
+    const [normalRes, bridalRes] = await Promise.all([
+      this.supabase.getProducts(),
+      this.bridesProductsService.getProducts(),
+      delayMin
+    ]);
 
-    if (error) {
-      console.error('Error al obtener productos', error);
-      this.loading = false;
-      return;
+    if (normalRes.error) {
+      console.error('Error al obtener productos normales', normalRes.error);
+    }
+    if ((bridalRes as any)?.error) {
+      console.error('Error al obtener productos de novias', (bridalRes as any).error);
     }
 
-    let rawProducts: any[] = [];
+    const normalData = normalRes.data || [];
+    const bridalData = (bridalRes as any)?.data || [];
+
+    const mappedNormal = ProductUtils.mapProducts(Array.isArray(normalData) ? normalData : [normalData], false);
+    const mappedBridal = ProductUtils.mapProducts(Array.isArray(bridalData) ? bridalData : [bridalData], true);
+
+    const allProducts = [...mappedNormal, ...mappedBridal];
+
+    let rawProducts: Product[] = [];
     if (this.searchMode === 'filters') {
-      rawProducts = (data as any[]) || [];
+      rawProducts = allProducts;
     } else {
       const search = this.searchTerm.toLowerCase();
-      rawProducts = (data as any[]).filter(p =>
+      rawProducts = allProducts.filter(p =>
         p.name?.toLowerCase().includes(search) ||
-        p.categories?.name?.toLowerCase().includes(search) ||
-        p.subcategories?.name?.toLowerCase().includes(search)
+        p.category?.name?.toLowerCase().includes(search) ||
+        p.subcategory?.name?.toLowerCase().includes(search)
       );
 
       try {
@@ -492,7 +508,7 @@ export class SearchPageComponent implements OnInit, OnDestroy {
       }
     }
 
-    this.originalProducts = ProductUtils.mapProducts(rawProducts);
+    this.originalProducts = rawProducts;
     
     // Reset pagination when new search results are loaded
     this.currentPage = 1;
@@ -1060,6 +1076,7 @@ export class SearchPageComponent implements OnInit, OnDestroy {
   }
   
   private getProductSizes(p: Product): string[] {
+      if (p.isBridal) return [];
       const sizes = new Set<string>();
       const anyP: any = p as any;
       
@@ -1081,6 +1098,7 @@ export class SearchPageComponent implements OnInit, OnDestroy {
   }
 
   private productHasSize(p: Product, size: string): boolean {
+    if (p.isBridal) return false;
     const sUp = String(size).toUpperCase();
     const anyP: any = p as any;
     if (typeof anyP.size === 'string' && String(anyP.size).toUpperCase() === sUp) return true;

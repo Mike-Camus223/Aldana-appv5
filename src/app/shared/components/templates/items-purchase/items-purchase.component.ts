@@ -47,7 +47,6 @@ export class ItemsPurchaseComponent implements OnInit, OnDestroy {
   selectedSize: string | null = null;
   carouselImages: { src: string; thumb: string }[] = [];
   quantitySelected: number = 1;
-  openAccordion: string | null = null;
   relatedProducts: Product[] = [];
   private initialColorParam: string | null = null;
   private initialSizeParam: string | null = null;
@@ -67,7 +66,6 @@ export class ItemsPurchaseComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    this.openAccordion = 'descripcion';
     const id = this.route.snapshot.paramMap.get('slug');
     const qp = this.route.snapshot.queryParamMap;
     this.initialColorParam = qp.get('color');
@@ -109,7 +107,7 @@ export class ItemsPurchaseComponent implements OnInit, OnDestroy {
         }
       }
       const tallaParam = qpm.get('talla');
-      if (tallaParam) {
+      if (tallaParam && !this.product.isBridal) {
         const targetSizeLc = tallaParam.toLowerCase();
         const sizes = this.product.sizes || [];
         const matchSize = sizes.find(s => String(s).toLowerCase() === targetSizeLc);
@@ -146,7 +144,7 @@ export class ItemsPurchaseComponent implements OnInit, OnDestroy {
     const normalRes = await this.supabaseService.getProducts(slug);
     if (!normalRes.error && normalRes.data) {
       const productArray = Array.isArray(normalRes.data) ? normalRes.data : [normalRes.data];
-      const products = ProductUtils.mapProducts(productArray);
+      const products = ProductUtils.mapProducts(productArray, false);
       mappedProduct = products[0] || null;
     }
 
@@ -156,7 +154,7 @@ export class ItemsPurchaseComponent implements OnInit, OnDestroy {
       const bridalData = bridalRes?.data;
       if (!bridalRes?.error && bridalData) {
         const productArray = Array.isArray(bridalData) ? bridalData : [bridalData];
-        const products = ProductUtils.mapProducts(productArray);
+        const products = ProductUtils.mapProducts(productArray, true);
         mappedProduct = products[0] || null;
       }
     }
@@ -186,7 +184,7 @@ export class ItemsPurchaseComponent implements OnInit, OnDestroy {
           this.selectColor(this.product.variants[0].color_name);
         }
         // Intentar aplicar talla desde query param usando valor real (sin uppercasing)
-        if (this.initialSizeParam) {
+        if (this.initialSizeParam && !this.product.isBridal) {
           const targetSizeLc = String(this.initialSizeParam).toLowerCase();
           const sizes = this.product.sizes || [];
           const matchSize = sizes.find(s => String(s).toLowerCase() === targetSizeLc);
@@ -237,12 +235,8 @@ export class ItemsPurchaseComponent implements OnInit, OnDestroy {
     }
   }
 
-  toggleAccordion(value: string) {
-    this.openAccordion = this.openAccordion === value ? null : value;
-  }
-
   addToCartItems() {
-    if (!this.product || !this.selectedVariant || !this.selectedSize) {
+    if (!this.product || !this.selectedVariant || (!this.product.isBridal && !this.selectedSize)) {
       this.notificationService.showWarn(
         'Talla requerida',
         'Por favor, seleccione una talla antes de añadir al carrito.'
@@ -260,14 +254,19 @@ export class ItemsPurchaseComponent implements OnInit, OnDestroy {
     const shopImage = (variantShopMedia.length > 0) ? variantShopMedia[0].url : 
                       (productShopMedia.length > 0) ? productShopMedia[0].url : null;
 
+    const sizeValue = this.product.isBridal ? 'Unique' : this.selectedSize;
+    const cartItemId = this.product.isBridal 
+      ? `${this.product.id}-${this.selectedVariant.color_name}`
+      : `${this.product.id}-${this.selectedVariant.color_name}-${this.selectedSize}`;
+
     const cartItem: CartItem = {
-      id: `${this.product.id}-${this.selectedVariant.color_name}-${this.selectedSize}`,
+      id: cartItemId,
       name: this.product.name,
       price: this.product.price,
       image: shopImage || this.product.main_image,
       variantMainImage: variantImage || shopImage || undefined,
       color: this.selectedVariant.color_name,
-      size: this.selectedSize,
+      size: sizeValue || '',
       quantity: this.quantitySelected
     };
 
@@ -331,18 +330,13 @@ export class ItemsPurchaseComponent implements OnInit, OnDestroy {
 
   private updateCartQuantityInCart(): void {
     if (!this.product || !this.selectedVariant) return;
-    const basePrefix = `${this.product.id}-${this.selectedVariant.color_name}-`;
+    const cartItemId = this.product.isBridal 
+      ? `${this.product.id}-${this.selectedVariant.color_name}`
+      : `${this.product.id}-${this.selectedVariant.color_name}-${this.selectedSize}`;
+      
     const cart = this.cartService.getCart();
-    if (this.selectedSize) {
-      const id = `${basePrefix}${this.selectedSize}`;
-      if (cart.some(i => i.id === id)) {
-        this.cartService.setQuantity(id, this.quantitySelected);
-      }
-      return;
-    }
-    const matches = cart.filter(i => i.id.startsWith(basePrefix));
-    if (matches.length === 1) {
-      this.cartService.setQuantity(matches[0].id, this.quantitySelected);
+    if (cart.some(i => i.id === cartItemId)) {
+      this.cartService.setQuantity(cartItemId, this.quantitySelected);
     }
   }
 
@@ -350,7 +344,7 @@ export class ItemsPurchaseComponent implements OnInit, OnDestroy {
     if (!this.product) return;
 
     try {
-      let data: any = null;
+      let data: Product[] = [];
       let error: any = null;
 
       // Intentar obtener productos relacionados por categoría en ambos servicios (en paralelo)
@@ -360,20 +354,18 @@ export class ItemsPurchaseComponent implements OnInit, OnDestroy {
           this.bridesProductsService.getProductsByCategory(String(this.product.category_id), 12)
         ]);
 
-        const combinedData = [
-          ...(resNormal.data || []),
-          ...(resBridal.data || [])
-        ];
+        const productsNormal = ProductUtils.mapProducts(resNormal.data || [], false);
+        const productsBridal = ProductUtils.mapProducts(resBridal.data || [], true);
         
-        data = combinedData;
+        data = [...productsNormal, ...productsBridal];
       }
 
-      if (!data || data.length === 0) return;
+      if (data.length === 0) return;
 
-      const allProducts = ProductUtils.mapProducts(Array.isArray(data) ? data : [data]);
+      const allProducts = data;
       
       // Filter related products
-      const related = allProducts.filter(p => p.id !== this.product!.id);
+      const related = allProducts.filter((p: Product) => p.id !== this.product!.id);
 
       this.relatedProducts = related.slice(0, 6);
     } catch (error) {

@@ -125,6 +125,9 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
   categories: any[] = [];
   pretAPorterCategories: any[] = [];
   noviasCategories: any[] = [];
+  get isBridalView(): boolean {
+    return !!this.selectedBridesCollectionId || (this.activeCategoryScope?.startsWith('bridal') ?? false);
+  }
 
   constructor(
     private supabaseService: SupabaseService,
@@ -207,7 +210,7 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
           }
 
           if (Array.isArray(data)) {
-            this.allProducts = ProductUtils.mapProducts(data);
+            this.allProducts = ProductUtils.mapProducts(data, false);
             this.allProducts.forEach(p => {
               this.selectedColors[p.id] = p.variants[0]?.color_name || '';
             });
@@ -404,6 +407,7 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
   }
 
   private isBridalProduct(p: Product): boolean {
+    if (p.isBridal) return true;
     const source = (p as any)?.source_module;
     if (source === 'bridal') return true;
     const catName = ProductUtils.normalize(typeof p.category === 'string' ? p.category : (p.category?.name ?? ''));
@@ -681,6 +685,7 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
   }
 
   private productHasSize(p: Product, size: string): boolean {
+    if (p.isBridal) return false;
     const sUp = String(size).toUpperCase();
     const anyP: any = p as any;
     // Producto: campo único o array
@@ -980,7 +985,7 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
         }
 
         if (Array.isArray(bridesData)) {
-          const mappedBrides = ProductUtils.mapProducts(bridesData);
+          const mappedBrides = ProductUtils.mapProducts(bridesData, true);
           const bridesProducts = mappedBrides.map(p => ({
             ...p,
             source_module: 'bridal'

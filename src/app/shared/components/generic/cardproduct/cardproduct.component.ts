@@ -78,6 +78,16 @@ export class CardproductComponent implements OnInit, AfterViewInit, OnDestroy {
   private readonly zoomDuration = 0.75;
   private readonly staggerBase = 0.08;
 
+  get cardQueryParams(): any {
+    const params: any = {};
+    if (this.selectedColor) {
+      params.color = this.selectedColor;
+    }
+    if (this.selectedSize && !this.product.isBridal) {
+      params.talla = this.selectedSize;
+    }
+    return params;
+  }
 
   constructor(
     private favoritesService: FavoritesService,

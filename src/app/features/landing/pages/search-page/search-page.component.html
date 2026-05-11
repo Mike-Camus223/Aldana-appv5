@@ -304,7 +304,7 @@
               </app-acordiongeneric>
 
               <!-- Tamaños -->
-              <app-acordiongeneric [title]="'Tamaños'" [value]="'tamanos'" [selectedMultiple]="openAccordionsArray"
+              <app-acordiongeneric *ngIf="allowedSizes.length > 0" [title]="'Tamaños'" [value]="'tamanos'" [selectedMultiple]="openAccordionsArray"
                 (toggled)="onAccordionToggled($event)">
                 <div class="space-y-1">
                   <label *ngFor="let s of allowedSizes"
@@ -628,7 +628,7 @@
       </app-acordiongeneric>
 
       <!-- Tamaños -->
-      <app-acordiongeneric [title]="'Tamaños'" [value]="'tamanos'" [selectedMultiple]="openAccordionsArray"
+      <app-acordiongeneric *ngIf="allowedSizes.length > 0" [title]="'Tamaños'" [value]="'tamanos'" [selectedMultiple]="openAccordionsArray"
         (toggled)="onAccordionToggled($event)">
         <div class="space-y-1">
           <label *ngFor="let s of allowedSizes"

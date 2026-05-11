@@ -24,7 +24,7 @@
 
         </div>
 
-        <div class="flex items-center flex-wrap gap-2">
+        <div *ngIf="!product.isBridal" class="flex items-center flex-wrap gap-2">
           <span
             class="text-sm md:text-sm font-light text-aldy-green-gray NewAldyFontType4 tracking-wider me-3">Tallas:</span>
           <ng-container *ngFor="let size of product.sizes">
@@ -59,8 +59,7 @@
           </button>
         </div>
 
-        <app-acordiongeneric [title]="'Descripción'" [value]="'descripcion'" [selected]="openAccordion"
-          (toggled)="toggleAccordion($event)">
+        <app-acordiongeneric [title]="'Descripción'" [value]="'descripcion'" [initialOpen]="true">
           <div class="space-y-1">
             <p
               class="flex items-center gap-2 pt-2 pb-6 px-3 text-sm sm:text-base text-aldy-green-gray-bold leading-5 italic tracking-wide w-full">
@@ -69,8 +68,7 @@
           </div>
         </app-acordiongeneric>
 
-        <app-acordiongeneric [title]="'Detalles del producto'" [value]="'detalles'" [selected]="openAccordion"
-          (toggled)="toggleAccordion($event)">
+        <app-acordiongeneric [title]="'Detalles del producto'" [value]="'detalles'">
           <div class="space-y-1">
             <p
               class="flex items-center gap-2 pt-2 pb-6 px-3 text-sm sm:text-base text-aldy-green-gray-bold leading-5 tracking-wide w-full">
@@ -79,19 +77,7 @@
           </div>
         </app-acordiongeneric>
 
-        <app-acordiongeneric [title]="'Talle y ajustes'" [value]="'talla'" [selected]="openAccordion"
-          (toggled)="toggleAccordion($event)">
-          <div class="space-y-1">
-            <p
-              class="flex items-center gap-2 pt-2 pb-6 px-3 text-sm sm:text-base text-aldy-green-gray-bold leading-5 tracking-wide w-full">
-              {{ product.details }}
-            </p>
-          </div>
-        </app-acordiongeneric>
-
-
-        <app-acordiongeneric [title]="'Fabricación'" [value]="'fabricacion'" [selected]="openAccordion"
-          (toggled)="toggleAccordion($event)">
+        <app-acordiongeneric *ngIf="!product.isBridal" [title]="'Talle y ajustes'" [value]="'talla'">
           <div class="space-y-1">
             <p
               class="flex items-center gap-2 pt-2 pb-6 px-3 text-sm sm:text-base text-aldy-green-gray-bold leading-5 tracking-wide w-full">
@@ -101,8 +87,17 @@
         </app-acordiongeneric>
 
 
-        <app-acordiongeneric [title]="'Citas y pruebas de vestuario'" [value]="'citas'" [selected]="openAccordion"
-          (toggled)="toggleAccordion($event)">
+        <app-acordiongeneric [title]="'Fabricación'" [value]="'fabricacion'">
+          <div class="space-y-1">
+            <p
+              class="flex items-center gap-2 pt-2 pb-6 px-3 text-sm sm:text-base text-aldy-green-gray-bold leading-5 tracking-wide w-full">
+              {{ product.details }}
+            </p>
+          </div>
+        </app-acordiongeneric>
+
+
+        <app-acordiongeneric [title]="'Citas y pruebas de vestuario'" [value]="'citas'">
           <div class="space-y-1">
             <p class="pt-2 pb-6 px-3 text-sm sm:text-base text-aldy-green-gray-bold leading-5 tracking-wide w-full">
               ¿Prefieres probarte esta prenda en persona? Estaremos encantados de ayudarte.
@@ -120,8 +115,7 @@
         </app-acordiongeneric>
 
 
-        <app-acordiongeneric [title]="'Tabla de medidas'" [value]="'envio'" [selected]="openAccordion"
-          (toggled)="toggleAccordion($event)">
+        <app-acordiongeneric *ngIf="!product.isBridal" [title]="'Tabla de medidas'" [value]="'envio'">
           <div class="space-y-1">
             <p
               class="flex items-center gap-2 pt-2 pb-6 px-3 text-sm sm:text-base text-aldy-green-gray-bold leading-5 tracking-wide w-full">
@@ -129,38 +123,38 @@
             </p>
           </div>
         </app-acordiongeneric>
-<div class="w-full bg-[#f3ece5] overflow-hidden p-4">
-  <div class="flex items-start gap-3">
-    <lucide-icon
-      class="text-aldy-green-gray-bold mt-1"
-      [size]="24"
-      [strokeWidth]="1.5"
-      name="package"
-    ></lucide-icon>
+        <!-- ngIf="!product.isBridal" en caso de no necesitar esto en novias se usa este if -->
+        <div class="w-full bg-[#f3ece5] overflow-hidden p-4">
+          <div class="flex items-start gap-3">
+            <lucide-icon class="text-aldy-green-gray-bold mt-1" [size]="24" [strokeWidth]="1.5"
+              name="package"></lucide-icon>
 
-    <p class="text-xs text-aldy-green-gray-bold leading-4 tracking-wide">
-      Todos nuestros vestidos de novia se confeccionan a mano y bajo pedido. Cada pieza tarda entre 3 y 6 meses* en crearse. Una vez realizado el pedido, nuestro equipo se pondrá en contacto contigo vía WhatsApp para confirmar la talla, los detalles y los plazos de entrega, y así finalizar tu pedido.
+            <p class="text-xs text-aldy-green-gray-bold leading-4 tracking-wide">
+              Todos nuestros vestidos de novia se confeccionan a mano y bajo pedido. Cada pieza tarda entre 3 y 6 meses*
+              en crearse. Una vez realizado el pedido, nuestro equipo se pondrá en contacto contigo vía WhatsApp para
+              confirmar la talla, los detalles y los plazos de entrega, y así finalizar tu pedido.
 
-      <span class="block leading-4 mt-1">
-        Si tu boda es en menos de 3 meses, puedes escribirnos por WhatsApp para evaluar opciones de producción urgente.
-      </span>
+              <span class="block leading-4 mt-1">
+                Si tu boda es en menos de 3 meses, puedes escribirnos por WhatsApp para evaluar opciones de producción
+                urgente.
+              </span>
 
-      <span class="block leading-4 mt-1">
-        Los tiempos pueden variar según el diseño y la carga de producción.
-      </span>
-    </p>
-  </div>
-</div>
+              <span class="block leading-4 mt-1">
+                Los tiempos pueden variar según el diseño y la carga de producción.
+              </span>
+            </p>
+          </div>
+        </div>
 
 
 
+      </div>
     </div>
   </div>
-</div>
-<div class="px-4 md:px-6 md:px-12 xl:px-16 2xl:px-24 py-8 md:py-12 w-full" *ngIf="relatedProducts.length > 0">
-  <div class="max-w-screen-xl mx-auto">
-    <app-product-carousel [products]="relatedProducts" [carouselTitle]="'Puede que también te guste'" [maxProducts]="6"
-      [visibleProducts]="3">
-    </app-product-carousel>
+  <div class="px-4 md:px-6 md:px-12 xl:px-16 2xl:px-24 py-8 md:py-12 w-full" *ngIf="relatedProducts.length > 0">
+    <div class="max-w-screen-xl mx-auto">
+      <app-product-carousel [products]="relatedProducts" [carouselTitle]="'Puede que también te guste'"
+        [maxProducts]="6" [visibleProducts]="3">
+      </app-product-carousel>
+    </div>
   </div>
-</div>

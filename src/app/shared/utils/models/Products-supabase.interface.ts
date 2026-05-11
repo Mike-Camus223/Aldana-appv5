@@ -60,5 +60,6 @@ export interface Product {
   subcategory?: Subcategory;
   wishlisted?: boolean;
   collections?: Collection[];
+  isBridal?: boolean;
 }
 
