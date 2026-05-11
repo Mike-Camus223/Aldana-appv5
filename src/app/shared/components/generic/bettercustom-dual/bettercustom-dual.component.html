@@ -1,18 +1,26 @@
-<div class="flex flex-col md:flex-row w-full mx-auto"  [ngClass]="[maxwidthandpadding, height]">
-  <div #parallaxContainer
-  class="overflow-hidden flex-shrink-0 w-full relative"
-  [ngClass]="getImageOrderClasses()"
-  [ngStyle]="getCombinedStyle(getImageStyle())"
-  [style.aspect-ratio]="useAspectRatio ? aspectRatio : null">
-        <img 
-        appCardInitAnimation="up"
-        [ngClass]="[imageStyles]"
-        *ngIf="mediaType === 'image'"
-         #parallaxImage
-         [src]="imageUrl"
-         alt="image"
-         class="w-full h-full"/>
-        <div *ngIf="mediaType === 'video'" class="w-full h-full">
+<div
+  class="dual-grid"
+  [ngClass]="maxwidthandpadding"
+  [ngStyle]="gridStyle"
+>
+
+  <!-- ── BLOQUE MEDIA ────────────────────────────────────────── -->
+  <div class="dual-media" [ngClass]="mediaOrderClass">
+
+    <img
+      *ngIf="mediaType === 'image'"
+      appCardInitAnimation="up"
+      #parallaxImage
+      [src]="imageUrl"
+      alt="image"
+      [ngClass]="imageStyles"
+      class="absolute inset-0 w-full h-full object-cover"
+    />
+
+    <div
+      *ngIf="mediaType === 'video'"
+      class="absolute inset-0 w-full h-full"
+    >
       <app-video
         [src]="videoSrc"
         [muted]="videoMuted"
@@ -20,40 +28,72 @@
         [showControls]="videoShowControls"
         [gradientOverlay]="videoGradientOverlay"
         [objectFit]="videoObjectFit"
-        [height]="'h-full'"
-        [width]="'w-full'"
+        height="h-full"
+        width="w-full"
       />
     </div>
+
   </div>
-  <div class="w-full flex flex-col justify-center items-center text-center md:text-left"
-       [ngClass]="[textContainerClass, getTextOrderClasses()]"
-       [ngStyle]="getCombinedStyle(getTextStyle())">
-    
-    <div class="px-2 py-10 md:py-0 md:px-10 lg:px-20 w-full">
-      <div [ngClass]="[titleAndContentClass]" class="flex w-full flex-col items-start">
-        <h2 appWordReveal  *ngIf="CommentsTestimonial"
-            class="text-4xl font-bold text-aldy-medium">❛❛</h2>
-        <h2 appWordReveal [ngClass]="[SeparationTitle,StylesTitle]"  class="text-4xl NewAldyTitle font-light w-full text-aldy-green-gray-bold">{{ title }}</h2>
-        <div *ngIf="divider" class="border-t-1 border-aldy-medium my-3 w-16"></div>
+
+  <!-- ── BLOQUE TEXTO ─────────────────────────────────────────── -->
+  <div class="dual-text" [ngClass]="[textContainerClass, textOrderClass]">
+    <div class="dual-text-inner">
+
+      <div class="flex w-full flex-col items-center" [ngClass]="titleAndContentClass">
+        <h2
+          *ngIf="CommentsTestimonial"
+          appWordReveal
+          class="text-3xl font-bold text-aldy-green-gray-bold"
+        >
+          ❛❛
+        </h2>
+
+        <h2
+          appWordReveal
+          [ngClass]="[SeparationTitle, StylesTitle]"
+          class="text-3xl NewAldyTitle font-light w-full text-aldy-green-gray-bold"
+        >
+          {{ title }}
+        </h2>
+
+        <div *ngIf="divider" class="border-t border-aldy-medium my-3 w-16 mx-auto"></div>
       </div>
-      
-      <ng-container *ngFor="let sub of subtitles">
-        <h3 class="text-xl font-semibold text-aldy-green-gray-bold">{{ sub }}</h3>
-      </ng-container>
-      
-      <p appFadeUpLetter [ngClass]="[textcontetclass,StylesText]"
-         class="text-aldy-green-gray leading-8 tracking-wider text-base NewAldyFontType4 whitespace-pre-wrap break-words max-w-2xl">
+
+      <h3
+        *ngFor="let sub of subtitles"
+        class="text-xl font-semibold text-aldy-green-gray-bold"
+      >
+        {{ sub }}
+      </h3>
+
+      <p
+        appFadeUpLetter
+        [ngClass]="[textcontetclass, StylesText]"
+        class="text-sm sm:text-base text-aldy-green-gray-bold leading-relaxed NewAldyFontType4 tracking-wider max-w-2xl mx-auto"
+      >
         <ng-container *ngIf="CommentsTestimonial; else plainText">
           "{{ contentTestimonial }}"
         </ng-container>
         <ng-template #plainText>{{ contentTestimonial }}</ng-template>
       </p>
-      
-      <p [ngClass]="[StylesText]" class="text-aldy-green-gray leading-8 tracking-wider text-base NewAldyFontType4">{{ content }}</p>
-      
-      <p *ngIf="extraContent" [ngClass]="[textextracontetclass]" class="text-sm text-gray-500 mt-4">
+
+      <p
+        *ngIf="content"
+        [ngClass]="StylesText"
+        class="text-sm sm:text-base text-aldy-green-gray-bold leading-relaxed NewAldyFontType4 tracking-wider max-w-2xl mx-auto"
+      >
+        {{ content }}
+      </p>
+
+      <p
+        *ngIf="extraContent"
+        [ngClass]="textextracontetclass"
+        class="mt-4 text-sm sm:text-base text-aldy-green-gray-bold leading-relaxed NewAldyFontType4 tracking-wider max-w-2xl mx-auto"
+      >
         {{ extraContent }}
       </p>
+
     </div>
   </div>
+
 </div>

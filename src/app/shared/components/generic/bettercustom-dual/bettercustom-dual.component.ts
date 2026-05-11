@@ -23,6 +23,7 @@ import { CardInitAnimationDirective } from '../../../utils/directives/card-init-
   standalone: true,
   imports: [CommonModule, WordRevealDirective, FadeUpLetterDirective, VideoComponent, CardInitAnimationDirective],
   templateUrl: './bettercustom-dual.component.html',
+  styleUrls: ['./bettercustom-dual.component.css'],
 })
 export class BettercustomDualComponent implements AfterViewInit, OnDestroy {
   @Input() mediaType: 'image' | 'video' = 'image';
@@ -35,62 +36,54 @@ export class BettercustomDualComponent implements AfterViewInit, OnDestroy {
   @Input() videoObjectFit = 'object-cover';
   @Input() CommentsTestimonial = false;
   @Input() title = '';
-  @Input() SeparationTitle: string = '';
-  @Input() StylesText: string = '';
-  @Input() StylesTitle: string = '';
+  @Input() SeparationTitle = '';
+  @Input() StylesText = '';
+  @Input() StylesTitle = '';
   @Input() subtitles: string[] = [];
   @Input() contentTestimonial = '';
   @Input() content = '';
   @Input() extraContent = '';
-  @Input() imageWidth = '60%';
-  @Input() textWidth = '40%';
+  @Input() gridCols = '3fr 2fr';
   @Input() textContainerClass = '';
-  @Input() mobileOrder: 'image-first' | 'text-first' = 'image-first';
   @Input() desktopOrder: 'image-first' | 'text-first' = 'image-first';
-  @Input() height: string = '200px';
-  @Input() mobileHeight: string = '';
-  @Input() maxwidthandpadding: string = '';
-  @Input() divider: boolean = false;
-  @Input() textcontetclass: string = '';
-  @Input() textextracontetclass: string = '';
-  @Input() titleAndContentClass: string = '';
-  @Input() aspectRatio: string = '3 / 2';
-  @Input() useAspectRatio: boolean = false;
-  @Input() imageStyles: string = '';
+  @Input() minHeight = '350px';
+  @Input() aspectRatio = '16/9';
+  @Input() useAspectRatio = false;
+  @Input() maxwidthandpadding = '';
+  @Input() divider = false;
+  @Input() textcontetclass = '';
+  @Input() textextracontetclass = '';
+  @Input() titleAndContentClass = '';
+  @Input() imageStyles = '';
 
   @ViewChild('parallaxImage', { static: false }) parallaxImage!: ElementRef<HTMLImageElement>;
-  @ViewChild('parallaxContainer', { static: false }) parallaxContainer!: ElementRef<HTMLDivElement>;
 
-  screenWidth = 0;
+  // Breakpoint custom: 990px
+  isMobile = false;
   private animSub?: Subscription;
 
   constructor(
-    private el: ElementRef,
-    private loaderService: LoaderService,
-    @Inject(PLATFORM_ID) private platformId: Object
+    @Inject(PLATFORM_ID) private platformId: Object,
+    private loaderService: LoaderService
   ) {
     if (isPlatformBrowser(this.platformId)) {
-      this.screenWidth = window.innerWidth;
+      this.isMobile = window.innerWidth < 990;
     }
   }
 
   @HostListener('window:resize')
   onResize() {
     if (isPlatformBrowser(this.platformId)) {
-      this.screenWidth = window.innerWidth;
+      this.isMobile = window.innerWidth < 990;
     }
   }
 
   ngAfterViewInit() {
     if (this.mediaType === 'video' && !this.videoSrc) {
-      console.warn('BettercustomDualComponent: mediaType is "video" pero falta videoSrc.');
+      console.warn('BettercustomDualComponent: mediaType es "video" pero falta videoSrc.');
     }
-
-    // Mantengo la suscripción al LoaderService si lo necesitás para otra lógica
     if (isPlatformBrowser(this.platformId)) {
-      this.animSub = this.loaderService.animationsEnabled$.subscribe(() => {
-        // No hay animaciones GSAP ahora
-      });
+      this.animSub = this.loaderService.animationsEnabled$.subscribe(() => {});
     }
   }
 
@@ -98,46 +91,24 @@ export class BettercustomDualComponent implements AfterViewInit, OnDestroy {
     this.animSub?.unsubscribe();
   }
 
-  getImageStyle() {
-    if (!isPlatformBrowser(this.platformId)) return {};
-    return this.screenWidth >= 768 ? { width: this.imageWidth } : {};
+  get gridStyle(): Record<string, string> {
+    if (this.isMobile) return {};
+    return {
+      gridTemplateColumns: this.gridCols,
+      minHeight: this.minHeight,
+    };
   }
 
-  getTextStyle() {
-    if (!isPlatformBrowser(this.platformId)) return {};
-    return this.screenWidth >= 768 ? { width: this.textWidth } : {};
+  // Mobile: media siempre order 1, desktop respeta desktopOrder
+  get mediaOrderClass(): string {
+    return this.desktopOrder === 'image-first'
+      ? 'dual-order-media-1'
+      : 'dual-order-media-2';
   }
 
-  getBlockHeight() {
-    if (!isPlatformBrowser(this.platformId)) return {};
-    const isDesktop = this.screenWidth >= 768;
-    if (isDesktop) {
-      return { height: this.height };
-    } else if (this.mobileHeight) {
-      return { height: this.mobileHeight };
-    } else {
-      return {};
-    }
-  }
-
-  getCombinedStyle(base: { [key: string]: any }) {
-    return this.useAspectRatio
-      ? base
-      : {
-          ...base,
-          ...this.getBlockHeight(),
-        };
-  }
-
-  getImageOrderClasses() {
-    const mobile = this.mobileOrder === 'image-first' ? 'order-1' : 'order-2';
-    const desktop = this.desktopOrder === 'image-first' ? 'md:order-1' : 'md:order-2';
-    return `${mobile} ${desktop}`;
-  }
-
-  getTextOrderClasses() {
-    const mobile = this.mobileOrder === 'text-first' ? 'order-1' : 'order-2';
-    const desktop = this.desktopOrder === 'text-first' ? 'md:order-1' : 'md:order-2';
-    return `${mobile} ${desktop}`;
+  get textOrderClass(): string {
+    return this.desktopOrder === 'image-first'
+      ? 'dual-order-text-2'
+      : 'dual-order-text-1';
   }
 }

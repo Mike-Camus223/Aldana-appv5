@@ -21,7 +21,7 @@ type CollectionItemCard = {
 @Component({
   selector: 'app-generic-collection',
   standalone: true,
-  imports: [CommonModule, RouterModule, BettercustomDualComponent, BreadcrumbComponent,CardInitAnimationDirective],
+  imports: [CommonModule, RouterModule, BreadcrumbComponent, CardInitAnimationDirective,BettercustomDualComponent],
   templateUrl: './generic-collection.component.html',
   styleUrls: ['./generic-collection.component.css'],
 })
