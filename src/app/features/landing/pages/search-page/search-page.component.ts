@@ -38,6 +38,7 @@ import { LinkHoverUnderlineDirective } from '../../../../shared/utils/directives
 import { BridesProductsService } from '../../../../core/services/data-access/brides-products/brides-products.service';
 import { JournalService } from '../../../../core/services/data-access/journal/journal.service';
 import { JournalPostListRow } from '../../../../core/services/data-access/journal/journal.models';
+import { ProductsService } from '../../../../core/services/data-access/products/products.service';
 
 @Component({
   selector: 'app-search-page',
@@ -292,12 +293,10 @@ export class SearchPageComponent implements OnInit, OnDestroy {
   ];
 
   constructor(
-    private supabase: SupabaseService,
+    private productsService: ProductsService,
     private bridesProductsService: BridesProductsService,
     private router: Router,
     private route: ActivatedRoute,
-    private authService: AuthService,
-    private favoritesService: FavoritesService,
     private journalService: JournalService,
     @Inject(PLATFORM_ID) private platformId: Object
   ) { }
@@ -466,7 +465,7 @@ export class SearchPageComponent implements OnInit, OnDestroy {
     
     // Fetch from both normal and bridal modules
     const [normalRes, bridalRes] = await Promise.all([
-      this.supabase.getProducts(),
+      this.productsService.getProducts(),
       this.bridesProductsService.getProducts(),
       delayMin
     ]);

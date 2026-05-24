@@ -39,6 +39,7 @@ import {
   LucideAngularModule,
   LucideIconProvider,
 } from 'lucide-angular';
+import { CuponserviceService } from '../../../../core/services/data-access/cupon/cuponservice.service';
 
 @Component({
   selector: 'app-shipping',
@@ -108,7 +109,7 @@ export class ShippingComponent implements OnInit, OnDestroy {
     private progress: CheckoutStepperProgressService,
     private shippingService: ShippingService,
     private router: Router,
-    private supabaseService: SupabaseService,
+    private cuponService: CuponserviceService,
     private authService: AuthService
   ) {}
 
@@ -365,7 +366,7 @@ export class ShippingComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.supabaseService.validateCoupon(code).then((result) => {
+    this.cuponService.validateCoupon(code).then((result) => {
       if (!result.valid) {
         this.discountError = result.error || 'Cupón inválido.';
         this.appliedDiscount = 0;

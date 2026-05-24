@@ -16,6 +16,7 @@ import { ProductUtils } from '../../../utils/dataEx/products-utils';
 import { AcordiongenericComponent } from '../../generic/acordiongeneric/acordiongeneric.component';
 import { LUCIDE_ICONS, LucideAngularModule, LucideIconProvider, Package, ShoppingBag } from 'lucide-angular';
 import { Subscription } from 'rxjs';
+import { ProductsService } from '../../../../core/services/data-access/products/products.service';
 
 @Component({
   selector: 'app-items-purchase',
@@ -56,13 +57,12 @@ export class ItemsPurchaseComponent implements OnInit, OnDestroy {
   private currentSlug: string | null = null;
 
   constructor(
+    private productsService: ProductsService,
     private route: ActivatedRoute,
-    private supabaseService: SupabaseService,
     private bridesProductsService: BridesProductsService,
     private cartService: CartService,
     private router: Router,
     private notificationService: NotificationService,
-    private location: Location
   ) { }
 
   ngOnInit(): void {
@@ -141,7 +141,7 @@ export class ItemsPurchaseComponent implements OnInit, OnDestroy {
     let mappedProduct: Product | null = null;
 
     // 1) Intentar en módulo normal (Pret a Porter)
-    const normalRes = await this.supabaseService.getProducts(slug);
+    const normalRes = await this.productsService.getProducts(slug);
     if (!normalRes.error && normalRes.data) {
       const productArray = Array.isArray(normalRes.data) ? normalRes.data : [normalRes.data];
       const products = ProductUtils.mapProducts(productArray, false);
@@ -350,7 +350,7 @@ export class ItemsPurchaseComponent implements OnInit, OnDestroy {
       // Intentar obtener productos relacionados por categoría en ambos servicios (en paralelo)
       if (this.product.category_id) {
         const [resNormal, resBridal] = await Promise.all([
-          this.supabaseService.getProductsByCategory(String(this.product.category_id), 12),
+          this.productsService.getProductsByCategory(String(this.product.category_id), 12),
           this.bridesProductsService.getProductsByCategory(String(this.product.category_id), 12)
         ]);
 

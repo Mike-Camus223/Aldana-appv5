@@ -4,12 +4,9 @@ import { AuthService } from '../auth/auth.service';
 @Injectable({ providedIn: 'root' })
 export class getDataHelperService {
   constructor(private authService: AuthService) {}
-
   get client() {
-    // Usar siempre el cliente del AuthService para evitar múltiples instancias
     return this.authService.getAuthenticatedClient();
   }
-
   // Método para operaciones que requieren autenticación
   async insertWithAuth<T>(
     table: string,
@@ -19,11 +16,9 @@ export class getDataHelperService {
     try {
       // Usar el cliente autenticado del AuthService
       const authenticatedClient = this.authService.getAuthenticatedClient();
-      
       // Verificar sesión del cliente autenticado
       const { data: { session } } = await authenticatedClient.auth.getSession();
-      
-      console.log('🔍 Session check (AuthService client):', {
+      console.log('Session check (AuthService client):', {
         hasSession: !!session,
         userId: session?.user?.id,
         userEmail: session?.user?.email,
@@ -41,7 +36,7 @@ export class getDataHelperService {
           .select(select)
           .single();
         
-        console.log('📝 Insert result:', { 
+        console.log('Insert result:', { 
           success: !error, 
           error: error?.message,
           data: insertData 
@@ -53,7 +48,7 @@ export class getDataHelperService {
           .from(table)
           .insert(data);
         
-        console.log('📝 Insert result:', { 
+        console.log('Insert result:', { 
           success: !error, 
           error: error?.message,
           data: insertData 
@@ -75,13 +70,10 @@ export class getDataHelperService {
     single: boolean = false
   ): Promise<{ data: T | null; error: any }> {
     let query = this.client.from(table).select(select);
-
     if (filterKey && filterValue !== undefined) {
       query = query.eq(filterKey, filterValue);
     }
-
     const result = single ? await query.single() : await query;
-
     return {
       data: result.error ? null : (result.data as T),
       error: result.error,

@@ -18,6 +18,7 @@ import { AldyCheckboxV1Directive } from '../../../utils/directives/aldy-checkbox
 import { Location } from '@angular/common';
 import { FavoritesService } from '../../../../core/services/favorites/favorites.service';
 import { AuthService } from '../../../../core/services/auth/auth.service';
+import { ProductsService } from '../../../../core/services/data-access/products/products.service';
  
 
 
@@ -130,12 +131,11 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
   }
 
   constructor(
-    private supabaseService: SupabaseService,
+    private productsService: ProductsService,
     private bridesProductsService: BridesProductsService,
     private favoritesService: FavoritesService,
     private authService: AuthService,
     private route: ActivatedRoute,
-    private router: Router,
     private location: Location,
     @Inject(PLATFORM_ID) private platformId: Object
   ) { }
@@ -189,7 +189,7 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
 
         if (this.allProducts.length === 0) {
           // Cargar colecciones normales
-          const collectionsData = await this.supabaseService.getAllCollections();
+          const collectionsData = await this.productsService.getAllCollections();
           this.allCollections = collectionsData || [];
           this.topCollections = [...this.allCollections]
             .sort((a, b) => new Date(b.release_date || b.created_at).getTime() - new Date(a.release_date || a.created_at).getTime())
@@ -202,7 +202,7 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
             .sort((a, b) => new Date(b.release_date || b.created_at).getTime() - new Date(a.release_date || a.created_at).getTime())
             .slice(0, 4);
 
-          const { data, error } = await this.supabaseService.getProducts();
+          const { data, error } = await this.productsService.getProducts();
           if (error) {
             console.error('Error loading products:', error);
             this.loading = false;
@@ -1148,8 +1148,8 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
     try {
       // 1. Obtener datos de Supabase (Pret a Porter)
       const [normalCatsRes, normalSubsRes] = await Promise.all([
-        this.supabaseService.getCategories(),
-        this.supabaseService.getSubcategories()
+        this.productsService.getCategories(),
+        this.productsService.getSubcategories()
       ]);
 
       if (normalCatsRes.data && normalSubsRes.data) {

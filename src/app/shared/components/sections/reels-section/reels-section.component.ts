@@ -14,6 +14,7 @@ import { SupabaseService } from '../../../../core/services/data-access/supabase.
 import { CarouselImagesGenericv2Component } from '../../generic/carousel-images-genericv2/carousel-images-genericv2.component';
 import { Subject } from 'rxjs';
 import { debounceTime, takeUntil } from 'rxjs/operators';
+import { InstagramserviceService } from '../../../../core/services/data-access/instagram/instagramservice.service';
 
 @Component({
   selector: 'app-reels-section',
@@ -50,7 +51,7 @@ export class ReelsSectionComponent implements OnInit, OnDestroy {
   };
 
   constructor(
-    private supabaseService: SupabaseService,
+    private instagramService: InstagramserviceService,
     private cdr: ChangeDetectorRef,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {
@@ -103,7 +104,7 @@ export class ReelsSectionComponent implements OnInit, OnDestroy {
 
   private async loadInstagramReels(): Promise<void> {
     try {
-      const { data, error } = await this.supabaseService.getInstagramReels();
+      const { data, error } = await this.instagramService.getInstagramReels();
 
       if (error || !data || data.length === 0) {
         this.reels = [];

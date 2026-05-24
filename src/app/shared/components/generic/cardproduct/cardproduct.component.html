@@ -100,7 +100,7 @@
               </button>
             </ng-container>
           </div>
-          <div class="flex mt-2 gap-2 flex-wrap">
+          <div [ngClass]="{'mt-2': product.isBridal}" class="flex gap-2 flex-wrap">
             <button *ngFor="let color of product.variants" (click)="selectColor(color.color_name)"
               [ngStyle]="{ backgroundColor: color.color_hex }" 
               [attr.aria-pressed]="selectedColor === color.color_name"
