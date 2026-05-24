@@ -51,7 +51,6 @@ import { CuponserviceService } from '../../../../core/services/data-access/cupon
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    FloatLabelModule,
     SelectsComponent,
     AldyCheckboxV1Directive,
     LucideAngularModule,
