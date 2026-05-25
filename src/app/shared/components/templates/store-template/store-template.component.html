@@ -100,7 +100,7 @@
                   <div *ngFor="let col of topCollections" class="border-l border-aldy-medium/20 pl-2">
                     <button type="button" (click)="toggleCollectionDropdown('normal-' + col.id)"
                       class="w-full cursor-pointer flex items-center justify-between py-1 pl-2 pr-8 text-xs font-light text-aldy-green-gray hover:text-aldy-medium transition-colors">
-                      <span class="NewAldyFontType4 uppercase tracking-wider"
+                      <span class="NewAldyFontType4 tracking-wider"
                         [ngClass]="{'text-aldy-medium font-medium': selectedCollectionId === col.id}">{{ col.name
                         }}</span>
                         <span class="relative h-4 w-4 flex items-center justify-center">
@@ -120,7 +120,7 @@
                     <div *ngIf="isCollectionDropdownOpen('normal-' + col.id)" class="pl-4 mt-1 space-y-1">
                       <div *ngFor="let category of getCategoriesForCollection('normal', col.id)" class="space-y-1">
                         <label
-                          class="flex items-center gap-2 py-1 px-2 text-xs uppercase tracking-wider NewAldyFontType4 cursor-pointer w-full hover:bg-aldy-light">
+                          class="flex items-center gap-2 py-1 px-2 text-xs tracking-wider NewAldyFontType4 cursor-pointer w-full hover:bg-aldy-light">
                           <input type="checkbox" [checked]="isCategorySelectedInScope('normal', col.id, category.value)"
                             (change)="toggleCategoryInScope('normal', col.id, category.value)" AldyCheckboxV1 />
                           <span
