@@ -9,7 +9,7 @@ import { AboutSecHomev2Component } from '../../../../shared/components/sections/
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [RouterModule, WordRevealDirective, AboutSecHomeComponent, ReelsSectionComponent, DualSectionComponent,AboutSecHomev2Component],
+  imports: [RouterModule, WordRevealDirective, AboutSecHomeComponent, ReelsSectionComponent, DualSectionComponent],
   templateUrl: './home.component.html',
   styles: ``
 })
