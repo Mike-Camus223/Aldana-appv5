@@ -121,3 +121,12 @@
 .scrollbar-invisible::-webkit-scrollbar-thumb {
   display: none;
 }
+
+
+#smooth-wrapper {
+  overflow: hidden;
+}
+
+#smooth-content {
+  will-change: transform;
+}

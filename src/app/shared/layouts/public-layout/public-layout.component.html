@@ -1,12 +1,16 @@
 <header>
-   <app-navbar-publicv3></app-navbar-publicv3>
+  <app-navbar-publicv3></app-navbar-publicv3>
 </header>
-<main class="overflow-x-hidden bg-aldy-white">
-  <router-outlet></router-outlet>
-</main>
- <section>
-  <app-newsletter/>
- </section>
-<footer>
-  <app-footerv2></app-footerv2>
-</footer>
+<div id="smooth-wrapper">
+  <div id="smooth-content">
+    <main class="overflow-x-hidden bg-aldy-white">
+      <router-outlet></router-outlet>
+    </main>
+    <section>
+      <app-newsletter />
+    </section>
+    <footer>
+      <app-footerv2></app-footerv2>
+    </footer>
+  </div>
+</div>

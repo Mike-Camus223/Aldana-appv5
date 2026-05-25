@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
 import { Router, NavigationStart, NavigationEnd } from '@angular/router';
 import { Footerv2Component } from '../../components/system/footerv2/footerv2.component';
 import { RouterOutlet } from '@angular/router';
@@ -6,6 +6,11 @@ import { LoaderService } from '../../../core/services/utils/loader.service';
 import { Subscription, filter } from 'rxjs';
 import { NewsletterComponent } from "../../components/system/newsletter/newsletter.component";
 import { NavbarPublicv3Component } from '../../components/system/navbar-publicv3/navbar-publicv3.component';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { ScrollSmoother } from 'gsap/ScrollSmoother';
+
+gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
 
 @Component({
   selector: 'app-public-layout',
@@ -19,10 +24,23 @@ import { NavbarPublicv3Component } from '../../components/system/navbar-publicv3
   templateUrl: './public-layout.component.html',
   styles: ``
 })
-export class PublicLayoutComponent implements OnInit, OnDestroy {
+export class PublicLayoutComponent implements OnInit, OnDestroy , AfterViewInit{
   private routerSubscription?: Subscription;
 
   constructor(private loaderService: LoaderService, private router: Router) {}
+
+  ngAfterViewInit(): void {
+
+  ScrollSmoother.get()?.kill();
+
+  ScrollSmoother.create({
+    wrapper: '#smooth-wrapper',
+    content: '#smooth-content',
+    smooth: 1.4,
+    effects: true
+  });
+
+}
 
   ngOnInit(): void {
     // Establecer contexto público al inicializar
