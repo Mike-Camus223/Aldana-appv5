@@ -1,13 +1,13 @@
 <ng-container *ngIf="isOpen">
   <div
-    class="fixed inset-0 z-[1000] flex items-center justify-center transition-opacity duration-300 ease-out"
+    class="fixed inset-0 z-[1000] flex flex-col transition-opacity duration-300 ease-out"
     [ngClass]="{
       'opacity-100': !isClosing,
       'opacity-0': isClosing
     }"
   >
-    <!-- BACKGROUND -->
-    <div class="absolute inset-0 bg-aldy-white"></div>
+    <!-- BACKGROUND — cubre todo incluyendo la navbar -->
+    <div class="absolute inset-0 bg-aldy-white z-0"></div>
 
     <!-- CLOSE -->
     <button
@@ -22,47 +22,43 @@
       ></lucide-icon>
     </button>
 
-    <!-- PREV -->
-    <button
-      (click)="prev()"
-      class="absolute left-4 top-1/2 z-30 flex h-12 w-12 -translate-y-1/2 cursor-pointer items-center justify-center border border-aldy-medium transition-all duration-200 ease-in-out hover:scale-110 md:left-10"
-    >
-      <lucide-icon
-        name="chevron-left"
-        color="#AEC2A9"
-        [strokeWidth]="1.5"
-      ></lucide-icon>
-    </button>
+    <!-- CONTENT: flex column que llena toda la pantalla -->
+    <div class="relative z-10 flex w-full h-full flex-col">
 
-    <!-- NEXT -->
-    <button
-      (click)="next()"
-      class="absolute right-4 top-1/2 z-30 flex h-12 w-12 -translate-y-1/2 cursor-pointer items-center justify-center border border-aldy-medium transition-all duration-200 ease-in-out hover:scale-110 md:right-10"
-    >
-      <lucide-icon
-        name="chevron-right"
-        color="#AEC2A9"
-        [strokeWidth]="1.5"
-      ></lucide-icon>
-    </button>
-
-    <!-- CONTENT -->
-    <div class="relative z-10 flex w-full flex-col items-center px-0 md:px-20">
-
-      <!-- SLIDER -->
+      <!-- SLIDER — flex-1 para ocupar todo el espacio disponible menos thumbs -->
       <div
-        class="relative flex h-[65vh] w-screen max-w-none items-center justify-center md:h-[84vh] md:max-w-[1300px]"
+        class="relative flex-1 overflow-hidden"
         (wheel)="onWheel($event)"
       >
+
+        <!-- PREV — centrado dentro del slider -->
+        <button
+          (click)="prev()"
+          class="absolute left-4 top-1/2 z-30 flex h-12 w-12 -translate-y-1/2 cursor-pointer items-center justify-center border border-aldy-medium transition-all duration-200 ease-in-out hover:scale-110 md:left-10"
+        >
+          <lucide-icon
+            name="chevron-left"
+            color="#AEC2A9"
+            [strokeWidth]="1.5"
+          ></lucide-icon>
+        </button>
+
+        <!-- NEXT — centrado dentro del slider -->
+        <button
+          (click)="next()"
+          class="absolute right-4 top-1/2 z-30 flex h-12 w-12 -translate-y-1/2 cursor-pointer items-center justify-center border border-aldy-medium transition-all duration-200 ease-in-out hover:scale-110 md:right-10"
+        >
+          <lucide-icon
+            name="chevron-right"
+            color="#AEC2A9"
+            [strokeWidth]="1.5"
+          ></lucide-icon>
+        </button>
 
         <div
           *ngFor="let item of items; let i = index; trackBy: trackByIndex"
           #slideRef
-          class="absolute inset-0 flex items-center justify-center transition-opacity duration-[280ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
-          [ngClass]="{
-            'opacity-100 pointer-events-auto': i === activeIndex,
-            'opacity-0 pointer-events-none': i !== activeIndex
-          }"
+          class="absolute inset-0 flex items-center justify-center"
         >
 
           <!-- IMAGE -->
@@ -73,26 +69,15 @@
             (mousedown)="startDrag($event)"
             (mousemove)="onDrag($event)"
             (dragstart)="$event.preventDefault()"
-            [style.transform]="
-              i === activeIndex ? getImgTransform() : 'scale(1)'
-            "
-            [style.transition]="
-              isDragging
-                ? 'none'
-                : 'transform 300ms cubic-bezier(0.4,0,0.2,1)'
-            "
+            [style.transform]="i === activeIndex ? getImgTransform() : 'scale(1)'"
+            [style.transition]="isDragging ? 'none' : 'transform 300ms cubic-bezier(0.4,0,0.2,1)'"
             [style.pointerEvents]="i === activeIndex ? 'auto' : 'none'"
             [ngClass]="{
               'cursor-plus': !zoomed && i === activeIndex,
               'cursor-grabbing': isDragging && i === activeIndex,
               'cursor-minus': zoomed && i === activeIndex
             }"
-            class="
-              relative block h-full w-full select-none object-contain
-              touch-none will-change-transform
-              md:h-auto md:w-auto md:max-h-full md:max-w-full
-              2xl:max-h-[84vh] 2xl:max-w-[1300px]
-            "
+            class="block h-full w-full select-none object-contain touch-none will-change-transform"
           />
 
           <!-- VIDEO -->
@@ -113,20 +98,9 @@
           <!-- VIDEO OVERLAY -->
           <div
             *ngIf="i === activeIndex && showVideoOverlay"
-            class="
-              pointer-events-none absolute inset-0 z-20
-              flex items-center justify-center
-              [animation:videoOverlayFade_900ms_ease_forwards]
-            "
+            class="pointer-events-none absolute inset-0 z-20 flex items-center justify-center [animation:videoOverlayFade_900ms_ease_forwards]"
           >
-            <div
-              class="
-                flex h-[90px] w-[90px]
-                items-center justify-center
-                rounded-full bg-black/45
-                backdrop-blur-[14px]
-              "
-            >
+            <div class="flex h-[90px] w-[90px] items-center justify-center rounded-full bg-black/45 backdrop-blur-[14px]">
               <lucide-icon
                 [name]="videoOverlayIcon"
                 color="#fff"
@@ -139,29 +113,14 @@
         </div>
       </div>
 
-      <!-- THUMBS -->
-      <div
-        class="
-          fixed bottom-10 left-1/2 z-20
-          flex w-full max-w-screen-sm
-          -translate-x-1/2 flex-wrap justify-center gap-5 px-4
-          md:static md:left-auto md:bottom-auto
-          md:w-auto md:max-w-none md:translate-x-0
-          md:gap-4 md:mt-5
-        "
-      >
+      <!-- THUMBS — barra fija al fondo -->
+      <div class="flex w-full h-[100px] flex-shrink-0 items-center justify-center gap-4 px-16 z-10">
         <button
           *ngFor="let item of items; let i = index"
           (click)="goTo(i)"
-          class="
-            h-12 w-12 flex-shrink-0
-            cursor-pointer overflow-hidden rounded-full
-            border transition-all duration-150 ease-out
-            md:h-[70px] md:w-[70px]
-          "
+          class="h-12 w-12 flex-shrink-0 cursor-pointer overflow-hidden rounded-full border transition-all duration-150 ease-out md:h-[60px] md:w-[60px]"
           [ngClass]="{
-            'scale-140 border-[1px] border-aldy-medium md:scale-110':
-              i === activeIndex,
+            'scale-110 border-[1px] border-aldy-medium': i === activeIndex,
             'border-transparent': i !== activeIndex
           }"
         >

@@ -1,6 +1,9 @@
- <section>
+ <!-- <section>
   <app-dual-section></app-dual-section>
-</section> 
+</section> -->
+<section>
+  <app-triplesection></app-triplesection>
+</section>
 <!-- <section class="mb-1 block md:hidden">
   <app-carousel-screen [slides]="slides"></app-carousel-screen>
 </section> -->
@@ -40,9 +43,6 @@
       draggable="false"
     />
   </div> -->
-  <div class="relative z-10">
-    <app-about-sec-home></app-about-sec-home>
-  </div>
 </section>
 <!-- <section>
   <app-about-sec-homev2></app-about-sec-homev2>
@@ -102,11 +102,45 @@
 />
   </div>
 </section> -->
+<section>
+
+
+<div class="relative flex items-center justify-center min-h-[400px] py-5 overflow-hidden">
+
+  <!-- fondo decorativo -->
+  <div class="absolute w-25 h-25 opacity-40 left-1/2 top-7 -translate-x-1/2">
+    <img src="../../../../../assets/svg/logo.svg" alt="logo" class="w-full h-full object-contain" draggable="false" />
+  </div>
+
+  <!-- TEXTO centrado en X e Y -->
+  <p appWordReveal
+    class="relative text-4xl italic tracking-wider text-center NewAldyTitle font-light text-aldy-green-gray-bold z-10 max-w-2xl">
+    "Creo con pasi<span class="NewAldyFontTypeAccent relative -top-[1px]">ó</span>n, dise<span class="NewAldyFontTypeAccent relative -top-[1px]">ñ</span>o con honestidad para que seas tu misma".
+  </p>
+
+  <!-- FIRMA abajo centrada absoluta -->
+  <div class="absolute bottom-2 left-1/2 -translate-x-1/2 z-10">
+    <img
+      src="../../../../../assets/images/firma2.png"
+      alt="firma"
+      class="w-25 object-contain"
+      draggable="false"
+    />
+  </div>
+
+</div>
+
+</section>
+<!-- 
+  <div class="relative z-10">
+    <app-about-sec-home></app-about-sec-home>
+  </div> -->
+
 <section class="py-6">
  <div class="px-4 sm:px-6 lg:px-12 xl:px-16 2xl:px-24">
       <p appWordReveal class="text-aldy-green-gray-bold NewAldyTitle text-center font-light text-xl sm:text-xl md:text-2xl lg:text-2xl">
         Sig<span class="NewAldyFontTypeAccent relative -top-[1px]">ú</span>enos en {{"@"}}aldana_vilcabana
-      </p>  
+      </p>
     </div>
 </section>
 <section class="max-w-screen-3xl mx-auto">

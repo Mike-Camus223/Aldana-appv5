@@ -3,6 +3,9 @@
 @import '@fancyapps/ui/dist/carousel/carousel.css';
 @import '@fancyapps/ui/dist/carousel/carousel.thumbs.css';
 
+/* =========================
+   THEME COLORS
+========================= */
 @theme {
   --color-aldy-primary-50: #f1fafa;
   --color-aldy-primary-100: #d7f1ef;
@@ -16,9 +19,6 @@
   --color-aldy-primary-900: #335c59;
   --color-aldy-primary-1000: #293d3b;
 
-  /* --color-aldy-new:#D2E4CC;
-  --color-aldy-bg-new: #AEC2A9;
-  --color-aldy-new-bold: #889287; */
   --color-aldy-white: #FEF5EC;
   --color-aldy-light:#D2E4CC;
   --color-aldy-light-2: #A6B9A2;
@@ -31,6 +31,9 @@
   --color-aldy-prueba: #D2E4CC;
 }
 
+/* =========================
+   FONTS
+========================= */
 @font-face {
   font-family: 'aldyfont';
   src: url('assets/fonts/Futura Lt BT Light.ttf') format('truetype');
@@ -73,56 +76,51 @@
   src: url('./assets/fonts/freight-big-pro-light-regular.ttf') format('truetype');
 }
 
+/* =========================
+   FONT CLASSES
+========================= */
+.NewAldyTitle { font-family: 'NewAldyFont', sans-serif; }
+.NewAldyTitleCursive { font-family: 'NewAldyFontCursive'; }
+.NewAldyFontType1 { font-family: 'NewAldyFont-type1'; }
+.NewAldyFontType2 { font-family: 'NewAldyFont-type2'; }
+.NewAldyFontType3 { font-family: 'NewAldyFont-type3'; }
+.NewAldyFontType4 { font-family: 'NewAldyFont-type4'; }
+.NewAldyFontTypeAccent { font-family: 'accent-aldy'; }
 
-.NewAldyTitle {
-  font-family: 'NewAldyFont', sans-serif;
+/* =========================
+   CUSTOM SCROLLBAR (GLOBAL)
+========================= */
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-aldy-medium) transparent;
 }
 
-.NewAldyTitleCursive {
-  font-family: 'NewAldyFontCursive';
+/* Chrome / Edge / Safari */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
 }
 
-.NewAldyFontType1 {
-  font-family: 'NewAldyFont-type1';
+/* invisible track */
+::-webkit-scrollbar-track {
+  background: transparent;
 }
 
-.NewAldyFontType2 {
-  font-family: 'NewAldyFont-type2';
+/* SOLO RECTÁNGULO */
+::-webkit-scrollbar-thumb {
+  background: var(--color-aldy-medium);
+  border-radius: 0px; /* rectángulo puro */
 }
 
-.NewAldyFontType3 {
-  font-family: 'NewAldyFont-type3';
+/* hover un poquito más oscuro */
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-aldy-medium-2);
 }
 
-.NewAldyFontType4 {
-  font-family: 'NewAldyFont-type4';
-}
-
-.NewAldyFontTypeAccent {
-  font-family: 'accent-aldy';
-}
-
-.scrollbar-invisible {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-  overflow: auto;
-}
-
-.scrollbar-invisible::-webkit-scrollbar {
-  display: none;
-  width: 0;
-  height: 0;
-}
-
-.scrollbar-invisible::-webkit-scrollbar-track {
-  display: none;
-}
-
-.scrollbar-invisible::-webkit-scrollbar-thumb {
-  display: none;
-}
-
-
+/* =========================
+   SMOOTH SCROLL WRAPPER
+========================= */
 #smooth-wrapper {
   overflow: hidden;
 }

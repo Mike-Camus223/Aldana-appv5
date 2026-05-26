@@ -5,11 +5,12 @@ import { ReelsSectionComponent } from "../../../../shared/components/sections/re
 import { DualSectionComponent } from "../../../../shared/components/generic/dual-section/dual-section.component";
 import { WordRevealDirective } from '../../../../shared/utils/directives/word-reveal.directive';
 import { AboutSecHomev2Component } from '../../../../shared/components/sections/about-sec-homev2/about-sec-homev2.component';
+import { TriplesectionComponent } from '../../../../shared/components/sections/triplesection/triplesection.component';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [RouterModule, WordRevealDirective, AboutSecHomeComponent, ReelsSectionComponent, DualSectionComponent],
+  imports: [RouterModule, WordRevealDirective, AboutSecHomeComponent, ReelsSectionComponent, DualSectionComponent ,TriplesectionComponent],
   templateUrl: './home.component.html',
   styles: ``
 })

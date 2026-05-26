@@ -16,8 +16,7 @@
           <!-- <span
             class="text-sm md:text-sm font-light text-aldy-green-gray NewAldyFontType4 tracking-wider me-3">Colores:</span> -->
           <button *ngFor="let variant of product.variants" (click)="selectColor(variant.color_name)"
-            [ngStyle]="{ backgroundColor: variant.color_hex }" class="w-10 h-10 transition-all border"
-            [ngClass]="{
+            [ngStyle]="{ backgroundColor: variant.color_hex }" class="w-10 h-10 transition-all border" [ngClass]="{
     'border-white border-2 ring-2 ring-aldy-green-gray cursor-default': isColorSelected(variant.color_name),
     'border-transparent cursor-pointer': !isColorSelected(variant.color_name)
   }" aria-label="Elegir color"></button>
@@ -101,7 +100,7 @@
               ¿Prefieres probarte esta prenda en persona? Estaremos encantados de ayudarte.
 
               Puedes coordinar una cita de prueba de manera virtual o solicitar una atención personalizada a través de
-              <a href="https://wa.me/5491164082659?text=Hola%2C%20vengo%20por%20una%20asesor%C3%ADa%20personalizada.%20%C2%BFPodr%C3%ADas%20pasarme%20los%20detalles%3F"
+              <a href="https://wa.me/5491164082659?text=Hola%2C%20estoy%20interesado%2Fa%20en%20este%20producto.%20%C2%BFPodr%C3%ADas%20pasarme%20m%C3%A1s%20informaci%C3%B3n%3F"
                 target="_blank" rel="noopener noreferrer"
                 class="underline font-medium transition-all duration-300 ease-in-out hover:opacity-80">
                 WhatsApp

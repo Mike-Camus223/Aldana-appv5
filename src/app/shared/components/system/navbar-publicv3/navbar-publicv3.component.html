@@ -3,13 +3,13 @@
 <!-- ========================================== -->
 <nav (mouseleave)="onNavbarLeave()" [ngClass]="{
     'bg-aldy-white bg-opacity-100': !isHomePage || MoverScroll || hoverNavbar,
-    'bg-gradient-to-b from-black/35 to-transparent': isHomePage && !MoverScroll && !hoverNavbar,
+    'bg-transparent': isHomePage && !MoverScroll && !hoverNavbar,
     'py-0': MoverScroll,
     'py-1': !MoverScroll,
     'translate-y-0': showNavbar,
     '-translate-y-full': !showNavbar
   }" class="hidden lg:block w-full fixed top-0 z-50 transform transition-all duration-300 ease-in-out">
-  <div class="relative z-10 max-w-[95%] mx-auto flex items-center justify-between h-20 px-6">
+  <div class="relative z-10 max-w-7xl mx-auto flex items-center justify-between h-20 px-6">
 
     <!-- IZQUIERDA: LINKS -->
     <div class="flex items-center space-x-10  uppercase">
@@ -17,7 +17,7 @@
         (mouseenter)="onInteractiveEnter()" [ngClass]="{
           'text-white hover:text-gray-300 border-white': isHomePage && !MoverScroll && !hoverNavbar,
           'text-aldy-medium hover:text-aldy-medium-2 border-aldy-medium hover:border-aldy-medium-2': !isHomePage || MoverScroll || hoverNavbar
-        }" class="transition-colors font-light NewAldyFontType4 text-sm tracking-wider border-transparent pb-[1px]">
+        }" class="transition-colors font-light NewAldyTitle text-sm tracking-[0.15em] border-transparent pb-[1px]">
         {{ link.label }}
       </a>
 
@@ -28,7 +28,7 @@
             (mouseenter)="onInteractiveEnter()" [ngClass]="{
               'text-white hover:text-gray-300 border-white': isHomePage && !MoverScroll && !hoverNavbar,
               'text-aldy-medium hover:text-aldy-medium-2 border-aldy-medium hover:border-aldy-medium-2': !isHomePage || MoverScroll || hoverNavbar
-            }" class="transition-colors text-sm font-light NewAldyFontType4 tracking-wider pb-[1px]">
+            }" class="transition-colors text-sm font-light NewAldyTitle tracking-[0.15em] pb-[1px]">
             TIENDA
           </a>
           <lucide-icon name="chevron-down" [ngClass]="{
@@ -124,7 +124,7 @@
         (mouseenter)="onInteractiveEnter()" [ngClass]="{
           'text-white hover:text-gray-300 border-white': isHomePage && !MoverScroll && !hoverNavbar,
           'text-aldy-medium hover:text-aldy-medium-2 border-aldy-medium hover:border-aldy-medium-2': !isHomePage || MoverScroll || hoverNavbar
-        }" class="transition-colors font-light NewAldyFontType4 text-sm tracking-wider border-transparent pb-[1px]">
+        }" class="transition-colors font-light NewAldyTitle text-sm tracking-[0.15em] border-transparent pb-[1px]">
         Diario
       </a>
     </div>
@@ -146,7 +146,7 @@
           (mouseenter)="onInteractiveEnter()" [ngClass]="{
             'text-white hover:text-gray-300 border-white': isHomePage && !MoverScroll && !hoverNavbar,
             'text-aldy-medium hover:text-aldy-medium-2 border-aldy-medium hover:border-aldy-medium-2': !isHomePage || MoverScroll || hoverNavbar
-          }" class="transition-colors font-light NewAldyFontType4 text-sm tracking-wider border-transparent pb-[1px]">
+          }" class="transition-colors font-light NewAldyTitle text-sm tracking-[0.15em] border-transparent pb-[1px]">
           {{ link.label }}
         </a>
       </div>
@@ -280,22 +280,22 @@
   <div class="p-6 space-y-6 h-full">
 
     <div class="flex justify-between items-center pb-4 border-b border-gray-200">
-      <h2 class="text-xl text-gray-800 font-light NewAldyFontType4 tracking-wider">MENÚ</h2>
+      <h2 class="text-xl text-gray-800 font-light NewAldyTitle tracking-[0.15em]">MENÚ</h2>
     </div>
 
     <div class="space-y-4">
       <a routerLink="/acerca-de-mi" (click)="onMenuLinkClick()"
-        class="block text-gray-700 hover:text-aldy-primary-500 tracking-wider uppercase font-light NewAldyFontType4 text-sm  transition-colors duration-200 py-3">
+        class="block text-gray-700 hover:text-aldy-primary-500 tracking-[0.15em] uppercase font-light NewAldyTitle text-sm  transition-colors duration-200 py-3">
         Acerca de mí
       </a>
       <a routerLink="/novias-colecciones" (click)="onMenuLinkClick()"
-        class="block text-gray-700 hover:text-aldy-primary-500 tracking-wider uppercase font-light NewAldyFontType4 text-sm  transition-colors duration-200 py-3">
+        class="block text-gray-700 hover:text-aldy-primary-500 tracking-[0.15em] uppercase font-light NewAldyTitle text-sm  transition-colors duration-200 py-3">
         Novias
       </a>
       <!-- DROPDOWN TIENDA MOBILE -->
       <div>
         <button (click)="toggleMobileDropdown()"
-          class="w-full flex items-center justify-between text-gray-700 hover:text-aldy-primary-500 tracking-wider uppercase font-light NewAldyFontType4 text-sm  transition-colors duration-200 py-3">
+          class="w-full flex items-center justify-between text-gray-700 hover:text-aldy-primary-500 tracking-[0.15em] uppercase font-light NewAldyTitle text-sm  transition-colors duration-200 py-3">
           <span>Tienda</span>
           <lucide-icon name="chevron-down" class="w-5 h-5 transition-transform duration-200 text-gray-700"
             [ngClass]="{ 'rotate-180': mobileDropdownOpen }"></lucide-icon>
@@ -311,12 +311,12 @@
       </div>
 
       <a routerLink="/colecciones" (click)="onMenuLinkClick()"
-        class="block text-gray-700 hover:text-aldy-primary-500 tracking-wider uppercase font-light NewAldyFontType4 text-sm transition-colors duration-200 py-3">
+        class="block text-gray-700 hover:text-aldy-primary-500 tracking-[0.15em] uppercase font-light NewAldyTitle text-sm transition-colors duration-200 py-3">
         Colecciones
       </a>
 
       <a routerLink="/contacto" (click)="onMenuLinkClick()"
-        class="block text-gray-700 hover:text-aldy-primary-500 tracking-wider uppercase font-light NewAldyFontType4 text-sm transition-colors duration-200 py-3">
+        class="block text-gray-700 hover:text-aldy-primary-500 tracking-[0.15em] uppercase font-light NewAldyTitle text-sm transition-colors duration-200 py-3">
         Contacto
       </a>
     </div>
