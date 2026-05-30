@@ -12,12 +12,12 @@
   <div class="relative z-10 max-w-7xl mx-auto flex items-center justify-between h-20 px-6">
 
     <!-- IZQUIERDA: LINKS -->
-    <div class="flex items-center space-x-10  uppercase">
+    <div class="flex items-center space-x-5 lg:space-x-5 xl:space-x-10  uppercase">
       <a *ngFor="let link of leftLinks" appLinkHoverUnderline [routerLink]="link.link"
         (mouseenter)="onInteractiveEnter()" [ngClass]="{
           'text-white hover:text-gray-300 border-white': isHomePage && !MoverScroll && !hoverNavbar,
           'text-aldy-medium hover:text-aldy-medium-2 border-aldy-medium hover:border-aldy-medium-2': !isHomePage || MoverScroll || hoverNavbar
-        }" class="transition-colors font-light NewAldyTitle text-sm tracking-[0.15em] border-transparent pb-[1px]">
+        }" class="transition-colors font-light NewAldyTitle text-xs lg:text-xs xl:text-sm tracking-[0.15em] border-transparent pb-[1px]">
         {{ link.label }}
       </a>
 
@@ -28,7 +28,7 @@
             (mouseenter)="onInteractiveEnter()" [ngClass]="{
               'text-white hover:text-gray-300 border-white': isHomePage && !MoverScroll && !hoverNavbar,
               'text-aldy-medium hover:text-aldy-medium-2 border-aldy-medium hover:border-aldy-medium-2': !isHomePage || MoverScroll || hoverNavbar
-            }" class="transition-colors text-sm font-light NewAldyTitle tracking-[0.15em] pb-[1px]">
+            }" class="transition-colors text-xs lg:text-xs xl:text-sm font-light NewAldyTitle tracking-[0.15em] pb-[1px]">
             TIENDA
           </a>
           <lucide-icon name="chevron-down" [ngClass]="{
@@ -124,7 +124,7 @@
         (mouseenter)="onInteractiveEnter()" [ngClass]="{
           'text-white hover:text-gray-300 border-white': isHomePage && !MoverScroll && !hoverNavbar,
           'text-aldy-medium hover:text-aldy-medium-2 border-aldy-medium hover:border-aldy-medium-2': !isHomePage || MoverScroll || hoverNavbar
-        }" class="transition-colors font-light NewAldyTitle text-sm tracking-[0.15em] border-transparent pb-[1px]">
+        }" class="transition-colors font-light NewAldyTitle text-xs lg:text-xs xl:text-sm tracking-[0.15em] border-transparent pb-[1px]">
         Diario
       </a>
     </div>
@@ -140,41 +140,41 @@
           [class.opacity-0]="isHomePage && !MoverScroll && !hoverNavbar">
       </a>
     </div>
-    <div class="flex items-center space-x-10">
-      <div class="flex items-center space-x-10  uppercase">
+    <div class="flex items-center space-x-5 lg:space-x-5 xl:space-x-10">
+      <div class="flex items-center space-x-5 lg:space-x-5 xl:space-x-10  uppercase">
         <a *ngFor="let link of rightLinks" appLinkHoverUnderline [routerLink]="link.link"
           (mouseenter)="onInteractiveEnter()" [ngClass]="{
             'text-white hover:text-gray-300 border-white': isHomePage && !MoverScroll && !hoverNavbar,
             'text-aldy-medium hover:text-aldy-medium-2 border-aldy-medium hover:border-aldy-medium-2': !isHomePage || MoverScroll || hoverNavbar
-          }" class="transition-colors font-light NewAldyTitle text-sm tracking-[0.15em] border-transparent pb-[1px]">
+          }" class="transition-colors font-light NewAldyTitle text-xs lg:text-xs xl:text-sm tracking-[0.15em] border-transparent pb-[1px]">
           {{ link.label }}
         </a>
       </div>
 
       <!-- ÍCONOS -->
-      <div class="flex items-center space-x-6 text-xl">
+      <div class="flex items-center space-x-5">
         <a routerLink="/busqueda" class="cursor-pointer" (mouseenter)="onInteractiveEnter()">
-          <lucide-icon name="search" class="w-6 h-6 transition-colors duration-200 ease-in-out"
+          <lucide-icon name="search" class="lg:w-5 lg:h-5 xl:w-6 xl:h-6 transition-colors duration-200 ease-in-out"
             [ngClass]="iconColorClass"></lucide-icon>
         </a>
 
         <a *ngIf="isAuthenticated" routerLink="/panel/favoritos" class="cursor-pointer"
           (mouseenter)="onInteractiveEnter()">
-          <lucide-icon name="heart" class="w-6 h-6 transition-colors duration-200 ease-in-out"
+          <lucide-icon name="heart" class="lg:w-5 lg:h-5 xl:w-6 xl:h-6 transition-colors duration-200 ease-in-out"
             [ngClass]="iconColorClass"></lucide-icon>
         </a>
 
         <button (click)="onUserButtonClick()" class="cursor-pointer" (mouseenter)="onInteractiveEnter()">
-          <lucide-icon name="user" class="w-6 h-6 transition-colors duration-200 ease-in-out"
+          <lucide-icon name="user" class="lg:w-5 lg:h-5 xl:w-6 xl:h-6 transition-colors duration-200 ease-in-out"
             [ngClass]="iconColorClass"></lucide-icon>
         </button>
 
         <div class="flex items-center cursor-pointer" (mouseenter)="onInteractiveEnter()">
           <a routerLink="/checkout/carrito" class="cursor-pointer">
-            <lucide-icon name="shopping-bag" class="w-6 h-6 transition-colors duration-200 ease-in-out"
+            <lucide-icon name="shopping-bag" class="lg:w-5 lg:h-5 xl:w-6 xl:h-6 transition-colors duration-200 ease-in-out"
               [ngClass]="iconColorClass"></lucide-icon>
           </a>
-          <span translate="no" class="text-base ml-1" [ngClass]="{
+          <span translate="no" class="text-xs lg:text-xs xl:text-base ml-1" [ngClass]="{
               'text-white border-white': isHomePage && !MoverScroll && !hoverNavbar,
               'text-aldy-medium border-aldy-medium hover:border-aldy-medium-2': !isHomePage || MoverScroll || hoverNavbar
             }">
@@ -202,28 +202,28 @@
     <!-- ICONOS IZQUIERDA -->
     <div class="flex items-center gap-4 text-lg sm:text-xl">
       <a routerLink="/busqueda" class="cursor-pointer">
-        <lucide-icon name="search" class="w-6 h-6" [ngClass]="{
+        <lucide-icon name="search" class="w-5 h-5" [ngClass]="{
             'text-white': !menuOpen && isHomePage && !MoverScroll && !hoverNavbar,
-            'text-aldy-medium hover:text-aldy-primary-500': menuOpen || !isHomePage || MoverScroll || hoverNavbar
+            'text-aldy-medium hover:text-aldy-medium-2': menuOpen || !isHomePage || MoverScroll || hoverNavbar
           }"></lucide-icon>
       </a>
       <a *ngIf="isAuthenticated" routerLink="/panel/favoritos" class="cursor-pointer">
-        <lucide-icon name="heart" class="w-6 h-6" [ngClass]="{
+        <lucide-icon name="heart" class="w-5 h-5" [ngClass]="{
             'text-white': !menuOpen && isHomePage && !MoverScroll && !hoverNavbar,
-            'text-aldy-medium hover:text-aldy-primary-500': menuOpen || !isHomePage || MoverScroll || hoverNavbar
+            'text-aldy-medium hover:text-aldy-medium-2': menuOpen || !isHomePage || MoverScroll || hoverNavbar
           }"></lucide-icon>
       </a>
       <button (click)="onUserButtonClick()" class="cursor-pointer">
-        <lucide-icon name="user" class="w-6 h-6" [ngClass]="{
+        <lucide-icon name="user" class="w-5 h-5" [ngClass]="{
             'text-white': !menuOpen && isHomePage && !MoverScroll && !hoverNavbar,
-            'text-aldy-medium hover:text-aldy-primary-500': menuOpen || !isHomePage || MoverScroll || hoverNavbar
+            'text-aldy-medium hover:text-aldy-medium-2': menuOpen || !isHomePage || MoverScroll || hoverNavbar
           }"></lucide-icon>
       </button>
     </div>
 
     <!-- LOGO CENTRO MOBILE-->
     <div class="flex items-center justify-center">
-      <a href="/" class="flex justify-center items-center relative w-[3.5rem] h-[3.5rem]">
+      <a href="/" class="flex justify-center items-center relative w-[3rem] h-[3rem] sm:w-[3.5rem] sm:h-[3.5rem]">
 
         <!-- Logo blanco (por defecto, navbar oscuro) -->
         <img src="../../../../../assets/svg/logo_whiteAV.svg" alt="Aldana Vilcabana"
@@ -246,14 +246,14 @@
     <div class="flex items-center gap-4 text-lg sm:text-xl">
       <div class="flex items-center">
         <a routerLink="/checkout/carrito" class="cursor-pointer flex items-center">
-          <lucide-icon name="shopping-bag" class="w-6 h-6" [ngClass]="{
+          <lucide-icon name="shopping-bag" class="w-5 h-5" [ngClass]="{
               'text-white': !menuOpen && isHomePage && !MoverScroll && !hoverNavbar,
-              'text-aldy-medium hover:text-aldy-primary-500': menuOpen || !isHomePage || MoverScroll || hoverNavbar
+              'text-aldy-medium hover:text-aldy-medium-2': menuOpen || !isHomePage || MoverScroll || hoverNavbar
             }"></lucide-icon>
         </a>
         <span class="text-sm ms-1" [ngClass]="{
             'text-white': !menuOpen && isHomePage && !MoverScroll && !hoverNavbar,
-            'text-gray-700': menuOpen || !isHomePage || MoverScroll || hoverNavbar
+            'text-aldy-medium': menuOpen || !isHomePage || MoverScroll || hoverNavbar
           }">
           {{ cartItemCount }}
         </span>
@@ -261,11 +261,11 @@
 
       <!-- BOTÓN MENU / X -->
       <button (click)="toggleMenu()" class="cursor-pointer flex items-center relative z-[60]">
-        <lucide-icon *ngIf="!menuOpen" name="menu" class="w-6 h-6" [ngClass]="{
+        <lucide-icon *ngIf="!menuOpen" name="menu" class="w-5 h-5" [ngClass]="{
             'text-white': isHomePage && !MoverScroll && !hoverNavbar,
-            'text-aldy-medium hover:text-aldy-primary-500': !isHomePage || MoverScroll || hoverNavbar
+            'text-aldy-medium hover:text-aldy-medium-2': !isHomePage || MoverScroll || hoverNavbar
           }"></lucide-icon>
-        <lucide-icon *ngIf="menuOpen" name="x" class="w-6 h-6 text-aldy-medium"></lucide-icon>
+        <lucide-icon *ngIf="menuOpen" name="x" class="w-5 h-5 text-aldy-medium"></lucide-icon>
       </button>
     </div>
   </div>
@@ -280,43 +280,43 @@
   <div class="p-6 space-y-6 h-full">
 
     <div class="flex justify-between items-center pb-4 border-b border-gray-200">
-      <h2 class="text-xl text-gray-800 font-light NewAldyTitle tracking-[0.15em]">MENÚ</h2>
+      <h2 class="text-xl text-aldy-green-gray font-light NewAldyTitle tracking-[0.15em]">MENÚ</h2>
     </div>
 
     <div class="space-y-4">
       <a routerLink="/acerca-de-mi" (click)="onMenuLinkClick()"
-        class="block text-gray-700 hover:text-aldy-primary-500 tracking-[0.15em] uppercase font-light NewAldyTitle text-sm  transition-colors duration-200 py-3">
+        class="block text-aldy-green-gray hover:text-aldy-green-gray-bold tracking-[0.15em] uppercase font-light NewAldyTitle text-xs  transition-colors duration-200 py-3">
         Acerca de mí
       </a>
       <a routerLink="/novias-colecciones" (click)="onMenuLinkClick()"
-        class="block text-gray-700 hover:text-aldy-primary-500 tracking-[0.15em] uppercase font-light NewAldyTitle text-sm  transition-colors duration-200 py-3">
+        class="block text-aldy-green-gray hover:text-aldy-green-gray-bold tracking-[0.15em] uppercase font-light NewAldyTitle text-xs  transition-colors duration-200 py-3">
         Novias
       </a>
       <!-- DROPDOWN TIENDA MOBILE -->
       <div>
         <button (click)="toggleMobileDropdown()"
-          class="w-full flex items-center justify-between text-gray-700 hover:text-aldy-primary-500 tracking-[0.15em] uppercase font-light NewAldyTitle text-sm  transition-colors duration-200 py-3">
+          class="w-full flex items-center justify-between text-aldy-green-gray hover:text-aldy-green-gray-bold tracking-[0.15em] uppercase font-light NewAldyTitle text-xs  transition-colors duration-200 py-3">
           <span>Tienda</span>
-          <lucide-icon name="chevron-down" class="w-5 h-5 transition-transform duration-200 text-gray-700"
+          <lucide-icon name="chevron-down" class="w-5 h-5 transition-transform duration-200 text-aldy-green-gray"
             [ngClass]="{ 'rotate-180': mobileDropdownOpen }"></lucide-icon>
         </button>
         <div *ngIf="mobileDropdownOpen" @expandDropdown
           class="pl-4 mt-2 space-y-3 border-l-2 border-aldy-medium hover:border-aldy-medium-2">
           <a *ngFor="let item of tiendaItems" [routerLink]="['/tienda/categoria/general', normalizeCategory(item)]"
             (click)="onMenuLinkClick()"
-            class="block text-md text-gray-600 hover:text-aldy-primary-500 font-light NewAldyFontType4 text-sm transition-colors duration-200 py-2">
+            class="block text-md text-aldy-green-gray tracking-widest hover:text-aldy-green-gray-bold font-light NewAldyFontType4 text-xs transition-colors duration-200 py-2">
             {{ item }}
           </a>
         </div>
       </div>
 
       <a routerLink="/colecciones" (click)="onMenuLinkClick()"
-        class="block text-gray-700 hover:text-aldy-primary-500 tracking-[0.15em] uppercase font-light NewAldyTitle text-sm transition-colors duration-200 py-3">
+        class="block text-aldy-green-gray hover:text-aldy-green-gray-bold tracking-[0.15em] uppercase font-light NewAldyTitle text-xs transition-colors duration-200 py-3">
         Colecciones
       </a>
 
       <a routerLink="/contacto" (click)="onMenuLinkClick()"
-        class="block text-gray-700 hover:text-aldy-primary-500 tracking-[0.15em] uppercase font-light NewAldyTitle text-sm transition-colors duration-200 py-3">
+        class="block text-aldy-green-gray hover:text-aldy-green-gray-bold tracking-[0.15em] uppercase font-light NewAldyTitle text-xs transition-colors duration-200 py-3">
         Contacto
       </a>
     </div>
