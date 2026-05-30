@@ -1,7 +1,10 @@
 import { Component, ElementRef, ViewChild, AfterViewInit, Output, EventEmitter, OnDestroy, Renderer2, Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser, NgOptimizedImage } from '@angular/common';
 import { gsap } from 'gsap';
+import { DrawSVGPlugin } from 'gsap/DrawSVGPlugin';
 import { LoaderService } from '../../../../core/services/utils/loader.service';
+
+gsap.registerPlugin(DrawSVGPlugin);
 
 @Component({
   standalone: true,
@@ -190,7 +193,7 @@ export class LoadingScreenComponent implements AfterViewInit, OnDestroy {
       force3D: true
     });
 
-    this.timeline.fromTo(this.box1.nativeElement, 
+    this.timeline!.fromTo(this.box1.nativeElement, 
       { 
         scale: 0,
         rotation: -5,
@@ -205,7 +208,7 @@ export class LoadingScreenComponent implements AfterViewInit, OnDestroy {
         force3D: true
       }, 0);
 
-    this.timeline.fromTo(this.box2.nativeElement, 
+    this.timeline!.fromTo(this.box2.nativeElement, 
       { 
         scale: 0,
         rotation: 3,
@@ -220,7 +223,7 @@ export class LoadingScreenComponent implements AfterViewInit, OnDestroy {
         force3D: true
       }, 0.15);
 
-    this.timeline.fromTo(this.box3.nativeElement, 
+    this.timeline!.fromTo(this.box3.nativeElement, 
       { 
         scale: 0,
         rotation: -4,
@@ -235,7 +238,7 @@ export class LoadingScreenComponent implements AfterViewInit, OnDestroy {
         force3D: true
       }, 0.3);
 
-    this.timeline.fromTo(this.box4.nativeElement, 
+    this.timeline!.fromTo(this.box4.nativeElement, 
       { 
         scale: 0,
         rotation: 4,
@@ -250,81 +253,119 @@ export class LoadingScreenComponent implements AfterViewInit, OnDestroy {
         force3D: true
       }, 0.45);
 
-    this.timeline.to(this.logoSvg.nativeElement, { 
+    this.timeline!.to(this.logoSvg.nativeElement, { 
       scale: 1,
       opacity: 1, 
-      duration: 0.7, 
+      duration: 0.4, 
       ease: 'back.out(1.8)',
       onComplete: () => {
         this.logoSvg.nativeElement.classList.add('active');
       }
     }, '+=0.1');
     
-    this.timeline.to(this.nameContainer.nativeElement, { 
+    // Animate the new SVG with the same animation as triplesection
+    this.timeline!.to(this.nameContainer.nativeElement, { 
       opacity: 1, 
       y: 0, 
-      duration: 0.8, 
+      duration: 0.6, 
       ease: 'power2.out'
-    }, '-=0.2');
+    }, '-=0.1');
     
-    this.timeline.to([this.box1, this.box2, this.box3, this.box4].map(box => 
+    // SVG drawing animation
+    const svg = this.vilcabanaSvg.nativeElement;
+    const paths = Array.from(svg.querySelectorAll('path')) as SVGPathElement[];
+    
+    // Sort paths by x position
+    const sortedPaths = [...paths].sort((a, b) => {
+      const ax = a.getBBox?.()?.x ?? 0;
+      const bx = b.getBBox?.()?.x ?? 0;
+      return ax - bx;
+    });
+    
+    // Set initial state for paths
+    sortedPaths.forEach(path => {
+      const len = path.getTotalLength?.() ?? 0;
+      gsap.set(path, {
+        fill: 'none',
+        stroke: '#d2e4cc',
+        strokeWidth: 0.9,
+        strokeDasharray: len,
+        strokeDashoffset: len,
+        opacity: 1
+      });
+    });
+    
+    // Animate SVG draw
+    const writeDuration = 0.9;
+    const staggerGap = 0.055;
+    const writeStart = this.timeline!.duration();
+    
+    sortedPaths.forEach((path, i) => {
+      this.timeline!.to(
+        path,
+        { strokeDashoffset: 0, duration: writeDuration, ease: 'power2.inOut' },
+        writeStart + i * staggerGap
+      );
+    });
+    
+    // Fill paths
+    sortedPaths.forEach((path, i) => {
+      const fillStart = writeStart + i * staggerGap + writeDuration * 0.6;
+      this.timeline!.to(
+        path,
+        { fill: '#d2e4cc', strokeWidth: 0, strokeOpacity: 0, duration: 0.5, ease: 'power2.inOut' },
+        fillStart
+      );
+    });
+    
+    this.timeline!.to([this.box1, this.box2, this.box3, this.box4].map(box => 
       box.nativeElement.querySelector('img')), { 
         filter: 'grayscale(0%)', 
         duration: 1, 
         ease: 'power2.out',
         force3D: true,
         stagger: 0.1
-      }, '-=0.3');
+      }, '-=0');
 
-    this.timeline.to(this.circleGroup.nativeElement, { 
+    this.timeline!.to(this.circleGroup.nativeElement, { 
       opacity: 0, 
       duration: 0.4, 
       ease: 'power2.out'
-    }, '+=0.5');
+    }, '+=0');
     
-    this.timeline.to(this.screen.nativeElement, { 
+    this.timeline!.to(this.screen.nativeElement, { 
       backgroundColor: '#AEC2A9', 
       duration: 0.8, 
       ease: 'power2.out',
       onStart: () => {
         this.unblockScrollAndInteraction();
 
-        if (this.nameContainer && this.nameContainer.nativeElement) {
-          const svgElements = this.nameContainer.nativeElement.querySelectorAll('path, text, polygon, rect, circle, tspan, line, polyline, g');
-          svgElements.forEach((el: Element) => {
-            try {
-              this.renderer.setStyle(el, 'fill', '#ffffff');
-              this.renderer.setStyle(el, 'stroke', '#ffffff');
-            } catch (e) {
-            }
-          });
-        }
-
         if (this.vilcabanaSvg && this.vilcabanaSvg.nativeElement) {
-          try {
-            const nodes = this.vilcabanaSvg.nativeElement.querySelectorAll('*');
-            nodes.forEach((n: Element) => {
-              this.renderer.setStyle(n, 'fill', '#ffffff');
-              this.renderer.setStyle(n, 'stroke', '#ffffff');
+          const svgElements = this.vilcabanaSvg.nativeElement.querySelectorAll('path');
+          svgElements.forEach((el: Element) => {
+            gsap.to(el, {
+              fill: '#ffffff',
+              duration: 0.3,
+              ease: 'power2.out'
             });
-          } catch (e) { }
+          });
         }
       }
     }, '-=0.4');
 
-    this.timeline.to(this.logoSvg.nativeElement, { 
+    this.timeline!.to(this.logoSvg.nativeElement, { 
       filter: 'brightness(0) invert(1)',
       duration: 0.3,
       ease: 'power2.out'
     }, '-=0.7');
 
-    this.timeline.to(this.vilcabanaSvg.nativeElement, { 
+    this.timeline!.to(this.vilcabanaSvg.nativeElement, { 
       filter: 'brightness(0) invert(1)',
       duration: 0.3,
       ease: 'power2.out'
     }, '-=0.7');
 
-    this.timeline.to(this.screen.nativeElement, { 
+    this.timeline!.to(this.screen.nativeElement, { 
       y: '-100%', 
       duration: 0.6, 
       ease: 'power2.inOut',
