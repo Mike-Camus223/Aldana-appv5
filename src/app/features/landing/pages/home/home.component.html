@@ -102,33 +102,39 @@
 />
   </div>
 </section> -->
-<section>
+<section class="w-full overflow-hidden">
 
+  <div class="relative flex items-center justify-center min-h-[260px] sm:min-h-[320px] lg:min-h-[360px] px-6 py-16 sm:py-20 overflow-hidden">
 
-<div class="relative flex items-center justify-center min-h-[400px] py-5 overflow-hidden">
+    <div class="absolute left-1/2 top-8 sm:top-10 lg:top-12 -translate-x-1/2 opacity-30 w-20 sm:w-24 lg:w-28 pointer-events-none select-none">
+      <img
+        src="../../../../../assets/svg/logo.svg"
+        alt="logo"
+        class="w-full h-full object-contain"
+        draggable="false" />
+    </div>
 
-  <!-- fondo decorativo -->
-  <div class="absolute w-25 h-25 opacity-40 left-1/2 top-7 -translate-x-1/2">
-    <img src="../../../../../assets/svg/logo.svg" alt="logo" class="w-full h-full object-contain" draggable="false" />
+    <div class="relative z-10 flex flex-col items-center text-center pt-16 sm:pt-20 lg:pt-24">
+
+      <p
+        appWordReveal
+        class="max-w-[320px] sm:max-w-2xl lg:max-w-3xl text-[24px] leading-[1.5] sm:text-[36px] sm:leading-[1.4] lg:text-[48px] lg:leading-[1.3] italic font-light tracking-[0.01em] text-aldy-green-gray-bold NewAldyTitle">
+
+        "Creo con pasi<span class="NewAldyFontTypeAccent relative -top-[1px]">ó</span>n,
+        dise<span class="NewAldyFontTypeAccent relative -top-[1px]">ñ</span>o con honestidad
+        para que seas tu misma".
+
+      </p>
+
+      <img
+        src="../../../../../assets/images/firma2.png"
+        alt="firma"
+        class="mt-8 sm:mt-10 w-20 sm:w-24 lg:w-28 object-contain opacity-90"
+        draggable="false" />
+
+    </div>
+
   </div>
-
-  <!-- TEXTO centrado en X e Y -->
-  <p appWordReveal
-    class="relative text-4xl italic tracking-wider text-center NewAldyTitle font-light text-aldy-green-gray-bold z-10 max-w-2xl">
-    "Creo con pasi<span class="NewAldyFontTypeAccent relative -top-[1px]">ó</span>n, dise<span class="NewAldyFontTypeAccent relative -top-[1px]">ñ</span>o con honestidad para que seas tu misma".
-  </p>
-
-  <!-- FIRMA abajo centrada absoluta -->
-  <div class="absolute bottom-2 left-1/2 -translate-x-1/2 z-10">
-    <img
-      src="../../../../../assets/images/firma2.png"
-      alt="firma"
-      class="w-25 object-contain"
-      draggable="false"
-    />
-  </div>
-
-</div>
 
 </section>
 <!-- 
@@ -151,3 +157,4 @@
 <div class="py-6">
   <div class="h-[32px]"></div>
 </div>
+
