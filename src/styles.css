@@ -2,6 +2,7 @@
 @import "primeicons/primeicons.css";
 @import '@fancyapps/ui/dist/carousel/carousel.css';
 @import '@fancyapps/ui/dist/carousel/carousel.thumbs.css';
+@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
 
 /* =========================
    THEME COLORS
@@ -86,6 +87,9 @@
 .NewAldyFontType3 { font-family: 'NewAldyFont-type3'; }
 .NewAldyFontType4 { font-family: 'NewAldyFont-type4'; }
 .NewAldyFontTypeAccent { font-family: 'accent-aldy'; }
+.cursiveTitle { font-family: 'Great Vibes', cursive; }
+
+
 
 /* =========================
    CUSTOM SCROLLBAR (GLOBAL)

@@ -10,7 +10,7 @@ import { TriplesectionComponent } from '../../../../shared/components/sections/t
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [RouterModule, WordRevealDirective, ReelsSectionComponent,TriplesectionComponent],
+  imports: [RouterModule, WordRevealDirective, ReelsSectionComponent, TriplesectionComponent, AboutSecHomeComponent],
   templateUrl: './home.component.html',
   styles: ``
 })

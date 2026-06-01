@@ -15,6 +15,7 @@ import { Subject, takeUntil } from 'rxjs';
 import { LoaderService } from '../../../../core/services/utils/loader.service';
 import { WordRevealDirective } from '../../../utils/directives/word-reveal.directive';
 import { FadeUpLetterDirective } from '../../../utils/directives/fadeupletter.directive';
+import { RouterModule } from '@angular/router';
 
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger);
@@ -26,7 +27,8 @@ if (typeof window !== 'undefined') {
   imports: [
     CommonModule,
     WordRevealDirective,
-    FadeUpLetterDirective
+    FadeUpLetterDirective,
+    RouterModule,
   ],
   templateUrl: './about-sec-home.component.html',
   styleUrl: './about-sec-home.component.css',
