@@ -36,3 +36,13 @@
 .material-icons {
     font-size: 21px;
 }
+
+/* footerv2.component.css
+   Estilos adicionales para el footer.
+   La mayoría del diseño está gestionado por Tailwind en el HTML.
+*/
+
+/* Asegura que los acordeones en mobile hereden bien el color del texto */
+app-acordiongeneric {
+  display: block;
+}

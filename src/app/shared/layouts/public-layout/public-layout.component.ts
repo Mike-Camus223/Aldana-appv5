@@ -4,7 +4,6 @@ import { Footerv2Component } from '../../components/system/footerv2/footerv2.com
 import { RouterOutlet } from '@angular/router';
 import { LoaderService } from '../../../core/services/utils/loader.service';
 import { Subscription, filter } from 'rxjs';
-import { NewsletterComponent } from "../../components/system/newsletter/newsletter.component";
 import { NavbarPublicv3Component } from '../../components/system/navbar-publicv3/navbar-publicv3.component';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -19,7 +18,6 @@ gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
     RouterOutlet,
     NavbarPublicv3Component,
     Footerv2Component,
-    NewsletterComponent
 ],
   templateUrl: './public-layout.component.html',
   styles: ``
