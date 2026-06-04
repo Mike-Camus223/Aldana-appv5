@@ -1,129 +1,228 @@
-<div class="w-full max-w-screen px-4 py-1 select-none">
-  <app-carousel-images-genericv2
-    *ngIf="reels && reels.length > 0"
-    [images]="reels"
-    [slidesPerView]="slidesPerView"
-    [spacing]="spacing"
-    [breakpoints]="breakpoints"
-    [aspectRatio]="'4 / 5'"
-    [hoverOverlay]="true"
-    [hoverIconClass]="'fab fa-instagram'"
-    (imageClick)="openModal($event)"
-  ></app-carousel-images-genericv2>
+<!-- ════════════════════════════════════════════════════════
+     REELS SECTION  —  Aldana Vilcabana
+     Usa AppGenericCarouselComponent + CarouselItemDirective
+     ════════════════════════════════════════════════════════ -->
 
-  <div *ngIf="!reels || reels.length === 0" class="text-center py-8">
-    <p class="text-aldy-green-gray NewAldyFontType4 text-sm">No hay reels disponibles</p>
+<section class="w-full select-none py-2 px-4">
+
+  <!-- ══════════════════════════════════════════════════════
+       CAROUSEL  —  app-generic-carousel
+       ══════════════════════════════════════════════════════ -->
+  <app-generic-carousel [config]="carouselConfig">
+
+    <!--
+      Cada reel es un ng-template con la directiva carouselItem.
+      El click se maneja dentro del slide para pasar el índice.
+    -->
+    <ng-template
+      carouselItem
+      *ngFor="let reel of reels; let i = index; trackBy: trackByReelId"
+    >
+
+      <!-- Contenedor ratio 4/5 estilo reel de Instagram -->
+      <div
+        class="relative w-full overflow-hidden rounded-2xl group cursor-pointer"
+        style="padding-bottom: 125%;"
+        (click)="openModal(i)"
+      >
+
+        <!-- Thumbnail -->
+        <img
+          [src]="reel.image_url"
+          [alt]="reel.caption"
+          class="absolute inset-0 w-full h-full object-cover object-center
+                 scale-[1.04] group-hover:scale-110
+                 transition-transform duration-700 ease-out"
+          draggable="false"
+          loading="lazy"
+        />
+
+        <!-- Overlay oscuro al hover -->
+        <div
+          class="absolute inset-0 bg-black/0 group-hover:bg-black/30
+                 transition-all duration-500 ease-out"
+        ></div>
+
+        <!-- Ícono play centrado -->
+        <div
+          class="absolute inset-0 flex items-center justify-center
+                 opacity-70 group-hover:opacity-100
+                 transition-opacity duration-300"
+        >
+          <div
+            class="w-11 h-11 rounded-full bg-white/80 group-hover:bg-white
+                   flex items-center justify-center
+                   shadow-lg group-hover:scale-110
+                   transition-all duration-300"
+          >
+            <i class="fas fa-play text-gray-800 text-sm ml-0.5"></i>
+          </div>
+        </div>
+
+        <!-- Badge CAROUSEL_ALBUM -->
+        <div
+          *ngIf="reel.media_type === 'CAROUSEL_ALBUM'"
+          class="absolute top-2.5 right-2.5 z-10"
+        >
+          <div class="w-6 h-6 flex items-center justify-center">
+            <i class="fas fa-clone text-white text-xs drop-shadow"></i>
+          </div>
+        </div>
+
+      </div>
+    </ng-template>
+
+  </app-generic-carousel>
+
+  <!-- Empty state -->
+  <div
+    *ngIf="!reels || reels.length === 0"
+    class="text-center py-8"
+  >
+    <p class="text-aldy-green-gray NewAldyFontType4 text-sm">
+      No hay reels disponibles
+    </p>
   </div>
-</div>
 
+</section>
+
+
+<!-- ══════════════════════════════════════════════════════════════════
+     MODAL  —  Diseño estilo Instagram
+     ══════════════════════════════════════════════════════════════════ -->
 <app-modal
   [(open)]="showModal"
   [Mostyles]="modalStyles"
   (openChange)="onModalChange($event)"
 >
   <ng-container *ngIf="selectedReel">
+
     <div
-      class="flex flex-col lg:flex-row bg-white overflow-hidden"
+      class="flex bg-white overflow-hidden"
       [ngClass]="{
-        'h-screen w-screen': isMobile,
-        'w-auto h-auto': !isMobile
+        'flex-col h-screen w-screen': isMobile,
+        'flex-row w-auto':           !isMobile
       }"
     >
-      <!-- MEDIA IZQUIERDA -->
+
+      <!-- ════════════════════════════════════
+           COLUMNA IZQUIERDA  —  Media
+           ════════════════════════════════════ -->
       <div
-        class="bg-black flex items-center justify-center relative"
+        class="relative bg-black flex items-center justify-center overflow-hidden"
         [ngClass]="{
-          'w-full h-1/2': isMobile,
-          'w-auto h-auto max-h-[90vh]': !isMobile
+          'w-full flex-1 min-h-0': isMobile,
+          'w-[400px] h-[95vh]':   !isMobile
         }"
       >
-        <div class="relative w-full h-full flex items-center justify-center">
-          <div
-            *ngIf="isMediaLoading"
-            class="absolute inset-0 flex items-center justify-center z-20"
-          >
-            <div class="spinner"></div>
-          </div>
-          
-          <img
-            *ngIf="!isVideo(currentMedia)"
-            [src]="currentMedia.url"
-            class="w-full h-full object-contain"
-            loading="lazy"
-            (load)="onMediaLoaded($event)"
-            (error)="onMediaLoaded($event)"
-          />
-          
-          <video
-            *ngIf="isVideo(currentMedia)"
-            [src]="currentMedia.url"
-            autoplay
-            loop
-            playsinline
-            [muted]="isMuted"
-            class="w-full h-full object-contain"
-            preload="metadata"
-            (loadeddata)="onMediaLoaded($any($event))"
-            (error)="onMediaLoaded($any($event))"
-          ></video>
 
-          <button
-            *ngIf="isVideo(currentMedia)"
-            (click)="toggleMute()"
-            class="absolute bottom-4 cursor-pointer right-4 w-10 h-10 bg-black/60 hover:bg-black/80 rounded-full flex items-center justify-center transition-all z-10"
-          >
-            <i
-              [class]="isMuted ? 'fas fa-volume-mute' : 'fas fa-volume-up'"
-              class="text-white text-sm"
-            ></i>
-          </button>
+        <!-- Loading spinner -->
+        <div
+          *ngIf="isMediaLoading"
+          class="absolute inset-0 flex items-center justify-center z-20 bg-black/60"
+        >
+          <div class="w-8 h-8 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
         </div>
 
+        <!-- Imagen -->
+        <img
+          *ngIf="!isVideo(currentMedia)"
+          [src]="currentMedia.url"
+          class="w-full h-full object-contain"
+          loading="lazy"
+          (load)="onMediaLoaded($event)"
+          (error)="onMediaLoaded($event)"
+        />
+
+        <!-- Video -->
+        <video
+          *ngIf="isVideo(currentMedia)"
+          [src]="currentMedia.url"
+          autoplay
+          loop
+          playsinline
+          [muted]="isMuted"
+          class="w-full h-full object-contain"
+          preload="metadata"
+          (loadeddata)="onMediaLoaded($any($event))"
+          (error)="onMediaLoaded($any($event))"
+        ></video>
+
+        <!-- Botón mute -->
+        <button
+          *ngIf="isVideo(currentMedia)"
+          (click)="toggleMute()"
+          class="absolute bottom-4 right-4 z-10
+                 w-9 h-9 rounded-full
+                 bg-black/60 hover:bg-black/80
+                 flex items-center justify-center
+                 transition-all duration-200 cursor-pointer"
+        >
+          <i
+            [class]="isMuted ? 'fas fa-volume-mute' : 'fas fa-volume-up'"
+            class="text-white text-xs"
+          ></i>
+        </button>
+
+        <!-- Flechas multi-media (solo desktop) -->
         <button
           *ngIf="hasMultipleMedia && currentMediaIndex > 0 && !isMobile"
           (click)="prevMedia()"
-          class="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-lg transition-all z-10"
+          class="absolute left-3 top-1/2 -translate-y-1/2 z-10
+                 w-8 h-8 rounded-full bg-white/90 hover:bg-white
+                 flex items-center justify-center shadow-md
+                 transition-all duration-200 cursor-pointer"
         >
-          <i class="fas fa-chevron-left text-gray-800"></i>
+          <i class="fas fa-chevron-left text-gray-700 text-xs"></i>
         </button>
 
         <button
           *ngIf="hasMultipleMedia && currentMediaIndex < selectedReel.media.length - 1 && !isMobile"
           (click)="nextMedia()"
-          class="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-lg transition-all z-10"
+          class="absolute right-3 top-1/2 -translate-y-1/2 z-10
+                 w-8 h-8 rounded-full bg-white/90 hover:bg-white
+                 flex items-center justify-center shadow-md
+                 transition-all duration-200 cursor-pointer"
         >
-          <i class="fas fa-chevron-right text-gray-800"></i>
+          <i class="fas fa-chevron-right text-gray-700 text-xs"></i>
         </button>
 
+        <!-- Dots multi-media -->
         <div
-          *ngIf="hasMultipleMedia && !isMobile"
-          class="absolute top-4 left-1/2 -translate-x-1/2 flex gap-1 z-10"
+          *ngIf="hasMultipleMedia"
+          class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 z-10"
         >
-          <div
-            *ngFor="let media of selectedReel.media; let i = index; trackBy: trackByMediaIndex"
+          <button
+            *ngFor="let m of selectedReel.media; let i = index; trackBy: trackByMediaIndex"
             (click)="goToMedia(i)"
-            class="cursor-pointer transition-all"
+            class="rounded-full transition-all duration-200 p-0 border-none cursor-pointer"
             [ngClass]="{
-              'w-2 h-2 rounded-full bg-white': i === currentMediaIndex,
-              'w-2 h-2 rounded-full bg-white/50': i !== currentMediaIndex
+              'w-2.5 h-2.5 bg-white':         i === currentMediaIndex,
+              'w-2 h-2 bg-white/60 hover:bg-white': i !== currentMediaIndex
             }"
-          ></div>
+          ></button>
         </div>
+
       </div>
 
-      <!-- INFO DERECHA -->
+
+      <!-- ════════════════════════════════════
+           COLUMNA DERECHA  —  Info Instagram
+           ════════════════════════════════════ -->
       <div
-        class="w-full lg:w-[340px] flex flex-col bg-aldy-white border-l border-gray-200"
+        class="flex flex-col bg-white border-l border-gray-100"
         [ngClass]="{
-          'h-1/2': isMobile,
-          'h-auto': !isMobile
+          'w-full flex-shrink-0 overflow-hidden': isMobile,
+          'w-[340px] h-[95vh]':                  !isMobile
         }"
+        [style.height]="isMobile ? '55%' : ''"
       >
-        <div
-          class="px-3 py-4 border-b border-gray-200 flex items-start gap-2.5 flex-shrink-0"
-          [ngClass]="{ 'max-h-[30%]': isMobile }"
-        >
-          <div class="w-9 h-9 rounded-full overflow-hidden flex-shrink-0">
+
+        <!-- ── Header ───────────────────────────────────────────────── -->
+        <div class="flex items-center gap-3 px-4 py-3 border-b border-gray-100 flex-shrink-0">
+
+          <!-- Avatar -->
+          <div class="w-9 h-9 rounded-full overflow-hidden flex-shrink-0 ring-2 ring-gray-100">
             <img
               *ngIf="selectedReel.profile_picture_url"
               [src]="selectedReel.profile_picture_url"
@@ -132,90 +231,163 @@
             />
             <div
               *ngIf="!selectedReel.profile_picture_url"
-              class="w-full h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center"
+              class="w-full h-full flex items-center justify-center text-white font-semibold text-xs"
+              [style.background]="getAvatarGradient(selectedReel.username)"
             >
-              <i class="fab fa-instagram text-white text-sm"></i>
+              {{ getInitials(selectedReel.username) }}
             </div>
           </div>
 
-          <div class="flex flex-col min-w-0 flex-1 overflow-hidden">
-            <span class="NewAldyTitle text-aldy-green-gray-bold text-sm flex-shrink-0">
+          <!-- Username -->
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-semibold text-gray-900 leading-tight truncate NewAldyTitle">
               {{ selectedReel.username }}
-            </span>
-            <p
-              class="NewAldyFontType4 text-aldy-green-gray text-xs leading-relaxed mt-1 break-words overflow-y-auto scrollbar-hide"
-              [ngClass]="{
-                'max-h-20': isMobile,
-                'pr-2': isMobile
-              }"
-            >
-              {{ selectedReel.caption }}
             </p>
           </div>
         </div>
 
-        <div 
-          class="overflow-y-auto scrollbar-hide px-3 py-4 space-y-4"
-          [ngClass]="{
-            'flex-1 min-h-0': isMobile,
-            'flex-1': !isMobile
-          }"
-        >
-          <div
-            class="comment-block flex gap-2.5"
-            *ngFor="let comment of selectedReel.comments; trackBy: trackByCommentIndex"
-          >
-            <div class="w-8 h-8 rounded-full overflow-hidden flex-shrink-0">
+
+        <!-- ── Scroll: caption + comentarios ────────────────────────── -->
+        <div class="flex-1 overflow-y-auto min-h-0 scrollbar-hide">
+
+          <!-- Caption -->
+          <div class="flex gap-3 px-4 py-3">
+            <div class="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 mt-0.5">
               <img
-                *ngIf="comment.profile_pic"
-                [src]="comment.profile_pic"
+                *ngIf="selectedReel.profile_picture_url"
+                [src]="selectedReel.profile_picture_url"
                 class="w-full h-full object-cover"
                 loading="lazy"
               />
               <div
-                *ngIf="!comment.profile_pic"
-                class="w-full h-full flex items-center justify-center text-white font-semibold text-xs"
-                [style.background]="getAvatarColor(comment.user)"
+                *ngIf="!selectedReel.profile_picture_url"
+                class="w-full h-full flex items-center justify-center text-white text-xs font-semibold"
+                [style.background]="getAvatarGradient(selectedReel.username)"
               >
-                {{ comment.initials || getInitials(comment.user) }}
+                {{ getInitials(selectedReel.username) }}
               </div>
             </div>
-
             <div class="flex-1 min-w-0">
-              <p class="NewAldyFontType4 text-aldy-green-gray break-words">
-                <span class="NewAldyTitle text-sm text-aldy-green-gray-bold">
-                  {{ comment.user }}
-                </span>
-                <span class="text-xs">
-                  {{ comment.text }}
-                </span>
+              <p class="text-sm text-gray-800 leading-relaxed break-words NewAldyFontType4">
+                <span class="font-semibold text-gray-900 NewAldyTitle mr-1">
+                  {{ selectedReel.username }}
+                </span>{{ selectedReel.caption }}
               </p>
-              <span class="NewAldyFontType4 text-gray-500 text-xs">{{ comment.time }}</span>
+              <p class="text-xs text-gray-400 mt-1 NewAldyFontType4">
+                {{ formatTimestamp(selectedReel.timestamp) }}
+              </p>
             </div>
           </div>
-        </div>
 
-        <div class="px-3 py-4 border-t border-gray-200 flex-shrink-0">
-          <a
-            [href]="selectedReel.post_url"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="text-aldy-green-gray text-2xl mr-2 inline-block"
+          <!-- Título sección comentarios -->
+          <div
+            *ngIf="selectedReel.comments && selectedReel.comments.length > 0"
+            class="px-4 pb-1"
           >
-            <i class="fab fa-instagram"></i>
-          </a>
+            <p class="text-xs font-semibold text-gray-500 uppercase tracking-widest NewAldyFontType4">
+              Comentarios
+            </p>
+          </div>
 
-          <p class="NewAldyTitle text-aldy-green-gray-bold text-sm mt-2">
-            {{ selectedReel.like_count || 0 }} me gusta
-          </p>
-          <p class="NewAldyFontType4 text-aldy-green-gray text-sm">
-            {{ selectedReel.comments_count || 0 }} comentarios
-          </p>
-          <p class="NewAldyFontType4 text-gray-500 text-xs mt-1">
-            {{ formatTimestamp(selectedReel.timestamp) }}
-          </p>
+          <!-- Lista comentarios -->
+          <div class="space-y-0">
+            <div
+              *ngFor="let comment of selectedReel.comments; trackBy: trackByCommentIndex"
+              class="flex gap-3 px-4 py-2.5 hover:bg-gray-50/70 transition-colors duration-150"
+            >
+              <div class="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 mt-0.5">
+                <img
+                  *ngIf="comment.profile_pic"
+                  [src]="comment.profile_pic"
+                  class="w-full h-full object-cover"
+                  loading="lazy"
+                />
+                <div
+                  *ngIf="!comment.profile_pic"
+                  class="w-full h-full flex items-center justify-center text-white font-semibold text-xs"
+                  [style.background]="getAvatarColor(comment.user)"
+                >
+                  {{ comment.initials || getInitials(comment.user) }}
+                </div>
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-sm text-gray-800 leading-relaxed break-words NewAldyFontType4">
+                  <span class="font-semibold text-gray-900 NewAldyTitle mr-1">
+                    {{ comment.user }}
+                  </span>{{ comment.text }}
+                </p>
+                <span class="text-xs text-gray-400 NewAldyFontType4">{{ comment.time }}</span>
+              </div>
+              <button class="flex-shrink-0 mt-1 cursor-pointer text-gray-300 hover:text-gray-500 transition-colors duration-150">
+                <i class="far fa-heart text-xs"></i>
+              </button>
+            </div>
+          </div>
+
         </div>
+
+
+        <!-- ── Footer: acciones + likes ─────────────────────────────── -->
+        <div class="border-t border-gray-100 flex-shrink-0">
+
+          <div class="flex items-center gap-1 px-3 pt-3 pb-1">
+
+            <button class="p-2 rounded-full hover:bg-gray-100 transition-colors duration-200 cursor-pointer">
+              <i class="far fa-heart text-gray-800 text-xl"></i>
+            </button>
+
+            <button class="p-2 rounded-full hover:bg-gray-100 transition-colors duration-200 cursor-pointer">
+              <svg class="w-5 h-5 text-gray-800" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+              </svg>
+            </button>
+
+            <button class="p-2 rounded-full hover:bg-gray-100 transition-colors duration-200 cursor-pointer">
+              <svg class="w-5 h-5 text-gray-800" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="22" y1="2" x2="11" y2="13"/>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+              </svg>
+            </button>
+
+            <div class="flex-1"></div>
+
+            <button class="p-2 rounded-full hover:bg-gray-100 transition-colors duration-200 cursor-pointer">
+              <i class="far fa-bookmark text-gray-800 text-lg"></i>
+            </button>
+
+          </div>
+
+          <div class="px-4 pb-3 space-y-0.5">
+            <p class="text-sm font-semibold text-gray-900 NewAldyTitle">
+              {{ selectedReel.like_count || 0 | number }} Me gusta
+            </p>
+            <p class="text-xs text-gray-400 NewAldyFontType4 uppercase tracking-wide">
+              {{ formatTimestamp(selectedReel.timestamp) }}
+            </p>
+          </div>
+
+          <!-- Campo comentario (decorativo) + link Instagram -->
+          <div class="flex items-center gap-2 px-4 py-2.5 border-t border-gray-100">
+            <div class="flex-1 flex items-center gap-2 text-gray-400">
+              <span class="text-sm NewAldyFontType4">Agrega un comentario...</span>
+            </div>
+            <a
+              [href]="selectedReel.post_url"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-sky-500 hover:text-sky-600 text-sm font-semibold
+                     transition-colors duration-200 NewAldyTitle cursor-pointer"
+            >
+              <i class="fab fa-instagram text-lg text-gray-700"></i>
+            </a>
+          </div>
+
+        </div>
+
       </div>
     </div>
+
   </ng-container>
 </app-modal>

@@ -9,51 +9,60 @@ import {
   ChangeDetectorRef,
 } from '@angular/core';
 import { PLATFORM_ID } from '@angular/core';
-import { ModalComponent, } from '../../generic/modal/modal.component';
-import { SupabaseService } from '../../../../core/services/data-access/supabase.service';
-import { CarouselImagesGenericv2Component } from '../../generic/carousel-images-genericv2/carousel-images-genericv2.component';
 import { Subject } from 'rxjs';
 import { debounceTime, takeUntil } from 'rxjs/operators';
+
+// ── Tus componentes/servicios ──────────────────────────────────────────────
+import { ModalComponent } from '../../generic/modal/modal.component';
 import { InstagramserviceService } from '../../../../core/services/data-access/instagram/instagramservice.service';
+import { AppGenericCarouselComponent, CarouselConfig } from '../../generic/generic-carousel/generic-carousel.component';
+import { CarouselItemDirective } from '../../../utils/directives/carousel-slide.directive';
+// ── Carousel genérico que creamos ─────────────────────────────────────────
+
 
 @Component({
   selector: 'app-reels-section',
   standalone: true,
-  imports: [CommonModule, ModalComponent, CarouselImagesGenericv2Component],
+  imports: [
+    CommonModule,
+    ModalComponent,
+    AppGenericCarouselComponent,
+    CarouselItemDirective
+            // <-- directiva nueva (carouselItem)
+  ],
   templateUrl: './reels-section.component.html',
-  styleUrls: ['./reels-section.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ReelsSectionComponent implements OnInit, OnDestroy {
-  showModal = false;
-  reels: any[] = [];
+
+  // ── Estado del modal ─────────────────────────────────────────────────────
+  showModal        = false;
   selectedReel: any = null;
-  isMobile = false;
-  isMediaLoading = true;
-  modalStyles = '';
-  slidesPerView = 2;
-  spacing = 5;
+  isMediaLoading   = true;
+  modalStyles      = '';
+  isMobile         = false;
   currentMediaIndex = 0;
-  isMuted = true;
+  isMuted          = true;
 
-  private scrollPosition = 0;
-  private destroy$ = new Subject<void>();
-  private resizeSubject$ = new Subject<void>();
+  // ── Datos ────────────────────────────────────────────────────────────────
+  reels: any[] = [];
+
+  // ── Config del carousel ──────────────────────────────────────────────────
+  // El objeto se recalcula en handleResize() para ajustar visibleItems
+  carouselConfig: CarouselConfig = this.buildCarouselConfig(2);
+
+  // ── Internos ─────────────────────────────────────────────────────────────
+  private scrollPosition   = 0;
+  private destroy$         = new Subject<void>();
+  private resizeSubject$   = new Subject<void>();
   private avatarColorCache = new Map<string, string>();
-  private initialsCache = new Map<string, string>();
-  private timestampCache = new Map<string, string>();
-
-  breakpoints: any = {
-    '(min-width: 640px)': { slides: { perView: 2, spacing: 5 } },
-    '(min-width: 768px)': { slides: { perView: 3, spacing: 5 } },
-    '(min-width: 1024px)': { slides: { perView: 4, spacing: 5 } },
-    '(min-width: 1280px)': { slides: { perView: 5, spacing: 5 } },
-  };
+  private initialsCache    = new Map<string, string>();
+  private timestampCache   = new Map<string, string>();
 
   constructor(
     private instagramService: InstagramserviceService,
     private cdr: ChangeDetectorRef,
-    @Inject(PLATFORM_ID) private platformId: Object
+    @Inject(PLATFORM_ID) private platformId: Object,
   ) {
     this.resizeSubject$
       .pipe(debounceTime(150), takeUntil(this.destroy$))
@@ -61,27 +70,16 @@ export class ReelsSectionComponent implements OnInit, OnDestroy {
   }
 
   @HostListener('window:resize')
-  onResize() {
-    this.resizeSubject$.next();
-  }
+  onResize() { this.resizeSubject$.next(); }
 
-  private handleResize(): void {
-    if (isPlatformBrowser(this.platformId)) {
-      const wasMobile = this.isMobile;
-      this.isMobile = window.innerWidth < 1024;
-      
-      if (wasMobile !== this.isMobile) {
-        this.updateModalStyles();
-        this.cdr.markForCheck();
-      }
-    }
-  }
+  // ── Lifecycle ─────────────────────────────────────────────────────────────
 
   async ngOnInit(): Promise<void> {
     await this.loadInstagramReels();
 
     if (isPlatformBrowser(this.platformId)) {
       this.isMobile = window.innerWidth < 1024;
+      this.updateCarouselConfig();
       this.updateModalStyles();
       this.cdr.markForCheck();
     }
@@ -97,10 +95,57 @@ export class ReelsSectionComponent implements OnInit, OnDestroy {
     this.unlockScroll();
   }
 
-  onMediaLoaded(_event?: Event): void {
-    this.isMediaLoading = false;
+  // ── Carousel config helpers ───────────────────────────────────────────────
+
+  /**
+   * Devuelve cuántos slides mostrar según el ancho de ventana actual.
+   * Replica los breakpoints: xs=2, sm=3, md=4, lg=5
+   */
+  private getVisibleItems(): number {
+    if (!isPlatformBrowser(this.platformId)) return 2;
+    const w = window.innerWidth;
+    if (w >= 1280) return 5;
+    if (w >= 1024) return 4;
+    if (w >= 768)  return 3;
+    return 2;
+  }
+
+  private buildCarouselConfig(visibleItems: number): CarouselConfig {
+    return {
+      visibleItems,
+      gap:              8,
+      loop:             true,
+      showArrows:       true,
+      showDots:         false,
+      dragEnabled:      true,
+      animationDuration: 450,
+    };
+  }
+
+  private updateCarouselConfig(): void {
+    const visible = this.getVisibleItems();
+    this.carouselConfig = this.buildCarouselConfig(visible);
     this.cdr.markForCheck();
   }
+
+  // ── Resize handler ────────────────────────────────────────────────────────
+
+  private handleResize(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+
+    const wasMobile = this.isMobile;
+    this.isMobile = window.innerWidth < 1024;
+
+    this.updateCarouselConfig();
+
+    if (wasMobile !== this.isMobile) {
+      this.updateModalStyles();
+    }
+
+    this.cdr.markForCheck();
+  }
+
+  // ── Carga de datos ────────────────────────────────────────────────────────
 
   private async loadInstagramReels(): Promise<void> {
     try {
@@ -112,122 +157,68 @@ export class ReelsSectionComponent implements OnInit, OnDestroy {
         return;
       }
 
-      this.reels = data.map((item: any) => 
+      this.reels = data.map((item: any) =>
         Object.freeze({
-          id: item.id,
-          image_url: item.image_url || item.thumbnail_url,
-          caption: item.caption || '',
-          hashtags: item.hashtags || '',
-          post_url: item.post_url || item.permalink,
-          media_type: item.media_type,
-          media_url: item.media_url,
-          like_count: item.like_count || 0,
-          comments_count: item.comments_count || 0,
-          timestamp: item.timestamp,
-          comments: Array.isArray(item.comments) ? Object.freeze(item.comments) : [],
-          media: Object.freeze(item.media || [{
-            url: item.media_url,
-            type: item.media_type === 'VIDEO' || item.media_type === 'REELS' ? 'video' : 'image',
-          }]),
+          id:                  item.id,
+          image_url:           item.image_url || item.thumbnail_url,
+          caption:             item.caption    || '',
+          hashtags:            item.hashtags   || '',
+          post_url:            item.post_url   || item.permalink,
+          media_type:          item.media_type,
+          media_url:           item.media_url,
+          like_count:          item.like_count     || 0,
+          comments_count:      item.comments_count || 0,
+          timestamp:           item.timestamp,
+          comments:            Array.isArray(item.comments)
+                                 ? Object.freeze(item.comments)
+                                 : [],
+          media:               Object.freeze(
+                                 item.media || [{
+                                   url:  item.media_url,
+                                   type: item.media_type === 'VIDEO' || item.media_type === 'REELS'
+                                           ? 'video'
+                                           : 'image',
+                                 }]
+                               ),
           profile_picture_url: item.profile_picture_url || '',
-          username: item.username || 'aldana_vilcabana',
+          username:            item.username || 'aldana_vilcabana',
         })
       );
 
       this.cdr.markForCheck();
-    } catch (error) {
+    } catch {
       this.reels = [];
       this.cdr.markForCheck();
     }
   }
 
+  // ── Modal ─────────────────────────────────────────────────────────────────
+
   updateModalStyles(): void {
     this.modalStyles = this.isMobile
       ? 'fixed inset-0 w-screen h-screen m-0 p-0 bg-white rounded-none overflow-hidden z-[9999]'
-      : 'w-auto max-h-[90vh] rounded-sm';
+      : 'w-auto max-h-[95vh] rounded-xl overflow-hidden shadow-2xl';
   }
 
-  formatTimestamp(timestamp: string): string {
-    if (!timestamp) return 'Fecha desconocida';
-
-    if (this.timestampCache.has(timestamp)) {
-      return this.timestampCache.get(timestamp)!;
-    }
-
-    if (timestamp.includes('Hace')) {
-      this.timestampCache.set(timestamp, timestamp);
-      return timestamp;
-    }
-
-    try {
-      const date = new Date(timestamp);
-      const now = new Date();
-      const diffMs = now.getTime() - date.getTime();
-      const diffMins = Math.floor(diffMs / 60000);
-      const diffHours = Math.floor(diffMs / 3600000);
-      const diffDays = Math.floor(diffMs / 86400000);
-
-      let result: string;
-      if (diffMins < 60) {
-        result = `Hace ${diffMins} minuto${diffMins !== 1 ? 's' : ''}`;
-      } else if (diffHours < 24) {
-        result = `Hace ${diffHours} hora${diffHours !== 1 ? 's' : ''}`;
-      } else {
-        result = `Hace ${diffDays} día${diffDays !== 1 ? 's' : ''}`;
-      }
-      
-      this.timestampCache.set(timestamp, result);
-      return result;
-    } catch (e) {
-      return 'Fecha desconocida';
-    }
-  }
-
-  private lockScroll(): void {
-    if (isPlatformBrowser(this.platformId) && this.isMobile) {
-      this.scrollPosition = window.pageYOffset || document.documentElement.scrollTop;
-      document.body.style.overflow = 'hidden';
-      document.body.style.position = 'fixed';
-      document.body.style.top = `-${this.scrollPosition}px`;
-      document.body.style.width = '100%';
-      document.body.style.touchAction = 'none';
-      document.body.classList.add('no-scroll');
-    }
-  }
-
-  private unlockScroll(): void {
-    if (isPlatformBrowser(this.platformId) && this.isMobile) {
-      document.body.style.overflow = '';
-      document.body.style.position = '';
-      document.body.style.top = '';
-      document.body.style.width = '';
-      document.body.style.touchAction = '';
-      document.body.classList.remove('no-scroll');
-      window.scrollTo(0, this.scrollPosition);
-    }
-  }
-
-  openModal(reel: any): void {
+  /**
+   * Se llama desde el template cuando el usuario hace click en un slide.
+   * El carousel emite el índice mediante (slideChange) o podés usar click directo
+   * en el template — acá recibimos el índice del reel.
+   */
+  openModal(index: number): void {
+    const reel = this.reels[index];
     if (!reel) return;
-    this.selectedReel = reel;
-    this.currentMediaIndex = 0;
-    this.isMuted = true;
-    this.isMediaLoading = true;
-    this.showModal = true;
-    this.lockScroll();
-    this.cdr.markForCheck();
-  }
 
-  closeModal(): void {
-    this.showModal = false;
-    this.unlockScroll();
-    this.cdr.markForCheck();
-    
+    this.selectedReel    = reel;
+    this.currentMediaIndex = 0;
+    this.isMuted         = true;
+    this.isMediaLoading  = true;
+
     setTimeout(() => {
-      this.currentMediaIndex = 0;
-      this.selectedReel = null;
+      this.showModal = true;
+      this.lockScroll();
       this.cdr.markForCheck();
-    }, 200);
+    }, 50);
   }
 
   onModalChange(isOpen: boolean): void {
@@ -236,36 +227,110 @@ export class ReelsSectionComponent implements OnInit, OnDestroy {
       this.unlockScroll();
       setTimeout(() => {
         this.currentMediaIndex = 0;
-        this.selectedReel = null;
+        this.selectedReel      = null;
         this.cdr.markForCheck();
       }, 200);
     }
   }
 
+  // ── Media helpers ─────────────────────────────────────────────────────────
+
+  onMediaLoaded(_event?: Event): void {
+    this.isMediaLoading = false;
+    this.cdr.markForCheck();
+  }
+
+  get currentMedia() {
+    if (!this.selectedReel?.media || this.selectedReel.media.length === 0) {
+      return { url: this.selectedReel?.image_url, type: 'image' };
+    }
+    return this.selectedReel.media[this.currentMediaIndex];
+  }
+
+  get hasMultipleMedia(): boolean {
+    return this.selectedReel?.media && this.selectedReel.media.length > 1;
+  }
+
+  nextMedia(): void {
+    if (this.selectedReel?.media &&
+        this.currentMediaIndex < this.selectedReel.media.length - 1) {
+      this.currentMediaIndex++;
+      this.isMediaLoading = true;
+      this.isMuted        = true;
+      this.cdr.markForCheck();
+    }
+  }
+
+  prevMedia(): void {
+    if (this.currentMediaIndex > 0) {
+      this.currentMediaIndex--;
+      this.isMediaLoading = true;
+      this.isMuted        = true;
+      this.cdr.markForCheck();
+    }
+  }
+
+  goToMedia(index: number): void {
+    this.currentMediaIndex = index;
+    this.isMediaLoading    = true;
+    this.isMuted           = true;
+    this.cdr.markForCheck();
+  }
+
+  toggleMute(): void {
+    this.isMuted = !this.isMuted;
+    this.cdr.markForCheck();
+  }
+
+  isVideo(media: any): boolean {
+    return media?.type === 'video';
+  }
+
+  // ── Scroll lock ───────────────────────────────────────────────────────────
+
+  private lockScroll(): void {
+    if (!isPlatformBrowser(this.platformId) || !this.isMobile) return;
+    this.scrollPosition = window.pageYOffset || document.documentElement.scrollTop;
+    document.body.style.overflow    = 'hidden';
+    document.body.style.position    = 'fixed';
+    document.body.style.top         = `-${this.scrollPosition}px`;
+    document.body.style.width       = '100%';
+    document.body.style.touchAction = 'none';
+    document.body.classList.add('no-scroll');
+  }
+
+  private unlockScroll(): void {
+    if (!isPlatformBrowser(this.platformId) || !this.isMobile) return;
+    document.body.style.overflow    = '';
+    document.body.style.position    = '';
+    document.body.style.top         = '';
+    document.body.style.width       = '';
+    document.body.style.touchAction = '';
+    document.body.classList.remove('no-scroll');
+    window.scrollTo(0, this.scrollPosition);
+  }
+
+  // ── Avatar helpers ────────────────────────────────────────────────────────
+
   getInitials(username: string): string {
     if (!username) return '?';
+    if (this.initialsCache.has(username)) return this.initialsCache.get(username)!;
 
-    if (this.initialsCache.has(username)) {
-      return this.initialsCache.get(username)!;
-    }
-
-    const cleanName = username.replace('@', '').trim();
+    const clean = username.replace('@', '').trim();
     let result: string;
 
-    if (!cleanName.includes(' ') && !cleanName.includes('_')) {
-      result = cleanName.substring(0, 2).toUpperCase();
-    } else if (cleanName.includes(' ')) {
-      const words = cleanName.split(/\s+/);
+    if (clean.includes(' ')) {
+      const words = clean.split(/\s+/);
       result = words.length === 1
         ? words[0].substring(0, 2).toUpperCase()
         : (words[0][0] + words[words.length - 1][0]).toUpperCase();
-    } else if (cleanName.includes('_')) {
-      const parts = cleanName.split('_');
+    } else if (clean.includes('_')) {
+      const parts = clean.split('_');
       result = parts.length === 1
         ? parts[0].substring(0, 2).toUpperCase()
         : (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
     } else {
-      result = cleanName.substring(0, 2).toUpperCase();
+      result = clean.substring(0, 2).toUpperCase();
     }
 
     this.initialsCache.set(username, result);
@@ -273,14 +338,12 @@ export class ReelsSectionComponent implements OnInit, OnDestroy {
   }
 
   getAvatarColor(username: string): string {
-    if (this.avatarColorCache.has(username)) {
-      return this.avatarColorCache.get(username)!;
-    }
+    if (this.avatarColorCache.has(username)) return this.avatarColorCache.get(username)!;
 
     const colors = [
-      '#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A',
-      '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E2',
-      '#F8B4D9', '#AED581', '#FFB74D', '#9575CD',
+      '#FF6B6B','#4ECDC4','#45B7D1','#FFA07A',
+      '#98D8C8','#F7DC6F','#BB8FCE','#85C1E2',
+      '#F8B4D9','#AED581','#FFB74D','#9575CD',
     ];
 
     let hash = 0;
@@ -303,8 +366,6 @@ export class ReelsSectionComponent implements OnInit, OnDestroy {
       'linear-gradient(135deg, #30cfd0 0%, #330867 100%)',
       'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
       'linear-gradient(135deg, #ff9a56 0%, #ff6a88 100%)',
-      'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
-      'linear-gradient(135deg, #ff6e7f 0%, #bfe9ff 100%)',
     ];
 
     let hash = 0;
@@ -315,68 +376,39 @@ export class ReelsSectionComponent implements OnInit, OnDestroy {
     return gradients[Math.abs(hash) % gradients.length];
   }
 
-  get currentMedia() {
-    if (!this.selectedReel?.media || this.selectedReel.media.length === 0) {
-      return { url: this.selectedReel?.image_url, type: 'image' };
+  // ── Format ────────────────────────────────────────────────────────────────
+
+  formatTimestamp(timestamp: string): string {
+    if (!timestamp) return 'Fecha desconocida';
+    if (this.timestampCache.has(timestamp)) return this.timestampCache.get(timestamp)!;
+    if (timestamp.includes('Hace')) {
+      this.timestampCache.set(timestamp, timestamp);
+      return timestamp;
     }
-    return this.selectedReel.media[this.currentMediaIndex];
-  }
 
-  get hasMultipleMedia(): boolean {
-    return this.selectedReel?.media && this.selectedReel.media.length > 1;
-  }
+    try {
+      const date     = new Date(timestamp);
+      const now      = new Date();
+      const diffMs   = now.getTime() - date.getTime();
+      const diffMins = Math.floor(diffMs / 60000);
+      const diffHours = Math.floor(diffMs / 3600000);
+      const diffDays  = Math.floor(diffMs / 86400000);
 
-  get hasComments(): boolean {
-    return this.selectedReel?.comments && this.selectedReel.comments.length > 0;
-  }
+      let result: string;
+      if (diffMins < 60)       result = `Hace ${diffMins} minuto${diffMins !== 1 ? 's' : ''}`;
+      else if (diffHours < 24) result = `Hace ${diffHours} hora${diffHours !== 1 ? 's' : ''}`;
+      else                     result = `Hace ${diffDays} día${diffDays !== 1 ? 's' : ''}`;
 
-  nextMedia(): void {
-    if (this.selectedReel?.media && this.currentMediaIndex < this.selectedReel.media.length - 1) {
-      this.currentMediaIndex++;
-      this.isMediaLoading = true;
-      this.resetVideoState();
-      this.cdr.markForCheck();
-    }
-  }
-
-  prevMedia(): void {
-    if (this.currentMediaIndex > 0) {
-      this.currentMediaIndex--;
-      this.isMediaLoading = true;
-      this.resetVideoState();
-      this.cdr.markForCheck();
+      this.timestampCache.set(timestamp, result);
+      return result;
+    } catch {
+      return 'Fecha desconocida';
     }
   }
 
-  goToMedia(index: number): void {
-    this.currentMediaIndex = index;
-    this.isMediaLoading = true;
-    this.resetVideoState();
-    this.cdr.markForCheck();
-  }
+  // ── TrackBy ───────────────────────────────────────────────────────────────
 
-  toggleMute(): void {
-    this.isMuted = !this.isMuted;
-    this.cdr.markForCheck();
-  }
-
-  private resetVideoState(): void {
-    this.isMuted = true;
-  }
-
-  isVideo(media: any): boolean {
-    return media?.type === 'video';
-  }
-
-  trackByReelId(_index: number, reel: any): any {
-    return reel.id;
-  }
-
-  trackByCommentIndex(index: number): number {
-    return index;
-  }
-
-  trackByMediaIndex(index: number): number {
-    return index;
-  }
+  trackByReelId(_index: number, reel: any): any { return reel.id; }
+  trackByCommentIndex(index: number): number { return index; }
+  trackByMediaIndex(index: number): number { return index; }
 }
