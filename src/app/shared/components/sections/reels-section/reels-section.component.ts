@@ -11,13 +11,11 @@ import {
 import { PLATFORM_ID } from '@angular/core';
 import { Subject } from 'rxjs';
 import { debounceTime, takeUntil } from 'rxjs/operators';
-
-// ── Tus componentes/servicios ──────────────────────────────────────────────
 import { ModalComponent } from '../../generic/modal/modal.component';
 import { InstagramserviceService } from '../../../../core/services/data-access/instagram/instagramservice.service';
 import { AppGenericCarouselComponent, CarouselConfig } from '../../generic/generic-carousel/generic-carousel.component';
 import { CarouselItemDirective } from '../../../utils/directives/carousel-slide.directive';
-// ── Carousel genérico que creamos ─────────────────────────────────────────
+import { Heart, LUCIDE_ICONS, LucideAngularModule, LucideIconProvider, Sparkle } from 'lucide-angular';
 
 
 @Component({
@@ -27,22 +25,34 @@ import { CarouselItemDirective } from '../../../utils/directives/carousel-slide.
     CommonModule,
     ModalComponent,
     AppGenericCarouselComponent,
-    CarouselItemDirective
-            // <-- directiva nueva (carouselItem)
+    CarouselItemDirective,
+    LucideAngularModule
   ],
-  templateUrl: './reels-section.component.html',
+  templateUrl: './reels-section.component.html',providers: [
+      {
+        provide: LUCIDE_ICONS,
+        multi: true,
+        useValue: new LucideIconProvider({
+         Sparkle,
+         Heart
+        })
+      }
+    ],
   changeDetection: ChangeDetectionStrategy.OnPush,
+
 })
 export class ReelsSectionComponent implements OnInit, OnDestroy {
 
   // ── Estado del modal ─────────────────────────────────────────────────────
-  showModal        = false;
+  showModal = false;
   selectedReel: any = null;
-  isMediaLoading   = true;
-  modalStyles      = '';
-  isMobile         = false;
+  isMediaLoading = true;
+  modalStyles = '';
+  isMobile = false;
   currentMediaIndex = 0;
-  isMuted          = true;
+  isMuted = true;
+  mediaWidth = 1080;
+mediaHeight = 1920;
 
   // ── Datos ────────────────────────────────────────────────────────────────
   reels: any[] = [];
@@ -52,12 +62,12 @@ export class ReelsSectionComponent implements OnInit, OnDestroy {
   carouselConfig: CarouselConfig = this.buildCarouselConfig(2);
 
   // ── Internos ─────────────────────────────────────────────────────────────
-  private scrollPosition   = 0;
-  private destroy$         = new Subject<void>();
-  private resizeSubject$   = new Subject<void>();
+  private scrollPosition = 0;
+  private destroy$ = new Subject<void>();
+  private resizeSubject$ = new Subject<void>();
   private avatarColorCache = new Map<string, string>();
-  private initialsCache    = new Map<string, string>();
-  private timestampCache   = new Map<string, string>();
+  private initialsCache = new Map<string, string>();
+  private timestampCache = new Map<string, string>();
 
   constructor(
     private instagramService: InstagramserviceService,
@@ -106,18 +116,18 @@ export class ReelsSectionComponent implements OnInit, OnDestroy {
     const w = window.innerWidth;
     if (w >= 1280) return 5;
     if (w >= 1024) return 4;
-    if (w >= 768)  return 3;
+    if (w >= 768) return 3;
     return 2;
   }
 
   private buildCarouselConfig(visibleItems: number): CarouselConfig {
     return {
       visibleItems,
-      gap:              8,
-      loop:             true,
-      showArrows:       true,
-      showDots:         false,
-      dragEnabled:      true,
+      gap: 8,
+      loop: true,
+      showArrows: true,
+      showDots: false,
+      dragEnabled: true,
       animationDuration: 450,
     };
   }
@@ -159,29 +169,29 @@ export class ReelsSectionComponent implements OnInit, OnDestroy {
 
       this.reels = data.map((item: any) =>
         Object.freeze({
-          id:                  item.id,
-          image_url:           item.image_url || item.thumbnail_url,
-          caption:             item.caption    || '',
-          hashtags:            item.hashtags   || '',
-          post_url:            item.post_url   || item.permalink,
-          media_type:          item.media_type,
-          media_url:           item.media_url,
-          like_count:          item.like_count     || 0,
-          comments_count:      item.comments_count || 0,
-          timestamp:           item.timestamp,
-          comments:            Array.isArray(item.comments)
-                                 ? Object.freeze(item.comments)
-                                 : [],
-          media:               Object.freeze(
-                                 item.media || [{
-                                   url:  item.media_url,
-                                   type: item.media_type === 'VIDEO' || item.media_type === 'REELS'
-                                           ? 'video'
-                                           : 'image',
-                                 }]
-                               ),
+          id: item.id,
+          image_url: item.image_url || item.thumbnail_url,
+          caption: item.caption || '',
+          hashtags: item.hashtags || '',
+          post_url: item.post_url || item.permalink,
+          media_type: item.media_type,
+          media_url: item.media_url,
+          like_count: item.like_count || 0,
+          comments_count: item.comments_count || 0,
+          timestamp: item.timestamp,
+          comments: Array.isArray(item.comments)
+            ? Object.freeze(item.comments)
+            : [],
+          media: Object.freeze(
+            item.media || [{
+              url: item.media_url,
+              type: item.media_type === 'VIDEO' || item.media_type === 'REELS'
+                ? 'video'
+                : 'image',
+            }]
+          ),
           profile_picture_url: item.profile_picture_url || '',
-          username:            item.username || 'aldana_vilcabana',
+          username: item.username || 'aldana_vilcabana',
         })
       );
 
@@ -197,7 +207,7 @@ export class ReelsSectionComponent implements OnInit, OnDestroy {
   updateModalStyles(): void {
     this.modalStyles = this.isMobile
       ? 'fixed inset-0 w-screen h-screen m-0 p-0 bg-white rounded-none overflow-hidden'
-      : 'w-auto max-h-[95vh] rounded-xl overflow-hidden shadow-2xl';
+      : 'w-auto max-h-[100vh] rounded-xl overflow-hidden shadow-2xl';
   }
 
   /**
@@ -209,10 +219,10 @@ export class ReelsSectionComponent implements OnInit, OnDestroy {
     const reel = this.reels[index];
     if (!reel) return;
 
-    this.selectedReel    = reel;
+    this.selectedReel = reel;
     this.currentMediaIndex = 0;
-    this.isMuted         = true;
-    this.isMediaLoading  = true;
+    this.isMuted = true;
+    this.isMediaLoading = true;
 
     setTimeout(() => {
       this.showModal = true;
@@ -227,7 +237,7 @@ export class ReelsSectionComponent implements OnInit, OnDestroy {
       this.unlockScroll();
       setTimeout(() => {
         this.currentMediaIndex = 0;
-        this.selectedReel      = null;
+        this.selectedReel = null;
         this.cdr.markForCheck();
       }, 200);
     }
@@ -235,10 +245,29 @@ export class ReelsSectionComponent implements OnInit, OnDestroy {
 
   // ── Media helpers ─────────────────────────────────────────────────────────
 
-  onMediaLoaded(_event?: Event): void {
-    this.isMediaLoading = false;
-    this.cdr.markForCheck();
+  onMediaLoaded(event?: Event): void {
+
+  const target = event?.target as HTMLImageElement | HTMLVideoElement;
+
+  if (target) {
+
+    if ('naturalWidth' in target) {
+
+      this.mediaWidth = target.naturalWidth || 1080;
+      this.mediaHeight = target.naturalHeight || 1920;
+
+    } else if ('videoWidth' in target) {
+
+      this.mediaWidth = target.videoWidth || 1080;
+      this.mediaHeight = target.videoHeight || 1920;
+
+    }
+
   }
+
+  this.isMediaLoading = false;
+  this.cdr.markForCheck();
+}
 
   get currentMedia() {
     if (!this.selectedReel?.media || this.selectedReel.media.length === 0) {
@@ -251,12 +280,25 @@ export class ReelsSectionComponent implements OnInit, OnDestroy {
     return this.selectedReel?.media && this.selectedReel.media.length > 1;
   }
 
+  get mediaContainerWidth(): number {
+
+  if (this.isMobile) {
+    return 0;
+  }
+
+  const viewportHeight = window.innerHeight * 0.95;
+
+  return Math.round(
+    (this.mediaWidth * viewportHeight) / this.mediaHeight
+  );
+}
+
   nextMedia(): void {
     if (this.selectedReel?.media &&
-        this.currentMediaIndex < this.selectedReel.media.length - 1) {
+      this.currentMediaIndex < this.selectedReel.media.length - 1) {
       this.currentMediaIndex++;
       this.isMediaLoading = true;
-      this.isMuted        = true;
+      this.isMuted = true;
       this.cdr.markForCheck();
     }
   }
@@ -265,15 +307,15 @@ export class ReelsSectionComponent implements OnInit, OnDestroy {
     if (this.currentMediaIndex > 0) {
       this.currentMediaIndex--;
       this.isMediaLoading = true;
-      this.isMuted        = true;
+      this.isMuted = true;
       this.cdr.markForCheck();
     }
   }
 
   goToMedia(index: number): void {
     this.currentMediaIndex = index;
-    this.isMediaLoading    = true;
-    this.isMuted           = true;
+    this.isMediaLoading = true;
+    this.isMuted = true;
     this.cdr.markForCheck();
   }
 
@@ -291,20 +333,20 @@ export class ReelsSectionComponent implements OnInit, OnDestroy {
   private lockScroll(): void {
     if (!isPlatformBrowser(this.platformId) || !this.isMobile) return;
     this.scrollPosition = window.pageYOffset || document.documentElement.scrollTop;
-    document.body.style.overflow    = 'hidden';
-    document.body.style.position    = 'fixed';
-    document.body.style.top         = `-${this.scrollPosition}px`;
-    document.body.style.width       = '100%';
+    document.body.style.overflow = 'hidden';
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${this.scrollPosition}px`;
+    document.body.style.width = '100%';
     document.body.style.touchAction = 'none';
     document.body.classList.add('no-scroll');
   }
 
   private unlockScroll(): void {
     if (!isPlatformBrowser(this.platformId) || !this.isMobile) return;
-    document.body.style.overflow    = '';
-    document.body.style.position    = '';
-    document.body.style.top         = '';
-    document.body.style.width       = '';
+    document.body.style.overflow = '';
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.width = '';
     document.body.style.touchAction = '';
     document.body.classList.remove('no-scroll');
     window.scrollTo(0, this.scrollPosition);
@@ -341,9 +383,9 @@ export class ReelsSectionComponent implements OnInit, OnDestroy {
     if (this.avatarColorCache.has(username)) return this.avatarColorCache.get(username)!;
 
     const colors = [
-      '#FF6B6B','#4ECDC4','#45B7D1','#FFA07A',
-      '#98D8C8','#F7DC6F','#BB8FCE','#85C1E2',
-      '#F8B4D9','#AED581','#FFB74D','#9575CD',
+      '#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A',
+      '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E2',
+      '#F8B4D9', '#AED581', '#FFB74D', '#9575CD',
     ];
 
     let hash = 0;
@@ -387,17 +429,17 @@ export class ReelsSectionComponent implements OnInit, OnDestroy {
     }
 
     try {
-      const date     = new Date(timestamp);
-      const now      = new Date();
-      const diffMs   = now.getTime() - date.getTime();
+      const date = new Date(timestamp);
+      const now = new Date();
+      const diffMs = now.getTime() - date.getTime();
       const diffMins = Math.floor(diffMs / 60000);
       const diffHours = Math.floor(diffMs / 3600000);
-      const diffDays  = Math.floor(diffMs / 86400000);
+      const diffDays = Math.floor(diffMs / 86400000);
 
       let result: string;
-      if (diffMins < 60)       result = `Hace ${diffMins} minuto${diffMins !== 1 ? 's' : ''}`;
+      if (diffMins < 60) result = `Hace ${diffMins} minuto${diffMins !== 1 ? 's' : ''}`;
       else if (diffHours < 24) result = `Hace ${diffHours} hora${diffHours !== 1 ? 's' : ''}`;
-      else                     result = `Hace ${diffDays} día${diffDays !== 1 ? 's' : ''}`;
+      else result = `Hace ${diffDays} día${diffDays !== 1 ? 's' : ''}`;
 
       this.timestampCache.set(timestamp, result);
       return result;
