@@ -196,7 +196,7 @@ export class ReelsSectionComponent implements OnInit, OnDestroy {
 
   updateModalStyles(): void {
     this.modalStyles = this.isMobile
-      ? 'fixed inset-0 w-screen h-screen m-0 p-0 bg-white rounded-none overflow-hidden z-[9999]'
+      ? 'fixed inset-0 w-screen h-screen m-0 p-0 bg-white rounded-none overflow-hidden'
       : 'w-auto max-h-[95vh] rounded-xl overflow-hidden shadow-2xl';
   }
 

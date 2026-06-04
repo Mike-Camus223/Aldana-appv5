@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, Output, EventEmitter,} from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnDestroy, ElementRef, Renderer2, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { trigger, transition, style, animate } from '@angular/animations';
 
 @Component({
@@ -29,10 +30,29 @@ import { trigger, transition, style, animate } from '@angular/animations';
     ])
   ]
 })
-export class ModalComponent {
+export class ModalComponent implements OnInit, OnDestroy {
   @Input() open = false;
   @Output() openChange = new EventEmitter<boolean>();
   @Input() Mostyles: string = 'p-0';
+
+  constructor(
+    private el: ElementRef,
+    private renderer: Renderer2,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {}
+
+  ngOnInit(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      // Mover el componente directamente al body para salir del contexto de apilamiento
+      this.renderer.appendChild(document.body, this.el.nativeElement);
+    }
+  }
+
+  ngOnDestroy(): void {
+    if (isPlatformBrowser(this.platformId) && this.el.nativeElement.parentNode) {
+      this.renderer.removeChild(this.el.nativeElement.parentNode, this.el.nativeElement);
+    }
+  }
 
   close() {
     this.open = false;
