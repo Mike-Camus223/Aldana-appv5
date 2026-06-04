@@ -5,31 +5,19 @@
 
 <section class="w-full select-none py-2 px-4">
 
-  <!-- ══════════════════════════════════════════════════════
-       CAROUSEL  —  app-generic-carousel
-       ══════════════════════════════════════════════════════ -->
   <app-generic-carousel [config]="carouselConfig">
-
-    <!--
-      Cada reel es un ng-template con la directiva carouselItem.
-      El click se maneja dentro del slide para pasar el índice.
-    -->
     <ng-template carouselItem *ngFor="let reel of reels; let i = index; trackBy: trackByReelId">
 
-      <!-- Contenedor ratio 4/5 estilo reel de Instagram -->
       <div class="relative w-full overflow-hidden rounded-2xl group cursor-pointer" style="padding-bottom: 125%;"
         (click)="openModal(i)">
 
-        <!-- Thumbnail -->
         <img [src]="reel.image_url" [alt]="reel.caption" class="absolute inset-0 w-full h-full object-cover object-center
                  scale-[1.04] group-hover:scale-110
                  transition-transform duration-700 ease-out" draggable="false" loading="lazy" />
 
-        <!-- Overlay oscuro al hover -->
         <div class="absolute inset-0 bg-black/0 group-hover:bg-black/30
                  transition-all duration-500 ease-out"></div>
 
-        <!-- Ícono play centrado -->
         <div class="absolute inset-0 flex items-center justify-center
                  opacity-70 group-hover:opacity-100
                  transition-opacity duration-300">
@@ -41,7 +29,6 @@
           </div>
         </div>
 
-        <!-- Badge CAROUSEL_ALBUM -->
         <div *ngIf="reel.media_type === 'CAROUSEL_ALBUM'" class="absolute top-2.5 right-2.5 z-10">
           <div class="w-6 h-6 flex items-center justify-center">
             <i class="fas fa-clone text-white text-xs drop-shadow"></i>
@@ -50,10 +37,8 @@
 
       </div>
     </ng-template>
-
   </app-generic-carousel>
 
-  <!-- Empty state -->
   <div *ngIf="!reels || reels.length === 0" class="text-center py-8">
     <p class="text-aldy-green-gray NewAldyFontType4 text-sm">
       No hay reels disponibles
@@ -64,189 +49,367 @@
 
 
 <!-- ══════════════════════════════════════════════════════════════════
-     MODAL  —  Diseño estilo Instagram
+     MODAL
      ══════════════════════════════════════════════════════════════════ -->
 <app-modal [(open)]="showModal" [Mostyles]="modalStyles" (openChange)="onModalChange($event)">
   <ng-container *ngIf="selectedReel">
 
-    <div class="flex bg-aldy-white overflow-hidden" [ngClass]="{
-        'flex-col h-screen w-screen': isMobile,
-        'flex-row w-auto':           !isMobile
-      }">
-      <div class="relative bg-black flex items-center justify-center overflow-hidden flex-shrink-0"
-        [style.width.px]="!isMobile ? mediaContainerWidth : null" [ngClass]="{
-    'w-full flex-1 min-h-0': isMobile,
-    'h-[95vh]': !isMobile
-  }">
-        <div *ngIf="isMediaLoading" class="absolute inset-0 flex items-center justify-center z-15 bg-black/60">
-          <div class="w-8 h-8 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+
+    <!-- ╔══════════════════════════════════════════════════════════════╗
+         ║  DESKTOP  (>= 1024px)  —  diseño original sin cambios       ║
+         ╚══════════════════════════════════════════════════════════════╝ -->
+    <ng-container *ngIf="!isMobile">
+      <div class="flex bg-aldy-white overflow-hidden flex-row w-auto">
+
+        <!-- Media -->
+        <div class="relative bg-black flex items-center justify-center overflow-hidden flex-shrink-0 h-[95vh]"
+             [style.width.px]="mediaContainerWidth">
+
+          <div *ngIf="isMediaLoading" class="absolute inset-0 flex items-center justify-center z-15 bg-black/60">
+            <div class="w-8 h-8 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+          </div>
+
+          <img *ngIf="!isVideo(currentMedia)" [src]="currentMedia.url"
+               class="max-h-full w-auto object-contain" loading="lazy"
+               (load)="onMediaLoaded($event)" (error)="onMediaLoaded($event)" />
+
+          <video *ngIf="isVideo(currentMedia)" [src]="currentMedia.url"
+                 autoplay loop playsinline [muted]="isMuted"
+                 class="max-h-full w-auto object-contain" preload="metadata"
+                 (loadeddata)="onMediaLoaded($any($event))" (error)="onMediaLoaded($any($event))">
+          </video>
+
+          <button *ngIf="isVideo(currentMedia)" (click)="toggleMute()"
+                  class="absolute bottom-4 right-4 z-10 w-9 h-9 rounded-full
+                         bg-black/60 hover:bg-black/80 flex items-center justify-center
+                         transition-all duration-200 cursor-pointer">
+            <i [class]="isMuted ? 'fas fa-volume-mute' : 'fas fa-volume-up'" class="text-white text-xs"></i>
+          </button>
+
+          <button *ngIf="hasMultipleMedia && currentMediaIndex > 0" (click)="prevMedia()"
+                  class="absolute left-3 top-1/2 -translate-y-1/2 z-10
+                         w-8 h-8 rounded-full bg-aldy-white/90 hover:bg-aldy-white
+                         flex items-center justify-center shadow-md
+                         transition-all duration-200 cursor-pointer">
+            <i class="fas fa-chevron-left text-gray-700 text-xs"></i>
+          </button>
+
+          <button *ngIf="hasMultipleMedia && currentMediaIndex < selectedReel.media.length - 1"
+                  (click)="nextMedia()"
+                  class="absolute right-3 top-1/2 -translate-y-1/2 z-10
+                         w-8 h-8 rounded-full bg-aldy-white/90 hover:bg-aldy-white
+                         flex items-center justify-center shadow-md
+                         transition-all duration-200 cursor-pointer">
+            <i class="fas fa-chevron-right text-gray-700 text-xs"></i>
+          </button>
+
+          <div *ngIf="hasMultipleMedia"
+               class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
+            <button *ngFor="let m of selectedReel.media; let i = index; trackBy: trackByMediaIndex"
+                    (click)="goToMedia(i)"
+                    class="rounded-full transition-all duration-200 p-0 border-none cursor-pointer"
+                    [ngClass]="{
+                      'w-2.5 h-2.5 bg-aldy-white':                        i === currentMediaIndex,
+                      'w-2 h-2 bg-aldy-white/60 hover:bg-aldy-white':     i !== currentMediaIndex
+                    }"></button>
+          </div>
         </div>
-        <img *ngIf="!isVideo(currentMedia)" [src]="currentMedia.url" class="max-h-full w-auto object-contain"
-          loading="lazy" (load)="onMediaLoaded($event)" (error)="onMediaLoaded($event)" />
-        <video *ngIf="isVideo(currentMedia)" [src]="currentMedia.url" autoplay loop playsinline [muted]="isMuted"
-          class="max-h-full w-auto object-contain" preload="metadata" (loadeddata)="onMediaLoaded($any($event))"
-          (error)="onMediaLoaded($any($event))">
-        </video>
-        <button *ngIf="isVideo(currentMedia)" (click)="toggleMute()" class="absolute bottom-4 right-4 z-10
-                 w-9 h-9 rounded-full
-                 bg-black/60 hover:bg-black/80
-                 flex items-center justify-center
-                 transition-all duration-200 cursor-pointer">
-          <i [class]="isMuted ? 'fas fa-volume-mute' : 'fas fa-volume-up'" class="text-white text-xs"></i>
-        </button>
-        <button *ngIf="hasMultipleMedia && currentMediaIndex > 0 && !isMobile" (click)="prevMedia()" class="absolute left-3 top-1/2 -translate-y-1/2 z-10
-                 w-8 h-8 rounded-full bg-aldy-white/90 hover:bg-aldy-white
-                 flex items-center justify-center shadow-md
-                 transition-all duration-200 cursor-pointer">
-          <i class="fas fa-chevron-left text-gray-700 text-xs"></i>
-        </button>
 
-        <button *ngIf="hasMultipleMedia && currentMediaIndex < selectedReel.media.length - 1 && !isMobile"
-          (click)="nextMedia()" class="absolute right-3 top-1/2 -translate-y-1/2 z-10
-                 w-8 h-8 rounded-full bg-aldy-white/90 hover:bg-aldy-white
-                 flex items-center justify-center shadow-md
-                 transition-all duration-200 cursor-pointer">
-          <i class="fas fa-chevron-right text-gray-700 text-xs"></i>
-        </button>
-        <div *ngIf="hasMultipleMedia" class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
-          <button *ngFor="let m of selectedReel.media; let i = index; trackBy: trackByMediaIndex" (click)="goToMedia(i)"
-            class="rounded-full transition-all duration-200 p-0 border-none cursor-pointer" [ngClass]="{
-              'w-2.5 h-2.5 bg-aldy-white':         i === currentMediaIndex,
-              'w-2 h-2 bg-aldy-white/60 hover:bg-aldy-white': i !== currentMediaIndex
-            }"></button>
-        </div>
+        <!-- Info -->
+        <div class="flex flex-col bg-aldy-white border-l border-gray-100 flex-shrink-0 w-[400px] h-[95vh]">
 
-      </div>
+          <!-- Header -->
+          <div class="flex relative items-center gap-5 px-6 mt-6 mb-3 border-b border-gray-100 flex-shrink-0">
+            <div class="w-12 h-12 rounded-full overflow-hidden flex-shrink-0 ring-1 ring-aldy-medium">
+              <img *ngIf="selectedReel.profile_picture_url" [src]="selectedReel.profile_picture_url"
+                   class="w-full h-full object-cover" loading="lazy" />
+              <div *ngIf="!selectedReel.profile_picture_url"
+                   class="w-full h-full flex items-center justify-center text-white font-semibold text-xs"
+                   [style.background]="getAvatarGradient(selectedReel.username)">
+                {{ getInitials(selectedReel.username) }}
+              </div>
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-semibold tracking-wide text-aldy-green-gray-bold leading-tight truncate NewAldyFontType4">
+                {{ selectedReel.username }}
+              </p>
+              <p class="text-xs text-aldy-green-gray-bold tracking-wider mt-1 NewAldyFontType4">
+                Audio Original
+              </p>
+            </div>
+            <img src="../../../../../assets/images/sections/about_home/flower2.png"
+                 class="w-10 h-auto absolute top-0 z-0 right-10" alt="flower">
+          </div>
 
-      <!-- ════════════════════════════════════
-           COLUMNA DERECHA  —  Info Instagram
-           ════════════════════════════════════ -->
-      <div class="flex flex-col bg-aldy-white border-l border-gray-100 flex-shrink-0" [ngClass]="{
-    'w-full overflow-hidden': isMobile,
-    'w-[25vw] h-[95vh]': !isMobile
-}" [style.height]="isMobile ? '55%' : ''">
-
-        <!-- ── Header ───────────────────────────────────────────────── -->
-        <div class="flex relative items-center gap-5 px-6 mt-6 mb-3 border-b border-gray-100 flex-shrink-0">
-
-          <!-- Avatar -->
-          <div class="w-12 h-12 rounded-full overflow-hidden flex-shrink-0 ring-1 ring-aldy-medium">
-            <img *ngIf="selectedReel.profile_picture_url" [src]="selectedReel.profile_picture_url"
-              class="w-full h-full object-cover" loading="lazy" />
-            <div *ngIf="!selectedReel.profile_picture_url"
-              class="w-full h-full flex items-center justify-center text-white font-semibold text-xs"
-              [style.background]="getAvatarGradient(selectedReel.username)">
-              {{ getInitials(selectedReel.username) }}
+          <div class="px-6">
+            <div class="flex items-center gap-3">
+              <div class="flex-1 h-px bg-gradient-to-r from-transparent via-aldy-medium to-aldy-medium"></div>
+              <lucide-icon name="sparkle" class="text-aldy-green-gray-bold flex-shrink-0" [strokeWidth]="1.8" [size]="16"></lucide-icon>
+              <div class="flex-1 h-px bg-gradient-to-l from-transparent via-aldy-medium to-aldy-medium"></div>
             </div>
           </div>
 
-          <!-- Username -->
-          <div class="flex-1 min-w-0">
-            <p
-              class="text-sm font-semibold tracking-wide text-aldy-green-gray-bold leading-tight truncate NewAldyFontType4">
-              {{ selectedReel.username }}
-            </p>
-            <p class="text-xs text-aldy-green-gray-bold tracking-wider mt-1 NewAldyFontType4">
-              Audio Original
-            </p>
+          <!-- Contenedor central -->
+          <div class="flex-1 flex flex-col min-h-0 overflow-hidden">
+
+            <div class="flex gap-3 px-6 py-3 flex-shrink-0">
+              <div class="flex-1 min-w-0">
+                <p class="text-sm text-aldy-green-gray-bold tracking-wide leading-relaxed break-words NewAldyFontType4">
+                  {{ selectedReel.caption }}
+                </p>
+              </div>
+            </div>
+
+            <div class="px-6 pb-3 space-y-0.5">
+              <p class="text-xs text-aldy-green-gray-bold tracking-wide NewAldyFontType4">
+                {{ formatTimestamp(selectedReel.timestamp) }}
+              </p>
+            </div>
+
+            <div class="flex items-center gap-4 px-6">
+              <div class="flex gap-2 items-center">
+                <lucide-icon name="heart" class="text-aldy-green-gray-bold" [strokeWidth]="2" [size]="22"></lucide-icon>
+                <p class="text-sm font-semibold text-aldy-green-gray-bold NewAldyFontType4">
+                  {{ selectedReel.like_count || 0 | number }}
+                </p>
+              </div>
+              <a [href]="selectedReel.post_url" target="_blank" rel="noopener noreferrer"
+                 class="font-semibold transition-colors pt-[6px] duration-200 NewAldyTitle cursor-pointer">
+                <i class="fab fa-instagram text-[22px] text-aldy-green-gray-bold"></i>
+              </a>
+            </div>
+
+            <div class="px-6 py-3">
+              <div class="flex items-center gap-3">
+                <div class="flex-1 h-px bg-gradient-to-r from-transparent via-aldy-medium to-aldy-medium"></div>
+                <lucide-icon name="sparkle" class="text-aldy-green-gray-bold flex-shrink-0" [strokeWidth]="1.8" [size]="16"></lucide-icon>
+                <div class="flex-1 h-px bg-gradient-to-l from-transparent via-aldy-medium to-aldy-medium"></div>
+              </div>
+            </div>
+
+            <div *ngIf="selectedReel.comments && selectedReel.comments.length > 0"
+                 class="px-6 pb-3 flex-shrink-0 border-b border-gray-100">
+              <p class="text-sm font-light text-aldy-green-gray-bold uppercase tracking-widest NewAldyTitle">
+                Comentarios
+              </p>
+            </div>
+
+            <!-- Solo esta parte scrollea -->
+            <div class="flex-1 overflow-y-auto min-h-0 scrollbar-hide">
+              <div class="space-y-0">
+                <div *ngFor="let comment of selectedReel.comments; trackBy: trackByCommentIndex"
+                     class="flex gap-3 px-6 py-2.5 transition-colors duration-150">
+                  <div class="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 mt-0.5">
+                    <img *ngIf="comment.profile_pic" [src]="comment.profile_pic"
+                         class="w-full h-full object-cover" loading="lazy" />
+                    <div *ngIf="!comment.profile_pic"
+                         class="w-full h-full flex items-center justify-center text-white font-semibold text-xs"
+                         [style.background]="getAvatarColor(comment.user)">
+                      {{ comment.initials || getInitials(comment.user) }}
+                    </div>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <p class="text-sm text-aldy-green-gray-bold tracking-wide leading-relaxed break-words NewAldyFontType4">
+                      <span class="text-sm font-semibold tracking-wide text-aldy-green-gray-bold leading-tight truncate NewAldyFontType4 mr-1">
+                        {{ comment.user }}
+                      </span>{{ comment.text }}
+                    </p>
+                    <span class="text-xs text-aldy-green-gray-bold tracking-wider NewAldyFontType4">
+                      {{ comment.time }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
           </div>
-          <img src="../../../../../assets/images/sections/about_home/flower2.png" class="w-10 h-auto absolute top-0 z-0 right-10"  alt="flower">
+
+          <div class="px-4 py-4">
+            <div class="flex justify-center items-center gap-3">
+              <div class="flex-1 h-px bg-gradient-to-r from-transparent via-aldy-medium to-aldy-medium"></div>
+              <img src="../../../../../assets/svg/logos-03.svg"
+                   [draggable]="false" class="w-11 h-auto opacity-60" alt="AV">
+              <div class="flex-1 h-px bg-gradient-to-l from-transparent via-aldy-medium to-aldy-medium"></div>
+            </div>
+          </div>
+
         </div>
+      </div>
+    </ng-container>
+    <!-- /DESKTOP -->
 
 
+    <!-- ╔══════════════════════════════════════════════════════════════╗
+         ║  MOBILE / TABLET  (< 1024px)  —  scroll unificado           ║
+         ╚══════════════════════════════════════════════════════════════╝ -->
+    <ng-container *ngIf="isMobile">
+      <div class="flex flex-col h-screen w-screen bg-aldy-white overflow-hidden">
 
-        <div class="px-6">
-          <div class="flex items-center gap-3">
-            <div class="flex-1 h-px bg-gradient-to-r from-transparent via-aldy-medium to-aldy-medium"></div>
-            <lucide-icon name="sparkle" class="text-aldy-green-gray-bold flex-shrink-0" [strokeWidth]="1.8" [size]="16">
-            </lucide-icon>
-            <div class="flex-1 h-px bg-gradient-to-l from-transparent via-aldy-medium to-aldy-medium"></div>
+        <!-- Media — altura fija 45%, no crece ni encoge -->
+        <div class="relative bg-black flex items-center justify-center overflow-hidden flex-none w-full"
+             style="height: 45%">
+
+          <div *ngIf="isMediaLoading" class="absolute inset-0 flex items-center justify-center z-10 bg-black/60">
+            <div class="w-8 h-8 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+          </div>
+
+          <img *ngIf="!isVideo(currentMedia)" [src]="currentMedia.url"
+               class="max-h-full w-auto object-contain" loading="lazy"
+               (load)="onMediaLoaded($event)" (error)="onMediaLoaded($event)" />
+
+          <video *ngIf="isVideo(currentMedia)" [src]="currentMedia.url"
+                 autoplay loop playsinline [muted]="isMuted"
+                 class="max-h-full w-auto object-contain" preload="metadata"
+                 (loadeddata)="onMediaLoaded($any($event))" (error)="onMediaLoaded($any($event))">
+          </video>
+
+          <button *ngIf="isVideo(currentMedia)" (click)="toggleMute()"
+                  class="absolute bottom-4 right-4 z-10 w-9 h-9 rounded-full
+                         bg-black/60 hover:bg-black/80 flex items-center justify-center
+                         transition-all duration-200 cursor-pointer">
+            <i [class]="isMuted ? 'fas fa-volume-mute' : 'fas fa-volume-up'" class="text-white text-xs"></i>
+          </button>
+
+          <div *ngIf="hasMultipleMedia"
+               class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
+            <button *ngFor="let m of selectedReel.media; let i = index; trackBy: trackByMediaIndex"
+                    (click)="goToMedia(i)"
+                    class="rounded-full transition-all duration-200 p-0 border-none cursor-pointer"
+                    [ngClass]="{
+                      'w-2.5 h-2.5 bg-aldy-white':                        i === currentMediaIndex,
+                      'w-2 h-2 bg-aldy-white/60 hover:bg-aldy-white':     i !== currentMediaIndex
+                    }"></button>
           </div>
         </div>
-        <!-- Contenedor central -->
-        <div class="flex-1 flex flex-col min-h-0 overflow-hidden">
-          <!-- Caption fijo -->
-          <div class="flex gap-3 px-6 py-3 flex-shrink-0">
+        <!-- /media -->
+
+        <!-- Info — ocupa el 55% restante, con header fijo + scroll interno -->
+        <div class="flex flex-col flex-1 min-h-0 bg-aldy-white border-t border-gray-100 w-full overflow-hidden">
+
+          <!-- Header (fijo) -->
+          <div class="flex relative items-center gap-5 px-6 pt-4 pb-3 border-b border-gray-100 flex-shrink-0">
+            <div class="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 ring-1 ring-aldy-medium">
+              <img *ngIf="selectedReel.profile_picture_url" [src]="selectedReel.profile_picture_url"
+                   class="w-full h-full object-cover" loading="lazy" />
+              <div *ngIf="!selectedReel.profile_picture_url"
+                   class="w-full h-full flex items-center justify-center text-white font-semibold text-xs"
+                   [style.background]="getAvatarGradient(selectedReel.username)">
+                {{ getInitials(selectedReel.username) }}
+              </div>
+            </div>
             <div class="flex-1 min-w-0">
+              <p class="text-sm font-semibold tracking-wide text-aldy-green-gray-bold leading-tight truncate NewAldyFontType4">
+                {{ selectedReel.username }}
+              </p>
+              <p class="text-xs text-aldy-green-gray-bold tracking-wider mt-0.5 NewAldyFontType4">
+                Audio Original
+              </p>
+            </div>
+            <img src="../../../../../assets/images/sections/about_home/flower2.png"
+                 class="w-8 h-auto absolute top-5 right-15 lg:top-0 z-0 lg:right-8" alt="flower">
+          </div>
+
+          <!-- Divisor sparkle (fijo) -->
+          <div class="px-6 py-2 flex-shrink-0">
+            <div class="flex items-center gap-3">
+              <div class="flex-1 h-px bg-gradient-to-r from-transparent via-aldy-medium to-aldy-medium"></div>
+              <lucide-icon name="sparkle" class="text-aldy-green-gray-bold flex-shrink-0" [strokeWidth]="1.8" [size]="14"></lucide-icon>
+              <div class="flex-1 h-px bg-gradient-to-l from-transparent via-aldy-medium to-aldy-medium"></div>
+            </div>
+          </div>
+
+          <!-- Zona scrolleable única: caption + likes + comentarios -->
+          <div class="flex-1 min-h-0 overflow-y-auto scrollbar-hide">
+
+            <!-- Caption -->
+            <div class="px-6 pt-1 pb-2">
               <p class="text-sm text-aldy-green-gray-bold tracking-wide leading-relaxed break-words NewAldyFontType4">
                 {{ selectedReel.caption }}
               </p>
             </div>
-          </div>
-             <div class="px-6 pb-3 space-y-0.5">
-            <p class="text-xs text-aldy-green-gray-bold tracking-wide NewAldyFontType4">
-              {{ formatTimestamp(selectedReel.timestamp) }}
-            </p>
-          </div>
 
-          <div class="flex items-center gap-4 px-6">
-            <div class="flex gap-2 items-center">
-              <lucide-icon name="heart" class="text-aldy-green-gray-bold" [strokeWidth]="2" [size]="22"></lucide-icon>
-              <p class="text-sm font-semibold text-aldy-green-gray-bold NewAldyFontType4">
-                {{ selectedReel.like_count || 0 | number }}
+            <!-- Timestamp -->
+            <div class="px-6 pb-2">
+              <p class="text-xs text-aldy-green-gray-bold tracking-wide NewAldyFontType4">
+                {{ formatTimestamp(selectedReel.timestamp) }}
               </p>
             </div>
-            <a [href]="selectedReel.post_url" target="_blank" rel="noopener noreferrer"
-              class="font-semibold transition-colors pt-[6px] duration-200 NewAldyTitle cursor-pointer">
-              <i class="fab fa-instagram text-[22px] text-aldy-green-gray-bold"></i>
-            </a>
-          </div>
-          <div class="px-6 py-3">
-          <div class="flex items-center gap-3">
-            <div class="flex-1 h-px bg-gradient-to-r from-transparent via-aldy-medium to-aldy-medium"></div>
-            <lucide-icon name="sparkle" class="text-aldy-green-gray-bold flex-shrink-0" [strokeWidth]="1.8" [size]="16">
-            </lucide-icon>
-            <div class="flex-1 h-px bg-gradient-to-l from-transparent via-aldy-medium to-aldy-medium"></div>
-          </div>
-        </div>
-          <!-- Header comentarios fijo -->
-          <div *ngIf="selectedReel.comments && selectedReel.comments.length > 0"
-            class="px-6 pb-3 flex-shrink-0 border-b border-gray-100">
-            <p class="text-sm font-light text-aldy-green-gray-bold uppercase tracking-widest NewAldyTitle">
-              Comentarios
-            </p>
-          </div>
 
-          <!-- SOLO ESTA PARTE SCROLLEA -->
-          <div class="flex-1 overflow-y-auto min-h-0 scrollbar-hide">
+            <!-- Likes + link Instagram -->
+            <div class="flex items-center gap-4 px-6 pb-2">
+              <div class="flex gap-2 items-center">
+                <lucide-icon name="heart" class="text-aldy-green-gray-bold" [strokeWidth]="2" [size]="20"></lucide-icon>
+                <p class="text-sm font-semibold text-aldy-green-gray-bold NewAldyFontType4">
+                  {{ selectedReel.like_count || 0 | number }}
+                </p>
+              </div>
+              <a [href]="selectedReel.post_url" target="_blank" rel="noopener noreferrer"
+                 class="font-semibold transition-colors duration-200 NewAldyTitle cursor-pointer">
+                <i class="fab fa-instagram text-[20px] text-aldy-green-gray-bold"></i>
+              </a>
+            </div>
 
+            <!-- Divisor sparkle -->
+            <div class="px-6 py-2">
+              <div class="flex items-center gap-3">
+                <div class="flex-1 h-px bg-gradient-to-r from-transparent via-aldy-medium to-aldy-medium"></div>
+                <lucide-icon name="sparkle" class="text-aldy-green-gray-bold flex-shrink-0" [strokeWidth]="1.8" [size]="14"></lucide-icon>
+                <div class="flex-1 h-px bg-gradient-to-l from-transparent via-aldy-medium to-aldy-medium"></div>
+              </div>
+            </div>
+
+            <!-- Título comentarios -->
+            <div *ngIf="selectedReel.comments && selectedReel.comments.length > 0"
+                 class="px-6 pb-2 border-b border-gray-100">
+              <p class="text-sm font-light text-aldy-green-gray-bold uppercase tracking-widest NewAldyTitle">
+                Comentarios
+              </p>
+            </div>
+
+            <!-- Lista de comentarios -->
             <div class="space-y-0">
               <div *ngFor="let comment of selectedReel.comments; trackBy: trackByCommentIndex"
-                class="flex gap-3 px-6 py-2.5 transition-colors duration-150">
-
+                   class="flex gap-3 px-6 py-2.5 transition-colors duration-150">
                 <div class="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 mt-0.5">
-                  <img *ngIf="comment.profile_pic" [src]="comment.profile_pic" class="w-full h-full object-cover"
-                    loading="lazy" />
+                  <img *ngIf="comment.profile_pic" [src]="comment.profile_pic"
+                       class="w-full h-full object-cover" loading="lazy" />
                   <div *ngIf="!comment.profile_pic"
-                    class="w-full h-full flex items-center justify-center text-white font-semibold text-xs"
-                    [style.background]="getAvatarColor(comment.user)">
+                       class="w-full h-full flex items-center justify-center text-white font-semibold text-xs"
+                       [style.background]="getAvatarColor(comment.user)">
                     {{ comment.initials || getInitials(comment.user) }}
                   </div>
                 </div>
-
                 <div class="flex-1 min-w-0">
                   <p class="text-sm text-aldy-green-gray-bold tracking-wide leading-relaxed break-words NewAldyFontType4">
-                    <span class="text-sm font-semibold tracking-wide text-aldy-green-gray-bold leading-tight truncate NewAldyFontType4 mr-1">
-                      {{ comment.user }}
-                    </span>{{ comment.text }}
+                    <span class="font-semibold mr-1 NewAldyFontType4">{{ comment.user }}</span>{{ comment.text }}
                   </p>
-
                   <span class="text-xs text-aldy-green-gray-bold tracking-wider NewAldyFontType4">
                     {{ comment.time }}
                   </span>
                 </div>
               </div>
             </div>
+
+            <!-- Footer dentro del scroll (mobile) -->
+            <div class="px-4 py-4">
+              <div class="flex justify-center items-center gap-3">
+                <div class="flex-1 h-px bg-gradient-to-r from-transparent via-aldy-medium to-aldy-medium"></div>
+                <img src="../../../../../assets/svg/logos-03.svg"
+                     [draggable]="false" class="w-10 h-auto opacity-60" alt="AV">
+                <div class="flex-1 h-px bg-gradient-to-l from-transparent via-aldy-medium to-aldy-medium"></div>
+              </div>
+            </div>
+
           </div>
+          <!-- /scroll -->
+
         </div>
-        <div class="px-4 py-4">
-          <div class="flex justify-center items-center gap-3">
-            <div class="flex-1 h-px bg-gradient-to-r from-transparent via-aldy-medium to-aldy-medium"></div>
-            <img src="../../../../../assets/svg/logos-03.svg" [draggable]="false" class="w-11 h-auto opacity-60" alt="AV">
-            <div class="flex-1 h-px bg-gradient-to-l from-transparent via-aldy-medium to-aldy-medium"></div>
-          </div>
-        </div>
+        <!-- /info -->
+
       </div>
-    </div>
+    </ng-container>
+    <!-- /MOBILE -->
+
+
   </ng-container>
 </app-modal>

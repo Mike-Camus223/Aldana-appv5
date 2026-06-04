@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, Output, EventEmitter, OnInit, OnDestroy, ElementRef, Renderer2, Inject, PLATFORM_ID } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnDestroy, ElementRef, Renderer2, Inject, PLATFORM_ID, OnChanges } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { trigger, transition, style, animate } from '@angular/animations';
 
@@ -18,7 +18,6 @@ import { trigger, transition, style, animate } from '@angular/animations';
         animate('200ms ease-in', style({ opacity: 0 }))
       ])
     ]),
-
     trigger('modalAnim', [
       transition(':enter', [
         style({ opacity: 0, transform: 'scale(0.95) translateY(10px)' }),
@@ -30,7 +29,7 @@ import { trigger, transition, style, animate } from '@angular/animations';
     ])
   ]
 })
-export class ModalComponent implements OnInit, OnDestroy {
+export class ModalComponent implements OnInit, OnDestroy, OnChanges {
   @Input() open = false;
   @Output() openChange = new EventEmitter<boolean>();
   @Input() Mostyles: string = 'p-0';
@@ -43,15 +42,31 @@ export class ModalComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
-      // Mover el componente directamente al body para salir del contexto de apilamiento
       this.renderer.appendChild(document.body, this.el.nativeElement);
     }
   }
 
-  ngOnDestroy(): void {
-    if (isPlatformBrowser(this.platformId) && this.el.nativeElement.parentNode) {
-      this.renderer.removeChild(this.el.nativeElement.parentNode, this.el.nativeElement);
+  ngOnChanges(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      this.open ? this.lockScroll() : this.unlockScroll();
     }
+  }
+
+  ngOnDestroy(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      this.unlockScroll();
+      if (this.el.nativeElement.parentNode) {
+        this.renderer.removeChild(this.el.nativeElement.parentNode, this.el.nativeElement);
+      }
+    }
+  }
+
+  private lockScroll(): void {
+    this.renderer.setStyle(document.body, 'overflow', 'hidden');
+  }
+
+  private unlockScroll(): void {
+    this.renderer.removeStyle(document.body, 'overflow');
   }
 
   close() {

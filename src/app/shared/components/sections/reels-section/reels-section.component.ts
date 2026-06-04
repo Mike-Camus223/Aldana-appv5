@@ -102,7 +102,6 @@ mediaHeight = 1920;
     this.avatarColorCache.clear();
     this.initialsCache.clear();
     this.timestampCache.clear();
-    this.unlockScroll();
   }
 
   // ── Carousel config helpers ───────────────────────────────────────────────
@@ -226,7 +225,6 @@ mediaHeight = 1920;
 
     setTimeout(() => {
       this.showModal = true;
-      this.lockScroll();
       this.cdr.markForCheck();
     }, 50);
   }
@@ -234,7 +232,6 @@ mediaHeight = 1920;
   onModalChange(isOpen: boolean): void {
     this.showModal = isOpen;
     if (!isOpen) {
-      this.unlockScroll();
       setTimeout(() => {
         this.currentMediaIndex = 0;
         this.selectedReel = null;
@@ -330,28 +327,7 @@ mediaHeight = 1920;
 
   // ── Scroll lock ───────────────────────────────────────────────────────────
 
-  private lockScroll(): void {
-    if (!isPlatformBrowser(this.platformId) || !this.isMobile) return;
-    this.scrollPosition = window.pageYOffset || document.documentElement.scrollTop;
-    document.body.style.overflow = 'hidden';
-    document.body.style.position = 'fixed';
-    document.body.style.top = `-${this.scrollPosition}px`;
-    document.body.style.width = '100%';
-    document.body.style.touchAction = 'none';
-    document.body.classList.add('no-scroll');
-  }
-
-  private unlockScroll(): void {
-    if (!isPlatformBrowser(this.platformId) || !this.isMobile) return;
-    document.body.style.overflow = '';
-    document.body.style.position = '';
-    document.body.style.top = '';
-    document.body.style.width = '';
-    document.body.style.touchAction = '';
-    document.body.classList.remove('no-scroll');
-    window.scrollTo(0, this.scrollPosition);
-  }
-
+ 
   // ── Avatar helpers ────────────────────────────────────────────────────────
 
   getInitials(username: string): string {
