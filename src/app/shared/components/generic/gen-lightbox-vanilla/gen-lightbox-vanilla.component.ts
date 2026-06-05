@@ -74,12 +74,13 @@ export class GenLightboxVanillaComponent implements OnChanges, AfterViewInit {
   private videoOverlayTimeout?: ReturnType<typeof setTimeout>;
 
   ngOnChanges(changes: SimpleChanges): void {
-    const openChanged = changes['isOpen'] && changes['isOpen'].currentValue === true;
-    if (this.isOpen && (openChanged || changes['startIndex'] || changes['items'])) {
-      this.activeIndex = this.clampIndex(this.startIndex);
-      setTimeout(() => this.initSlides(), 0);
-    }
+  const openChanged = changes['isOpen'] && changes['isOpen'].currentValue === true;
+  if (this.isOpen && (openChanged || changes['startIndex'] || changes['items'])) {
+    this.activeIndex = this.clampIndex(this.startIndex);
+    document.body.style.overflow = 'hidden'; // 👈 AGREGAR
+    setTimeout(() => this.initSlides(), 0);
   }
+}
 
   ngAfterViewInit(): void {
     this.initSlides();
@@ -303,16 +304,16 @@ export class GenLightboxVanillaComponent implements OnChanges, AfterViewInit {
   }
 
   close(): void {
-    this.isClosing = true;
-
-    setTimeout(() => {
-      this.isClosing = false;
-      this.zoomed = false;
-      this.resetDrag();
-      this.isOpen = false;
-      this.closed.emit();
-    }, 300);
-  }
+  this.isClosing = true;
+  setTimeout(() => {
+    this.isClosing = false;
+    this.zoomed = false;
+    this.resetDrag();
+    this.isOpen = false;
+    document.body.style.overflow = ''; // 👈 AGREGAR
+    this.closed.emit();
+  }, 300);
+}
 
   private clampIndex(index: number): number {
     const len = this.items?.length ?? 0;

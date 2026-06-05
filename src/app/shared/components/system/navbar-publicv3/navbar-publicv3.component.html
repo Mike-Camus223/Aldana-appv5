@@ -260,7 +260,7 @@
       </div>
 
       <!-- BOTÓN MENU / X -->
-      <button (click)="toggleMenu()" class="cursor-pointer flex items-center relative z-[60]">
+      <button (click)="toggleMenu()" class="cursor-pointer flex items-center relative z-[20]">
         <lucide-icon *ngIf="!menuOpen" name="menu" class="w-5 h-5" [ngClass]="{
             'text-white': isHomePage && !MoverScroll && !hoverNavbar,
             'text-aldy-medium hover:text-aldy-medium-2': !isHomePage || MoverScroll || hoverNavbar
@@ -276,7 +276,7 @@
 <!-- SIDEBAR MOBILE (VIENE DESDE LA DERECHA) -->
 <!-- ========================================== -->
 <div *ngIf="menuOpen" @sidebarSlide
-  class="fixed top-[64px] right-0 bottom-0 h-[calc(100vh-64px)] w-screen max-w-screen bg-aldy-white shadow-2xl z-30 overflow-y-auto lg:hidden">
+  class="fixed top-[64px] right-0 bottom-0 h-[calc(100vh-64px)] w-screen max-w-screen bg-aldy-white shadow-2xl z-22 overflow-y-auto lg:hidden">
   <div class="p-6 space-y-6 h-full">
 
     <div class="flex justify-between items-center pb-4 border-b border-gray-200">
