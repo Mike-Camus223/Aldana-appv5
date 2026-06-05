@@ -18,32 +18,33 @@ gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
     RouterOutlet,
     NavbarPublicv3Component,
     Footerv2Component,
-],
+  ],
   templateUrl: './public-layout.component.html',
   styles: ``
 })
-export class PublicLayoutComponent implements OnInit, OnDestroy , AfterViewInit{
+export class PublicLayoutComponent implements OnInit, OnDestroy, AfterViewInit {
   private routerSubscription?: Subscription;
 
-  constructor(private loaderService: LoaderService, private router: Router) {}
+  constructor(
+    private loaderService: LoaderService,
+    private router: Router
+  ) { }
 
   ngAfterViewInit(): void {
+    ScrollSmoother.get()?.kill();
 
-  ScrollSmoother.get()?.kill();
-
-  ScrollSmoother.create({
-    wrapper: '#smooth-wrapper',
-    content: '#smooth-content',
-    smooth: 1.4,
-    effects: true
-  });
-
-}
+    ScrollSmoother.create({
+      wrapper: '#smooth-wrapper',
+      content: '#smooth-content',
+      smooth: 1.4,
+      effects: true
+    });
+  }
 
   ngOnInit(): void {
     // Establecer contexto público al inicializar
     this.loaderService.setContext('public');
-    
+
     this.loaderService.setSkipGenericLoaderMatchers([
       /^\/checkout\/(?!carrito).*/,
     ]);

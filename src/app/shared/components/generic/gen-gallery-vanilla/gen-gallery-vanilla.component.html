@@ -13,7 +13,7 @@
              loading="lazy"
              appCardInitAnimation="up"
              decoding="async"
-             class="w-full h-full object-top object-cover"/>
+             class="w-full h-full object-top object-cover" />
         <video *ngIf="item.type === 'video'"
                [src]="item.url"
                [poster]="item.poster"
@@ -23,7 +23,7 @@
                preload="metadata"
                class="w-full h-full object-coverr">
         </video>
-        <div *ngIf="item.type === 'video'" 
+        <div *ngIf="item.type === 'video'"
              class="absolute top-3 right-3 bg-black px-1 py-0.5  lg:px-2 lg:py-1 rounded-full flex items-center gap-1.5 shadow-sm">
           <div class="h-1 w-1 lg:w-1.5 lg:h-1.5 rounded-full bg-aldy-white animate-pulse"></div>
           <span class="text-[8px] lg:text-[10px] tracking-[0.2em] uppercase text-white font-medium">Video</span>

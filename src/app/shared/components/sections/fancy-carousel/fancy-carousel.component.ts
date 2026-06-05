@@ -102,7 +102,7 @@ export class FancyCarouselComponent implements AfterViewInit, OnChanges, OnDestr
   constructor(
     private cdr: ChangeDetectorRef,
     @Inject(PLATFORM_ID) private platformId: Object,
-  ) {}
+  ) { }
 
   // ─── Lifecycle ────────────────────────────────────────────────────────────────
 
@@ -173,11 +173,12 @@ export class FancyCarouselComponent implements AfterViewInit, OnChanges, OnDestr
       video.play();
       this.videoPaused = false;
       this.showVideoFeedback('play');
-    } else {
-      video.pause();
-      this.videoPaused = true;
-      this.showVideoFeedback('pause');
+      return;
     }
+
+    video.pause();
+    this.videoPaused = true;
+    this.showVideoFeedback('pause');
   }
 
   private showVideoFeedback(icon: 'play' | 'pause'): void {
