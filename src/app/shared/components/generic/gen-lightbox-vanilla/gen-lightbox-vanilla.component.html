@@ -1,8 +1,8 @@
 <!-- El lightbox SIEMPRE está en el DOM — GSAP controla opacity/visibility -->
-<div #lightboxRoot
-  style="z-index: 100; opacity: 0; visibility: hidden;"
+<div #lightboxRoot style="z-index: 100; opacity: 0; visibility: hidden;"
   class="fixed inset-0 flex max-h-screen w-full flex-col pointer-events-none">
 
+  <div class="h-11 w-full"></div>
   <!-- BACKGROUND -->
   <div class="absolute inset-0 bg-aldy-white z-0"></div>
 
@@ -31,39 +31,41 @@
       </button>
 
       <div *ngFor="let item of items; let i = index; trackBy: trackByIndex" #slideRef
-        class="absolute inset-0 flex items-center justify-center">
+        class="absolute inset-0 justify-center">
 
-        <!-- IMAGE -->
-        <img *ngIf="!isVideo(item)" [src]="item.url"
-          (click)="onImgClick()"
-          (mousedown)="startDrag($event)"
-          (mousemove)="onDrag($event)"
-          (dragstart)="$event.preventDefault()"
-          [style.transform]="i === activeIndex ? getImgTransform() : 'scale(1)'"
-          [style.transition]="isDragging ? 'none' : 'transform 300ms cubic-bezier(0.4,0,0.2,1)'"
-          [style.pointerEvents]="i === activeIndex ? 'auto' : 'none'"
-          [ngClass]="{
-            'cursor-plus':  !zoomed && i === activeIndex,
-            'cursor-grabbing': isDragging && i === activeIndex,
-            'cursor-minus': zoomed && i === activeIndex
-          }"
-          class="block h-full w-full select-none object-contain touch-none will-change-transform" />
+        <div class="
+          w-full
+          h-[75vh]
+          flex
+          items-center
+          justify-center
+        ">
 
-        <!-- VIDEO -->
-        <video *ngIf="isVideo(item)" #videoPlayer
-          [src]="item.url"
-          [poster]="item.poster"
-          autoplay muted loop playsinline
-          (click)="toggleVideo(videoPlayer)"
-          [style.pointerEvents]="i === activeIndex ? 'auto' : 'none'"
-          class="absolute inset-0 h-full w-full cursor-pointer object-contain outline-none">
-        </video>
+          <!-- IMAGE -->
+          <!-- GSAP owns transform/scale/x/y — NO inline [style.transform] binding -->
+          <img *ngIf="!isVideo(item)" [src]="item.url" (click)="onImgClick($event)" (mousedown)="startDrag($event)"
+            (mousemove)="onDrag($event)" (dragstart)="$event.preventDefault()"
+            [style.pointerEvents]="i === activeIndex ? 'auto' : 'none'" [ngClass]="{
+    'cursor-plus': !zoomed && i === activeIndex,
+    'cursor-grabbing': isDragging && i === activeIndex,
+    'cursor-minus': zoomed && !isDragging && i === activeIndex
+  }" style="transform-origin: center center;"
+            class="block max-h-full max-w-full select-none object-contain touch-none will-change-transform" />
+
+          <!-- VIDEO -->
+          <video *ngIf="isVideo(item)" #videoPlayer [src]="item.url" [poster]="item.poster" autoplay muted loop
+            playsinline (click)="toggleVideo(videoPlayer)" [style.pointerEvents]="i === activeIndex ? 'auto' : 'none'"
+            class="h-full w-full cursor-pointer object-contain outline-none">
+          </video>
+
+        </div>
 
         <!-- VIDEO OVERLAY -->
         <div *ngIf="i === activeIndex && showVideoOverlay"
           class="pointer-events-none absolute inset-0 z-20 flex items-center justify-center [animation:videoOverlayFade_900ms_ease_forwards]">
           <div class="flex h-[90px] w-[90px] items-center justify-center rounded-full bg-black/45 backdrop-blur-[14px]">
-            <lucide-icon [name]="videoOverlayIcon" color="#fff" [size]="50" [strokeWidth]="1.5"></lucide-icon>
+            <lucide-icon [name]="videoOverlayIcon" color="#fff" [size]="50" [strokeWidth]="1.5">
+            </lucide-icon>
           </div>
         </div>
 
@@ -71,12 +73,12 @@
     </div>
 
     <!-- THUMBS -->
-    <div class="flex w-full h-[100px] flex-shrink-0 items-center justify-center gap-4 px-16 z-10">
+    <div class="flex w-full h-[120px] flex-shrink-0 items-center mb-2 justify-center gap-4 px-16 z-10">
       <button *ngFor="let item of items; let i = index" (click)="goTo(i)"
-        class="h-12 w-12 flex-shrink-0 cursor-pointer overflow-hidden rounded-full border transition-all duration-150 ease-out md:h-[60px] md:w-[60px]"
+        class="h-12 w-12 flex-shrink-0 hover:scale-110 cursor-pointer overflow-hidden rounded-full transition-all ease-out duration-300 md:h-[80px] md:w-[80px]"
         [ngClass]="{
-          'scale-110 border-[1px] border-aldy-medium': i === activeIndex,
-          'border-transparent': i !== activeIndex
+          'ring-2 ring-aldy-medium': i === activeIndex,
+          'ring-transparent': i !== activeIndex
         }">
         <img [src]="getThumb(item)" class="h-full w-full object-cover" loading="lazy" />
       </button>
