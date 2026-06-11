@@ -5,13 +5,12 @@ import { AuthService } from '../../core/services/auth/auth.service';
 import { User } from '@supabase/supabase-js';
 import { filter } from 'rxjs/operators';
 import { LoaderService } from '../../core/services/utils/loader.service';
-import { NewsletterComponent } from '../../shared/components/system/newsletter/newsletter.component';
 import { Footerv2Component } from '../../shared/components/system/footerv2/footerv2.component';
 
 @Component({
   selector: 'app-auth-panel',
   standalone: true,
-  imports: [CommonModule, RouterModule,NewsletterComponent,Footerv2Component],
+  imports: [CommonModule, RouterModule,Footerv2Component],
   templateUrl: './authPanel.component.html',
   styleUrls: ['./authPanel.component.css']
 })
