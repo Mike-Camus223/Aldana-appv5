@@ -21,11 +21,18 @@ import { CardInitAnimationDirective } from '../../../utils/directives/card-init-
 @Component({
   selector: 'app-bettercustom-dual',
   standalone: true,
-  imports: [CommonModule, WordRevealDirective, FadeUpLetterDirective, VideoComponent, CardInitAnimationDirective],
+  imports: [
+    CommonModule,
+    WordRevealDirective,
+    FadeUpLetterDirective,
+    VideoComponent,
+    CardInitAnimationDirective
+  ],
   templateUrl: './bettercustom-dual.component.html',
   styleUrls: ['./bettercustom-dual.component.css'],
 })
 export class BettercustomDualComponent implements AfterViewInit, OnDestroy {
+  // ── Media
   @Input() mediaType: 'image' | 'video' = 'image';
   @Input() imageUrl = '';
   @Input() videoSrc = '';
@@ -34,6 +41,8 @@ export class BettercustomDualComponent implements AfterViewInit, OnDestroy {
   @Input() videoShowControls = true;
   @Input() videoGradientOverlay = true;
   @Input() videoObjectFit = 'object-cover';
+
+  // ── Texto
   @Input() CommentsTestimonial = false;
   @Input() title = '';
   @Input() SeparationTitle = '';
@@ -43,11 +52,13 @@ export class BettercustomDualComponent implements AfterViewInit, OnDestroy {
   @Input() contentTestimonial = '';
   @Input() content = '';
   @Input() extraContent = '';
-  @Input() gridCols = '3fr 2fr';
+
+  // ── Mantenidos por compatibilidad con otros usos
+  @Input() gridCols = '';
   @Input() textContainerClass = '';
   @Input() desktopOrder: 'image-first' | 'text-first' = 'image-first';
-  @Input() minHeight = '350px';
-  @Input() aspectRatio = '16/9';
+  @Input() minHeight = '';
+  @Input() aspectRatio = '';
   @Input() useAspectRatio = false;
   @Input() maxwidthandpadding = '';
   @Input() divider = false;
@@ -56,27 +67,15 @@ export class BettercustomDualComponent implements AfterViewInit, OnDestroy {
   @Input() titleAndContentClass = '';
   @Input() imageStyles = '';
 
-  @ViewChild('parallaxImage', { static: false }) parallaxImage!: ElementRef<HTMLImageElement>;
+  @ViewChild('parallaxImage', { static: false })
+  parallaxImage!: ElementRef<HTMLImageElement>;
 
-  // Breakpoint custom: 990px
-  isMobile = false;
   private animSub?: Subscription;
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
     private loaderService: LoaderService
-  ) {
-    if (isPlatformBrowser(this.platformId)) {
-      this.isMobile = window.innerWidth < 990;
-    }
-  }
-
-  @HostListener('window:resize')
-  onResize() {
-    if (isPlatformBrowser(this.platformId)) {
-      this.isMobile = window.innerWidth < 990;
-    }
-  }
+  ) {}
 
   ngAfterViewInit() {
     if (this.mediaType === 'video' && !this.videoSrc) {
@@ -89,26 +88,5 @@ export class BettercustomDualComponent implements AfterViewInit, OnDestroy {
 
   ngOnDestroy() {
     this.animSub?.unsubscribe();
-  }
-
-  get gridStyle(): Record<string, string> {
-    if (this.isMobile) return {};
-    return {
-      gridTemplateColumns: this.gridCols,
-      minHeight: this.minHeight,
-    };
-  }
-
-  // Mobile: media siempre order 1, desktop respeta desktopOrder
-  get mediaOrderClass(): string {
-    return this.desktopOrder === 'image-first'
-      ? 'dual-order-media-1'
-      : 'dual-order-media-2';
-  }
-
-  get textOrderClass(): string {
-    return this.desktopOrder === 'image-first'
-      ? 'dual-order-text-2'
-      : 'dual-order-text-1';
   }
 }
