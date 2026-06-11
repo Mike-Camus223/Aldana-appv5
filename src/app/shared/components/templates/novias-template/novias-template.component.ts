@@ -45,12 +45,8 @@ import { FadeUpLetterDirective } from "../../../utils/directives/fadeupletter.di
 export class NoviasTemplateComponent implements AfterViewInit, OnDestroy {
   CollectionBrides: Collection[] = [];
   productColumns: number = 4;
-
-  // Guarda la elección MANUAL del usuario y en qué breakpoint la hizo
   private userChoice: number | null = null;
   private userChoiceBreakpoint: 'lg' | 'xl' | null = null;
-
-  // Breakpoints Tailwind
   private readonly BP_SM = 640;
   private readonly BP_LG = 1024;
   private readonly BP_XL = 1280;
@@ -96,57 +92,39 @@ export class NoviasTemplateComponent implements AfterViewInit, OnDestroy {
     }
   }
 
-  /**
-   * Lógica de columnas por breakpoint con reseteo automático
-   * 
-   * < sm  (< 640)    → 1 col  (resetea cualquier preferencia)
-   * sm–lg (640–1023) → 2 cols (resetea cualquier preferencia)
-   * lg–xl (1024–1279)→ 3 cols (resetea preferencias de xl, mantiene de lg)
-   * xl+   (≥ 1280)   → 4 cols (resetea preferencias de lg, mantiene de xl)
-   */
   private applyColumnsForWidth(width: number): void {
     let newCols: number;
     const currentBreakpoint = this.getCurrentBreakpoint(width);
 
     if (width < this.BP_SM) {
-      // Mobile: siempre 1, resetea cualquier preferencia
       newCols = 1;
       this.resetUserPreference();
       
     } else if (width < this.BP_LG) {
-      // sm–lg: siempre 2, resetea cualquier preferencia
       newCols = 2;
       this.resetUserPreference();
       
     } else if (width < this.BP_XL) {
-      // lg–xl: máximo 3
-      // Si el usuario eligió manualmente ESTANDO EN LG, respetar
-      // Si venía de xl (breakpoint superior), resetear y usar automático
+
       if (this.userChoice !== null && this.userChoiceBreakpoint === 'lg') {
         newCols = Math.min(this.userChoice, 3);
       } else {
-        // Resetear preferencia si venía de otro breakpoint
         if (this.userChoiceBreakpoint === 'xl') {
           this.resetUserPreference();
         }
-        newCols = 3; // automático
-        // Actualizar que ahora estamos en breakpoint lg
+        newCols = 3;
         this.userChoiceBreakpoint = 'lg';
       }
       
     } else {
-      // xl+: máximo 4
-      // Si el usuario eligió manualmente ESTANDO EN XL, respetar
-      // Si venía de lg o inferior, resetear y usar automático
+
       if (this.userChoice !== null && this.userChoiceBreakpoint === 'xl') {
         newCols = Math.min(Math.max(this.userChoice, 2), 4);
       } else {
-        // Resetear preferencia si venía de otro breakpoint
         if (this.userChoiceBreakpoint !== 'xl') {
           this.resetUserPreference();
         }
-        newCols = 4; // automático
-        // Actualizar que ahora estamos en breakpoint xl
+        newCols = 4;
         this.userChoiceBreakpoint = 'xl';
       }
     }
@@ -157,9 +135,6 @@ export class NoviasTemplateComponent implements AfterViewInit, OnDestroy {
     }
   }
 
-  /**
-   * Obtiene el breakpoint actual basado en el ancho
-   */
   private getCurrentBreakpoint(width: number): 'mobile' | 'sm' | 'lg' | 'xl' {
     if (width < this.BP_SM) return 'mobile';
     if (width < this.BP_LG) return 'sm';
@@ -167,9 +142,6 @@ export class NoviasTemplateComponent implements AfterViewInit, OnDestroy {
     return 'xl';
   }
 
-  /**
-   * Resetea la preferencia del usuario
-   */
   private resetUserPreference(): void {
     this.userChoice = null;
     this.userChoiceBreakpoint = null;
@@ -180,7 +152,6 @@ export class NoviasTemplateComponent implements AfterViewInit, OnDestroy {
       const currentWidth = window.innerWidth;
       const currentBreakpoint = this.getCurrentBreakpoint(currentWidth);
       
-      // Solo permitir selección manual si estamos en los breakpoints que soportan topbar
       if (currentBreakpoint === 'lg' || currentBreakpoint === 'xl') {
         this.userChoice = cols;
         this.userChoiceBreakpoint = currentBreakpoint;
@@ -188,7 +159,6 @@ export class NoviasTemplateComponent implements AfterViewInit, OnDestroy {
       }
     }
   }
-
   goToCollection(slug: string) {
     this.router.navigate(['/novias-colecciones', slug]);
   }
