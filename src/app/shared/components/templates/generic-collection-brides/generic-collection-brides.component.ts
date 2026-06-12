@@ -1,13 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { AppMenuItem } from '../../../utils/models/app-menu-item.model';
 import { ActivatedRoute, RouterModule } from '@angular/router';
-import { BettercustomDualComponent } from '../../generic/bettercustom-dual/bettercustom-dual.component';
 import { BreadcrumbComponent } from '../../system/breadcrump/breadcrump.component';
 import { CommonModule } from '@angular/common';
 import { CollectionBridesService } from '../../../../core/services/data-access/collection-brides/collection_brides.service';
 import { BridesProductsService } from '../../../../core/services/data-access/brides-products/brides-products.service';
 import { BridesProductUtils } from '../../../utils/dataEx/brides-products-utils';
 import { CardInitAnimationDirective } from '../../../utils/directives/card-init-animation.directive';
+import { VideoComponent } from '../../generic/video/video.component';
+import { WordRevealDirective } from '../../../utils/directives/word-reveal.directive';
+import { FadeUpLetterDirective } from '../../../utils/directives/fadeupletter.directive';
 
 type BridesCollectionItemCard = {
   id: string;
@@ -21,7 +23,7 @@ type BridesCollectionItemCard = {
 @Component({
   selector: 'app-generic-collection-brides',
   standalone: true,
-  imports: [CommonModule, RouterModule, BettercustomDualComponent, BreadcrumbComponent,CardInitAnimationDirective],
+  imports: [CommonModule, RouterModule, BreadcrumbComponent, CardInitAnimationDirective, VideoComponent, WordRevealDirective, FadeUpLetterDirective],
   templateUrl: './generic-collection-brides.component.html',
   styleUrl: './generic-collection-brides.component.css'
 })
