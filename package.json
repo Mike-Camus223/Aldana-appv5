@@ -30,7 +30,7 @@
     "@fontsource/plus-jakarta-sans": "^5.2.5",
     "@primeng/themes": "^19.1.4",
     "@supabase/auth-js": "^2.71.1",
-    "@supabase/supabase-js": "^2.77.0",
+    "@supabase/supabase-js": "^2.108.1",
     "@tailwindcss/postcss": "^4.1.8",
     "font-awesome": "^4.7.0",
     "gsap": "^3.13.0",

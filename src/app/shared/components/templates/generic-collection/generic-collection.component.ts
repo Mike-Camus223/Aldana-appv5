@@ -58,7 +58,7 @@ export class GenericCollectionComponent implements OnInit {
     ];
 
     this.collectionTitle = collection.name;
-    this.collectionSubtitle = `- COLECCIÓN ${new Date(collection.release_date).getFullYear()}`;
+    this.collectionSubtitle = `COLECCIÓN ${new Date(collection.release_date).getFullYear()}`;
     this.collectionBanner = collection.banner || '';
     this.collectionDescription = collection.description || '';
 

@@ -1,12 +1,12 @@
 <div class="relative w-full overflow-hidden text-white flex items-center justify-center"
      [ngClass]="[height]">
-  <div class="w-full h-full aspect-video relative">
+  <div class="w-full h-full bg-black aspect-video relative">
     <video
       #bgVideo
       loop
       playsinline
       [muted]="muted"
-      class="absolute top-0 left-0 w-full h-full"
+      class="absolute w-full h-full"
       [ngClass]="objectFit"
     >
       <source [src]="src" type="video/mp4" />

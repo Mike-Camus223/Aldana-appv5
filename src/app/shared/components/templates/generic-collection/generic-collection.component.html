@@ -1,39 +1,29 @@
 <div class="h-[72px] lg:h-[88px]"></div>
+
 <section>
   <app-breadcrumb [items]="breadcrumbItems"></app-breadcrumb>
 </section>
-<!--
-  BETTERCUSTOM DUAL – Banner colección
-  Desktop: 2 cols [texto+mannequin overlay | media]
-  Mobile/Tablet: media arriba, texto abajo
--->
-<div *ngIf="collectionBanner" class="relative flex flex-col lg:grid lg:grid-cols-2 w-full min-h-[440px] bg-aldy-white overflow-hidden">
 
-  <!-- ══ COL IZQUIERDA: imagen maniquí + texto encima ════════════ -->
-  <div class="order-2 lg:order-1 relative flex items-center justify-center min-h-[420px] lg:min-h-[440px] bg-aldy-white overflow-hidden">
+<div
+  *ngIf="collectionBanner"
+  class="hidden lg:grid lg:grid-cols-[7fr_4fr] xl:grid-cols-[5fr_4fr] 2xl:grid-cols-2 relative w-full min-h-[440px] overflow-hidden"
+>
+  <div
+    class="order-2 lg:order-1 relative flex items-center justify-center min-h-[420px] lg:min-h-[440px] bg-[#FDF2E8] overflow-hidden"
+  >
+    <div
+      class="absolute inset-0 w-full h-full bg-[linear-gradient(120deg,_#DDC6B3_0%,_#DDC6B3_1%,_transparent_30%,_transparent_100%)] z-10 pointer-events-none"
+    ></div>
 
-    <!-- Imagen maniquí de fondo -->
     <img
-      src="../../../../../assets/images/sections/collection/mannequin_portrait.png"
+      src="../../../../../assets/images/sections/collection/mannequin_portrait2.png"
       alt=""
-      class="absolute inset-0 w-full h-full object-cover object-center pointer-events-none select-none"
+      class="absolute bottom-0 left-0 w-4/9 xl:w-1/2 2xl:w-auto h-auto max-w-[55%] object-contain pointer-events-none select-none"
     />
 
-    <!-- Gradiente hacia la derecha (hacia el borde con la col de media) -->
-    <div class="absolute inset-y-0 right-0 w-1/3 bg-gradient-to-r from-transparent to-aldy-white pointer-events-none"></div>
-    <!-- Gradiente suave arriba y abajo para suavizar -->
-    <div class="absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-aldy-white/60 to-transparent pointer-events-none"></div>
-    <div class="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-aldy-white/60 to-transparent pointer-events-none"></div>
-
-    <!-- Contenido de texto centrado sobre el maniquí -->
-    <div class="relative z-10 flex flex-col items-center text-center gap-3 px-8 py-10 w-full max-w-xs mx-auto text-center uppercase">
-
-      <!-- Script caligráfico superior -->
-      <span class="NewAldyTitle italic text-xl text-aldy-green-gray leading-none -mb-1">
-        La
-      </span>
-
-      <!-- Título -->
+    <div
+      class="relative z-10 flex h-full flex-col items-center justify-center text-center px-8 py-10 w-full max-w-lg mr-10 ml-auto"
+    >
       <h1
         appWordReveal
         class="NewAldyTitle text-3xl lg:text-[2.6rem] font-light tracking-[0.13em] text-aldy-green-gray-bold uppercase leading-tight m-0"
@@ -41,38 +31,63 @@
         {{ collectionTitle }}
       </h1>
 
-      <!-- Descripción -->
       <p
         appFadeUpLetter
-        class="NewAldyFontType4 text-[0.8rem] text-aldy-green-gray-bold leading-[1.8] tracking-wider text-center max-w-[260px] m-0"
+        class="NewAldyFontType4 text-[14px] text-aldy-green-gray-bold leading-[1.8] tracking-wider text-center max-w-lg m-0"
       >
         {{ collectionDescription }}
       </p>
 
-      <!-- Logo AV con líneas decorativas -->
-      <div class="flex items-center gap-3 w-full mt-1">
-        <span class="flex-1 h-px bg-aldy-medium opacity-60"></span>
+      <div class="absolute bottom-10 flex items-center justify-center gap-4 w-full">
+        <span class="w-[20%] h-px bg-aldy-medium opacity-60"></span>
         <img
           src="../../../../../assets/svg/logos-03.svg"
           alt="AV"
-          class="w-14 h-auto opacity-70"
+          class="w-10 h-auto opacity-70"
         />
-        <span class="flex-1 h-px bg-aldy-medium opacity-60"></span>
+        <span class="w-[20%] h-px bg-aldy-medium opacity-60"></span>
       </div>
-
     </div>
   </div>
 
-  <!-- ══ COL DERECHA: Media (video o imagen) ════════════════════ -->
-  <!-- Gradiente a la izquierda que se funde con el color crema -->
-  <div class="order-1 lg:order-2 relative overflow-hidden min-h-[260px] lg:min-h-[440px]">
-
-    <!-- Gradiente de fusión en el borde izquierdo con la col de texto -->
-    <div class="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-aldy-white to-transparent z-10 pointer-events-none"></div>
-
+  <div class="order-1 lg:order-2 relative overflow-hidden min-h-[420px] lg:min-h-[440px]">
     <div
-      class="absolute inset-0 w-full h-full"
-    >
+      class="absolute inset-0 left-0 w-full h-full bg-[linear-gradient(90deg,_#FDF2E8_0%,_#FDF2E8_1%,_transparent_30%,_transparent_100%)] z-10 pointer-events-none"
+    ></div>
+
+    <div class="absolute inset-0 w-full h-full">
+      <app-video
+        [src]="collectionBanner"
+        [muted]="true"
+        [autoplay]="true"
+        [showControls]="true"
+        [gradientOverlay]="false"
+        [objectFit]="'object-cover'"
+        height="h-full"
+        width="w-full"
+      >
+      </app-video>
+    </div>
+  </div>
+</div>
+
+<div
+  *ngIf="collectionBanner"
+  class="grid grid-cols-1 md:grid-rows-2 lg:hidden relative w-full overflow-hidden"
+>
+  <div class="grid grid-cols-1 md:grid-cols-[3fr_5fr] w-full">
+    <div class="relative flex items-end justify-start bg-[#FDF2E8] overflow-hidden min-h-[260px]">
+      <img
+        src="../../../../../assets/images/sections/collection/mannequin_portrait.png"
+        class="w-full h-full object-contain md:object-cover object-left-top max-h-[420px] pointer-events-none select-none"
+      />
+    </div>
+
+    <div class="relative overflow-hidden min-h-[260px] hidden md:block">
+      <div
+        class="absolute inset-0 bg-gradient-to-r from-[#FDF2E8] via-[#FDF2E8] via-[6%] to-transparent z-10 pointer-events-none"
+      ></div>
+
       <app-video
         [src]="collectionBanner"
         [muted]="true"
@@ -84,84 +99,155 @@
         width="w-full"
       />
     </div>
-
   </div>
 
+  <div class="flex flex-col items-center justify-center text-center px-6 py-10 bg-[#FDF2E8]">
+    <h1
+      appWordReveal
+      class="NewAldyTitle text-2xl font-light tracking-[0.13em] text-aldy-green-gray-bold uppercase leading-tight"
+    >
+      {{ collectionTitle }}
+    </h1>
+
+    <p
+      appFadeUpLetter
+      class="NewAldyFontType4 text-[13px] text-aldy-green-gray-bold leading-[1.8] tracking-wider max-w-md mt-4"
+    >
+      {{ collectionDescription }}
+    </p>
+
+    <div class="flex items-center justify-center gap-4 w-full mt-6">
+      <span class="w-[12%] h-px bg-aldy-medium opacity-60"></span>
+      <img src="../../../../../assets/svg/logos-03.svg" class="w-10 opacity-70" />
+      <span class="w-[12%] h-px bg-aldy-medium opacity-60"></span>
+    </div>
+  </div>
+
+  <div class="block md:hidden w-full aspect-3/4 sm:aspect-7/7 bg-[#FDF2E8]">
+    <app-video
+      [src]="collectionBanner"
+      [muted]="true"
+      [autoplay]="true"
+      [showControls]="true"
+      [gradientOverlay]="false"
+      [objectFit]="'object-cover'"
+      height="h-full"
+      width="w-full"
+    />
+  </div>
 </div>
-<div class="px-4 sm:px-6 lg:px-12 xl:px-16 2xl:px-24 w-full">
-  <div class="max-w-screen-3xl mx-auto">
-    <div class="py-10 md:py-16">
-      <div class="mb-8 w-full h-auto flex items-end justify-between flex-wrap gap-4">
-        <div class="flex gap-2 items-end">
 
-          <h1 class="flex gap-2 items-end NewAldyTitle text-xl sm:text-3xl md:text-3xl text-aldy-green-gray-bold font-light tracking-tight uppercase">
-
-            COLECCIONES -
-
-            <span class="font-light text-aldy-green-gray-bold uppercase">
-              {{ collectionTitle }}
-            </span>
-
+<div class="bg-aldy-white w-full px-4 sm:px-6 lg:px-12 xl:px-16 2xl:px-24">
+  <div class="max-w-screen-2xl mx-auto py-10 md:py-16">
+    <div class="mb-8 md:mb-10">
+      <div class="hidden md:flex items-center gap-6">
+        <div class="flex items-center gap-2 shrink-0">
+          <h1
+            class="NewAldyTitle text-xl sm:text-2xl md:text-[1.6rem] font-light tracking-[0.1em] text-aldy-green-gray-bold uppercase leading-none"
+          >
+            COLECCIONES
           </h1>
 
-          <p class="text-sm mb-1 sm:mb-0 sm:text-lg NewAldyTitle text-aldy-green-gray uppercase mt-2 tracking-wider">
-            {{ collectionSubtitle }}
-          </p>
+          <span
+            class="NewAldyTitle text-xl sm:text-2xl md:text-[1.6rem] font-light text-aldy-green-gray leading-none"
+          >
+            -
+          </span>
 
+          <span
+            class="NewAldyTitle text-xl sm:text-2xl md:text-[1.6rem] font-light tracking-[0.1em] text-aldy-green-gray-bold uppercase leading-none"
+          >
+            {{ collectionTitle }}
+          </span>
+
+          <span
+            class="NewAldyTitle text-[0.7rem] sm:text-sm font-light tracking-[0.18em] text-aldy-green-gray uppercase"
+          >
+            - {{ collectionSubtitle }}
+          </span>
         </div>
+
+        <div class="flex-1 h-px bg-aldy-medium opacity-60"></div>
+
+        <span
+          class="shrink-0 NewAldyTitle text-[0.7rem] sm:text-sm font-light tracking-[0.22em] text-aldy-green-gray uppercase"
+        >
+          {{ items.length }} DISEÑOS
+        </span>
       </div>
 
-      <!-- ITEMS -->
-      <section *ngIf="items.length; else emptyState" class="mb-12">
-
-        <h2 class="text-md sm:text-xl font-light text-aldy-green-gray-bold NewAldyTitle mb-4 tracking-wider uppercase">
-          COLECCIÓN
-        </h2>
-
-        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-
-          <a
-            *ngFor="let it of items; trackBy: trackById"
-            class="group block w-full"
-            [routerLink]="['/colecciones', collectionSlug, it.slug]"
+      <div class="flex md:hidden flex-col gap-4">
+        <div class="flex items-center gap-2 flex-wrap">
+          <h1
+            class="NewAldyTitle text-xl font-light tracking-[0.1em] text-aldy-green-gray-bold uppercase leading-none"
           >
+            COLECCIONES
+          </h1>
 
-            <div class="aspect-[3/5] overflow-hidden">
-              <img
-                *ngIf="it.thumbUrl"
-                [src]="it.thumbUrl"
-                [alt]="it.title || 'Item'"
-                class="w-full h-full object-top object-cover"
-                appCardInitAnimation="up"
-                loading="lazy"
-              />
-            </div>
+          <span class="NewAldyTitle text-xl font-light text-aldy-green-gray leading-none">
+            -
+          </span>
 
-            <div class="pt-3">
-
-              <div class="text-xs sm:text-sm tracking-widest uppercase NewAldyTitle text-aldy-green-gray-bold">
-                {{ it.title }}
-              </div>
-
-              <div *ngIf="it.subtitle"
-                   class="text-[11px] sm:text-xs NewAldyFontType4 text-aldy-green-gray mt-1 uppercase tracking-widest line-clamp-1">
-                {{ it.subtitle }}
-              </div>
-
-            </div>
-
-          </a>
-
+          <span
+            class="NewAldyTitle text-xl font-light tracking-[0.1em] text-aldy-green-gray-bold uppercase leading-none"
+          >
+            {{ collectionTitle }}
+          </span>
         </div>
 
-      </section>
+        <div class="flex items-center gap-3">
+          <span
+            class="shrink-0 NewAldyTitle text-[0.7rem] font-light tracking-[0.18em] text-aldy-green-gray uppercase"
+          >
+            {{ collectionSubtitle }}
+          </span>
 
-      <ng-template #emptyState>
-        <div class="py-10 text-sm NewAldyFontType4 text-aldy-green-gray">
-          No hay items cargados para esta colección.
+          <div class="flex-1 h-px bg-aldy-medium opacity-60"></div>
+
+          <span
+            class="shrink-0 NewAldyTitle text-[0.7rem] font-light tracking-[0.22em] text-aldy-green-gray uppercase"
+          >
+            {{ items.length }} DISEÑOS
+          </span>
         </div>
-      </ng-template>
-
+      </div>
     </div>
+
+    <section *ngIf="items.length; else emptyState" class="mb-16">
+      <div
+        class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-4 gap-y-8 sm:gap-x-5 lg:gap-x-6"
+      >
+        <a
+          *ngFor="let it of items; trackBy: trackById"
+          class="group block w-full cursor-pointer"
+          [routerLink]="['/colecciones', collectionSlug, it.slug]"
+        >
+          <div class="aspect-[3/5] overflow-hidden bg-[#f0ece8]">
+            <img
+              *ngIf="it.thumbUrl"
+              [src]="it.thumbUrl"
+              [alt]="it.title || 'Item'"
+              class="w-full h-full object-cover object-top transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+              appCardInitAnimation="up"
+              loading="lazy"
+            />
+          </div>
+
+          <div class="flex items-center justify-between pt-3 pb-1 gap-2">
+            <span
+              class="NewAldyTitle text-[0.65rem] sm:text-[0.72rem] font-light tracking-[0.2em] text-aldy-green-gray-bold uppercase leading-tight"
+            >
+              {{ it.title }}
+            </span>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <ng-template #emptyState>
+      <div class="py-10 text-sm NewAldyFontType4 text-aldy-green-gray tracking-wide">
+        No hay items cargados para esta colección.
+      </div>
+    </ng-template>
   </div>
 </div>

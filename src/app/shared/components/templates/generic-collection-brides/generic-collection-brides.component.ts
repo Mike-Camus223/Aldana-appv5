@@ -60,7 +60,7 @@ export class GenericCollectionBridesComponent implements OnInit {
     ];
 
     this.collectionTitle = col.name;
-    this.collectionSubtitle = `- COLECCIÓN ${new Date(col.release_date).getFullYear()}`;
+    this.collectionSubtitle = `COLECCIÓN ${new Date(col.release_date).getFullYear()}`;
     this.collectionBanner = col.banner || '';
     this.collectionDescription = col.description || '';
 
