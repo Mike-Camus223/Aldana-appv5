@@ -1,0 +1,22 @@
+.spinner {
+  width: 70px;
+  height: 70px;
+  border: 7px solid #d2e4cc;
+  border-top-color: var(--aldy-green-gray, #aec2a9);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media screen and (max-width: 460px) {
+  .spinner {
+    width: 40px;
+    height: 40px;
+  }
+}

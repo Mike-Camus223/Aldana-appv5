@@ -1,6 +1,6 @@
 <div class="relative w-full overflow-hidden text-white flex items-center justify-center"
      [ngClass]="[height]">
-  <div class="w-full h-full bg-black aspect-video relative">
+  <div class="w-full h-full aspect-video relative">
     <video
       #bgVideo
       loop
@@ -46,7 +46,7 @@
     </button>
   </div>
   <div *ngIf="!videoLoaded()" 
-       class="absolute inset-0 flex items-center justify-center bg-gray-900/50 z-30">
-    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+       class="absolute inset-0 flex items-center bg-[#FDF2E8] justify-center z-30">
+    <div  class="spinner"></div>
   </div>
 </div>
