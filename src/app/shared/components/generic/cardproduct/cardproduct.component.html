@@ -1,117 +1,144 @@
 <ng-container *ngIf="isMobileView; else desktopView">
-  <div #cardRoot class="transition relative overflow-hidden flex flex-col">
-    <a [routerLink]="['/producto', product.slug]" [queryParams]="cardQueryParams" class="group block relative">
-      <div class="relative w-full aspect-[4/5] overflow-hidden bg-aldy-white">
-        <img *ngIf="displayImage || product.main_image" #mobileImage
-             [ngSrc]="displayImage || product.main_image" 
-             [alt]="product.name"
-             width="400"
-             height="500"
-             priority
-             class="w-full h-full cursor-pointer object-cover object-top"/>
-
-        <button type="button" 
-                aria-label="Añadir a favoritos" 
-                (click)="toggleWishlist($event)"
-                class="absolute top-2 right-2 z-10 cursor-pointer leading-none transition-colors focus:outline-none">
-          <lucide-icon name="heart"
-                       [ngClass]="product.wishlisted ? 'text-aldy-medium fill-current' : 'text-gray-300'">
+  <div #cardRoot class="relative flex flex-col bg-aldy-white border-1 border-aldy-medium/50 shadow-md overflow-hidden max-w-xs mx-auto">
+    <a [routerLink]="['/producto', product.slug]" [queryParams]="cardQueryParams" class="block relative">
+      <div class="relative w-full aspect-[4/5] overflow-hidden bg-[#f0ebe4]">
+        <div class="absolute top-3 left-0 z-10">
+          <span
+            class="bg-aldy-medium-2 text-white text-[9px] tracking-widest font-light NewAldyFontType4 py-1 pl-3 pr-4"
+            style="clip-path: polygon(0 0, 100% 0, 92% 100%, 0 100%)">
+            NUEVO
+          </span>
+        </div>
+        <img *ngIf="displayImage || product.main_image" #mobileImage [ngSrc]="displayImage || product.   main_image"
+          [alt]="product.name" width="400" height="500" priority class="w-full h-full object-cover object-top" />
+        <button type="button" aria-label="Añadir a favoritos"
+        (click)="$event.preventDefault(); $event.stopPropagation(); toggleWishlist($event)"
+          class="absolute top-3 right-3 z-14 w-9 h-9 rounded-full bg-aldy-white flex items-center justify-center  cursor-pointer">
+          <lucide-icon name="heart" [size]="17" [strokeWidth]="2"
+            [ngClass]="product.wishlisted ? 'text-aldy-medium fill-current' : 'text-aldy-green-gray-bold NewAldyFontType4'">
           </lucide-icon>
         </button>
       </div>
-      <div class="px-4 pt-3 pb-4">
-        <h3 class="text-base font-semibold">{{ product.name }}</h3>
-        <p class="text-sm font-main text-gray-600 mt-1">{{ product.description }}</p>
-        <p class="text-sm">
-          {{ product.price | currency:'ARS':'symbol-narrow':'1.2-2':'es-AR' }}
-        </p>
+      <div class="flex justify-center -mt-7 relative z-20">
+        <div
+          class="w-14 h-14 bg-aldy-white rounded-full justify-center items-center bg-[#f7f2ed] border border-aldy-medium flex items-center justify-center p-1.5">
+          <img src="../../../../../assets/svg/logos-03.svg" alt="AV logo" class="w-8 h-8 object-contain" />
+        </div>
       </div>
     </a>
-    <div class="pb-4 px-4 flex gap-2 flex-wrap mt-auto">
-      <button *ngFor="let color of product.variants" 
-              (click)="selectColor(color.color_name)"
-              [ngStyle]="{ backgroundColor: color.color_hex }" 
-              [attr.aria-pressed]="selectedColor === color.color_name"
-              class="w-5 h-5 transition-all rounded-[4px] border"
+    <div class="px-5 pt-3 pb-1 text-center">
+      <h3
+        class="text-[1.55rem] font-light NewAldyTitle text-aldy-green-gray-bold m-0 tracking-wide leading-tight mt-2 mb-1">
+        {{ product.name }}
+      </h3>
+      <p
+        class="text-base text-base font-medium NewAldyFontType4 text-aldy-green-gray-bold whitespace-nowrap tracking-wide mb-3">
+        {{ product.price | currency:'ARS':'symbol-narrow':'1.2-2':'es-AR' }}
+      </p>
+      <div class="flex items-center justify-center mb-4 gap-4 w-full">
+        <span class="flex-1 h-px bg-aldy-medium opacity-60"></span>
+        <span class="text-aldy-medium text-xs leading-none select-none">
+          ✦
+        </span>
+        <span class="flex-1 h-px bg-aldy-medium opacity-60"></span>
+      </div>
+      <div class="flex justify-between items-start gap-3 text-left px-1 mb-4">
+        <div class="flex flex-col gap-2">
+          <span
+            class="text-[10px] tracking-widest uppercase text-aldy-green-gray-bold NewAldyFontType4 font-medium">Colores</span>
+          <div class="flex items-center gap-2">
+            <button *ngFor="let color of product.variants" (click)="selectColor(color.color_name)"
+              [ngStyle]="{ backgroundColor: color.color_hex }" [attr.aria-pressed]="selectedColor === color.color_name"
+              [title]="color.color_name" aria-label="Elegir color"
+              class="w-6 h-6 rounded-full border-2 border-[#d9d0c7] cursor-pointer transition-all hover:scale-110"
               [ngClass]="{
-                'border-white border-2 ring-2 ring-gray-800 rounded-sm cursor-default': selectedColor === color.color_name,
-                'border-transparent cursor-pointer': selectedColor !== color.color_name
-              }" 
-              [title]="color.isBase ? (color.color_name + ' (base)') : color.color_name" 
-              aria-label="Elegir color">
-      </button>
+                      'ring-2 ring-offset-1 ring-[#2e2e2e]': selectedColor === color.color_name
+                    }">
+            </button>
+          </div>
+        </div>
+        <div *ngIf="!product.isBridal" class="flex flex-col gap-2">
+          <span
+            class="text-[10px] tracking-widest uppercase text-aldy-green-gray-bold NewAldyFontType4 font-medium">Tallas</span>
+          <div class="flex items-center gap-1.5">
+            <button *ngFor="let size of product.sizes" (click)="selectSize(size)"
+              class="w-8 h-8 text-sm bg-aldy-medium cursor-pointer text-white flex items-center justify-center">
+              {{ size }}
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </ng-container>
 <ng-template #desktopView>
-  <div #cardRoot class="relative overflow-hidden group aspect-[3/4] sm:aspect-[3/4] md:aspect-[3/5] lg:aspect-[3/5] xl:aspect-[3/5]">
-    <a [routerLink]="['/producto', product.slug]" [queryParams]="cardQueryParams" class="absolute inset-0 z-0 block" appPanimationcard [disableHover]="isMobileView">
-      <img
-        #productImage
-        [ngSrc]="currentImage"
-        alt="{{ product.name }}"
-        width="400"
-        height="500"
-        priority
-        class="w-full h-full cursor-pointer object-cover object-top"
-      />
-      <img
-        *ngIf="hoverImage"
-        data-overlay-image
-        [ngSrc]="hoverImage"
-        alt="{{ product.name }}"
-        width="400"
-        height="500"
-        priority
-        class="absolute inset-0 w-full h-full object-cover object-top pointer-events-none"
-        style="opacity:0"
-      />
+  <div
+    class="relative overflow-hidden border-1 border-aldy-medium/50 shadow-md group aspect-[3/4] sm:aspect-[3/4] md:aspect-[3/5] lg:aspect-[3/5] xl:aspect-[3/5] bg-[#dde5e0]">
+    <div class="absolute top-3 left-0 z-10">
+      <span class="bg-aldy-medium-2 text-white text-[10px] tracking-widest font-light NewAldyFontType4 py-1 pl-3 pr-4"
+        style="clip-path: polygon(0 0, 100% 0, 92% 100%, 0 100%)">
+        NUEVO
+      </span>
+    </div>
+    <button type="button" aria-label="Añadir a favoritos" (click)="toggleWishlist($event)"
+      class="absolute top-3 right-3 z-10 w-9 h-9 rounded-full bg-aldy-white flex items-center justify-center  cursor-pointer">
+      <lucide-icon name="heart" [size]="17" [strokeWidth]="2"
+        [ngClass]="product.wishlisted ? 'text-aldy-medium fill-current' : 'text-aldy-green-gray-bold NewAldyFontType4'">
+      </lucide-icon>
+    </button>
+    <a [routerLink]="['/producto', product.slug]" [queryParams]="cardQueryParams" class="absolute inset-0 z-0 block"
+      appPanimationcard [disableHover]="isMobileView">
+      <img #productImage [ngSrc]="currentImage" alt="{{ product.name }}" width="400" height="500" priority
+        class="w-full h-full cursor-pointer object-cover object-top" />
+      <img *ngIf="hoverImage" data-overlay-image [ngSrc]="hoverImage" alt="{{ product.name }}" width="400" height="500"
+        priority class="absolute inset-0 w-full h-full object-cover object-top pointer-events-none" style="opacity:0" />
     </a>
     <div appMoveupFade class="absolute inset-0 flex items-end z-10 pointer-events-none">
-      <div class="w-full bg-aldy-white space-y-3 p-4 m-3 pointer-events-auto">
-        
-        <div class="w-full flex justify-between items-center">
-          <a [routerLink]="['/producto', product.slug]" [queryParams]="cardQueryParams" class="block group/link">
-            <h3 class="text-xl NewAldyTitle text-aldy-green-gray-bold group-hover/link:text-aldy-medium transition-colors">{{ product.name }}</h3>
-          </a>
-
-          <button type="button" aria-label="Añadir a favoritos" (click)="toggleWishlist($event)"
-            class="cursor-pointer leading-none transition-colors focus:outline-none z-10">
-            <lucide-icon [strokeWidth]="3" [size]="20" 
-              name="heart"
-              [ngClass]="product.wishlisted ? 'text-aldy-medium fill-current' : 'text-gray-300'">
-            </lucide-icon>
-          </button>
-        </div>
-        <a [routerLink]="['/producto', product.slug]" [queryParams]="cardQueryParams">
-          <p class="text-sm font-light NewAldyFontType4 text-aldy-green-gray-bold hover:text-aldy-medium transition-colors">
+      <div class="w-full bg-aldy-white mx-3 mb-3 p-4 pointer-events-auto space-y-2">
+        <p class="text-[10px] tracking-widest NewAldyFontType4 uppercase text-aldy-medium-2 font-medium mb-2">Camisas
+        </p>
+        <div class="flex justify-between items-baseline">
+          <h3 class="text-xl font-light NewAldyTitle text-aldy-green-gray-bold m-0">
+            {{ product.name }}
+          </h3>
+          <span class="text-base font-medium NewAldyFontType4 text-aldy-green-gray-bold whitespace-nowrap ml-3">
             {{ product.price | currency:'ARS':'symbol-narrow':'1.2-2':'es-AR' }}
-          </p>
-        </a>
-        <div class="flex w-full items-center justify-between">
-          <div *ngIf="!product.isBridal" class="flex items-center flex-wrap gap-2">
-            <ng-container *ngFor="let size of product.sizes">
-              <button (click)="selectSize(size)"
-                class="text-sm sm:text-sm font-light px-3 py-1 border-b-2 transition-all cursor-pointer" [ngClass]="{
-                  'border-aldy-medium text-aldy-medium font-semibold': selectedSize === size,
-                  'border-transparent text-aldy-green-gray tracking-wider hover:border-gray-400': selectedSize !== size
-                }">
+          </span>
+        </div>
+        <div class="flex items-center justify-center mb-4 gap-4 w-full">
+        <span class="flex-1 h-px bg-aldy-medium opacity-60"></span>
+        <span class="text-aldy-medium text-xs leading-none select-none">
+          ✦
+        </span>
+        <span class="flex-1 h-px bg-aldy-medium opacity-60"></span>
+      </div>
+        <div class="flex justify-between items-start gap-4">
+          <div *ngIf="!product.isBridal">
+            <p
+              class="text-[10px] tracking-widest uppercase text-aldy-green-gray-bold NewAldyFontType4 font-medium mb-2">
+              Tallas</p>
+            <div class="flex gap-1.5">
+              <button *ngFor="let size of product.sizes" (click)="selectSize(size)"
+                class="w-9 h-9 text-sm bg-aldy-white hover:bg-aldy-medium text-aldy-green-gray-bold transition-all cursor-pointer duration-400 hover:text-white flex items-center justify-center">
                 {{ size }}
               </button>
-            </ng-container>
+            </div>
           </div>
-          <div [ngClass]="{'mt-2': product.isBridal}" class="flex gap-2 flex-wrap">
-            <button *ngFor="let color of product.variants" (click)="selectColor(color.color_name)"
-              [ngStyle]="{ backgroundColor: color.color_hex }" 
-              [attr.aria-pressed]="selectedColor === color.color_name"
-              class="w-5 h-5 transition-all rounded-[4px] border"
-              [ngClass]="{
-                'border-white border-2 ring-2 ring-aldy-medium-2 rounded-xs cursor-default': selectedColor === color.color_name,
-                'border-transparent cursor-pointer': selectedColor !== color.color_name
-              }" 
-              [title]="color.isBase ? (color.color_name + ' (base)') : color.color_name" 
-              aria-label="Elegir color">
-            </button>
+          <div>
+            <p
+              class="text-[10px] tracking-widest uppercase text-aldy-green-gray-bold NewAldyFontType4 font-medium mb-2">
+              Colores</p>
+            <div class="flex gap-2 items-center">
+              <button *ngFor="let color of product.variants" (click)="selectColor(color.color_name)"
+                [ngStyle]="{ backgroundColor: color.color_hex }"
+                [attr.aria-pressed]="selectedColor === color.color_name"
+                [title]="color.isBase ? (color.color_name + ' (base)') : color.color_name" aria-label="Elegir color"
+                class="w-7 h-7 rounded-full border transition-all cursor-pointer" [ngClass]="{
+                  'border-2 border-white ring-2 ring-[#7a9e87]': selectedColor === color.color_name,
+                  'border-gray-300': selectedColor !== color.color_name
+                }">
+              </button>
+            </div>
           </div>
         </div>
       </div>

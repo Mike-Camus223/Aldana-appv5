@@ -44,12 +44,12 @@
 <app-modal
   [(open)]="modalOpen"
   (openChange)="!$event && onModalClose()"
-  Mostyles="p-0 rounded-2xl w-[92%] sm:w-[88%] md:w-[80%] lg:w-full max-w-[700px]
-            h-[620px] lg:h-[500px] overflow-hidden mx-auto my-6 md:my-0"
+  Mostyles="p-0 rounded-2xl w-[92%] sm:w-[88%] md:w-[80%] sm:w-full max-w-[400px] sm:max-w-[600px]  md:max-w-[700px] h-[620px] sm:h-[500px] overflow-hidden mx-auto my-6 md:my-0"
 >
-  <div class="flex flex-col lg:flex-row h-full">
-    <div class="w-full lg:w-1/2 h-[310px] lg:h-full">
+  <div class="flex flex-col sm:flex-row h-full">
+    <div class="w-full sm:w-1/2 h-[310px] sm:h-full">
       <img
+        [draggable]="false"
         src="../../../../../assets/images/others/about2.jpg"
         alt="Aldana Vilcabana"
         class="w-full h-full object-cover"
@@ -57,20 +57,21 @@
     </div>
 
     <!-- CONTENIDO -->
-    <div class="w-full lg:w-1/2 h-[310px] lg:h-full bg-aldy-white
-                px-5 sm:px-8 py-6 lg:px-12 lg:py-8
+    <div class="w-full sm:w-1/2 h-[310px] sm:h-full bg-aldy-white
+                px-6 lg:px-12 py-6 sm:py-8
                 flex flex-col justify-center overflow-y-hidden">
 
-      <div class="w-full max-w-[320px] lg:max-w-[330px] mx-auto
-                  space-y-4 lg:space-y-6">
+      <div class="w-full max-w-[320px] sm:max-w-[330px] mx-auto
+                  space-y-4 sm:space-y-6">
 
         <!-- LOGO + TITULO -->
         <div class="text-center">
           <img src="../../../../../assets/svg/logo-4.svg"
+               [draggable]="false"
                alt="Aldana Vilcabana"
-               class="mx-auto mb-4 lg:mb-7 h-9 sm:h-10 lg:h-12" />
+               class="mx-auto mb-4 sm:mb-7 h-9 sm:h-10 sm:h-12" />
 
-          <h2 class="text-base sm:text-lg lg:text-xl
+          <h2 class="text-base sm:text-lg sm:text-xl
                      text-aldy-green-gray NewAldyTitle leading-snug">
             Suscribite y obtené 10% OFF en tu primera compra ✨
           </h2>
@@ -84,16 +85,16 @@
             required
             placeholder="Ingresá tu correo electrónico"
             class="w-full border border-aldy-medium NewAldyFontType4
-                   px-4 py-2.5 lg:py-3
-                   text-xs tracking-widest mb-3 lg:mb-5
+                   px-4 py-2.5 sm:py-3
+                   text-xs tracking-widest mb-3 sm:mb-5
                    focus:outline-none focus:ring-1 focus:ring-aldy-white"
           />
           <button
             class="w-full bg-aldy-medium text-white cursor-pointer
                    NewAldyFontType4 font-light uppercase
-                   text-[10px] lg:text-[11px]
-                   tracking-[0.25em] lg:tracking-[0.3em]
-                   py-2.5 lg:py-3
+                   text-[10px] sm:text-[11px]
+                   tracking-[0.25em] sm:tracking-[0.3em]
+                   py-2.5 sm:py-3
                    hover:opacity-90 transition"
           >
             Subscribirse
@@ -102,13 +103,13 @@
 
         <!-- TEXTO -->
         <div class="text-center">
-          <p class="text-[10px] lg:text-[11px]
+          <p class="text-[10px] sm:text-[11px]
                     NewAldyFontType4 text-aldy-green-gray
-                    leading-relaxed mb-2 lg:mb-6">
+                    leading-relaxed mb-2 sm:mb-6">
             Recibí novedades exclusivas, nuevos lanzamientos y el
             universo creativo de Aldana Vilcabana.
           </p>
-          <p class="text-[9px] lg:text-[10px]
+          <p class="text-[9px] sm:text-[10px]
                     NewAldyFontType4 text-aldy-green-gray">
             *Podés darte de baja en cualquier momento.
           </p>
