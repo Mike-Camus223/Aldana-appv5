@@ -6,6 +6,7 @@ import { AuthService } from '../../../../core/services/auth/auth.service';
 import { InputComponent } from '../../../../shared/components/generic/forms/input/input.component';
 import { InputpasswordComponent } from '../../../../shared/components/generic/forms/inputpassword/inputpassword.component';
 import { Subscription } from 'rxjs';
+import { LUCIDE_ICONS, LucideAngularModule, LucideIconProvider, Mail } from 'lucide-angular';
 
 interface LoginForm {
   email: FormControl<string | null>;
@@ -19,8 +20,17 @@ interface ForgotPasswordForm {
 @Component({
   selector: 'app-login-page',
   standalone: true,
-  imports: [RouterModule, ReactiveFormsModule, CommonModule, InputComponent, InputpasswordComponent],
-  templateUrl: './login-page.component.html'
+  imports: [RouterModule, ReactiveFormsModule, CommonModule, InputComponent, InputpasswordComponent,LucideAngularModule],
+  templateUrl: './login-page.component.html',
+  providers: [
+        {
+          provide: LUCIDE_ICONS,
+          multi: true,
+          useValue: new LucideIconProvider({
+            Mail
+          })
+        }
+      ]
 })
 export class LoginPageComponent implements OnInit, OnDestroy {
   isSubmitting = false;
@@ -48,7 +58,7 @@ export class LoginPageComponent implements OnInit, OnDestroy {
   // LOGIN SUBMIT
   async onSubmit(): Promise<void> {
     if (this.formLogin.invalid) {
-      this.formLogin.markAllAsTouched();  // <<--- fuerza required
+      this.formLogin.markAllAsTouched(); 
       return;
     }
 

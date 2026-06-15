@@ -1,0 +1,8 @@
+.auth-scroll-col {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.auth-scroll-col::-webkit-scrollbar {
+  display: none;
+}

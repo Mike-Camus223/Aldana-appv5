@@ -1,12 +1,24 @@
 import { Component, Input, Optional, Self } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, ControlValueAccessor, NgControl } from '@angular/forms';
+import { Eye, EyeClosed, Lock, LUCIDE_ICONS, LucideAngularModule, LucideIconProvider } from 'lucide-angular';
 
 @Component({
   selector: 'app-inputpassword',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule,LucideAngularModule],
   templateUrl: './inputpassword.component.html',
+  providers: [
+      {
+        provide: LUCIDE_ICONS,
+        multi: true,
+        useValue: new LucideIconProvider({
+          Lock,
+          Eye,
+          EyeClosed
+        })
+      }
+    ]
 })
 export class InputpasswordComponent implements ControlValueAccessor {
   @Input() label = 'Contraseña';
