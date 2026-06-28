@@ -4,37 +4,26 @@
   <app-breadcrumb [items]="breadcrumbItems"></app-breadcrumb>
 </section>
 
-<div
-  *ngIf="collectionBanner"
-  class="hidden lg:grid lg:grid-cols-[7fr_4fr] xl:grid-cols-[5fr_4fr] 2xl:grid-cols-2 relative w-full min-h-[440px] overflow-hidden"
->
+<div *ngIf="collectionBanner"
+  class="hidden lg:grid lg:grid-cols-[7fr_4fr] xl:grid-cols-[5fr_4fr] 2xl:grid-cols-2 relative w-full min-h-[440px] overflow-hidden">
   <div
-    class="order-2 lg:order-1 relative flex items-center justify-center min-h-[420px] lg:min-h-[440px] bg-[#FDF2E8] overflow-hidden"
-  >
+    class="order-2 lg:order-1 relative flex items-center justify-center min-h-[420px] lg:min-h-[440px] bg-[#FDF2E8] overflow-hidden">
     <div
-      class="absolute inset-0 w-full h-full bg-[linear-gradient(120deg,_#DDC6B3_0%,_#DDC6B3_1%,_transparent_30%,_transparent_100%)] z-10 pointer-events-none"
-    ></div>
+      class="absolute inset-0 w-full h-full bg-[linear-gradient(120deg,_#DDC6B3_0%,_#DDC6B3_1%,_transparent_30%,_transparent_100%)] z-10 pointer-events-none">
+    </div>
 
-    <img
-      src="../../../../../assets/images/sections/collection/mannequin_portrait2.png"
-      alt=""
-      class="absolute bottom-0 left-0 w-4/9 xl:w-1/2 2xl:w-auto h-auto max-w-[55%] object-contain pointer-events-none select-none"
-    />
+    <img src="../../../../../assets/images/sections/collection/mannequin_portrait2.png" alt=""
+      class="absolute bottom-0 left-0 w-4/9 xl:w-1/2 2xl:w-auto h-auto max-w-[55%] object-contain pointer-events-none select-none" />
 
     <div
-      class="relative z-10 flex h-full flex-col items-center justify-center text-center px-8 py-10 w-full max-w-lg mr-10 ml-auto"
-    >
-      <h1
-        appWordReveal
-        class="NewAldyTitle text-3xl lg:text-[2.6rem] font-light tracking-[0.13em] text-aldy-green-gray-bold uppercase leading-tight m-0"
-      >
+      class="relative z-10 flex h-full flex-col items-center justify-center text-center px-8 py-10 w-full max-w-lg mr-10 ml-auto">
+      <h1 appWordReveal
+        class="NewAldyTitle text-3xl lg:text-[2.6rem] font-light tracking-[0.13em] text-aldy-green-gray-bold uppercase leading-tight m-0">
         {{ collectionTitle }}
       </h1>
 
-      <p
-        appFadeUpLetter
-        class="NewAldyFontType4 text-[14px] text-aldy-green-gray-bold leading-[1.8] tracking-wider text-center max-w-lg m-0"
-      >
+      <p appFadeUpLetter
+        class="NewAldyFontType4 text-[14px] text-aldy-green-gray-bold leading-[1.8] tracking-wider text-center max-w-lg m-0">
         {{ collectionDescription }}
       </p>
 
@@ -48,67 +37,42 @@
 
   <div class="order-1 lg:order-2 relative overflow-hidden min-h-[420px] lg:min-h-[440px]">
     <div
-      class="absolute inset-0 left-0 w-full h-full bg-[linear-gradient(90deg,_#FDF2E8_0%,_#FDF2E8_1%,_transparent_30%,_transparent_100%)] z-10 pointer-events-none"
-    ></div>
+      class="absolute inset-0 left-0 w-full h-full bg-[linear-gradient(90deg,_#FDF2E8_0%,_#FDF2E8_1%,_transparent_30%,_transparent_100%)] z-10 pointer-events-none">
+    </div>
 
     <div class="absolute inset-0 w-full h-full">
-      <app-video
-        [src]="collectionBanner"
-        [muted]="true"
-        [autoplay]="true"
-        [showControls]="true"
-        [gradientOverlay]="false"
-        [objectFit]="'object-cover'"
-        height="h-full"
-        width="w-full"
-      >
+      <app-video [src]="collectionBanner" [muted]="true" [autoplay]="true" [showControls]="true"
+        [gradientOverlay]="false" [objectFit]="'object-cover'" height="h-full" width="w-full">
       </app-video>
     </div>
   </div>
 </div>
 
-<div
-  *ngIf="collectionBanner"
-  class="grid grid-cols-1 md:grid-rows-2 lg:hidden relative w-full overflow-hidden"
->
+<div *ngIf="collectionBanner" class="grid grid-cols-1 md:grid-rows-2 lg:hidden relative w-full overflow-hidden">
   <div class="grid grid-cols-1 md:grid-cols-[3fr_5fr] w-full">
     <div class="relative flex items-end justify-start bg-[#FDF2E8] overflow-hidden min-h-[260px]">
-      <img
-        src="../../../../../assets/images/sections/collection/mannequin_portrait.png"
-        class="w-full h-full object-contain md:object-cover object-left-top max-h-[420px] pointer-events-none select-none"
-      />
+      <img src="../../../../../assets/images/sections/collection/mannequin_portrait.png"
+        class="w-full h-full object-contain md:object-cover object-left-top max-h-[420px] pointer-events-none select-none" />
     </div>
 
     <div class="relative overflow-hidden min-h-[260px] hidden md:block">
       <div
-        class="absolute inset-0 bg-gradient-to-r from-[#FDF2E8] via-[#FDF2E8] via-[6%] to-transparent z-10 pointer-events-none"
-      ></div>
+        class="absolute inset-0 bg-gradient-to-r from-[#FDF2E8] via-[#FDF2E8] via-[6%] to-transparent z-10 pointer-events-none">
+      </div>
 
-      <app-video
-        [src]="collectionBanner"
-        [muted]="true"
-        [autoplay]="true"
-        [showControls]="true"
-        [gradientOverlay]="false"
-        [objectFit]="'object-cover'"
-        height="h-full"
-        width="w-full"
-      />
+      <app-video [src]="collectionBanner" [muted]="true" [autoplay]="true" [showControls]="true"
+        [gradientOverlay]="false" [objectFit]="'object-cover'" height="h-full" width="w-full" />
     </div>
   </div>
 
   <div class="flex flex-col items-center justify-center text-center px-6 py-10 bg-[#FDF2E8]">
-    <h1
-      appWordReveal
-      class="NewAldyTitle text-2xl font-light tracking-[0.13em] text-aldy-green-gray-bold uppercase leading-tight"
-    >
+    <h1 appWordReveal
+      class="NewAldyTitle text-2xl font-light tracking-[0.13em] text-aldy-green-gray-bold uppercase leading-tight">
       {{ collectionTitle }}
     </h1>
 
-    <p
-      appFadeUpLetter
-      class="NewAldyFontType4 text-[13px] text-aldy-green-gray-bold leading-[1.8] tracking-wider max-w-md mt-4"
-    >
+    <p appFadeUpLetter
+      class="NewAldyFontType4 text-[13px] text-aldy-green-gray-bold leading-[1.8] tracking-wider max-w-md mt-4">
       {{ collectionDescription }}
     </p>
 
@@ -120,16 +84,8 @@
   </div>
 
   <div class="block md:hidden w-full aspect-3/4 sm:aspect-7/7 bg-[#FDF2E8]">
-    <app-video
-      [src]="collectionBanner"
-      [muted]="true"
-      [autoplay]="true"
-      [showControls]="true"
-      [gradientOverlay]="false"
-      [objectFit]="'object-cover '"
-      height="h-full"
-      width="w-full"
-    />
+    <app-video [src]="collectionBanner" [muted]="true" [autoplay]="true" [showControls]="true" [gradientOverlay]="false"
+      [objectFit]="'object-cover '" height="h-full" width="w-full" />
   </div>
 </div>
 
@@ -139,26 +95,21 @@
       <div class="hidden md:flex items-center gap-6">
         <div class="flex items-center gap-2 shrink-0">
           <h1
-            class="NewAldyTitle text-xl sm:text-2xl md:text-[1.6rem] font-light tracking-[0.1em] text-aldy-green-gray-bold uppercase leading-none"
-          >
+            class="NewAldyTitle text-xl sm:text-2xl md:text-[1.6rem] font-light tracking-[0.1em] text-aldy-green-gray-bold uppercase leading-none">
             NOVIAS
           </h1>
 
-          <span
-            class="NewAldyTitle text-xl sm:text-2xl md:text-[1.6rem] font-light text-aldy-green-gray leading-none"
-          >
+          <span class="NewAldyTitle text-xl sm:text-2xl md:text-[1.6rem] font-light text-aldy-green-gray leading-none">
             -
           </span>
 
           <span
-            class="NewAldyTitle text-xl sm:text-2xl md:text-[1.6rem] font-light tracking-[0.1em] text-aldy-green-gray-bold uppercase leading-none"
-          >
+            class="NewAldyTitle text-xl sm:text-2xl md:text-[1.6rem] font-light tracking-[0.1em] text-aldy-green-gray-bold uppercase leading-none">
             {{ collectionTitle }}
           </span>
 
           <span
-            class="NewAldyTitle text-[0.7rem] sm:text-sm font-light tracking-[0.18em] text-aldy-green-gray uppercase"
-          >
+            class="NewAldyTitle text-[0.7rem] sm:text-sm font-light tracking-[0.18em] text-aldy-green-gray uppercase">
             - {{ collectionSubtitle }}
           </span>
         </div>
@@ -166,17 +117,14 @@
         <div class="flex-1 h-px bg-aldy-medium opacity-60"></div>
 
         <span
-          class="shrink-0 NewAldyTitle text-[0.7rem] sm:text-sm font-light tracking-[0.22em] text-aldy-green-gray uppercase"
-        >
+          class="shrink-0 NewAldyTitle text-[0.7rem] sm:text-sm font-light tracking-[0.22em] text-aldy-green-gray uppercase">
           {{ items.length }} DISEÑOS
         </span>
       </div>
 
       <div class="flex md:hidden flex-col gap-4">
         <div class="flex items-center gap-2 flex-wrap">
-          <h1
-            class="NewAldyTitle text-xl font-light tracking-[0.1em] text-aldy-green-gray-bold uppercase leading-none"
-          >
+          <h1 class="NewAldyTitle text-xl font-light tracking-[0.1em] text-aldy-green-gray-bold uppercase leading-none">
             NOVIAS
           </h1>
 
@@ -185,24 +133,19 @@
           </span>
 
           <span
-            class="NewAldyTitle text-xl font-light tracking-[0.1em] text-aldy-green-gray-bold uppercase leading-none"
-          >
+            class="NewAldyTitle text-xl font-light tracking-[0.1em] text-aldy-green-gray-bold uppercase leading-none">
             {{ collectionTitle }}
           </span>
         </div>
 
         <div class="flex items-center gap-3">
-          <span
-            class="shrink-0 NewAldyTitle text-[0.7rem] font-light tracking-[0.18em] text-aldy-green-gray uppercase"
-          >
+          <span class="shrink-0 NewAldyTitle text-[0.7rem] font-light tracking-[0.18em] text-aldy-green-gray uppercase">
             {{ collectionSubtitle }}
           </span>
 
           <div class="flex-1 h-px bg-aldy-medium opacity-60"></div>
 
-          <span
-            class="shrink-0 NewAldyTitle text-[0.7rem] font-light tracking-[0.22em] text-aldy-green-gray uppercase"
-          >
+          <span class="shrink-0 NewAldyTitle text-[0.7rem] font-light tracking-[0.22em] text-aldy-green-gray uppercase">
             {{ items.length }} DISEÑOS
           </span>
         </div>
@@ -210,29 +153,18 @@
     </div>
 
     <section *ngIf="items.length; else emptyState" class="mb-16">
-      <div
-        class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-4 gap-y-8 sm:gap-x-5 lg:gap-x-6"
-      >
-        <a
-          *ngFor="let it of items; trackBy: trackById"
-          class="group block w-full cursor-pointer"
-          [routerLink]="['/novias-colecciones', collectionSlug, it.slug]"
-        >
+      <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-4 gap-y-8 sm:gap-x-5 lg:gap-x-6">
+        <a *ngFor="let it of items; trackBy: trackById" class="group block bg-[#e4ddd6] w-full cursor-pointer"
+          [routerLink]="['/novias-colecciones', collectionSlug, it.slug]">
           <div class="aspect-[3/5] overflow-hidden bg-[#f0ece8]">
-            <img
-              *ngIf="it.thumbUrl"
-              [src]="it.thumbUrl"
-              [alt]="it.title || 'Diseño'"
+            <img *ngIf="it.thumbUrl" [src]="it.thumbUrl" [alt]="it.title || 'Diseño'"
               class="w-full h-full object-cover object-top transition-transform duration-500 ease-out group-hover:scale-[1.03]"
-              appCardInitAnimation="up"
-              loading="lazy"
-            />
+              appCardInitAnimation="up" loading="lazy" />
           </div>
 
-          <div class="flex items-center justify-between pt-3 pb-1 gap-2">
+          <div class="flex items-center bg-aldy-white justify-between pt-3 pb-1 gap-2">
             <span
-              class="NewAldyTitle text-[0.65rem] sm:text-[0.72rem] font-light tracking-[0.2em] text-aldy-green-gray-bold uppercase leading-tight"
-            >
+              class="NewAldyTitle text-[0.65rem] sm:text-[0.72rem] font-light tracking-[0.2em] text-aldy-green-gray-bold uppercase leading-tight">
               {{ it.title }}
             </span>
           </div>

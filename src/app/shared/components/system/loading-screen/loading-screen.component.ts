@@ -45,6 +45,7 @@ export class LoadingScreenComponent implements AfterViewInit, OnDestroy {
 
   ngAfterViewInit(): void {
     if (isPlatformBrowser(this.platformId)) {
+      this.blockScrollAndInteraction();
       this.setupInitialStates();
       
       setTimeout(() => {

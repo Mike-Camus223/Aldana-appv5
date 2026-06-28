@@ -7,6 +7,7 @@ import { LoadingScreenGenericComponent } from "./shared/components/system/loadin
 import { LoadingScreenComponent } from './shared/components/system/loading-screen/loading-screen.component';
 import { ToastNotificationComponent } from './shared/components/system/toast-notification/toast-notification.component';
 import { DiscountLeafComponent } from './shared/components/system/discount-leaf/discount-leaf.component';
+import { LoaderService } from './core/services/utils/loader.service';
 
 @Component({
   selector: 'app-root',
@@ -24,12 +25,15 @@ import { DiscountLeafComponent } from './shared/components/system/discount-leaf/
 })
 export class AppComponent implements OnInit {
   title = 'Aldyapp2';
-  showMainLoader = true;
+  showMainLoader = false;
 
   constructor(
     private router: Router,
-    private viewportScroller: ViewportScroller
-  ) {}
+    private viewportScroller: ViewportScroller,
+    private loaderService: LoaderService
+  ) {
+    this.showMainLoader = this.loaderService.isFirstLoad;
+  }
 
   ngOnInit(): void {
     this.router.events

@@ -17,7 +17,7 @@ export class CardComponent implements OnInit {
   constructor(
     private favoritesService: FavoritesService,
     private authService: AuthService
-  ) {}
+  ) { }
 
   ngOnInit() {
     if (this.product?.id) {
@@ -38,9 +38,9 @@ export class CardComponent implements OnInit {
   async toggleFavorite(event: Event) {
     event.stopPropagation();
     if (this.isLoading) return;
-    
+
     this.isLoading = true;
-    
+
     try {
       if (!this.authService.isAuthenticated()) {
         alert('Debes iniciar sesión para guardar productos en favoritos');

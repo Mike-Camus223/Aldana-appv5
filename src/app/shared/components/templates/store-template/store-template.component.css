@@ -33,3 +33,26 @@ font-family: "PT Sans Narrow", sans-serif;
 ::ng-deep .p-accordioncontent-content {
     padding: 0px 18px !important;
 }
+
+.spinner {
+  width: 70px;
+  height: 70px;
+  border: 7px solid #e4ddd6;
+  border-top-color: var(--color-aldy-medium, #8d7355);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media screen and (max-width: 460px) {
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border-width: 4px;
+  }
+}

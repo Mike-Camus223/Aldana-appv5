@@ -31,7 +31,9 @@ import { PanimationcardDirective } from '../../../utils/directives/panimationcar
 import { FavoritesService } from '../../../../core/services/favorites/favorites.service';
 import { AuthService } from '../../../../core/services/auth/auth.service';
 import { NotificationService } from '../../../../core/services/notification.service';
+import { LoaderService } from '../../../../core/services/utils/loader.service';
 import { gsap } from 'gsap';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-cardproduct',
@@ -58,7 +60,7 @@ import { gsap } from 'gsap';
     }
   ]
 })
-export class CardproductComponent implements OnInit, AfterViewInit, OnDestroy {
+export class CardproductComponent implements OnInit, AfterViewInit, OnDestroy, OnChanges {
   @Input() product!: Product;
   @Input() selectedColor: string = '';
   @Input() displayImage: string = '';
@@ -77,6 +79,7 @@ export class CardproductComponent implements OnInit, AfterViewInit, OnDestroy {
   private readonly fadeupDuration = 0.55;
   private readonly zoomDuration = 0.75;
   private readonly staggerBase = 0.08;
+  private loaderSubscription?: Subscription;
 
   get cardQueryParams(): any {
     const params: any = {};
@@ -95,7 +98,8 @@ export class CardproductComponent implements OnInit, AfterViewInit, OnDestroy {
     @Inject(PLATFORM_ID) private platformId: Object,
     private notificationService: NotificationService,
     private router: Router,
-    private hostRef: ElementRef<HTMLElement>
+    private hostRef: ElementRef<HTMLElement>,
+    private loaderService: LoaderService
   ) {}
 
   ngOnInit(): void {
@@ -125,14 +129,77 @@ export class CardproductComponent implements OnInit, AfterViewInit, OnDestroy {
     this.setHoverImage();
   }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['product'] && !changes['product'].firstChange) {
+      if (isPlatformBrowser(this.platformId)) {
+        this.waitForLoaderThenAnimate();
+      }
+    }
+  }
+
   ngAfterViewInit(): void {
     if (!isPlatformBrowser(this.platformId) || !this.cardRootRef) return;
-    requestAnimationFrame(() => this.playEntryAnimation());
+    this.waitForLoaderThenAnimate();
   }
 
   @HostListener('window:resize')
   onResize(): void {
     this.updateView();
+  }
+
+  private waitForLoaderThenAnimate(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    
+    // Set initial invisible state immediately to avoid layout flicker
+    this.setInitialState();
+
+    // Subscribe to loader animations state
+    this.loaderSubscription = this.loaderService.animationsEnabled$.subscribe(async (enabled: boolean) => {
+      if (enabled) {
+        // Wait for image content to be ready before playing animation
+        await this.waitForImageToLoad();
+        
+        this.playEntryAnimation();
+        // Unsubscribe immediately so it only runs once per mount
+        this.loaderSubscription?.unsubscribe();
+        this.loaderSubscription = undefined;
+      }
+    });
+  }
+
+  private async waitForImageToLoad(): Promise<void> {
+    if (!isPlatformBrowser(this.platformId)) return;
+    
+    // Wait a brief frame for the img DOM binding if not immediate
+    let imgEl = this.getImageEl();
+    if (!imgEl) {
+      await new Promise(resolve => requestAnimationFrame(resolve));
+      imgEl = this.getImageEl();
+    }
+    
+    if (imgEl instanceof HTMLImageElement) {
+      await new Promise<void>((resolve) => {
+        if (imgEl.complete && imgEl.naturalWidth > 0) {
+          resolve();
+        } else {
+          imgEl.addEventListener('load', () => resolve(), { once: true });
+          imgEl.addEventListener('error', () => resolve(), { once: true });
+          // Safety timeout of 1.5 seconds to handle slow networks
+          setTimeout(() => resolve(), 1500);
+        }
+      });
+    }
+  }
+
+  private setInitialState(): void {
+    if (!isPlatformBrowser(this.platformId) || !this.cardRootRef) return;
+    gsap.killTweensOf(this.cardRootRef.nativeElement);
+    gsap.set(this.cardRootRef.nativeElement, { opacity: 0, y: 30, willChange: 'opacity, transform' });
+    const imgEl = this.getImageEl();
+    if (imgEl) {
+      gsap.killTweensOf(imgEl);
+      gsap.set(imgEl, { scale: 1.06, willChange: 'transform' });
+    }
   }
 
   private playEntryAnimation(): void {
@@ -298,6 +365,9 @@ export class CardproductComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    if (this.loaderSubscription) {
+      this.loaderSubscription.unsubscribe();
+    }
     if (this.cardRootRef?.nativeElement) {
       gsap.killTweensOf(this.cardRootRef.nativeElement);
     }

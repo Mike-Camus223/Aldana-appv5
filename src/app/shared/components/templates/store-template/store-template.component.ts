@@ -1099,7 +1099,7 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
 
 
   trackByProductId(index: number, product: Product): string {
-    return `${this.renderVersion}-${product.slug || product.id}`;
+    return product.id;
   }
 
   public normalize(text: string): string {
