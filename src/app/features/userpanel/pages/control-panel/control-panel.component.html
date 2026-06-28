@@ -1,45 +1,128 @@
-<div class="w-full max-w-screen mx-auto p-4 space-y-8">
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-    <div
-      class="p-6 shadow-md lg:shadow-none lg:hover:shadow-md transition-all duration-400 ease-in-out space-y-4">
-      <div class="flex items-center space-x-3">
-        <lucide-icon name="send" class="text-aldy-medium" [size]="24" [strokeWidth]="1.75"></lucide-icon>
-        <h2 class="text-md sm:text-lg NewAldyTitle uppercase font-light tracking-widest text-aldy-green-gray-bold">Newsletter</h2>
+<div class="w-full max-w-7xl mx-auto">
+
+  <!-- Greeting -->
+  <div class="mb-8">
+    <h2 class="text-2xl md:text-3xl NewAldyTitle font-light text-[#7a9472] tracking-wide">
+      Hola, {{ (user | async)?.user_metadata?.['full_name'] || (user | async)?.user_metadata?.['name'] || 'Usuario' }}
+    </h2>
+    <p class="mt-1 text-sm text-aldy-green-gray-bold  NewAldyFontType4 tracking-wider font-light">
+      Desde tu cuenta puedes gestionar tus pedidos, datos y preferencias.
+    </p>
+  </div>
+
+  <!-- Cards Grid -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
+
+    <!-- Mis Pedidos -->
+    <div class="border border-[#e8e0d8] bg-aldy-white p-6 space-y-4 hover:shadow-sm transition-shadow duration-300">
+      <div class="flex items-center gap-4">
+        <div class="w-14 h-14 rounded-full bg-aldy-light/40 flex items-center justify-center shrink-0">
+          <lucide-icon name="shopping-bag" [size]="22" [strokeWidth]="2" class="text-aldy-green-gray-bold"></lucide-icon>
+        </div>
+        <div class="flex-1 min-w-0">
+          <h3 class="text-sm NewAldyTitle tracking-[0.2em] uppercase text-aldy-green-gray-bold font-normal mb-1.5">Mis Pedidos</h3>
+          <p class="text-sm text-aldy-green-gray-bold  NewAldyFontType4 tracking-wider font-light leading-relaxed">
+            Revisa el estado de tus pedidos y detalles de compra.
+          </p>
+        </div>
       </div>
-      <p class="text-sm text-aldy-green-gray NewAldyFontType4 tracking-wider">Suscríbete y recibe novedades y promociones exclusivas.</p>
-      <button
-        class="px-5 py-2 bg-aldy-medium cursor-pointer text-white NewAldyFontType4 text-sm tracking-wider hover:bg-aldy-medium-2 transition-colors duration-500 ease-in-out">
-        Suscribirme
+      <button 
+        class="px-5 py-2 bg-aldy-medium text-white text-xs NewAldyFontType4 tracking-[0.15em] uppercase hover:bg-aldy-medium-2 transition-colors duration-300 cursor-pointer">
+        Ver mis pedidos
       </button>
     </div>
 
-    <div
-      class="p-6 shadow-md lg:shadow-none lg:hover:shadow-md transition-all duration-400 ease-in-out space-y-4">
-      <div class="flex items-center space-x-3">
-        <lucide-icon name="user" class="text-aldy-medium" [size]="24" [strokeWidth]="1.75"></lucide-icon>
-        <h2 class="text-md sm:text-lg NewAldyTitle uppercase font-light tracking-widest text-aldy-green-gray-bold">Mis Datos Personales</h2>
-      </div>
-      <div class="text-sm text-aldy-green-gray NewAldyFontType4 tracking-wider" *ngIf="user | async as userData">
-        <p class="font-light">{{ userData.user_metadata['full_name'] || userData.user_metadata['name'] || 'Usuario' }}</p>
-        <p>{{ userData.email || 'agregar correo' }}</p>
+    <!-- Información Personal -->
+    <div class="border border-[#e8e0d8] bg-aldy-white p-6 space-y-4 hover:shadow-sm transition-shadow duration-300">
+      <div class="flex items-center gap-4">
+        <div class="w-14 h-14 rounded-full bg-aldy-light/40 flex items-center justify-center shrink-0">
+          <lucide-icon name="user-round" [size]="22" [strokeWidth]="2" class="text-aldy-green-gray-bold"></lucide-icon>
+        </div>
+        <div class="flex-1 min-w-0">
+          <h3 class="text-sm NewAldyTitle tracking-[0.2em] uppercase text-aldy-green-gray-bold font-normal mb-1.5">Información Personal</h3>
+          <p class="text-sm text-aldy-green-gray-bold  NewAldyFontType4 tracking-wider font-light leading-relaxed">
+            Actualiza tus datos personales y de contacto.
+          </p>
+        </div>
       </div>
       <button (click)="GotoAccountInfo()"
-        class="px-5 py-2 bg-aldy-medium cursor-pointer text-white NewAldyFontType4 text-sm tracking-wider hover:bg-aldy-medium-2 transition-colors duration-500 ease-in-out">
-        Modificar
+        class="px-5 py-2 bg-aldy-medium text-white text-xs NewAldyFontType4 tracking-[0.15em] uppercase hover:bg-aldy-medium-2 transition-colors duration-300 cursor-pointer">
+        Editar información
       </button>
     </div>
 
-    <div
-      class="p-6 shadow-md lg:shadow-none lg:hover:shadow-md transition-all duration-400 ease-in-out space-y-4">
-      <div class="flex items-center space-x-3">
-        <lucide-icon name="heart" class="text-aldy-medium" [size]="24" [strokeWidth]="1.75"></lucide-icon>
-        <h2 class="text-md sm:text-lg NewAldyTitle uppercase font-light tracking-widest text-aldy-green-gray-bold">Lista de favoritos</h2>
+    <!-- Mis Favoritos -->
+    <div class="border border-[#e8e0d8] bg-aldy-white p-6 space-y-4 hover:shadow-sm transition-shadow duration-300">
+      <div class="flex items-center gap-4">
+        <div class="w-14 h-14 rounded-full bg-aldy-light/40 flex items-center justify-center shrink-0">
+          <lucide-icon name="heart" [size]="22" [strokeWidth]="2" class="text-aldy-green-gray-bold"></lucide-icon>
+        </div>
+        <div class="flex-1 min-w-0">
+          <h3 class="text-sm NewAldyTitle tracking-[0.2em] uppercase text-aldy-green-gray-bold font-normal mb-1.5">Mis Favoritos</h3>
+          <p class="text-sm text-aldy-green-gray-bold  NewAldyFontType4 tracking-wider font-light leading-relaxed">
+            Guarda aquí los productos que te gustan para comprarlos más adelante.
+          </p>
+        </div>
       </div>
-      <p class="text-sm text-aldy-green-gray NewAldyFontType4 tracking-wider">Guarda aquí los productos que te gustan para comprarlos más adelante.</p>
       <button (click)="Gotofav()"
-        class="mt-2 px-5 py-2 bg-aldy-medium cursor-pointer text-white NewAldyFontType4 text-sm tracking-wider hover:bg-aldy-medium-2 transition-colors duration-500 ease-in-out">
-        Ver lista
+        class="px-5 py-2 bg-aldy-medium text-white text-xs NewAldyFontType4 tracking-[0.15em] uppercase hover:bg-aldy-medium-2 transition-colors duration-300 cursor-pointer">
+        Ver mi lista
       </button>
     </div>
+
+    <!-- Newsletter -->
+    <div class="border border-[#e8e0d8] bg-aldy-white p-6 space-y-4 hover:shadow-sm transition-shadow duration-300">
+      <div class="flex items-center gap-4">
+        <div class="w-14 h-14 rounded-full bg-aldy-light/40 flex items-center justify-center shrink-0">
+          <lucide-icon name="send" [size]="22" [strokeWidth]="2" class="text-aldy-green-gray-bold"></lucide-icon>
+        </div>
+        <div class="flex-1 min-w-0">
+          <h3 class="text-sm NewAldyTitle tracking-[0.2em] uppercase text-aldy-green-gray-bold font-normal mb-1.5">Newsletter</h3>
+          <p class="text-sm text-aldy-green-gray-bold  NewAldyFontType4 tracking-wider font-light leading-relaxed">
+            Suscríbete y recibe novedades y promociones exclusivas.
+          </p>
+        </div>
+      </div>
+      <button
+        class="px-5 py-2 bg-aldy-medium text-white text-xs NewAldyFontType4 tracking-[0.15em] uppercase hover:bg-aldy-medium-2 transition-colors duration-300 cursor-pointer">
+        Gestionar suscripción
+      </button>
+    </div>
+
   </div>
+  <div class="bg-aldy-white py-4 border border-[#e8e0d8] hover:shadow-sm transition-shadow duration-300 flex px-6 sm:px-16 flex-col sm:flex-row justify-between items-center gap-8">
+    <div class="shrink-0">
+      <img
+        src="../../../assets/images/sections/misc/mannequin_help.png"
+        alt="Ayuda"
+        class="w-7 h-auto opacity-80">
+    </div>
+    <div class="flex-1 text-center sm:text-left">
+      <h3 class="text-xl NewAldyTitle font-light tracking-[0.15em] text-aldy-green-gray-bold mb-1">¿Necesitas ayuda?</h3>
+      <p class="text-sm text-aldy-green-gray-bold  NewAldyFontType4 tracking-wider font-light leading-relaxed">
+        Estamos aquí para ayudarte.<br>
+        Contáctanos por WhatsApp o correo electrónico.
+      </p>
+    </div>
+
+    <!-- Contact info -->
+    <div class="flex flex-col gap-3 shrink-0 text-center sm:text-left">
+      <a href="https://wa.me/541112345678" target="_blank"
+        class="flex items-center gap-2.5 text-sm text-aldy-green-gray-bold NewAldyFontType4 tracking-wider hover:text-[#7a9472] transition-colors duration-200">
+        <div class="w-10 h-10 rounded-full bg-aldy-light/40 flex items-center justify-center shrink-0">
+          <i class="fa-brands fa-whatsapp text-2xl text-[#7a9472] font-bold"></i>
+        </div>
+        +54 11 1234 5678
+      </a>
+      <a href="mailto:hola@aldanavilcabana.com.ar"
+        class="flex items-center gap-2.5 text-sm text-aldy-green-gray-bold NewAldyFontType4 tracking-wider hover:text-[#7a9472] transition-colors duration-200">
+        <div class="w-10 h-10 rounded-full bg-aldy-light/40 flex items-center justify-center shrink-0">
+          <lucide-icon name="mail" [size]="20" [strokeWidth]="2" class="text-[#7a9472]"></lucide-icon>
+        </div>
+        holaaldanavilcabana.com.ar
+      </a>
+    </div>
+
+  </div>
+
 </div>

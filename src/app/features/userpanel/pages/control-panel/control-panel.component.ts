@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth/auth.service';
-import { Heart, LUCIDE_ICONS, LucideAngularModule, LucideIconProvider, Send, User } from 'lucide-angular';
+import { Heart, LUCIDE_ICONS, LucideAngularModule, LucideIconProvider, Mail, MessageCircle, Send, ShoppingBag, User, UserRound } from 'lucide-angular';
 
 @Component({
   selector: 'app-control-panel',
@@ -17,7 +17,11 @@ import { Heart, LUCIDE_ICONS, LucideAngularModule, LucideIconProvider, Send, Use
       useValue: new LucideIconProvider({
         Send,
         User,
-        Heart
+        Heart,
+        ShoppingBag,
+        MessageCircle,
+        UserRound,
+        Mail
       })
     }
   ]
@@ -36,7 +40,3 @@ export class ControlPanelComponent {
     this.router.navigate(['/panel/informacion-cuenta']);
   }
 }
-
-// ANTES DE IRTE RECUERDA QUE TENES QUE HACER EL SISTEMA DE WHITELIST 
-// CON LA TABLA QUE CREAMOS Y CONECTARLO CON USUARIOS Y EL COMPONENTE DE TIENDA
-// OK? 

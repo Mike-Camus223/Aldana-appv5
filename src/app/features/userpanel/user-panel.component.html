@@ -1,42 +1,52 @@
 <app-navbar-publicv3></app-navbar-publicv3>
-<div class="h-[0px] lg:h-[88px]"></div>
+<div class="h-[72px] bg-aldy-white lg:h-[88px]"></div>
 <div class="min-h-screen w-full bg-aldy-white overflow-x-hidden">
-  <div class="max-w-screen w-full bg-aldy-white mx-auto">
-    <div class="relative w-full h-80 flex items-center justify-center text-center overflow-hidden">
-      <img class="absolute inset-0 w-full h-full object-cover object-[65%_22%]"
-        src="../../../assets/images/others/perfil_user.jpg"
-        alt="wardrobe">
-      <div class="absolute inset-0 bg-black/20"></div>
-      <h1 class="relative text-5xl NewAldyTitle tracking-widest uppercase text-white  font-light z-10">
-        Mi cuenta
-      </h1>
-    </div>
-  </div>
-  <div class="max-w-7xl mx-auto px-4 flex h-screen">
-    <div class="w-64">
-      <nav class="mt-6">
-        <div class="px-3 space-y-1">
-          <a *ngFor="let item of navItems" [routerLink]="item.route"
-            routerLinkActive="bg-[#d3eeca] text-aldy-green-gray-bold"
-            class="w-full flex items-center text-aldy-green-gray px-3 tracking-wider font-light py-4 text-sm NewAldyFontType4">
-            <lucide-icon [size]="22" [strokeWidth]="1.75" [name]="item.icon" class="mr-1.5 text-aldy-green-gray"></lucide-icon>
-            {{ item.title }}
-          </a>
-        </div>
-        <div class="px-3 space-y-1 mt-8">
-          <button (click)="onSignOut()"
-            class="w-full cursor-pointer text-aldy-green-gray flex items-center hover:bg-[#d3eeca] transition-colors duration-300 ease-in-out px-3 py-4 text-sm NewAldyFontType4">
-            <lucide-icon [size]="22" [strokeWidth]="1.75" name="log-out" class="mr-1.5 text-aldy-green-gray"></lucide-icon>
-            Cerrar Sesión
-          </button>
-        </div>
-      </nav>
-    </div>
-    <div class="flex-1 bg-aldy-white p-8 relative">
-      <div *ngIf="isLoading" class="loading-overlay">
-        <div class="spinner"></div>
+  <div class="flex min-h-screen">
+    <aside class="sticky top-0 inset-0 flex flex-col w-[260px] shrink-0 bg-aldy-white border-r border-[#e0d8cf]">
+      <div class="px-8 flex items-center justify-center pt-10 pb-8">
+        <img [draggable]="false" src="../../../assets/svg/logo-4.svg" alt="Aldana Vilcabana" class="w-35 h-full object-contain">
       </div>
-      <router-outlet *ngIf="!isLoading"></router-outlet>
+      <nav class="flex flex-col px-4 gap-0.5">
+        <a
+          *ngFor="let item of navItems"
+          [routerLink]="item.route"
+          routerLinkActive="bg-[#d6e4cf] text-[#4a6644]"
+          [routerLinkActiveOptions]="{exact: false}"
+          class="flex items-center gap-3 px-4 py-3.5 text-[#7a8c74] text-[11px] tracking-[0.2em] uppercase NewAldyFontType4 font-light hover:bg-[#e6ede2] transition-colors duration-200 cursor-pointer">
+          <lucide-icon [size]="17" [strokeWidth]="1.5" [name]="item.icon" class="shrink-0 text-[#7a9472]"></lucide-icon>
+          {{ item.title }}
+        </a>
+      </nav>
+      <div class="mt-6 px-4">
+        <div class="border-t border-[#d8cfc6] mb-2"></div>
+        <button
+          (click)="onSignOut()"
+          class="w-full flex items-center gap-3 px-4 py-3.5 text-[#7a8c74] text-[11px] tracking-[0.2em] uppercase NewAldyFontType4 font-light hover:bg-[#e6ede2] transition-colors duration-200 cursor-pointer">
+          <lucide-icon [size]="17" [strokeWidth]="1.5" name="log-out" class="shrink-0 text-[#7a9472]"></lucide-icon>
+          Cerrar Sesión
+        </button>
+      </div>
+      <div class="mt-auto pb-8 text-center">
+        <span class="text-[#c4b8a8] text-base tracking-widest select-none">˜ ˜ ˜</span>
+      </div>
+    </aside>
+    <div class="flex-1 flex flex-col min-h-screen">
+      <div class="relative w-full h-65 flex items-center justify-center overflow-hidden shrink-0">
+        <img
+          class="absolute inset-0 w-full h-full object-cover brightness-70 object-[65%_22%]"
+          src="../../../assets/images/others/perfil_user.jpg"
+          alt="wardrobe">
+        <div class="absolute inset-0 bg-black/20"></div>
+        <h1 class="relative text-3xl sm:text-5xl NewAldyTitle tracking-[0.3em] uppercase text-white font-light z-10">
+          Mi cuenta
+        </h1>
+      </div>
+      <main class="flex-1 bg-aldy-white relative px-8 py-10">
+        <div *ngIf="isLoading" class="loading-overlay">
+          <div class="spinner-aldy"></div>
+        </div>
+        <router-outlet *ngIf="!isLoading"></router-outlet>
+      </main>
     </div>
   </div>
 </div>

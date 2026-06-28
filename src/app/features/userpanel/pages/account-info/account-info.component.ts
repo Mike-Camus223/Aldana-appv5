@@ -3,7 +3,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { InputComponent } from '../../../../shared/components/generic/forms/input/input.component';
 import { SelectsComponent } from '../../../../shared/components/generic/forms/selects/selects.component';
-import { LUCIDE_ICONS, LucideAngularModule, LucideIconProvider, Pencil } from 'lucide-angular';
+import { Calendar, ChevronRight, Lock, LUCIDE_ICONS, LucideAngularModule, LucideIconProvider, Mail, MapPin, Pencil } from 'lucide-angular';
 import { AuthService } from '../../../../core/services/auth/auth.service';
 import { User } from '@supabase/supabase-js';
 import { take } from 'rxjs';
@@ -12,7 +12,7 @@ import { take } from 'rxjs';
   selector: 'app-account-info',
   standalone: true,
   imports: [
-    CommonModule, 
+    CommonModule,
     ReactiveFormsModule,
     InputComponent,
     SelectsComponent,
@@ -23,20 +23,23 @@ import { take } from 'rxjs';
       provide: LUCIDE_ICONS,
       multi: true,
       useValue: new LucideIconProvider({
-        Pencil
+        Pencil, Mail, Calendar, Lock, MapPin, ChevronRight
       })
     }
   ],
   templateUrl: './account-info.component.html'
 })
 export class AccountInfoComponent implements OnInit {
+
   accountForm: FormGroup;
   isSaving = false;
+  userAvatarUrl: string | null = null;
+  displayName = '';
+  displayEmail = '';
+
   private authService = inject(AuthService);
   private user: User | null = null;
-  userAvatarUrl: string | null = null; 
 
-  
   genderOptions = [
     { label: 'Femenino', value: 'Femenino' },
     { label: 'Masculino', value: 'Masculino' },
@@ -46,15 +49,39 @@ export class AccountInfoComponent implements OnInit {
   constructor(private fb: FormBuilder) {
     this.accountForm = this.fb.group({
       firstName: ['', [Validators.required]],
-      lastName: ['', [Validators.required]],
-      email: ['', [Validators.required, Validators.email]],
-      phone: ['', [Validators.required]],
-      gender: ['', [Validators.required]]
+      lastName:  ['', [Validators.required]],
+      email:     ['', [Validators.required, Validators.email]],
+      phone:     ['', [Validators.required]],
+      gender:    ['', [Validators.required]]
     });
   }
 
   ngOnInit(): void {
     this.loadUserData();
+  }
+
+  getInitial(): string {
+    return this.displayName.charAt(0).toUpperCase() || 'U';
+  }
+
+  onCancel(): void {
+    this.accountForm.reset();
+    this.displayName = '';
+    this.displayEmail = '';
+  }
+
+  onSubmit(): void {
+    if (this.accountForm.valid && !this.accountForm.pristine) {
+      this.isSaving = true;
+      setTimeout(() => {
+        console.log('Form submitted:', this.accountForm.value);
+        this.accountForm.markAsPristine();
+        this.isSaving = false;
+        alert('¡Cambios guardados exitosamente! (Simulado)');
+      }, 1000);
+    } else {
+      this.markFormAsTouched();
+    }
   }
 
   private loadUserData(): void {
@@ -68,36 +95,22 @@ export class AccountInfoComponent implements OnInit {
         this.userAvatarUrl = user.user_metadata?.['avatar_url'] || null;
 
         this.accountForm.patchValue({
-          firstName: firstName,
-          lastName: lastName,
-          email: user.email,
-          phone: user.phone || '',
+          firstName,
+          lastName,
+          email:  user.email,
+          phone:  user.phone || '',
           gender: user.user_metadata?.['gender'] || ''
         });
+
+        this.displayName  = firstName;
+        this.displayEmail = user.email ?? '';
       }
     });
   }
 
-  onSubmit(): void {
-    if (this.accountForm.valid && !this.accountForm.pristine) {
-      this.isSaving = true;
-      
-      // TODO: Implementar la llamada real al servicio de actualización
-      setTimeout(() => {
-        console.log('Form submitted:', this.accountForm.value);
-        this.accountForm.markAsPristine();
-        this.isSaving = false;
-        alert('¡Cambios guardados exitosamente! (Simulado)');
-      }, 1000);
-    } else {
-      this.markFormAsTouched();
-    }
-  }
-
   private markFormAsTouched(): void {
     Object.keys(this.accountForm.controls).forEach(field => {
-      const control = this.accountForm.get(field);
-      control?.markAsTouched();
+      this.accountForm.get(field)?.markAsTouched();
     });
   }
 }

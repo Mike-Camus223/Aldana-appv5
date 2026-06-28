@@ -1,80 +1,76 @@
-<div class="relative group w-full mt-4" style="min-height:56px">
+<div class="relative w-full" [id]="id">
+
+  <!-- Trigger -->
   <div
-    [id]="id"
     (click)="toggleDropdown()"
     (keydown)="onKeyDown($event)"
     [attr.tabindex]="disabled ? -1 : 0"
     role="combobox"
     [attr.aria-expanded]="isOpen"
-
-    class="peer block w-full h-[56px] px-2.5 pb-2.5 pt-4 text-sm bg-transparent border-0 border-b appearance-none focus:outline-none focus:ring-0 cursor-pointer transition-all duration-300 ease-in-out"
-
+    class="flex items-center w-full px-3 gap-3 min-h-[52px] cursor-pointer border transition-all duration-200"
     [ngClass]="{
-      'border-red-400 text-red-400': invalid,
-      'border-aldy-medium text-aldy-green-gray': !invalid && !disabled,
-      'bg-transparent text-aldy-green-gray': disabled
-    }"
-  >
-    <span class="block truncate">
-      {{ value ? getDisplayText() : '' }}
+      'bg-aldy-white border-red-400': invalid,
+      'bg-aldy-white border-[#7A8C6E]': isOpen && !invalid,
+      'bg-aldy-white border-[#7A8C6E]/40': !isOpen && !invalid,
+      'opacity-60 cursor-not-allowed': disabled
+    }">
+
+    <!-- Texto -->
+    <span
+      class="flex-1 NewAldyFontType4 tracking-wide text-[13px]"
+      [ngClass]="{
+        'text-red-400': invalid,
+        'text-[#5A5A4A]': !invalid && value,
+        'text-[#B0ADA5]': !invalid && !value
+      }">
+      {{ value ? getDisplayText() : 'Seleccionar opción' }}
     </span>
 
-  </div>
-  <!-- ARROW -->
-  <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+    <!-- Icono -->
     <svg
-      class="w-4 h-4 transition-transform duration-300"
+      class="w-4 h-4 transition-transform duration-200 shrink-0"
       [class.rotate-180]="isOpen"
-      [ngClass]="invalid ? 'text-red-400' : 'text-gray-400'"
+      [ngClass]="invalid ? 'text-red-400' : 'text-[#5A5A4A]'"
       fill="none"
       stroke="currentColor"
-      viewBox="0 0 24 24"
-    >
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+      viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 9l-7 7-7-7"/>
     </svg>
+
   </div>
-  <!-- DROPDOWN -->
+
+  <!-- Dropdown -->
   <div
     *ngIf="isOpen"
     @slideDown
-    class="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg"
-  >
-    <div class="max-h-60 overflow-y-auto">
+    class="absolute z-50 w-full mt-1 bg-aldy-white border border-[#e0d8cf] shadow-sm overflow-hidden">
+
+    <div class="max-h-52 overflow-y-auto">
 
       <div
         *ngFor="let option of options"
         (click)="selectOption(option)"
-        class="px-3 py-2 text-sm cursor-pointer hover:bg-aldy-light text-gray-900 transition-colors duration-200 flex items-center justify-between"
-      >
+        class="flex items-center justify-between px-3.5 py-3 NewAldyFontType4 text-[13px] tracking-wide cursor-pointer transition-colors duration-150"
+        [ngClass]="{
+          'bg-aldy-light text-aldy-medium': isSelected(option),
+          'text-[#5A5A4A] hover:bg-aldy-light': !isSelected(option)
+        }">
+
         <span>{{ getOptionLabel(option) }}</span>
 
         <svg
           *ngIf="isSelected(option)"
-          class="w-4 h-4 text-aldy-light-2"
+          class="w-3.5 h-3.5 text-aldy-medium shrink-0"
           fill="currentColor"
-          viewBox="0 0 20 20"
-        >
+          viewBox="0 0 20 20">
           <path fill-rule="evenodd"
-          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-          clip-rule="evenodd"/>
+            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+            clip-rule="evenodd"/>
         </svg>
 
       </div>
 
     </div>
   </div>
-  <label
-    [for]="id"
-    class="absolute start-1 z-10 origin-[0] px-2 text-sm transition-all duration-200 pointer-events-none"
-    [ngClass]="{
-      'text-red-400': invalid,
-      'text-aldy-green-gray': disabled,
-      'text-aldy-medium': !invalid && !disabled && (value || isOpen),
-      'text-aldy-green-gray-bold': !invalid && !disabled && !(value || isOpen),
-      'top-2 -translate-y-4 scale-75': value || isOpen,
-      'top-1/2 -translate-y-1/2 scale-100': !(value || isOpen)
-    }"
-  >
-    {{ label }}
-  </label>
+
 </div>
