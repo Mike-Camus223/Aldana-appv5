@@ -350,7 +350,7 @@
             </div>
           </app-acordiongeneric>
           <div class="px-3 pt-3 flex gap-2">
-            <button type="button" (click)="clearFilters()"
+            <button *ngIf="hasFiltersApplied()" type="button" (click)="clearFilters()"
               class="flex-1 border border-aldy-medium text-aldy-medium px-3 py-2 font-light hover:border-aldy-medium-2 hover:text-aldy-medium-2 NewAldyFontType4 cursor-pointer transition-colors text-xs uppercase tracking-widest">Borrar
               filtros</button>
             <button type="button" (click)="applyFiltersAction(false)" [disabled]="loading"
@@ -719,7 +719,7 @@
 
     <div class="sticky bottom-0 bg-aldy-white border-t border-gray-200 p-4">
       <div class="px-3 pt-3 flex gap-2">
-        <button type="button" (click)="clearFilters()"
+        <button *ngIf="hasFiltersApplied()" type="button" (click)="clearFilters()"
           class="flex-1 border border-aldy-medium text-aldy-medium px-3 py-2 font-light hover:border-aldy-medium-2 hover:text-aldy-medium-2 NewAldyFontType4 cursor-pointer transition-colors text-xs uppercase tracking-widest">Borrar
           filtros</button>
         <button type="button" (click)="applyFiltersAction(true)" [disabled]="loading"

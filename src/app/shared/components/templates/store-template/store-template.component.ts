@@ -16,7 +16,6 @@ import { trigger, transition, style, animate, state } from '@angular/animations'
 import { AcordiongenericComponent } from '../../generic/acordiongeneric/acordiongeneric.component';
 import { LoadingbarComponent } from '../../system/loadingbar/loadingbar.component';
 import { AldyCheckboxV1Directive } from '../../../utils/directives/aldy-checkbox-v1.directive';
-import { Location } from '@angular/common';
 import { FavoritesService } from '../../../../core/services/favorites/favorites.service';
 import { AuthService } from '../../../../core/services/auth/auth.service';
 import { ProductsService } from '../../../../core/services/data-access/products/products.service';
@@ -88,11 +87,15 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
   enableColorImageChange = false;
 
   // Stored state from the initial entry route
-  private initialCategories: string[] = [];
-  private initialSubcategoriesMap: Record<string, string[]> = {};
-  private initialCollectionId: string | 'general' | null = null;
-  private initialBridesCollectionId: string | 'general' | null = null;
-  private initialCategoryScope: string | null = null;
+  private entryRouteState: {
+    categoria: string | null;
+    subcategoria: string | null;
+    scope: string | null;
+    qpCats: string | null;
+    qpSubs: string | null;
+    qpColl: string | null;
+    qpBridesColl: string | null;
+  } | null = null;
   readonly maxPages: number = 16; 
   currentPage: number = 1;
   pagedProducts: Product[] = [];
@@ -148,7 +151,6 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private route: ActivatedRoute,
     private router: Router,
-    private location: Location,
     @Inject(PLATFORM_ID) private platformId: Object
   ) { }
 
@@ -341,12 +343,18 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
         this.openAccordions.clear();
         this.openAccordions.add('categorias');
 
-        // Guardar el estado inicial de la ruta de entrada para restaurarlo al borrar filtros
-        this.initialCategories = [...this.selectedCategories];
-        this.initialSubcategoriesMap = JSON.parse(JSON.stringify(this.selectedSubcategoriesMap));
-        this.initialCollectionId = this.selectedCollectionId;
-        this.initialBridesCollectionId = this.selectedBridesCollectionId;
-        this.initialCategoryScope = this.activeCategoryScope;
+        // Guardar el estado de entrada inicial si es la primera vez que se carga
+        if (!this.entryRouteState) {
+          this.entryRouteState = {
+            categoria: categoriaParam,
+            subcategoria: subcategoriaParam,
+            scope: scopeParam,
+            qpCats: qp.get('categorias'),
+            qpSubs: qp.get('subcategorias'),
+            qpColl: qp.get('coleccion'),
+            qpBridesColl: qp.get('coleccion_novias')
+          };
+        }
 
         // Aplicar con animación similar a filtrar
         await this.applyFilters();
@@ -768,9 +776,65 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
   }
 
   clearFilters(): void {
-    const { path, queryParams } = this.getBaseRoute();
+    if (this.entryRouteState) {
+      this.selectedCategories = [];
+      if (this.entryRouteState.categoria) {
+        this.selectedCategories.push(ProductUtils.normalize(this.entryRouteState.categoria));
+      }
+      if (this.entryRouteState.qpCats) {
+        const extraCats = this.entryRouteState.qpCats.split(',').map(c => ProductUtils.normalize(c)).filter(Boolean);
+        this.selectedCategories = Array.from(new Set([...this.selectedCategories, ...extraCats]));
+      }
 
-    // Limpiar filtros del componente para actualizar la vista de inmediato
+      this.selectedSubcategoriesMap = {};
+      const addSubToMap = (subNorm: string) => {
+        const parent = this.findParentCategoryForSub(subNorm);
+        if (parent) {
+          if (!this.selectedCategories.includes(parent)) {
+            this.selectedCategories.push(parent);
+          }
+          const arr = this.selectedSubcategoriesMap[parent] || [];
+          if (!arr.includes(subNorm)) {
+            arr.push(subNorm);
+          }
+          this.selectedSubcategoriesMap[parent] = arr;
+        }
+      };
+
+      if (this.entryRouteState.qpSubs) {
+        this.entryRouteState.qpSubs.split(',').map(s => ProductUtils.normalize(s)).filter(Boolean).forEach(addSubToMap);
+      }
+      if (this.entryRouteState.subcategoria) {
+        const subNorm = ProductUtils.normalize(this.entryRouteState.subcategoria);
+        addSubToMap(subNorm);
+      }
+
+      this.selectedCollectionId = this.entryRouteState.qpColl || null;
+      this.selectedBridesCollectionId = this.entryRouteState.qpBridesColl || null;
+
+      if (this.entryRouteState.scope === 'general') {
+        this.selectedCollectionId = 'general';
+        this.selectedBridesCollectionId = null;
+      } else if (this.entryRouteState.scope === 'general-novias') {
+        this.selectedBridesCollectionId = 'general';
+        this.selectedCollectionId = null;
+      }
+
+      if (this.selectedBridesCollectionId) {
+        this.activeCategoryScope = this.buildScopeKey('bridal', this.selectedBridesCollectionId);
+      } else if (this.selectedCollectionId) {
+        this.activeCategoryScope = this.buildScopeKey('normal', this.selectedCollectionId);
+      } else {
+        this.activeCategoryScope = null;
+      }
+    } else {
+      this.selectedCategories = [];
+      this.selectedSubcategoriesMap = {};
+      this.selectedCollectionId = null;
+      this.selectedBridesCollectionId = null;
+      this.activeCategoryScope = null;
+    }
+
     this.selectedSizes = [];
     this.priceMin = 0;
     this.priceMax = 500000;
@@ -785,60 +849,56 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    // Navegar de vuelta a la ruta base de la sección actual (limpia la URL de filtros)
-    void this.router.navigate(path, { queryParams }).then(() => {
+    void this.applyFilters().then(() => {
       if (this.isMobileView) {
         this.toggleFilters();
       }
     });
   }
 
-  private getBaseRoute(): { path: string[], queryParams: Record<string, any> } {
-    const pm = this.route.snapshot.paramMap;
-    const qp = this.route.snapshot.queryParamMap;
+  hasFiltersApplied(): boolean {
+    if (this.selectedSizes.length > 0) return true;
+    if (this.priceRange[0] !== 0) return true;
+    if (this.priceRange[1] !== 500000) return true;
+    if (this.currentPage > 1) return true;
+    if (!this.entryRouteState) return false;
 
-    const categoriaParam = pm.get('categoria');
-    const subcategoriaParam = pm.get('subcategoria');
-    const scopeParam = pm.get('scope');
-
-    const qpColl = qp.get('coleccion');
-    const qpBridesColl = qp.get('coleccion_novias');
-    const qpCats = qp.get('categorias');
-    const qpSubs = qp.get('subcategorias');
-
-    let path = ['/tienda'];
-    const queryParams: Record<string, any> = {};
-
-    const generalScope = scopeParam === 'general' ? 'general' : 
-                         scopeParam === 'general-novias' ? 'general-novias' : null;
-
-    if (generalScope && categoriaParam) {
-      path = ['/tienda', 'categoria', generalScope, categoriaParam];
-    } else if (scopeParam && categoriaParam) {
-      path = ['/tienda', 'categoria', scopeParam, categoriaParam];
-    } else if (categoriaParam) {
-      path = ['/tienda', 'categoria', categoriaParam];
+    // Comparar categorías
+    let baseCats: string[] = [];
+    if (this.entryRouteState.categoria) {
+      baseCats.push(ProductUtils.normalize(this.entryRouteState.categoria));
     }
+    if (this.entryRouteState.qpCats) {
+      baseCats.push(...this.entryRouteState.qpCats.split(',').map(c => ProductUtils.normalize(c)).filter(Boolean));
+    }
+    baseCats = Array.from(new Set(baseCats));
 
-    if (subcategoriaParam) {
-      path.push('subcategoria', subcategoriaParam);
-    }
+    if (this.selectedCategories.length !== baseCats.length) return true;
+    const allBaseMatch = this.selectedCategories.every(c => baseCats.includes(c));
+    if (!allBaseMatch) return true;
 
-    // Mantener colecciones y selecciones de categoría de la URL base
-    if (qpColl) {
-      queryParams['coleccion'] = qpColl;
+    // Comparar subcategorías
+    let baseSubs: string[] = [];
+    if (this.entryRouteState.subcategoria) {
+      baseSubs.push(ProductUtils.normalize(this.entryRouteState.subcategoria));
     }
-    if (qpBridesColl) {
-      queryParams['coleccion_novias'] = qpBridesColl;
+    if (this.entryRouteState.qpSubs) {
+      baseSubs.push(...this.entryRouteState.qpSubs.split(',').map(s => ProductUtils.normalize(s)).filter(Boolean));
     }
-    if (qpCats) {
-      queryParams['categorias'] = qpCats;
-    }
-    if (qpSubs) {
-      queryParams['subcategorias'] = qpSubs;
-    }
+    baseSubs = Array.from(new Set(baseSubs));
 
-    return { path, queryParams };
+    const currentSubs = Object.values(this.selectedSubcategoriesMap).flat();
+    if (currentSubs.length !== baseSubs.length) return true;
+    const allBaseSubsMatch = currentSubs.every(s => baseSubs.includes(s));
+    if (!allBaseSubsMatch) return true;
+
+    // Comparar colecciones
+    const expectedColl = this.entryRouteState.qpColl || null;
+    const expectedBridesColl = this.entryRouteState.qpBridesColl || null;
+    if (this.selectedCollectionId !== expectedColl) return true;
+    if (this.selectedBridesCollectionId !== expectedBridesColl) return true;
+
+    return false;
   }
 
   applyFiltersAction(isMobile: boolean = false): void {
@@ -847,10 +907,6 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
     }
     this.isApplyingFilters = true;
     this.applyFiltersPromise = this.applyFilters().then(() => {
-      const url = this.buildUrlString();
-      // Actualiza la URL sin disparar navegación ni loaders genéricos
-      const [base, query] = url.split('?');
-      this.location.replaceState(base, query ?? '');
       if (isMobile) {
         this.toggleFilters();
       }
@@ -860,97 +916,7 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
     });
   }
 
-  private buildPathAndQuery(): { path: string[]; queryParams: Record<string, any> } {
-    const subUnion = Object.values(this.selectedSubcategoriesMap).flat();
-    const hasCollectionContext = !!(this.selectedCollectionId || this.selectedBridesCollectionId);
-    const generalScope = this.selectedCollectionId === 'general'
-      ? 'general'
-      : this.selectedBridesCollectionId === 'general'
-        ? 'general-novias'
-        : null;
-    const hasGeneralScope = !!generalScope;
 
-    // SEO-friendly rutas híbridas: preferir path params cuando hay selección única
-    let path: string[] = ['/tienda'];
-    if (hasGeneralScope) {
-      if (this.selectedCategories.length === 1 && subUnion.length === 1) {
-        path = ['/tienda', 'categoria', generalScope as string, this.selectedCategories[0], 'subcategoria', subUnion[0]];
-      } else if (this.selectedCategories.length === 1) {
-        path = ['/tienda', 'categoria', generalScope as string, this.selectedCategories[0]];
-      } else {
-        path = ['/tienda'];
-      }
-    } else if (hasCollectionContext) {
-      // Con colecciones activas preferimos query params para evitar rutas ambiguas
-      // entre categorías homónimas de General/Colecciones.
-      path = ['/tienda'];
-    } else if (this.selectedCategories.length === 1 && subUnion.length === 1) {
-      // /tienda/categoria/:categoria/subcategoria/:subcategoria
-      path = ['/tienda', 'categoria', this.selectedCategories[0], 'subcategoria', subUnion[0]];
-    } else if (this.selectedCategories.length === 1) {
-      // /tienda/categoria/:categoria
-      path = ['/tienda', 'categoria', this.selectedCategories[0]];
-    } else if (this.selectedCategories.length === 0 && subUnion.length === 1) {
-      // /tienda/subcategoria/:subcategoria
-      path = ['/tienda', 'subcategoria', subUnion[0]];
-    }
-
-    const queryParams: Record<string, any> = {};
-    if (hasCollectionContext && !hasGeneralScope && this.selectedCategories.length > 0) {
-      queryParams['categorias'] = this.selectedCategories.join(',');
-    } else if (hasGeneralScope && this.selectedCategories.length > 1) {
-      queryParams['categorias'] = this.selectedCategories.join(',');
-    } else if (this.selectedCategories.length > 1) {
-      // múltiples categorías como query param legible
-      queryParams['categorias'] = this.selectedCategories.join(',');
-    }
-    if (
-      (hasCollectionContext && !hasGeneralScope && subUnion.length > 0) ||
-      subUnion.length > 1 ||
-      (this.selectedCategories.length !== 1 && subUnion.length === 1)
-    ) {
-      // múltiples subcategorías o única sin categoría única
-      queryParams['subcategorias'] = subUnion.join(',');
-    }
-    // Tamaños como query param
-    if (this.selectedSizes.length > 0) {
-      queryParams['tamanos'] = this.selectedSizes.join(',');
-    }
-    // Colecciones
-    if (this.selectedCollectionId && !(hasGeneralScope && this.selectedCollectionId === 'general')) {
-      queryParams['coleccion'] = this.selectedCollectionId;
-    }
-    if (this.selectedBridesCollectionId && !(hasGeneralScope && this.selectedBridesCollectionId === 'general')) {
-      queryParams['coleccion_novias'] = this.selectedBridesCollectionId;
-    }
-    // Precio como query param (evitar defaults para SEO limpio)
-    if (this.priceRange[0] !== 0) {
-      queryParams['precio_min'] = this.priceRange[0];
-    }
-    if (this.priceRange[1] !== 500000) {
-      queryParams['precio_max'] = this.priceRange[1];
-    }
-    // Página del paginator solo si > 1
-    if (this.currentPage > 1) {
-      queryParams['page'] = this.currentPage;
-    }
-    return { path, queryParams };
-  }
-
-  private buildUrlString(): string {
-    const { path, queryParams } = this.buildPathAndQuery();
-    let base = path.join('/');
-    if (!base.startsWith('/')) base = '/' + base;
-    // Construir query string de manera robusta
-    const params = new URLSearchParams();
-    Object.entries(queryParams).forEach(([k, v]) => {
-      if (v !== undefined && v !== null && String(v).length > 0) {
-        params.set(k, String(v));
-      }
-    });
-    const qs = params.toString();
-    return qs ? `${base}?${qs}` : base;
-  }
 
   applyFiltersMobile(): void {
     this.applyFiltersAction(true);
@@ -1147,9 +1113,6 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
     if (page < 1 || page > this.totalPages) return;
     this.currentPage = page;
     this.updatePagination();
-    const url = this.buildUrlString();
-    const [base, query] = url.split('?');
-    this.location.replaceState(base, query ?? '');
   }
 
   prevPage(): void {
