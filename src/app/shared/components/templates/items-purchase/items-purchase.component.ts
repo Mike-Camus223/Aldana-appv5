@@ -48,6 +48,9 @@ export class ItemsPurchaseComponent implements OnInit, OnDestroy {
   selectedSize: string | null = null;
   carouselImages: { src: string; thumb: string }[] = [];
   quantitySelected: number = 1;
+
+  // Flag to toggle color-specific variant images in carousel
+  enableColorImageChange = false;
   relatedProducts: Product[] = [];
   private initialColorParam: string | null = null;
   private initialSizeParam: string | null = null;
@@ -209,27 +212,31 @@ export class ItemsPurchaseComponent implements OnInit, OnDestroy {
     if (!newVariant) return;
     this.selectedVariant = newVariant;
     this.selectedSize = null;
-    const cleanMainImage = newVariant.main_image?.trim() || null;
     
-    // Intentar obtener media de uso 'product' o 'collection' (para bridal)
-    const variantMedia = newVariant.media.filter(m => 
-      m.use?.includes('product') || m.use?.includes('collection')
-    );
-    
-    const hasMedia = variantMedia.length > 0;
-    if (!cleanMainImage && !hasMedia) {
+    if (this.enableColorImageChange) {
+      const cleanMainImage = newVariant.main_image?.trim() || null;
+      
+      // Intentar obtener media de uso 'product' o 'collection' (para bridal)
+      const variantMedia = newVariant.media.filter(m => 
+        m.use?.includes('product') || m.use?.includes('collection')
+      );
+      
+      const hasMedia = variantMedia.length > 0;
+      if (!cleanMainImage && !hasMedia) {
+        this.carouselImages = [];
+        return;
+      }
       this.carouselImages = [];
-      return;
-    }
-    this.carouselImages = [];
 
-    if (cleanMainImage) {
-      this.carouselImages.push({ src: cleanMainImage, thumb: cleanMainImage });
-    }
+      if (cleanMainImage) {
+        this.carouselImages.push({ src: cleanMainImage, thumb: cleanMainImage });
+      }
 
-    if (hasMedia) {
-      this.carouselImages.push(...variantMedia.map(m => ({ src: m.url, thumb: m.poster || m.url })));
+      if (hasMedia) {
+        this.carouselImages.push(...variantMedia.map(m => ({ src: m.url, thumb: m.poster || m.url })));
+      }
     }
+    
     if (!silent) {
       this.updateUrlQuery();
     }

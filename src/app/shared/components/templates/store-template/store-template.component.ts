@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy, HostListener, Inject, ElementRef, ViewChild } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { PLATFORM_ID } from '@angular/core';
+import { combineLatest } from 'rxjs';
 import { CheckboxModule } from 'primeng/checkbox';
 import { SliderModule } from 'primeng/slider';
 import { FormsModule } from '@angular/forms';
@@ -82,6 +83,16 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
   showFilters = false;
   productColumns: number = 4;
   itemsPerPage: number = 4;
+  
+  // Flag to toggle color-specific variant images on cards
+  enableColorImageChange = false;
+
+  // Stored state from the initial entry route
+  private initialCategories: string[] = [];
+  private initialSubcategoriesMap: Record<string, string[]> = {};
+  private initialCollectionId: string | 'general' | null = null;
+  private initialBridesCollectionId: string | 'general' | null = null;
+  private initialCategoryScope: string | null = null;
   readonly maxPages: number = 16; 
   currentPage: number = 1;
   pagedProducts: Product[] = [];
@@ -136,6 +147,7 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
     private favoritesService: FavoritesService,
     private authService: AuthService,
     private route: ActivatedRoute,
+    private router: Router,
     private location: Location,
     @Inject(PLATFORM_ID) private platformId: Object
   ) { }
@@ -176,7 +188,7 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
   }
 
   private async initializeRoute(): Promise<void> {
-    this.route.paramMap.subscribe(async params => {
+    combineLatest([this.route.paramMap, this.route.queryParamMap]).subscribe(async ([params, qp]) => {
       this.loading = true;
       this.filteredProducts = [];
       const categoriaParam = params.get('categoria');
@@ -224,14 +236,23 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
             }
           }
         }
-        // Inicializar selección múltiple desde path y query params
+        // Reset all filter state to default before parsing route parameters
         this.selectedCategories = [];
+        this.selectedSubcategoriesMap = {};
+        this.selectedCollectionId = null;
+        this.selectedBridesCollectionId = null;
+        this.selectedSizes = [];
+        this.priceMin = 0;
+        this.priceMax = 500000;
+        this.priceRange = [0, 500000];
+        this.currentPage = 1;
+        this.activeCategoryScope = null;
+
         if (categoriaParam) {
           this.selectedCategories = [ProductUtils.normalize(categoriaParam)];
         }
 
         // Leer query params híbridos
-        const qp = this.route.snapshot.queryParamMap;
         const qpCats = qp.get('categorias');
         const qpSubs = qp.get('subcategorias');
         const qpColl = qp.get('coleccion');
@@ -320,6 +341,13 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
         this.openAccordions.clear();
         this.openAccordions.add('categorias');
 
+        // Guardar el estado inicial de la ruta de entrada para restaurarlo al borrar filtros
+        this.initialCategories = [...this.selectedCategories];
+        this.initialSubcategoriesMap = JSON.parse(JSON.stringify(this.selectedSubcategoriesMap));
+        this.initialCollectionId = this.selectedCollectionId;
+        this.initialBridesCollectionId = this.selectedBridesCollectionId;
+        this.initialCategoryScope = this.activeCategoryScope;
+
         // Aplicar con animación similar a filtrar
         await this.applyFilters();
 
@@ -359,10 +387,12 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
     if (this.selectedColors[productId] === color) return;
 
     this.selectedColors[productId] = color;
-    const selectedVariant = product.variants.find(v => v.color_name === color);
-    if (selectedVariant) {
-      product.main_image = selectedVariant.main_image ?? '';
-      product.media = selectedVariant.media ?? [];
+    if (this.enableColorImageChange) {
+      const selectedVariant = product.variants.find(v => v.color_name === color);
+      if (selectedVariant) {
+        product.main_image = selectedVariant.main_image ?? '';
+        product.media = selectedVariant.media ?? [];
+      }
     }
   }
 
@@ -738,13 +768,9 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
   }
 
   clearFilters(): void {
-    this.selectedCategories = [];
-    this.selectedSubcategoriesMap = {};
-    this.selectedCategory = null;
-    this.selectedSubcategory = null;
-    this.selectedCollectionId = null;
-    this.selectedBridesCollectionId = null;
-    this.activeCategoryScope = null;
+    const { path, queryParams } = this.getBaseRoute();
+
+    // Limpiar filtros del componente para actualizar la vista de inmediato
     this.selectedSizes = [];
     this.priceMin = 0;
     this.priceMax = 500000;
@@ -754,8 +780,65 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
     this.openAccordions.add('categorias');
     this.openCollectionDropdowns.clear();
     this.clearCaches(); // Limpiar cachés
-    void this.applyFiltersSync();
-    this.location.replaceState('/tienda');
+
+    if (isPlatformBrowser(this.platformId)) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Navegar de vuelta a la ruta base de la sección actual (limpia la URL de filtros)
+    void this.router.navigate(path, { queryParams }).then(() => {
+      if (this.isMobileView) {
+        this.toggleFilters();
+      }
+    });
+  }
+
+  private getBaseRoute(): { path: string[], queryParams: Record<string, any> } {
+    const pm = this.route.snapshot.paramMap;
+    const qp = this.route.snapshot.queryParamMap;
+
+    const categoriaParam = pm.get('categoria');
+    const subcategoriaParam = pm.get('subcategoria');
+    const scopeParam = pm.get('scope');
+
+    const qpColl = qp.get('coleccion');
+    const qpBridesColl = qp.get('coleccion_novias');
+    const qpCats = qp.get('categorias');
+    const qpSubs = qp.get('subcategorias');
+
+    let path = ['/tienda'];
+    const queryParams: Record<string, any> = {};
+
+    const generalScope = scopeParam === 'general' ? 'general' : 
+                         scopeParam === 'general-novias' ? 'general-novias' : null;
+
+    if (generalScope && categoriaParam) {
+      path = ['/tienda', 'categoria', generalScope, categoriaParam];
+    } else if (scopeParam && categoriaParam) {
+      path = ['/tienda', 'categoria', scopeParam, categoriaParam];
+    } else if (categoriaParam) {
+      path = ['/tienda', 'categoria', categoriaParam];
+    }
+
+    if (subcategoriaParam) {
+      path.push('subcategoria', subcategoriaParam);
+    }
+
+    // Mantener colecciones y selecciones de categoría de la URL base
+    if (qpColl) {
+      queryParams['coleccion'] = qpColl;
+    }
+    if (qpBridesColl) {
+      queryParams['coleccion_novias'] = qpBridesColl;
+    }
+    if (qpCats) {
+      queryParams['categorias'] = qpCats;
+    }
+    if (qpSubs) {
+      queryParams['subcategorias'] = qpSubs;
+    }
+
+    return { path, queryParams };
   }
 
   applyFiltersAction(isMobile: boolean = false): void {
@@ -1023,6 +1106,10 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
     this.filteredProducts = [];
     this.pagedProducts = [];
     this.currentPage = 1;
+    
+    // Add an asynchronous delay to ensure the spinner is visible to the user
+    await new Promise(resolve => setTimeout(resolve, 800));
+    
     await this.applyFiltersSync();
     this.loading = false;
     this.unlockProductsContainer();

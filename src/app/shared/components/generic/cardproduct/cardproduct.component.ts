@@ -81,6 +81,9 @@ export class CardproductComponent implements OnInit, AfterViewInit, OnDestroy, O
   private readonly staggerBase = 0.08;
   private loaderSubscription?: Subscription;
 
+  // Flag to toggle color-specific variant images on cards
+  enableColorImageChange = false;
+
   get cardQueryParams(): any {
     const params: any = {};
     if (this.selectedColor) {
@@ -117,7 +120,7 @@ export class CardproductComponent implements OnInit, AfterViewInit, OnDestroy, O
       }
     }
     
-    if (this.selectedColor) {
+    if (this.selectedColor && this.enableColorImageChange) {
       const selectedVariant = this.product.variants.find(
         (v) => v.color_name === this.selectedColor
       );
@@ -239,16 +242,20 @@ export class CardproductComponent implements OnInit, AfterViewInit, OnDestroy, O
   }
 
   private setHoverImage(): void {
-    const variant = this.product.variants.find(
-      (v) => v.color_name === this.selectedColor
-    );
+    if (this.selectedColor && this.enableColorImageChange) {
+      const variant = this.product.variants.find(
+        (v) => v.color_name === this.selectedColor
+      );
 
-    const variantProductMedia = variant ? ProductUtils.getMediaByUse(variant.media, 'product') : [];
+      const variantProductMedia = variant ? ProductUtils.getMediaByUse(variant.media, 'product') : [];
+      if (variantProductMedia.length > 0) {
+        this.hoverImage = variantProductMedia[0].url;
+        return;
+      }
+    }
+    
     const productMedia = ProductUtils.getMediaByUse(this.product.media, 'product');
-
-    if (variantProductMedia.length > 0) {
-      this.hoverImage = variantProductMedia[0].url;
-    } else if (productMedia.length > 0) {
+    if (productMedia.length > 0) {
       this.hoverImage = productMedia[0].url;
     } else {
       this.hoverImage = null;
@@ -268,7 +275,7 @@ export class CardproductComponent implements OnInit, AfterViewInit, OnDestroy, O
 
   onMouseLeave(): void {
     if (!this.isMobileView) {
-      if (this.selectedColor) {
+      if (this.selectedColor && this.enableColorImageChange) {
         const selectedVariant = this.product.variants.find(
           (v) => v.color_name === this.selectedColor
         );
@@ -311,21 +318,24 @@ export class CardproductComponent implements OnInit, AfterViewInit, OnDestroy, O
     if (this.selectedColor === color) return;
     this.selectedColor = color;
     this.colorSelected.emit({ productId: this.product.id, color });
-    const selectedVariant = this.product.variants.find(
-      (v) => v.color_name === color
-    );
-    if (selectedVariant?.main_image) {
-      this.currentImage = selectedVariant.main_image;
-    } else {
-      this.currentImage = this.displayImage || this.product.main_image;
+    
+    if (this.enableColorImageChange) {
+      const selectedVariant = this.product.variants.find(
+        (v) => v.color_name === color
+      );
+      if (selectedVariant?.main_image) {
+        this.currentImage = selectedVariant.main_image;
+      } else {
+        this.currentImage = this.displayImage || this.product.main_image;
+      }
+      this.setHoverImage();
+      this.preventHover = true;
+      this.preloadImage(this.hoverImage || '');
+      this.preloadImage(this.currentImage);
+      setTimeout(() => {
+        this.preventHover = false;
+      }, 200);
     }
-    this.setHoverImage();
-    this.preventHover = true;
-    this.preloadImage(this.hoverImage || '');
-    this.preloadImage(this.currentImage);
-    setTimeout(() => {
-      this.preventHover = false;
-    }, 200);
   }
 
    selectSize(size: string) {
