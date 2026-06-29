@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, HostListener, Inject, ElementRef, ViewChild } from '@angular/core';
-import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { CommonModule, isPlatformBrowser, Location } from '@angular/common';
 import { PLATFORM_ID } from '@angular/core';
 import { combineLatest } from 'rxjs';
 import { CheckboxModule } from 'primeng/checkbox';
@@ -19,7 +19,7 @@ import { AldyCheckboxV1Directive } from '../../../utils/directives/aldy-checkbox
 import { FavoritesService } from '../../../../core/services/favorites/favorites.service';
 import { AuthService } from '../../../../core/services/auth/auth.service';
 import { ProductsService } from '../../../../core/services/data-access/products/products.service';
- 
+
 
 
 @Component({
@@ -62,7 +62,7 @@ import { ProductsService } from '../../../../core/services/data-access/products/
     {
       provide: LUCIDE_ICONS,
       multi: true,
-      useValue: new LucideIconProvider({ Funnel, ChevronDown, ChevronUp,Minus, Plus })
+      useValue: new LucideIconProvider({ Funnel, ChevronDown, ChevronUp, Minus, Plus })
     }
   ],
 })
@@ -72,8 +72,8 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
   allProducts: Product[] = [];
   filteredProducts: Product[] = [];
   selectedColors: Record<string, string> = {};
-  selectedCategory: string | null = null; 
-  selectedSubcategory: string | null = null; 
+  selectedCategory: string | null = null;
+  selectedSubcategory: string | null = null;
   selectedCategories: string[] = [];
   selectedSubcategoriesMap: Record<string, string[]> = {};
   private wishlistKey = 'wishlistProducts';
@@ -81,8 +81,8 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
   activeAccordion: number = 0;
   showFilters = false;
   productColumns: number = 4;
-  itemsPerPage: number = 4;
-  
+  itemsPerPage: number = 16;
+
   // Flag to toggle color-specific variant images on cards
   enableColorImageChange = false;
 
@@ -96,7 +96,7 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
     qpColl: string | null;
     qpBridesColl: string | null;
   } | null = null;
-  readonly maxPages: number = 16; 
+  readonly maxPages: number = 16;
   currentPage: number = 1;
   pagedProducts: Product[] = [];
   pagesArray: number[] = [];
@@ -116,13 +116,13 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
   private bridesLoadPromise: Promise<void> | null = null;
   pretAPorterOpen = false;
   noviasOpen = false;
-  
+
   // Collections state
   allCollections: any[] = [];
   allBridesCollections: any[] = [];
   topCollections: any[] = [];
   topBridesCollections: any[] = [];
-  
+
   // Track open state for collection dropdowns
   openCollectionDropdowns: Set<string> = new Set();
   selectedCollectionId: string | 'general' | null = null;
@@ -151,13 +151,14 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private route: ActivatedRoute,
     private router: Router,
+    private location: Location,
     @Inject(PLATFORM_ID) private platformId: Object
   ) { }
 
   ngOnInit(): void {
     this.checkMobileView();
     this.initializeRoute();
-    
+
     // Suscribirse a cambios en favoritos
     this.favoritesService.favorites$.subscribe(favorites => {
       if (this.authService.isAuthenticated()) {
@@ -635,7 +636,7 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
 
   getSubcategoriesForCategory(categoryValue: string): { label: string; value: string }[] {
     const catNorm = ProductUtils.normalize(categoryValue);
-    
+
     // Si hay una colección seleccionada, filtrar subcategorías por esa colección
     if (this.selectedCollectionId) {
       return this.getSubcategoriesForCollectionCategory('normal', this.selectedCollectionId, categoryValue);
@@ -758,6 +759,9 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
       this.selectedCategories.splice(idx, 1);
     }
     delete this.selectedSubcategoriesMap[cat];
+    if (this.selectedCategories.length > 0) {
+      this.applyFiltersAction();
+    }
   }
 
   removeSubcategory(categoryValue: string, subValue: string): void {
@@ -773,6 +777,7 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
         delete this.selectedSubcategoriesMap[cat];
       }
     }
+    this.applyFiltersAction();
   }
 
   clearFilters(): void {
@@ -850,6 +855,9 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
     }
 
     void this.applyFilters().then(() => {
+      const url = this.buildUrlString();
+      const [base, query] = url.split('?');
+      this.location.replaceState(base, query ?? '');
       if (this.isMobileView) {
         this.toggleFilters();
       }
@@ -907,6 +915,9 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
     }
     this.isApplyingFilters = true;
     this.applyFiltersPromise = this.applyFilters().then(() => {
+      const url = this.buildUrlString();
+      const [base, query] = url.split('?');
+      this.location.replaceState(base, query ?? '');
       if (isMobile) {
         this.toggleFilters();
       }
@@ -914,6 +925,88 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
       this.isApplyingFilters = false;
       this.applyFiltersPromise = null;
     });
+  }
+
+  private buildUrlString(): string {
+    const subUnion = Object.values(this.selectedSubcategoriesMap).flat();
+    const hasCollectionContext = !!(this.selectedCollectionId || this.selectedBridesCollectionId);
+    const generalScope = this.selectedCollectionId === 'general'
+      ? 'general'
+      : this.selectedBridesCollectionId === 'general'
+        ? 'general-novias'
+        : null;
+    const hasGeneralScope = !!generalScope;
+
+    // SEO-friendly rutas híbridas: preferir path params cuando hay selección única
+    let path: string[] = ['/tienda'];
+    if (hasGeneralScope) {
+      if (this.selectedCategories.length === 1 && subUnion.length === 1) {
+        path = ['/tienda', 'categoria', generalScope as string, this.selectedCategories[0], 'subcategoria', subUnion[0]];
+      } else if (this.selectedCategories.length === 1) {
+        path = ['/tienda', 'categoria', generalScope as string, this.selectedCategories[0]];
+      } else {
+        path = ['/tienda'];
+      }
+    } else if (hasCollectionContext) {
+      path = ['/tienda'];
+    } else if (this.selectedCategories.length === 1 && subUnion.length === 1) {
+      path = ['/tienda', 'categoria', this.selectedCategories[0], 'subcategoria', subUnion[0]];
+    } else if (this.selectedCategories.length === 1) {
+      path = ['/tienda', 'categoria', this.selectedCategories[0]];
+    } else if (this.selectedCategories.length === 0 && subUnion.length === 1) {
+      path = ['/tienda', 'subcategoria', subUnion[0]];
+    }
+
+    const queryParams: Record<string, any> = {};
+    if (hasCollectionContext && !hasGeneralScope && this.selectedCategories.length > 0) {
+      queryParams['categorias'] = this.selectedCategories.join(',');
+    } else if (hasGeneralScope && this.selectedCategories.length > 1) {
+      queryParams['categorias'] = this.selectedCategories.join(',');
+    } else if (this.selectedCategories.length > 1) {
+      queryParams['categorias'] = this.selectedCategories.join(',');
+    }
+
+    if (
+      (hasCollectionContext && !hasGeneralScope && subUnion.length > 0) ||
+      subUnion.length > 1 ||
+      (this.selectedCategories.length !== 1 && subUnion.length === 1)
+    ) {
+      queryParams['subcategorias'] = subUnion.join(',');
+    }
+
+    if (this.selectedSizes.length > 0) {
+      queryParams['tamanos'] = this.selectedSizes.join(',');
+    }
+
+    if (this.selectedCollectionId && !(hasGeneralScope && this.selectedCollectionId === 'general')) {
+      queryParams['coleccion'] = this.selectedCollectionId;
+    }
+    if (this.selectedBridesCollectionId && !(hasGeneralScope && this.selectedBridesCollectionId === 'general')) {
+      queryParams['coleccion_novias'] = this.selectedBridesCollectionId;
+    }
+
+    if (this.priceRange[0] !== 0) {
+      queryParams['precio_min'] = this.priceRange[0];
+    }
+    if (this.priceRange[1] !== 500000) {
+      queryParams['precio_max'] = this.priceRange[1];
+    }
+
+    if (this.currentPage > 1) {
+      queryParams['page'] = this.currentPage;
+    }
+
+    let base = path.join('/');
+    if (!base.startsWith('/')) base = '/' + base;
+
+    const params = new URLSearchParams();
+    Object.entries(queryParams).forEach(([k, v]) => {
+      if (v !== undefined && v !== null && String(v).length > 0) {
+        params.set(k, String(v));
+      }
+    });
+    const qs = params.toString();
+    return qs ? `${base}?${qs}` : base;
   }
 
 
@@ -959,7 +1052,7 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
   private filterProducts(hasAnyCategory: boolean, hasAnySub: boolean, hasAnySize: boolean, selectedSubUnion: string[]): void {
     this.filteredProducts = this.allProducts.filter(p => {
       const isBridal = this.isBridalProduct(p);
-      
+
       // Filtro de colección Normal
       if (this.selectedCollectionId) {
         if (isBridal) return false;
@@ -1072,10 +1165,10 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
     this.filteredProducts = [];
     this.pagedProducts = [];
     this.currentPage = 1;
-    
+
     // Add an asynchronous delay to ensure the spinner is visible to the user
     await new Promise(resolve => setTimeout(resolve, 800));
-    
+
     await this.applyFiltersSync();
     this.loading = false;
     this.unlockProductsContainer();
@@ -1113,6 +1206,9 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
     if (page < 1 || page > this.totalPages) return;
     this.currentPage = page;
     this.updatePagination();
+    const url = this.buildUrlString();
+    const [base, query] = url.split('?');
+    this.location.replaceState(base, query ?? '');
   }
 
   prevPage(): void {
