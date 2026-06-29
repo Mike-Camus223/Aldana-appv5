@@ -21,6 +21,7 @@ export class CardInitAnimationDirective implements AfterViewInit, OnDestroy {
   private scrollTrigger: ScrollTrigger | null = null;
   private destroy$ = new Subject<void>();
   private stylesInitialized = false;
+  @Input() wave: boolean = false;
   @Input() animationDelay: number = 0;
   @Input() gray: boolean = false;
 
@@ -82,6 +83,34 @@ export class CardInitAnimationDirective implements AfterViewInit, OnDestroy {
       this.scrollTrigger.kill();
       this.scrollTrigger = null;
     }
+
+    if (this.wave) {
+      this.renderer.setAttribute(element, 'data-wave', 'true');
+      
+      // Permitir que el layout se asiente antes de medir coordenadas
+      setTimeout(() => {
+        const siblings = Array.from(document.querySelectorAll('[data-wave="true"]'))
+          .filter(el => {
+            const rect = el.getBoundingClientRect();
+            const thisRect = element.getBoundingClientRect();
+            // Pertenecen a la misma fila si están a menos de 150px de diferencia vertical
+            return Math.abs(rect.top - thisRect.top) < 150;
+          }) as HTMLElement[];
+
+        siblings.sort((a, b) => a.getBoundingClientRect().left - b.getBoundingClientRect().left);
+        const index = siblings.indexOf(element);
+        if (index !== -1) {
+          this.animationDelay = index * 0.2; // Stagger de 200ms
+        }
+        
+        this.createScrollTrigger(element);
+      }, 60);
+    } else {
+      this.createScrollTrigger(element);
+    }
+  }
+
+  private createScrollTrigger(element: HTMLElement): void {
     this.scrollTrigger = ScrollTrigger.create({
       trigger: element,
       start: "top 85%",

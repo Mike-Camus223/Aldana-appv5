@@ -11,6 +11,7 @@ import { CollectionService } from '../../../../core/services/data-access/collect
 import { CollectionBridesService } from '../../../../core/services/data-access/collection-brides/collection_brides.service';
 import { BreadcrumbComponent } from '../../system/breadcrump/breadcrump.component';
 import { GenGalleryVanillaComponent } from '../../generic/gen-gallery-vanilla/gen-gallery-vanilla.component';
+import { LoaderService } from '../../../../core/services/utils/loader.service';
 
 import { AppMenuItem } from '../../../utils/models/app-menu-item.model';
 import { MediaItem } from '../../../utils/models/objectsGallery.model';
@@ -34,6 +35,7 @@ type BridesProduct = {
   standalone: true,
   imports: [CommonModule, RouterModule, BreadcrumbComponent, GenGalleryVanillaComponent, LucideAngularModule, WordRevealDirective, FadeUpLetterDirective],
   templateUrl: './items-collection.component.html',
+  styleUrls: ['./items-collection.component.css'],
   providers: [
     {
       provide: LUCIDE_ICONS,
@@ -87,7 +89,8 @@ private updateVisibleProducts() {
     private route: ActivatedRoute,
     private bridesProducts: BridesProductsService,
     private collections: CollectionService,
-    private collectionBrides: CollectionBridesService
+    private collectionBrides: CollectionBridesService,
+    private loaderService: LoaderService
   ) {}
 
   ngOnDestroy(): void {
@@ -174,6 +177,7 @@ private updateVisibleProducts() {
   async ngOnInit(): Promise<void> {
     this.updateVisibleProducts();
     this.route.paramMap.subscribe(params => {
+      this.loaderService.holdLoader();
       this.loadProductData();
     });
   }
@@ -224,7 +228,10 @@ private updateVisibleProducts() {
       }
     }
 
-    if (!row) return;
+    if (!row) {
+      this.loaderService.releaseLoader();
+      return;
+    }
 
     this.product = {
       name: row.name,
@@ -256,11 +263,19 @@ private updateVisibleProducts() {
       ];
     }
 
-    //  Asegurar que ScrollTrigger se reinicie después de cargar los nuevos datos
-     setTimeout(() => {
-       this.initScroll();
-       window.scrollTo({ top: 0, behavior: 'smooth' });
-     }, 500);
+    // Preload hero images and related products images
+    const preloadUrls = [...this.heroImages];
+    const uniqueUrls = Array.from(new Set(preloadUrls)).filter(Boolean);
+
+    this.preloadImages(uniqueUrls).then(() => {
+      this.initScroll();
+      if (typeof window !== 'undefined') {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+      setTimeout(() => {
+        this.loaderService.releaseLoader();
+      }, 50);
+    });
   }
 
   ngAfterViewInit(): void {
@@ -349,5 +364,20 @@ private updateVisibleProducts() {
   get translate(): string {
     return `translateX(-${this.carouselIndex * (100 / this.visibleProducts)}%)`;
   }
-  
+
+  private preloadImages(urls: string[]): Promise<void[]> {
+    if (typeof window === 'undefined') {
+      return Promise.resolve([]);
+    }
+    return Promise.all(
+      urls.map(url => {
+        return new Promise<void>((resolve) => {
+          const img = new Image();
+          img.onload = () => resolve();
+          img.onerror = () => resolve();
+          img.src = url;
+        });
+      })
+    );
+  }
 }

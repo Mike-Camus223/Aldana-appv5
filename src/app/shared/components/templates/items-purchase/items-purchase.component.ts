@@ -17,6 +17,7 @@ import { AcordiongenericComponent } from '../../generic/acordiongeneric/acordion
 import { LUCIDE_ICONS, LucideAngularModule, LucideIconProvider, Package, ShoppingBag } from 'lucide-angular';
 import { Subscription } from 'rxjs';
 import { ProductsService } from '../../../../core/services/data-access/products/products.service';
+import { LoaderService } from '../../../../core/services/utils/loader.service';
 
 @Component({
   selector: 'app-items-purchase',
@@ -66,6 +67,7 @@ export class ItemsPurchaseComponent implements OnInit, OnDestroy {
     private cartService: CartService,
     private router: Router,
     private notificationService: NotificationService,
+    private loaderService: LoaderService
   ) { }
 
   ngOnInit(): void {
@@ -84,6 +86,7 @@ export class ItemsPurchaseComponent implements OnInit, OnDestroy {
     this.paramSub = this.route.paramMap.subscribe(pm => {
       const slug = pm.get('slug');
       if (slug && slug !== this.currentSlug) {
+        this.loaderService.holdLoader();
         this.loadProduct(slug);
       }
     });
@@ -200,9 +203,28 @@ export class ItemsPurchaseComponent implements OnInit, OnDestroy {
         }
         this.updateUrlQuery(true);
       }
+
+      // Preload images to avoid flash of blank areas
+      const preloadUrls = [this.product.main_image];
+      if (this.product.variants) {
+        this.product.variants.forEach(v => {
+          if (v.main_image) preloadUrls.push(v.main_image);
+        });
+      }
+      const mediaUrls = this.product.media
+        .filter(m => m.use?.includes('product') || m.use?.includes('collection'))
+        .map(m => m.url);
+      preloadUrls.push(...mediaUrls);
+
+      const uniqueUrls = Array.from(new Set(preloadUrls)).filter(Boolean);
+
+      this.preloadImages(uniqueUrls).then(() => {
+        this.loaderService.releaseLoader();
+      });
     } else {
       this.product = null;
       this.relatedProducts = [];
+      this.loaderService.releaseLoader();
     }
   }
 
@@ -384,5 +406,21 @@ export class ItemsPurchaseComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.qpSub?.unsubscribe();
     this.paramSub?.unsubscribe();
+  }
+
+  private preloadImages(urls: string[]): Promise<void[]> {
+    if (typeof window === 'undefined') {
+      return Promise.resolve([]);
+    }
+    return Promise.all(
+      urls.map(url => {
+        return new Promise<void>((resolve) => {
+          const img = new Image();
+          img.onload = () => resolve();
+          img.onerror = () => resolve();
+          img.src = url;
+        });
+      })
+    );
   }
 }

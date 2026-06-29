@@ -30,9 +30,9 @@ export class LoadingScreenGenericComponent implements OnInit, OnDestroy, AfterVi
   constructor(
     private loaderService: LoaderService,
     @Inject(PLATFORM_ID) private platformId: Object
-  ) {}
+  ) { }
 
-  ngOnInit(): void {}
+  ngOnInit(): void { }
 
   ngAfterViewInit(): void {
     if (isPlatformBrowser(this.platformId)) {
@@ -52,6 +52,11 @@ export class LoadingScreenGenericComponent implements OnInit, OnDestroy, AfterVi
         }
       });
     }
+  }
+
+  private scrollToTop(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
   }
 
   private hideLoaderDOM(): void {
@@ -80,6 +85,7 @@ export class LoadingScreenGenericComponent implements OnInit, OnDestroy, AfterVi
     this.isIntroComplete = false;
 
     this.blockScroll();
+    this.scrollToTop();
     this.showLoaderDOM();
 
     const screen = this.loadingScreenRef.nativeElement;
@@ -95,10 +101,10 @@ export class LoadingScreenGenericComponent implements OnInit, OnDestroy, AfterVi
     gsap.set(logo, { opacity: 0, y: 20 });
 
     this.timeline
-      .to(logo, { 
-        duration: 0.4, 
-        opacity: 1, 
-        y: 0, 
+      .to(logo, {
+        duration: 0.4,
+        opacity: 1,
+        y: 0,
         ease: 'power2.out',
         onComplete: () => {
           this.isIntroComplete = true;
@@ -126,15 +132,15 @@ export class LoadingScreenGenericComponent implements OnInit, OnDestroy, AfterVi
     this.timeline = gsap.timeline();
 
     this.timeline
-      .to(logo, { 
-        duration: 0.3, 
-        opacity: 0, 
-        y: -20, 
-        ease: 'power2.in' 
+      .to(logo, {
+        duration: 0.3,
+        opacity: 0,
+        y: -20,
+        ease: 'power2.in'
       })
-      .to(screen, { 
-        duration: 0.3, 
-        opacity: 0, 
+      .to(screen, {
+        duration: 0.3,
+        opacity: 0,
         ease: 'power2.in',
         onComplete: () => {
           this.hideLoaderDOM();
@@ -152,7 +158,6 @@ export class LoadingScreenGenericComponent implements OnInit, OnDestroy, AfterVi
 
     if (document.body) {
       document.body.classList.add('reserve-scrollbar-space');
-      document.body.style.overflow = 'hidden';
       document.body.style.overscrollBehavior = 'none';
     }
 

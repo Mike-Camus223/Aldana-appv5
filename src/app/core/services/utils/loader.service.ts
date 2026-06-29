@@ -14,6 +14,10 @@ export class LoaderService {
   private isBrowser: boolean;
   private isNavigationSkipped = false;
   
+  private activeLocks = 0;
+  private pendingNavigationEnd = false;
+  private lockTimeoutRef: any = null;
+  
   // Track the active loader component
   private currentLoaderSubject = new BehaviorSubject<'main' | 'generic' | null>('main');
   public currentLoader$ = this.currentLoaderSubject.asObservable();
@@ -100,14 +104,24 @@ export class LoaderService {
             }, 10);
           }
         } else if (!this.isFirstLoad) {
-          // Tell the generic loader to play its exit animation
-          this.navigationStateSubject.next('end');
+          if (this.activeLocks > 0) {
+            this.pendingNavigationEnd = true;
+          } else {
+            // Tell the generic loader to play its exit animation
+            this.navigationStateSubject.next('end');
+          }
         }
       }
     });
   }
 
   finish(loaderType?: 'main' | 'generic') {
+    this.activeLocks = 0;
+    this.pendingNavigationEnd = false;
+    if (this.lockTimeoutRef) {
+      clearTimeout(this.lockTimeoutRef);
+      this.lockTimeoutRef = null;
+    }
     this.animationsEnabledSubject.next(true);
     this.currentLoaderSubject.next(null);
     this.navigationStateSubject.next(null);
@@ -189,4 +203,44 @@ export class LoaderService {
   setUserPanelNavigationState(isInUserPanel: boolean) {}
   setContext(context: 'public' | 'user-panel') {}
   pageReady() {}
+
+  holdLoader() {
+    this.activeLocks++;
+    
+    // Limpiar timeout de seguridad si ya existía
+    if (this.lockTimeoutRef) {
+      clearTimeout(this.lockTimeoutRef);
+      this.lockTimeoutRef = null;
+    }
+    
+    // Limitar espera a un máximo de 4 segundos por seguridad si algo falla
+    if (this.isBrowser) {
+      this.lockTimeoutRef = setTimeout(() => {
+        if (this.activeLocks > 0) {
+          console.warn('Loader safety timeout reached. Releasing locks.');
+          this.activeLocks = 0;
+          if (this.pendingNavigationEnd) {
+            this.pendingNavigationEnd = false;
+            this.navigationStateSubject.next('end');
+          }
+        }
+      }, 4000);
+    }
+  }
+
+  releaseLoader() {
+    if (this.activeLocks > 0) {
+      this.activeLocks--;
+      if (this.activeLocks === 0) {
+        if (this.lockTimeoutRef) {
+          clearTimeout(this.lockTimeoutRef);
+          this.lockTimeoutRef = null;
+        }
+        if (this.pendingNavigationEnd) {
+          this.pendingNavigationEnd = false;
+          this.navigationStateSubject.next('end');
+        }
+      }
+    }
+  }
 }

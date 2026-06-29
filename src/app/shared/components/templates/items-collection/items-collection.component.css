@@ -1,1 +1,5 @@
 /* Solo usando Tailwind - no custom CSS needed */
+.hero-image-reveal {
+  opacity: 0;
+  will-change: transform, opacity, clip-path;
+}
