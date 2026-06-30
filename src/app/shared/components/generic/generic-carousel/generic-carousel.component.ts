@@ -19,7 +19,7 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CarouselItemDirective } from '../../../utils/directives/carousel-slide.directive';
- 
+
 export interface CarouselConfig {
   autoplay?: boolean;
   autoplayInterval?: number;
@@ -136,8 +136,7 @@ export interface CarouselConfig {
   `,
 })
 export class AppGenericCarouselComponent
-  implements AfterContentInit, AfterViewInit, OnDestroy
-{
+  implements AfterContentInit, AfterViewInit, OnDestroy {
   @ContentChildren(CarouselItemDirective) items!: QueryList<CarouselItemDirective>;
 
   @Input() config: CarouselConfig = {};
@@ -179,7 +178,7 @@ export class AppGenericCarouselComponent
     return this.currentIndex() < this.totalItems - this.visibleItems;
   }
 
-  constructor(private cdr: ChangeDetectorRef, private ngZone: NgZone) {}
+  constructor(private cdr: ChangeDetectorRef, private ngZone: NgZone) { }
 
   async ngAfterContentInit() {
     this.totalItems = this.items.length;
@@ -286,8 +285,8 @@ export class AppGenericCarouselComponent
     const next = this.canGoNext
       ? this.currentIndex() + 1
       : this.config.loop
-      ? 0
-      : this.currentIndex();
+        ? 0
+        : this.currentIndex();
     this.goTo(next);
   }
 
@@ -295,8 +294,8 @@ export class AppGenericCarouselComponent
     const prev = this.canGoPrev
       ? this.currentIndex() - 1
       : this.config.loop
-      ? this.totalItems - this.visibleItems
-      : this.currentIndex();
+        ? this.totalItems - this.visibleItems
+        : this.currentIndex();
     this.goTo(prev);
   }
 

@@ -70,7 +70,7 @@ export class GenericCollectionComponent implements OnInit {
       // Intentar encontrar primero una imagen con use 'collection' o 'shop'
       const collectionMedia = m.find(x => x.type === 'image' && Array.isArray(x.use) && x.use.includes('collection'));
       if (collectionMedia) return collectionMedia.url;
-      
+
       const shopMedia = m.find(x => x.type === 'image' && Array.isArray(x.use) && x.use.includes('shop'));
       if (shopMedia) return shopMedia.url;
 

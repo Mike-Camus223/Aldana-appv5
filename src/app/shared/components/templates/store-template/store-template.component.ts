@@ -1,6 +1,10 @@
-import { Component, OnInit, OnDestroy, HostListener, Inject, ElementRef, ViewChild } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy, HostListener, Inject, ElementRef, ViewChild } from '@angular/core';
 import { CommonModule, isPlatformBrowser, Location } from '@angular/common';
 import { PLATFORM_ID } from '@angular/core';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
 import { combineLatest } from 'rxjs';
 import { CheckboxModule } from 'primeng/checkbox';
 import { SliderModule } from 'primeng/slider';
@@ -66,7 +70,7 @@ import { ProductsService } from '../../../../core/services/data-access/products/
     }
   ],
 })
-export class StoreTemplateComponent implements OnInit, OnDestroy {
+export class StoreTemplateComponent implements OnInit, AfterViewInit, OnDestroy {
 
   products: Product[] = [];
   allProducts: Product[] = [];
@@ -133,6 +137,9 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
   private subcategoriesCache = new Map<string, any[]>();
 
   @ViewChild('productsContainer') productsContainerRef?: ElementRef<HTMLDivElement>;
+  @ViewChild('storeLayout') storeLayoutRef?: ElementRef<HTMLDivElement>;
+  @ViewChild('filterPanel') filterPanelRef?: ElementRef<HTMLDivElement>;
+  private triggers: ScrollTrigger[] = [];
   private containerLocked = false;
   private lockedHeight = 0;
   private currentFavorites: Set<string> = new Set();
@@ -177,7 +184,51 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
     if (this.filteredProducts) this.filteredProducts.forEach(updateProduct);
   }
 
+  ngAfterViewInit(): void {
+    setTimeout(() => {
+      this.initFiltersPin();
+    }, 500);
+  }
+
   ngOnDestroy(): void {
+    this.cleanupTriggers();
+  }
+
+  cleanupTriggers(): void {
+    this.triggers.forEach(t => t.kill());
+    this.triggers = [];
+    if (isPlatformBrowser(this.platformId)) {
+      ScrollTrigger.getAll().forEach(st => st.kill());
+      ScrollTrigger.clearMatchMedia();
+    }
+  }
+
+  initFiltersPin(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    if (!this.filterPanelRef || !this.productsContainerRef || !this.storeLayoutRef) return;
+
+    this.cleanupTriggers();
+
+    const panel = this.filterPanelRef.nativeElement;
+    const container = this.productsContainerRef.nativeElement;
+    const layout = this.storeLayoutRef.nativeElement;
+
+    ScrollTrigger.matchMedia({
+      "(min-width: 1024px)": () => {
+        const pinTrigger = ScrollTrigger.create({
+          trigger: layout,
+          start: "top top+=88",
+          end: () => `+=${Math.max(0, container.offsetHeight - panel.offsetHeight)}`,
+          pin: panel,
+          pinSpacing: false,
+          invalidateOnRefresh: true,
+        });
+
+        this.triggers.push(pinTrigger);
+      }
+    });
+
+    ScrollTrigger.refresh();
   }
 
   @HostListener('window:resize', ['$event'])
@@ -187,6 +238,9 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
       if (!this.isMobileView && this.showFilters) {
         this.showFilters = false;
       }
+      setTimeout(() => {
+        this.initFiltersPin();
+      }, 100);
     }
   }
 
@@ -376,6 +430,9 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
   setProductColumns(cols: number): void {
     if (cols >= 2 && cols <= 4) {
       this.productColumns = cols;
+      setTimeout(() => {
+        this.initFiltersPin();
+      }, 500);
     }
   }
 
@@ -386,6 +443,9 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
         document.body.style.overflow = this.showFilters ? 'hidden' : 'auto';
       }
     }
+    setTimeout(() => {
+      this.initFiltersPin();
+    }, 600);
   }
 
 
@@ -861,6 +921,9 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
       if (this.isMobileView) {
         this.toggleFilters();
       }
+      setTimeout(() => {
+        this.initFiltersPin();
+      }, 100);
     });
   }
 
@@ -921,6 +984,9 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
       if (isMobile) {
         this.toggleFilters();
       }
+      setTimeout(() => {
+        this.initFiltersPin();
+      }, 100);
     }).finally(() => {
       this.isApplyingFilters = false;
       this.applyFiltersPromise = null;
@@ -1209,6 +1275,9 @@ export class StoreTemplateComponent implements OnInit, OnDestroy {
     const url = this.buildUrlString();
     const [base, query] = url.split('?');
     this.location.replaceState(base, query ?? '');
+    setTimeout(() => {
+      this.initFiltersPin();
+    }, 100);
   }
 
   prevPage(): void {

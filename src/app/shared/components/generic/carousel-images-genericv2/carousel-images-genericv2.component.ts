@@ -42,8 +42,8 @@ export class CarouselImagesGenericv2Component implements AfterViewInit, OnDestro
   @Output() imageClick = new EventEmitter<any>();
 
   private sliderInstance: KeenSliderInstance | null = null;
-  
-  constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
+
+  constructor(@Inject(PLATFORM_ID) private platformId: Object) { }
 
   ngAfterViewInit(): void {
     // Solo inicializar el slider en el navegador, no en el servidor

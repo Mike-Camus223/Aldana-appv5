@@ -56,7 +56,7 @@ export class GenericGalleryTemplComponent implements AfterViewInit, OnDestroy {
     private CollectionService: CollectionService,
     private router: Router,
     private cdr: ChangeDetectorRef
-  ) {}
+  ) { }
 
   async ngAfterViewInit() {
     try {
@@ -83,7 +83,7 @@ export class GenericGalleryTemplComponent implements AfterViewInit, OnDestroy {
     }
   }
 
-  ngOnDestroy() {}
+  ngOnDestroy() { }
 
   @HostListener('window:resize', ['$event'])
   onResize(event: Event): void {
@@ -99,11 +99,11 @@ export class GenericGalleryTemplComponent implements AfterViewInit, OnDestroy {
     if (width < this.BP_SM) {
       newCols = 1;
       this.resetUserPreference();
-      
+
     } else if (width < this.BP_LG) {
       newCols = 2;
       this.resetUserPreference();
-      
+
     } else if (width < this.BP_XL) {
       if (this.userChoice !== null && this.userChoiceBreakpoint === 'lg') {
         newCols = Math.min(this.userChoice, 3);
@@ -114,7 +114,7 @@ export class GenericGalleryTemplComponent implements AfterViewInit, OnDestroy {
         newCols = 3;
         this.userChoiceBreakpoint = 'lg';
       }
-      
+
     } else {
       if (this.userChoice !== null && this.userChoiceBreakpoint === 'xl') {
         newCols = Math.min(Math.max(this.userChoice, 2), 4);
@@ -149,7 +149,7 @@ export class GenericGalleryTemplComponent implements AfterViewInit, OnDestroy {
     if (cols >= 2 && cols <= 4) {
       const currentWidth = window.innerWidth;
       const currentBreakpoint = this.getCurrentBreakpoint(currentWidth);
-      
+
       if (currentBreakpoint === 'lg' || currentBreakpoint === 'xl') {
         this.userChoice = cols;
         this.userChoiceBreakpoint = currentBreakpoint;

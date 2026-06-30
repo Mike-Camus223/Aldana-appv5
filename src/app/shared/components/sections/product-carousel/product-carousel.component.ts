@@ -61,7 +61,7 @@ export class ProductCarouselComponent implements OnInit {
 
     if (width < 1024) {
       this.visibleProducts = 2;
-    }    else {
+    } else {
       this.visibleProducts = 3;
     }
     if (this.index > this.maxIndex) {
