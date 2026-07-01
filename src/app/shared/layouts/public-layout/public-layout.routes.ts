@@ -32,7 +32,7 @@ export const PUBLIC_ROUTES: Routes = [
       },
       {
         path: 'novias-colecciones',
-        loadComponent: () =>  import('../../../features/landing/pages/novias/novias.component').then(c => c.NoviasComponent),
+        loadComponent: () => import('../../../features/landing/pages/novias/novias.component').then(c => c.NoviasComponent),
       },
       {
         path: 'novias-colecciones/:collectionSlug/:productSlug/:mediaSlug',
@@ -46,7 +46,7 @@ export const PUBLIC_ROUTES: Routes = [
       },
       {
         path: 'novias-colecciones/:slug',
-        loadComponent: () => 
+        loadComponent: () =>
           import('../../../shared/components/templates/generic-collection-brides/generic-collection-brides.component').then(c => c.GenericCollectionBridesComponent),
       },
       {
@@ -106,6 +106,10 @@ export const PUBLIC_ROUTES: Routes = [
       {
         path: 'busqueda',
         loadComponent: () => import('../../../features/landing/pages/search-page/search-page.component').then(c => c.SearchPageComponent),
+      },
+      {
+        path: 'error',
+        loadComponent: () => import('../../components/templates/page-not-found/page-not-found.component').then(c => c.PageNotFoundComponent),
       },
       {
         path: '**',
