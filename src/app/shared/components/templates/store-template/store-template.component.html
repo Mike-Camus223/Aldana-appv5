@@ -358,7 +358,7 @@
           </div>
         </div>
       </aside>
-      <div #productsContainer class="transition-all duration-500 ease-in-out flex-1 min-h-[300px] relative">
+      <div #productsContainer class="transition-all duration-500 ease-in-out relative">
         <!-- Spinner circular de carga -->
         <div *ngIf="loading"
           class="absolute inset-0 flex items-center justify-center bg-aldy-white backdrop-blur-[1px] z-20">
@@ -371,10 +371,10 @@
         <div *ngIf="!loading && filteredProducts.length > 0" [@gridAnimation]="productColumns"
           class="grid gap-5 transition-all duration-500 ease-in-out" [ngClass]="[
             productColumns === 2
-              ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-2 mx-0 xl:mx-60'
+              ? 'grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-2 mx-0 xl:mx-60'
               : '',
-            productColumns === 3 ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 mx-0' : '',
-            productColumns === 4 ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 mx-0' : ''
+            productColumns === 3 ? 'grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 mx-0' : '',
+            productColumns === 4 ? 'grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 mx-0' : ''
           ]">
           <app-cardproduct *ngFor="let product of pagedProducts; trackBy: trackByProductId" [product]="product"
             [selectedColor]="selectedColors[product.id]" [displayImage]="product.main_image" [mobileMode]="'ismobile'"

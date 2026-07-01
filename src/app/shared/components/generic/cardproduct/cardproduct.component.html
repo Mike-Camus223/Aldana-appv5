@@ -1,72 +1,49 @@
 <ng-container *ngIf="isMobileView; else desktopView">
   <div #cardRoot
-    class="relative flex flex-col bg-aldy-white border-1 border-aldy-medium/50 shadow-md overflow-hidden max-w-xs mx-auto">
+    class="relative flex flex-col bg-aldy-white border-1 border-aldy-medium/50 shadow-md overflow-hidden w-full mx-auto">
     <a [routerLink]="['/producto', product.slug]" [queryParams]="cardQueryParams" class="block relative">
       <div class="relative w-full aspect-[4/5] overflow-hidden bg-[#e4ddd6]">
-        <div class="absolute top-3 left-0 z-10">
+        <div class="absolute top-2 xs:top-3 left-0 z-10">
           <span
-            class="bg-aldy-medium-2 text-white text-[9px] tracking-widest font-light NewAldyFontType4 py-1 pl-3 pr-4"
-            style="clip-path: polygon(0 0, 100% 0, 92% 100%, 0 100%)">
+            class="bg-aldy-medium-2 text-white tracking-widest font-light NewAldyFontType4 py-1 pl-2.5 pr-3.5 xs:pl-3 xs:pr-4"
+            style="clip-path: polygon(0 0, 100% 0, 92% 100%, 0 100%); font-size: clamp(7px, 2.2vw, 9px);">
             NUEVO
           </span>
         </div>
-        <img *ngIf="displayImage || product.main_image" #mobileImage [ngSrc]="displayImage || product.   main_image"
+        <img *ngIf="displayImage || product.main_image" #mobileImage [ngSrc]="displayImage || product.main_image"
           [alt]="product.name" width="400" height="500" priority class="w-full h-full object-cover object-top" />
         <button type="button" aria-label="Añadir a favoritos"
           (click)="$event.preventDefault(); $event.stopPropagation(); toggleWishlist($event)"
-          class="absolute top-3 right-3 z-14 w-9 h-9 rounded-full bg-aldy-white flex items-center justify-center  cursor-pointer">
-          <lucide-icon name="heart" [size]="17" [strokeWidth]="2"
+          class="absolute top-2 right-2 xs:top-3 xs:right-3 z-14 rounded-full bg-aldy-white flex items-center justify-center cursor-pointer"
+          style="width: clamp(30px, 9vw, 36px); height: clamp(30px, 9vw, 36px);">
+          <lucide-icon name="heart" [size]="16" [strokeWidth]="2"
             [ngClass]="product.wishlisted ? 'text-aldy-medium fill-current' : 'text-aldy-green-gray-bold NewAldyFontType4'">
           </lucide-icon>
         </button>
       </div>
-      <div class="flex justify-center -mt-7 relative z-20">
-        <div
-          class="w-14 h-14 bg-aldy-white rounded-full justify-center items-center bg-[#f7f2ed] border border-aldy-medium flex items-center justify-center p-1.5">
-          <img src="../../../../../assets/svg/logos-03.svg" alt="AV logo" class="w-8 h-8 object-contain" />
-        </div>
-      </div>
     </a>
-    <div class="px-5 pt-3 pb-1 text-center">
-      <h3
-        class="text-[1.55rem] font-light NewAldyTitle text-aldy-green-gray-bold m-0 tracking-wide leading-tight mt-2 mb-1">
+
+    <div class="flex flex-col px-2.5 xs:px-3 py-2.5">
+      <h3 class="font-light NewAldyTitle text-aldy-green-gray-bold m-0 tracking-wide leading-tight break-words"
+        style="font-size: clamp(12px, 3.6vw, 17px);">
         {{ product.name }}
       </h3>
-      <p
-        class="text-base text-base font-medium NewAldyFontType4 text-aldy-green-gray-bold whitespace-nowrap tracking-wide mb-3">
-        {{ product.price | currency:'ARS':'symbol-narrow':'1.2-2':'es-AR' }}
-      </p>
-      <div class="flex items-center justify-center mb-4 gap-4 w-full">
-        <span class="flex-1 h-px bg-aldy-medium opacity-60"></span>
-        <span class="text-aldy-medium text-xs leading-none select-none">
-          ✦
-        </span>
-        <span class="flex-1 h-px bg-aldy-medium opacity-60"></span>
-      </div>
-      <div class="flex justify-between items-start gap-3 text-left px-1 mb-4">
-        <div class="flex flex-col gap-2">
-          <span
-            class="text-[10px] tracking-widest uppercase text-aldy-green-gray-bold NewAldyFontType4 font-medium">Colores</span>
-          <div class="flex items-center gap-2">
-            <button *ngFor="let color of product.variants" (click)="selectColor(color.color_name)"
-              [ngStyle]="{ backgroundColor: color.color_hex }" [attr.aria-pressed]="selectedColor === color.color_name"
-              [title]="color.color_name" aria-label="Elegir color"
-              class="w-6 h-6 rounded-full border-2 border-[#d9d0c7] cursor-pointer transition-all hover:scale-110"
-              [ngClass]="{
-                      'ring-2 ring-offset-1 ring-[#2e2e2e]': selectedColor === color.color_name
-                    }">
-            </button>
-          </div>
-        </div>
-        <div *ngIf="!product.isBridal" class="flex flex-col gap-2">
-          <span
-            class="text-[10px] tracking-widest uppercase text-aldy-green-gray-bold NewAldyFontType4 font-medium">Tallas</span>
-          <div class="flex items-center gap-1.5">
-            <button *ngFor="let size of product.sizes" (click)="selectSize(size)"
-              class="w-8 h-8 text-sm bg-aldy-medium cursor-pointer text-white flex items-center justify-center">
-              {{ size }}
-            </button>
-          </div>
+
+      <div class="flex items-center justify-between gap-2 mt-1">
+        <p class="font-medium NewAldyFontType4 text-aldy-green-gray-bold tracking-wide"
+          style="font-size: clamp(11px, 3.2vw, 14px);">
+          {{ product.price | currency:'ARS':'symbol-narrow':'1.2-2':'es-AR' }}
+        </p>
+
+        <div class="shrink-0 flex items-center justify-end gap-1.5 max-w-[45%]">
+          <button *ngFor="let color of product.variants" (click)="selectColor(color.color_name)"
+            [ngStyle]="{ backgroundColor: color.color_hex }" [attr.aria-pressed]="selectedColor === color.color_name"
+            [title]="color.color_name" aria-label="Elegir color"
+            class="rounded-full border-2 border-[#d9d0c7] cursor-pointer transition-all hover:scale-110 shrink-0"
+            style="width: clamp(10px, 4vw, 22px); height: clamp(10px, 4vw, 22px);" [ngClass]="{
+              'ring-2 ring-offset-1 ring-aldy-medium-2': selectedColor === color.color_name
+            }">
+          </button>
         </div>
       </div>
     </div>
