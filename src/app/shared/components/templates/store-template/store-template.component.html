@@ -49,7 +49,7 @@
           opacity: showFilters ? '1' : '0',
           pointerEvents: showFilters ? 'auto' : 'none'
         }">
-        <div #filterPanel class="self-start w-full">
+        <div class="sticky-filter-panel self-start w-full pr-3">
           <!-- Pills seleccionadas -->
           <div class="px-3 pb-2" *ngIf="selectedCategories.length || getSelectedSubcategoriesFlat().length">
             <div class="flex flex-wrap gap-2">
