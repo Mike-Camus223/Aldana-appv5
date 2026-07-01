@@ -301,7 +301,7 @@ export class NavbarPublicv3Component implements OnInit, OnDestroy {
     if (this.isAuthenticated) {
       // Usuario autenticado
       if (this.authService.isAdmin()) {
-        this.router.navigate(['/admin/home']);
+        this.router.navigate(['/admin/panel-de-control']);
       } else {
         this.router.navigate(['/panel/panel-control']);
       }

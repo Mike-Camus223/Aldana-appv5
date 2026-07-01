@@ -31,7 +31,7 @@ export class AdminGuard implements CanActivate, CanActivateChild {
         if (!session || !session.user) {
           console.warn('AdminGuard: Usuario no autenticado');
           this.logSecurityEvent('ADMIN_ACCESS_DENIED_NO_AUTH', 'anonymous');
-          return of(this.router.createUrlTree(['/login']));
+          return of(this.router.createUrlTree(['/cuenta/iniciar-sesion']));
         }
 
         // Verificar rol del cliente primero (verificación rápida)
@@ -104,17 +104,18 @@ export class AdminGuard implements CanActivate, CanActivateChild {
 
   private logSecurityEvent(event: string, userEmail: string | undefined, metadata?: any): void {
     const safeEmail = userEmail || 'unknown';
+    const isBrowser = isPlatformBrowser(this.platformId);
     const logEntry = {
       timestamp: new Date().toISOString(),
       event,
       userEmail: safeEmail,
-      userAgent: navigator.userAgent,
-      url: window.location.href,
+      userAgent: (isBrowser && typeof navigator !== 'undefined') ? navigator.userAgent : 'server',
+      url: (isBrowser && typeof window !== 'undefined') ? window.location.href : 'server',
       metadata
     };
         
     // En producción, enviar estos logs a un servicio de monitoreo
-    if (typeof window !== 'undefined' && (window as any).gtag) {
+    if (isBrowser && typeof window !== 'undefined' && (window as any).gtag) {
       (window as any).gtag('event', event, {
         custom_parameter_1: safeEmail,
         custom_parameter_2: metadata ? JSON.stringify(metadata) : '',
@@ -135,6 +136,7 @@ export class AdminGuard implements CanActivate, CanActivateChild {
   }
 
   private storeSecurityAlert(logEntry: any): void {
+    if (!isPlatformBrowser(this.platformId) || typeof localStorage === 'undefined') return;
     try {
       const alerts = JSON.parse(localStorage.getItem('security_alerts') || '[]');
       alerts.push(logEntry);

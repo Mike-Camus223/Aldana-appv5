@@ -279,9 +279,9 @@ export class AuthService {
         // Redirigir según el rol del usuario
         const userRole = this.getUserRole();
         if (userRole === 'admin') {
-          this.router.navigate(['/dashboard']);
+          this.router.navigate(['/admin/panel-de-control']);
         } else {
-          this.router.navigate(['/panel-control']);
+          this.router.navigate(['/panel/panel-control']);
         }
         return { success: true };
       }

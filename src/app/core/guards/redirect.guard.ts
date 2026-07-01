@@ -62,7 +62,7 @@ export class RedirectGuard implements CanActivate {
       
       // Usuario autenticado, redirigir según el rol
       if (this.authService.isAdmin()) {
-        return of(this.router.createUrlTree(['/admin/home']));
+        return of(this.router.createUrlTree(['/admin/panel-de-control']));
       } else {
         return of(this.router.createUrlTree(['/panel/panel-control']));
       }

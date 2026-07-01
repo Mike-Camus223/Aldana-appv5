@@ -61,9 +61,9 @@ export class AuthPanelComponent implements OnInit, AfterViewInit, OnDestroy {
       this.currentUser = user;
       if (user) {
         if (this.authService.isAdmin()) {
-          this.router.navigate(['/dashboard']);
+          this.router.navigate(['/admin/panel-de-control']);
         } else {
-          this.router.navigate(['/panel-control']);
+          this.router.navigate(['/panel/panel-control']);
         }
       }
     });

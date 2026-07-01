@@ -32,6 +32,10 @@ export const checkoutRoutes: Routes = [
         // canActivate: [paymentsuccesguardGuard],
         loadComponent: () =>
           import('../../shared/components/templates/success-pay/success-pay.component').then(c => c.SuccessPayComponent),
+      },
+      {
+        path: '**',
+        redirectTo: 'carrito'
       }
     ]
   }

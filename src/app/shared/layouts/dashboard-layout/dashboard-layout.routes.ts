@@ -1,19 +1,19 @@
 import { Routes } from '@angular/router';
-// import { AdminGuard } from '../../../core/guards/admin.guard';
+import { AdminGuard } from '../../../core/guards/admin.guard';
 
 export const ADMIN_ROUTES: Routes = [
   {
     path: '',
     loadComponent: () => import('./dashboard-layout.component'),
-    // canActivate: [AdminGuard],
+    canActivate: [AdminGuard],
     children: [
       {
         path: '',
-        redirectTo: 'home',
+        redirectTo: 'panel-de-control',
         pathMatch: 'full',
       },
       {
-        path: 'home',
+        path: 'panel-de-control',
         loadComponent: () => import('../../../features/dashboard/pages/dashhome/dashhome.component').then(c => c.DashhomeComponent),
       },
       {
@@ -30,7 +30,7 @@ export const ADMIN_ROUTES: Routes = [
       },
       {
         path: '**',
-        redirectTo: '',
+        redirectTo: 'panel-de-control',
       }
     ]
   }

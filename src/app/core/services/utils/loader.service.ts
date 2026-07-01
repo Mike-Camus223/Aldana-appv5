@@ -47,6 +47,91 @@ export class LoaderService {
     }
   }
 
+  private isValidRoute(url: string): boolean {
+    const path = url.split('?')[0].split('#')[0];
+    
+    if (path === '' || path === '/') {
+      return true;
+    }
+
+    // Exact matches
+    const exactMatches = [
+      '/confirmar-registro',
+      '/registro-exitoso',
+      '/contacto',
+      '/acerca-de-mi',
+      '/journal',
+      '/busqueda',
+      '/error'
+    ];
+    if (exactMatches.includes(path)) {
+      return true;
+    }
+
+    // Valid prefixes & dynamic routes
+    const patterns = [
+      // Auth Panel
+      /^\/cuenta$/,
+      /^\/cuenta\/iniciar-sesion$/,
+      /^\/cuenta\/registro$/,
+
+      // Checkout
+      /^\/checkout$/,
+      /^\/checkout\/carrito$/,
+      /^\/checkout\/envio$/,
+      /^\/checkout\/pago$/,
+      /^\/checkout\/success$/,
+
+      // User Panel
+      /^\/panel$/,
+      /^\/panel\/panel-control$/,
+      /^\/panel\/orders-history$/,
+      /^\/panel\/order-details\/[^/]+$/,
+      /^\/panel\/informacion-cuenta$/,
+      /^\/panel\/favoritos$/,
+
+      // Admin Dashboard
+      /^\/admin$/,
+      /^\/admin\/panel-de-control$/,
+      /^\/admin\/storage$/,
+      /^\/admin\/creation$/,
+      /^\/admin\/users$/,
+
+      // Shop & Products
+      /^\/tienda$/,
+      /^\/tienda\/categoria\/[^/]+$/,
+      /^\/tienda\/categoria\/[^/]+\/[^/]+$/,
+      /^\/tienda\/categoria\/[^/]+\/subcategoria\/[^/]+$/,
+      /^\/tienda\/categoria\/[^/]+\/[^/]+\/subcategoria\/[^/]+$/,
+      /^\/producto\/[^/]+$/,
+
+      // Collections
+      /^\/colecciones$/,
+      /^\/colecciones\/[^/]+$/,
+      /^\/colecciones\/[^/]+\/[^/]+$/,
+      /^\/colecciones\/[^/]+\/[^/]+\/[^/]+$/,
+      
+      // Brides Collections
+      /^\/novias-colecciones$/,
+      /^\/novias-colecciones\/[^/]+$/,
+      /^\/novias-colecciones\/[^/]+\/[^/]+$/,
+      /^\/novias-colecciones\/[^/]+\/[^/]+\/[^/]+$/,
+
+      // Journal posts
+      /^\/journal\/[^/]+\/[^/]+\/[^/]+\/[^/]+$/
+    ];
+
+    return patterns.some(pattern => pattern.test(path));
+  }
+
+  public getShowMainLoader(url: string): boolean {
+    const cleanUrl = url.startsWith('/') ? url.substring(1) : url;
+    const targetSegment = cleanUrl.split('/')[0];
+    const isCheckoutRoute = targetSegment === 'checkout';
+    const isValid = this.isValidRoute(url);
+    return this.isFirstLoad && isValid && !isCheckoutRoute;
+  }
+
   private initRouterListener(): void {
     let lastUrl = '';
 
@@ -67,8 +152,21 @@ export class LoaderService {
           return;
         }
 
+        const getFirstSegment = (url: string) => {
+          const cleanUrl = url.startsWith('/') ? url.substring(1) : url;
+          return cleanUrl.split('/')[0];
+        };
+        const currentSegment = getFirstSegment(currentUrl);
+        const targetSegment = getFirstSegment(targetUrl);
+
+        const isUserPanelInternal = currentUrl !== '' && currentSegment === 'panel' && targetSegment === 'panel';
+        const isAdminPanelInternal = currentUrl !== '' && currentSegment === 'admin' && targetSegment === 'admin';
+        const isAuthInternal = currentUrl !== '' && currentSegment === 'cuenta' && targetSegment === 'cuenta';
+
+        const isInternalBypass = isUserPanelInternal || isAdminPanelInternal || isAuthInternal;
+
         // Check if this route should skip the generic loader
-        if (!this.isFirstLoad && this.shouldSkipGeneric(event.url)) {
+        if (!this.isFirstLoad && (isInternalBypass || this.shouldSkipGeneric(event.url))) {
           this.isNavigationSkipped = true;
           this.animationsEnabledSubject.next(false);
           this.currentLoaderSubject.next(null);
@@ -77,7 +175,12 @@ export class LoaderService {
 
         this.isNavigationSkipped = false;
 
-        if (this.isFirstLoad) {
+        // Determine which loader to show
+        const isCheckoutRoute = targetSegment === 'checkout';
+        const isValid = this.isValidRoute(event.url);
+        const shouldShowMain = this.isFirstLoad && isValid && !isCheckoutRoute;
+
+        if (shouldShowMain) {
           this.animationsEnabledSubject.next(false);
           this.currentLoaderSubject.next('main');
         } else {
@@ -93,7 +196,12 @@ export class LoaderService {
         if (this.isNavigationSkipped) {
           // If we skipped the loader, trigger animations immediately after navigation ends
           this.animationsEnabledSubject.next(true);
-          this.currentLoaderSubject.next(null);
+          
+          if (this.currentLoaderSubject.value === 'generic') {
+            this.navigationStateSubject.next('end');
+          } else {
+            this.currentLoaderSubject.next(null);
+          }
           this.isNavigationSkipped = false;
           
           if (this.isBrowser) {
@@ -103,7 +211,7 @@ export class LoaderService {
               }
             }, 10);
           }
-        } else if (!this.isFirstLoad) {
+        } else if (this.currentLoaderSubject.value === 'generic') {
           if (this.activeLocks > 0) {
             this.pendingNavigationEnd = true;
           } else {
@@ -126,7 +234,7 @@ export class LoaderService {
     this.currentLoaderSubject.next(null);
     this.navigationStateSubject.next(null);
 
-    if (loaderType === 'main') {
+    if (loaderType === 'main' || (loaderType === 'generic' && this.isFirstLoad)) {
       this.isFirstLoad = false;
       this.isMainLoaderComplete = true;
     }

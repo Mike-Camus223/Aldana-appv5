@@ -113,7 +113,7 @@ export const PUBLIC_ROUTES: Routes = [
       },
       {
         path: '**',
-        redirectTo: '',
+        loadComponent: () => import('../../components/templates/page-not-found/page-not-found.component').then(c => c.PageNotFoundComponent),
       }
     ]
   }

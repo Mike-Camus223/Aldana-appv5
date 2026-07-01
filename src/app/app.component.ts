@@ -1,7 +1,7 @@
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
 import { Router, NavigationEnd, RouterOutlet } from '@angular/router';
-import { CommonModule, ViewportScroller } from '@angular/common';
+import { CommonModule, ViewportScroller, isPlatformBrowser } from '@angular/common';
 import { filter } from 'rxjs/operators';
 import { LoadingScreenGenericComponent } from "./shared/components/system/loading-screen-generic/loading-screen-generic.component";
 import { LoadingScreenComponent } from './shared/components/system/loading-screen/loading-screen.component';
@@ -30,9 +30,15 @@ export class AppComponent implements OnInit {
   constructor(
     private router: Router,
     private viewportScroller: ViewportScroller,
-    private loaderService: LoaderService
+    private loaderService: LoaderService,
+    @Inject(PLATFORM_ID) private platformId: Object
   ) {
-    this.showMainLoader = this.loaderService.isFirstLoad;
+    if (isPlatformBrowser(this.platformId)) {
+      const initialPath = window.location.pathname;
+      this.showMainLoader = this.loaderService.getShowMainLoader(initialPath);
+    } else {
+      this.showMainLoader = false;
+    }
   }
 
   ngOnInit(): void {

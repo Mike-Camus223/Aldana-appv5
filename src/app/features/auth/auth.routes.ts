@@ -35,7 +35,7 @@ export const AUTH_ROUTES: Routes = [
       // },
       {
         path: '**',
-        redirectTo: 'iniciar-sesion'
+        loadComponent: () => import('./pages/404auth/404auth.component').then(c => c.Auth404Component)
       }
     ]
   }

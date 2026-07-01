@@ -57,7 +57,7 @@ export class AuthGuard implements CanActivate, CanActivateChild {
           }
         } else {
           this.logSecurityEvent('AUTH_FAILED', 'anonymous');
-          return of(this.router.createUrlTree(['/login']));
+          return of(this.router.createUrlTree(['/cuenta/iniciar-sesion']));
         }
       }),
       catchError(error => {
@@ -72,7 +72,7 @@ export class AuthGuard implements CanActivate, CanActivateChild {
         
         // Si falla después de varios intentos, redirigir a login
         this.retryCount = 0;
-        return of(this.router.createUrlTree(['/login']));
+        return of(this.router.createUrlTree(['/cuenta/iniciar-sesion']));
       })
     );
   }
@@ -104,7 +104,7 @@ export class AuthGuard implements CanActivate, CanActivateChild {
       console.error(' AuthGuard: Error al cerrar sesión expirada:', error);
     });
 
-    return of(this.router.createUrlTree(['/login'], {
+    return of(this.router.createUrlTree(['/cuenta/iniciar-sesion'], {
       queryParams: { reason: 'session_expired' }
     }));
   }
@@ -116,8 +116,8 @@ export class AuthGuard implements CanActivate, CanActivateChild {
         timestamp: new Date().toISOString(),
         event,
         userEmail: safeEmail,
-        userAgent: navigator.userAgent,
-        url: window.location.href,
+        userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : 'server',
+        url: typeof window !== 'undefined' ? window.location.href : 'server',
         metadata
       };
           
