@@ -5,7 +5,7 @@
     <div class="searchbar-container">
       <div class="searchbar max-w-[18rem] xs:max-w-sm sm:max-w-xl md:max-w-4xl w-full">
         <input type="text"
-          class="search-input NewAldyTitle text-xl xs:text-2xl sm:text-4xl md:text-5xl lg:text-5xl text-gray-700 font-medium tracking-wide"
+          class="search-input NewAldyTitle text-xl xs:text-2xl sm:text-4xl md:text-5xl lg:text-5xl text-aldy-green-gray-bold font-medium tracking-wide"
           [value]="searchTerm" (input)="onInput($event)" (keyup.enter)="applyFiltersAction(false)" placeholder="Buscar"
           autofocus #inputElement />
         <button type="button" (click)="applyFiltersAction(false)" [disabled]="loading"
