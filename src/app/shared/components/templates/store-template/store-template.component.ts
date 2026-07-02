@@ -20,7 +20,7 @@ import { AldyCheckboxV1Directive } from '../../../utils/directives/aldy-checkbox
 import { FavoritesService } from '../../../../core/services/favorites/favorites.service';
 import { AuthService } from '../../../../core/services/auth/auth.service';
 import { ProductsService } from '../../../../core/services/data-access/products/products.service';
-
+import { PaginatorComponent } from '../../generic/paginator/paginator.component';
 
 
 @Component({
@@ -36,7 +36,8 @@ import { ProductsService } from '../../../../core/services/data-access/products/
     LucideAngularModule,
     AcordiongenericComponent,
     LoadingbarComponent,
-    AldyCheckboxV1Directive
+    AldyCheckboxV1Directive,
+    PaginatorComponent
   ],
   templateUrl: './store-template.component.html',
   styleUrls: ['./store-template.component.css'],

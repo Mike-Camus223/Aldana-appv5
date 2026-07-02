@@ -25,6 +25,10 @@ export class OrdersHistoryComponent implements OnInit {
   currentPage = 1;
   pageSize = 5;
 
+  get totalPages(): number {
+    return Math.ceil(this.orders.length / this.pageSize);
+  }
+
   constructor(
     private ordersService: OrdersService,
     private router: Router
@@ -61,11 +65,6 @@ export class OrdersHistoryComponent implements OnInit {
 
   onPageChange(page: number) {
     this.currentPage = page;
-  }
-
-  onPageSizeChange(size: number) {
-    this.pageSize = size;
-    this.currentPage = 1; 
   }
 
   getStatusLabel(status: string): string {

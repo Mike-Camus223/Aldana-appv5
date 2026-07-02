@@ -117,11 +117,9 @@
     </div>
     <div class="pt-4 lg:pt-6" *ngIf="!loading && !error && orders.length >= 5">
       <app-paginator 
-        [totalItems]="orders.length"
-        [pageSizeOptions]="[5, 10, 20]"
-        [initialPageSize]="5"
-        (pageChange)="onPageChange($event)"
-        (pageSizeChange)="onPageSizeChange($event)">
+        [currentPage]="currentPage"
+        [totalPages]="totalPages"
+        (pageChange)="onPageChange($event)">
       </app-paginator>
     </div>
 </div>
