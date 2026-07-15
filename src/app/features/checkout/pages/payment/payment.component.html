@@ -21,7 +21,7 @@
 
 <!-- Skeleton Loader -->
 <div *ngIf="showSkeleton" class="w-full bg-aldy-white px-4 sm:px-6 lg:px-12 xl:px-16 2xl:px-24">
-  <div class="max-w-3xl mx-auto">
+  <div class="max-w-6xl mx-auto">
     <div class="w-full flex flex-col md:flex-row justify-center gap-6 min-h-[calc(100vh-65px)]">
       <!-- Left Column Skeleton -->
       <div class="w-full md:w-1/2 flex justify-center">
@@ -88,7 +88,7 @@
 
 <!-- Main Content -->
 <div *ngIf="!showSkeleton" class="w-full bg-aldy-white px-4 sm:px-6 lg:px-12 xl:px-16 2xl:px-24">
-  <div class="max-w-3xl mx-auto">
+  <div class="max-w-6xl mx-auto">
     <div class="w-full flex flex-col md:flex-row justify-center gap-6 min-h-[calc(100vh-65px)]">
       <div class="w-full md:w-1/2 flex justify-center">
         <div class="relative w-full">
@@ -196,67 +196,25 @@
                 [useIcon]="true"
                 [iconImg]="'../../../../../assets/svg/mpIcon.svg'"
                 [iconImgStyle]="'w-7 h-7'"
-                [title]="'Pagar con Mercado Pago'"
+                [title]="'Pagar con Tarjeta (Mercado Pago)'"
                 [value]="'payment_mp'"
                 [classTitle]="'text-sm NewAldyFontType4 tracking-wider text-aldy-green-gray-bold'"
                 [selected]="accordionActive"
                 (toggled)="toggleAccordion($event)"
               >
-                <div class="space-y-3 py-4">
-    
-                  <p class="text-sm NewAldyFontType4 tracking-wider text-aldy-green-gray">
-                    Paga de forma segura con tarjeta de crédito, débito o en efectivo.
-                  </p>
-    
-                  <button
-                    type="button"
-                    smartButton
-                    (click)="payWithMercadoPago()"
-                    [loadingAsync]="isProcessing"
-                    [icon]="true"
-                    [iconSvg]="'../../../../../assets/svg/mpIcon_white.svg'"
-                    [iconStyle]="'w-9 h-9'"
-                    class="w-full"
-                  >
-                    Realizar compra con Mercado Pago
-                  </button>
-    
-                  <p class="text-xs NewAldyFontType4 tracking-wider text-aldy-green-gray">
-                    Serás redirigido a Mercado Pago.
-                  </p>
-    
+                <div class="py-4 relative min-h-[150px]">
+                  <!-- Spinner de carga del Brick -->
+                  <div *ngIf="isBrickLoading" class="absolute inset-0 flex flex-col justify-center items-center bg-white z-10 space-y-2">
+                    <i class="fa-solid fa-circle-notch fa-spin text-2xl text-aldy-green-gray"></i>
+                    <p class="text-xs NewAldyFontType4 text-aldy-green-gray tracking-wider font-light">Cargando pasarela de pago segura...</p>
+                  </div>
+                  
+                  <!-- Contenedor del Brick de Mercado Pago -->
+                  <div id="cardPaymentBrick_container"></div>
                 </div>
               </app-acordiongeneric>
     
-              <app-acordiongeneric
-                [useIcon]="true"
-                [title]="'Pagar vía WhatsApp'"
-                [selected]="accordionWspActive"
-                [value]="'payment_wsp'"
-                [classTitle]="'text-sm NewAldyFontType4 tracking-wider text-aldy-green-gray-bold'"
-                [icon]="'fa-brands fa-whatsapp text-aldy-green-gray text-xl'"
-                (toggled)="toggleAccordionWsp($event)"
-              >
-                <div class="space-y-3 py-4">
-                  <p class="text-sm NewAldyFontType4 tracking-wider text-aldy-green-gray">
-                    Paga de forma rápida y directa desde WhatsApp.
-                  </p>
-    
-                  <button
-                    type="button"
-                    [disabled]="isProcessing"
-                    smartButton
-                    class="disabled:opacity-50 disabled:cursor-not-allowed w-full flex gap-4 justify-center items-center"
-                  >
-                    <i class="fa-brands fa-whatsapp text-white text-2xl"></i>
-                    {{ isProcessing ? "Procesando..." : "Pagar desde WhatsApp" }}
-                  </button>
-    
-                  <p class="text-xs NewAldyFontType4 tracking-wider text-aldy-green-gray">
-                    Serás redirigido al catálogo de WhatsApp.
-                  </p>
-                </div>
-              </app-acordiongeneric>
+
     
             </section>
           </div>
@@ -280,9 +238,9 @@
     
             <p *ngIf="item.color"
                class="text-xs sm:text-sm text-aldy-green-gray NewAldyFontType4 mt-1 flex items-center gap-2">
-              Color:
+              Color: <span class="capitalize">{{ item.color }}</span>
               <span class="inline-block w-3 h-3 rounded-xs ring-2 ring-aldy-green-gray"
-                    [ngStyle]="{ 'background-color': item.color }"></span>
+                    [ngStyle]="{ 'background-color': getColorHex(item.color) }"></span>
             </p>
 
             <p *ngIf="item.size"

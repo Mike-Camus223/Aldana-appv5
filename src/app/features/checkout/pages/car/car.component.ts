@@ -136,6 +136,29 @@ export class CarComponent implements OnInit {
     return this.cartItems.reduce((a, i) => a + i.price * i.quantity, 0);
   }
 
+  getColorHex(color: string): string {
+    if (!color) return '';
+    if (color.startsWith('#')) return color;
+    const map: Record<string, string> = {
+      'negro': '#000000',
+      'blanco': '#ffffff',
+      'rojo': '#e11d48',
+      'azul': '#2563eb',
+      'verde': '#16a34a',
+      'amarillo': '#ca8a04',
+      'rosa': '#db2777',
+      'gris': '#4b5563',
+      'naranja': '#ea580c',
+      'marrón': '#78350f',
+      'marron': '#78350f',
+      'beige': '#f5f5dc',
+      'celeste': '#38bdf8',
+      'lila': '#c084fc',
+      'violeta': '#7c3aed',
+    };
+    return map[color.toLowerCase().trim()] || color;
+  }
+
   goToReturn() {
     this.router.navigate(['/']);
   }

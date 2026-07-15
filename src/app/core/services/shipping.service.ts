@@ -15,6 +15,10 @@ export interface ShippingData {
   dniOrCuit?: string | null;
   razonSocial?: string | null;
   email: string;
+  shippingCost?: number;
+  deliveryType?: 'D' | 'S';
+  agencyCode?: string;
+  agencyName?: string;
 }
 
 export interface DiscountData {

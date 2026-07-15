@@ -34,37 +34,37 @@ export default class DashboardLayoutComponent {
     {
       icon: 'fas fa-home',
       label: 'Dashboard',
-      route: '/dashboard/home',
+      route: '/admin/panel-de-control',
       active: true
     },
     {
       icon: 'fas fa-plus-circle',
       label: 'Crear Producto',
-      route: '/dashboard/creation',
+      route: '/admin/creation',
       active: false
     },
     {
       icon: 'fas fa-box',
       label: 'Inventario',
-      route: '/dashboard/storage',
+      route: '/admin/storage',
       active: false
     },
     {
       icon: 'fas fa-shopping-cart',
       label: 'Pedidos',
-      route: '/dashboard/orders',
+      route: '/admin/orders',
       active: false
     },
     {
       icon: 'fas fa-users',
       label: 'Usuarios',
-      route: '/dashboard/users',
+      route: '/admin/users',
       active: false
     },
     {
       icon: 'fas fa-chart-bar',
       label: 'Reportes',
-      route: '/dashboard/reports',
+      route: '/admin/reports',
       active: false
     }
   ];

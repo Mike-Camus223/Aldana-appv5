@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { paymentsuccesguardGuard } from '../../core/guards/paymentsuccesguard.guard';
+import { resultScreenGuard } from '../../core/guards/result-screen.guard';
 
 export const checkoutRoutes: Routes = [
   {
@@ -28,10 +28,10 @@ export const checkoutRoutes: Routes = [
           import('./pages/payment/payment.component').then(c => c.PaymentComponent),
       },
       {
-        path: 'success',
-        // canActivate: [paymentsuccesguardGuard],
+        path: 'resultado',
+        canActivate: [resultScreenGuard],
         loadComponent: () =>
-          import('../../shared/components/templates/success-pay/success-pay.component').then(c => c.SuccessPayComponent),
+          import('./pages/result-screen/result-screen.component').then(c => c.ResultScreenComponent),
       },
       {
         path: '**',

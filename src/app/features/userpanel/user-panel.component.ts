@@ -4,6 +4,7 @@ import { NavigationEnd, NavigationStart, NavigationCancel, NavigationError, Rout
 import { AuthService } from '../../core/services/auth/auth.service';
 import { User } from '@supabase/supabase-js';
 import { filter } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
 import { AppMenuItem } from '../../shared/utils/models/app-menu-item.model';
 import { Heart, LogOut, LUCIDE_ICONS, LucideAngularModule, LucideIconProvider, Package, Settings, UserRound } from 'lucide-angular';
 import { LoaderService } from '../../core/services/utils/loader.service';
@@ -33,6 +34,7 @@ export class UserPanelComponent implements OnInit, OnDestroy {
   currentUser: User | null = null;
   activeSection: string = 'control-panel';
   isLoading = false;
+  private authSubscription?: Subscription;
 
   breadcrumbItemsAccount: AppMenuItem[] = [
       { label: 'INICIO', route: '/home' },
@@ -103,7 +105,7 @@ export class UserPanelComponent implements OnInit, OnDestroy {
     // Establecer contexto user-panel al inicializar el componente
     this.loaderService.setContext('user-panel');
     
-    this.authService.currentUser$.subscribe(user => {
+    this.authSubscription = this.authService.currentUser$.subscribe(user => {
       this.currentUser = user;
       if (!user) {
         this.router.navigate(['/login']);
@@ -114,6 +116,7 @@ export class UserPanelComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     // Restablecer contexto público al salir del panel de usuario
     this.loaderService.setContext('public');
+    this.authSubscription?.unsubscribe();
   }
 
   onSignOut() {

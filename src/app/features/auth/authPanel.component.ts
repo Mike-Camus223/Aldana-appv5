@@ -4,6 +4,7 @@ import { NavigationEnd, NavigationStart, NavigationCancel, NavigationError, Rout
 import { AuthService } from '../../core/services/auth/auth.service';
 import { User } from '@supabase/supabase-js';
 import { filter } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
 import { LoaderService } from '../../core/services/utils/loader.service';
 import { Footerv2Component } from '../../shared/components/system/footerv2/footerv2.component';
 
@@ -21,6 +22,7 @@ export class AuthPanelComponent implements OnInit, AfterViewInit, OnDestroy {
   currentUser: User | null = null;
   isLoading = false;
   showArrow = false;
+  private authSubscription?: Subscription;
 
   private authService = inject(AuthService);
   private router = inject(Router);
@@ -57,7 +59,7 @@ export class AuthPanelComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.authService.currentUser$.subscribe(user => {
+    this.authSubscription = this.authService.currentUser$.subscribe(user => {
       this.currentUser = user;
       if (user) {
         if (this.authService.isAdmin()) {
@@ -76,6 +78,7 @@ export class AuthPanelComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnDestroy(): void {
     this.loaderService.setContext('public');
     this.clearTimers();
+    this.authSubscription?.unsubscribe();
   }
 
   // Aparece a los 4s si hay contenido para scrollear

@@ -1,9 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ArrowDownToLine, Book, BookCheck, Check, Headset, House, LUCIDE_ICONS, LucideAngularModule, LucideIconProvider, NotepadText, Package, Truck } from 'lucide-angular';
 import { OrdersService } from '../../../../core/services/orders/orders.service';
 import { OrderModel, OrderProduct } from '../../../../shared/utils/models/order.interface';
+import { AuthService } from '../../../../core/services/auth/auth.service';
 
 interface Step {
   id: number;
@@ -39,17 +40,19 @@ interface Step {
   templateUrl: './order-status.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class OrderStatusComponent implements OnInit {
+export class OrderStatusComponent implements OnInit, OnDestroy {
   order: Order | null = null;
   loading = true;
   error: string | null = null;
   steps: Step[] = [];
+  private realtimeChannel: any = null;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private ordersService: OrdersService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private authService: AuthService
   ) {}
 
   ngOnInit() {
@@ -81,6 +84,7 @@ export class OrderStatusComponent implements OnInit {
       if (result.success && result.order) {
         this.order = result.order;
         this.updateSteps();
+        this.setupRealtime(orderId);
       } else {
         this.error = result.error || 'Error al cargar los detalles de la orden';
       }
@@ -89,6 +93,39 @@ export class OrderStatusComponent implements OnInit {
       console.error('Error loading order details:', error);
     } finally {
       this.loading = false;
+      this.cdr.detectChanges();
+    }
+  }
+
+  private setupRealtime(orderId: string) {
+    if (this.realtimeChannel) {
+      this.realtimeChannel.unsubscribe();
+    }
+
+    const supabase = this.authService.getAuthenticatedClient();
+    this.realtimeChannel = supabase
+      .channel(`order-updates-${orderId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'orders',
+          filter: `id=eq.${orderId}`,
+        },
+        (payload: any) => {
+          console.log('🔄 Actualización en tiempo real recibida:', payload.new);
+          this.order = payload.new;
+          this.updateSteps();
+          this.cdr.detectChanges();
+        }
+      )
+      .subscribe();
+  }
+
+  ngOnDestroy(): void {
+    if (this.realtimeChannel) {
+      this.realtimeChannel.unsubscribe();
     }
   }
 

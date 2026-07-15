@@ -73,12 +73,9 @@ export class OrdersService {
         return { success: false, error: 'No se pudo verificar la identidad del usuario' };
       }
 
-      if (shippingData.email !== currentUser.email) {
-        return { 
-          success: false, 
-          error: 'El email del pedido debe coincidir con el email de la cuenta por seguridad' 
-        };
-      }
+      // La seguridad de la orden está garantizada por user_id + RLS de Supabase.
+      // El email del formulario de envío es solo para logística/notificaciones
+      // y puede diferir del email de la cuenta (ej: pedido para otra persona).
 
       const orderNumber = this.generateOrderNumber();
       
@@ -331,6 +328,85 @@ export class OrdersService {
 
     } catch (error: any) {
       console.error('Error obteniendo órdenes para limpieza:', error);
+      return { success: false, error: error.message || 'Error desconocido' };
+    }
+  }
+
+  /**
+   * Obtiene todas las órdenes del sistema (para administradores)
+   */
+  async getAllOrdersAdmin(): Promise<{ success: boolean; orders?: any[]; error?: string }> {
+    try {
+      if (!this.authService.isAuthenticated()) {
+        return { success: false, error: 'Usuario no autenticado' };
+      }
+
+      const supabaseClient = this.authService.getAuthenticatedClient();
+      
+      const { data, error } = await supabaseClient
+        .from('orders')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        return { success: false, error: error.message };
+      }
+
+      return { success: true, orders: data || [] };
+    } catch (error: any) {
+      console.error('Error en getAllOrdersAdmin:', error);
+      return { success: false, error: error.message || 'Error desconocido' };
+    }
+  }
+
+  /**
+   * Actualiza el estado de una orden y registra el historial (para administradores)
+   */
+  async updateOrderStatusAdmin(
+    orderId: string, 
+    oldStatus: string, 
+    newStatus: string, 
+    comment: string
+  ): Promise<{ success: boolean; error?: string }> {
+    try {
+      if (!this.authService.isAuthenticated()) {
+        return { success: false, error: 'Usuario no autenticado' };
+      }
+
+      const supabaseClient = this.authService.getAuthenticatedClient();
+
+      // 1. Actualizar orden
+      const { error: updateError } = await supabaseClient
+        .from('orders')
+        .update({
+          status: newStatus,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', orderId);
+
+      if (updateError) {
+        return { success: false, error: updateError.message };
+      }
+
+      // 2. Registrar en historial de estados
+      const { error: historyError } = await supabaseClient
+        .from('orders_status_history')
+        .insert({
+          order_id: orderId,
+          old_status: oldStatus,
+          new_status: newStatus,
+          comment: comment,
+          changed_by: 'admin_dashboard'
+        });
+
+      if (historyError) {
+        console.error('Error al registrar historial de estado:', historyError);
+        // No bloqueamos el éxito principal
+      }
+
+      return { success: true };
+    } catch (error: any) {
+      console.error('Error en updateOrderStatusAdmin:', error);
       return { success: false, error: error.message || 'Error desconocido' };
     }
   }

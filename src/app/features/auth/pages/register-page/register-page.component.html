@@ -18,7 +18,7 @@
     <div class="mb-5 grid grid-cols-2 gap-3">
 
       <div>
-        <p class="NewAldyFontType4 tracking-[0.2em] uppercase text-[10px] mb-2 text-aldy-green-gray">Nombre</p>
+        <label class="NewAldyFontType4 tracking-[0.2em] uppercase text-[10px] mb-2 text-aldy-green-gray block">Nombre</label>
         <app-input label="Tu nombre" formControlName="nombre"></app-input>
         <div class="NewAldyFontType4 text-[12px] tracking-wider mt-1.5 text-red-400"
           *ngIf="form.get('nombre')?.touched && form.get('nombre')?.errors?.['required']">
@@ -27,7 +27,7 @@
       </div>
 
       <div>
-        <p class="NewAldyFontType4 tracking-[0.2em] uppercase text-[10px] mb-2 text-aldy-green-gray">Apellido</p>
+        <label class="NewAldyFontType4 tracking-[0.2em] uppercase text-[10px] mb-2 text-aldy-green-gray block">Apellido</label>
         <app-input label="Tu apellido" formControlName="apellido"></app-input>
         <div class="NewAldyFontType4 text-[12px] tracking-wider mt-1.5 text-red-400"
           *ngIf="form.get('apellido')?.touched && form.get('apellido')?.errors?.['required']">
@@ -38,9 +38,9 @@
     </div>
 
     <div class="mb-5">
-      <p class="NewAldyFontType4 tracking-[0.2em] uppercase text-[10px] mb-2 text-aldy-green-gray">
+      <label class="NewAldyFontType4 tracking-[0.2em] uppercase text-[10px] mb-2 text-aldy-green-gray block">
         Correo electrónico
-      </p>
+      </label>
       <div class="relative flex items-center">
         <span class="absolute left-3 z-10 pointer-events-none">
           <lucide-icon name="mail" [size]="17" color="#889287" [strokeWidth]="1.5"></lucide-icon>
@@ -56,9 +56,9 @@
     </div>
 
     <div class="mb-5">
-      <p class="NewAldyFontType4 tracking-[0.2em] uppercase text-[10px] mb-2 text-aldy-green-gray">
+      <label class="NewAldyFontType4 tracking-[0.2em] uppercase text-[10px] mb-2 text-aldy-green-gray block">
         Contraseña
-      </p>
+      </label>
       <app-inputpassword label="Contraseña" formControlName="password"></app-inputpassword>
       <div class="NewAldyFontType4 text-[12px] tracking-wider mt-1.5 text-red-400"
         *ngIf="form.get('password')?.touched && form.get('password')?.invalid">
@@ -67,9 +67,9 @@
     </div>
 
     <div class="mb-5">
-      <p class="NewAldyFontType4 tracking-[0.2em] uppercase text-[10px] mb-2 text-aldy-green-gray">
+      <label class="NewAldyFontType4 tracking-[0.2em] uppercase text-[10px] mb-2 text-aldy-green-gray block">
         Confirmar contraseña
-      </p>
+      </label>
       <app-inputpassword label="Repetir Contraseña" formControlName="repeatPassword"></app-inputpassword>
       <div class="NewAldyFontType4 text-[12px] tracking-wider mt-1.5 text-red-400"
         *ngIf="(form.get('repeatPassword')?.touched && form.get('repeatPassword')?.invalid) ||
@@ -79,9 +79,9 @@
     </div>
 
     <div class="mb-5">
-      <p class="NewAldyFontType4 tracking-[0.2em] uppercase text-[10px] mb-2 text-aldy-green-gray">
+      <label class="NewAldyFontType4 tracking-[0.2em] uppercase text-[10px] mb-2 text-aldy-green-gray block">
         Fecha de nacimiento
-      </p>
+      </label>
       <div class="grid grid-cols-3 gap-2">
 
         <div class="flex flex-col">

@@ -23,6 +23,7 @@ import {
 import { Router } from '@angular/router';
 import { OrdersService } from '../../../../core/services/orders/orders.service';
 import { AcordiongenericComponent } from '../../../../shared/components/generic/acordiongeneric/acordiongeneric.component';
+import { MercadoPagoService } from '../../../../core/services/mercado-pago.service';
 import { environment } from '../../../../../environments/environment';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { ButtonPrimaryDirective } from '../../../../shared/utils/directives/button-primary.directive';
@@ -66,13 +67,16 @@ export class PaymentComponent implements OnInit, AfterViewInit, OnDestroy {
   isProcessing = false;
   activeAccordionPanels: number[] = [0];
   accordionActive: string | null = null;
-  accordionWspActive: string | null = null;
   modalNotesOpen = false;
   modalAddressOpen = false;
   modalPickupOpen = false;
   orderNotes = '';
   isLoading = true;
   showSkeleton = true;
+  cardPaymentBrickController: any = null;
+  isBrickLoading = false;
+
+  isProduction = environment.production;
 
   constructor(
     private cartService: CartService,
@@ -80,8 +84,11 @@ export class PaymentComponent implements OnInit, AfterViewInit, OnDestroy {
     private router: Router,
     private cdr: ChangeDetectorRef,
     private ordersService: OrdersService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private mercadoPagoService: MercadoPagoService
   ) {}
+
+
 
   @HostListener('window:beforeunload')
   clearOnUnload() {}
@@ -134,221 +141,170 @@ export class PaymentComponent implements OnInit, AfterViewInit, OnDestroy {
 
   toggleAccordion(value: string) {
     this.accordionActive = this.accordionActive === value ? null : value;
+    if (this.accordionActive === 'payment_mp') {
+      this.isBrickLoading = true;
+      this.cdr.detectChanges();
+      setTimeout(() => {
+        this.initCardPaymentBrick();
+      }, 150);
+    } else {
+      this.cleanupBrick();
+    }
   }
 
-  toggleAccordionWsp(value: string) {
-    this.accordionWspActive = this.accordionWspActive === value ? null : value;
+  async initCardPaymentBrick() {
+    this.cleanupBrick();
+
+    try {
+      const mp = this.mercadoPagoService.getMP() || await this.mercadoPagoService.init(environment.MERCADOPAGO_PUBLIC_KEY);
+      const bricksBuilder = mp.bricks();
+
+      const settings = {
+        initialization: {
+          amount: this.total,
+          payer: {
+            email: this.shippingData?.email || '',
+          },
+        },
+        customization: {
+          visual: {
+            style: {
+              theme: 'default',
+            },
+          },
+        },
+        callbacks: {
+          onReady: () => {
+            this.isBrickLoading = false;
+            this.cdr.detectChanges();
+          },
+          onSubmit: async (formData: any) => {
+            return this.processPaymentWithBrick(formData);
+          },
+          onError: (error: any) => {
+            console.error('Error en Mercado Pago Card Brick:', error);
+            this.isBrickLoading = false;
+            this.notificationService.showError('Error de carga', 'No se pudo cargar el formulario de tarjeta.');
+            this.cdr.detectChanges();
+          },
+        },
+      };
+
+      this.cardPaymentBrickController = await bricksBuilder.create(
+        'cardPayment',
+        'cardPaymentBrick_container',
+        settings
+      );
+    } catch (error) {
+      console.error('Error al inicializar el Brick de pagos:', error);
+      this.isBrickLoading = false;
+      this.cdr.detectChanges();
+    }
+  }
+
+  private cleanupBrick() {
+    if (this.cardPaymentBrickController) {
+      try {
+        this.cardPaymentBrickController.unmount();
+      } catch (e) {
+        console.warn('Error desinstalando el Brick de pagos:', e);
+      }
+      this.cardPaymentBrickController = null;
+    }
+  }
+
+  async processPaymentWithBrick(formData: any) {
+    if (this.isProcessing) return;
+
+    try {
+      this.isProcessing = true;
+      this.notificationService.showInfo('Procesando', 'Registrando tu pedido y validando el pago...', 3000);
+      this.cdr.detectChanges();
+
+      // 1. Crear la orden en la base de datos
+      const agencyInfo = this.shippingData?.agencyCode ? ` - Agencia: ${this.shippingData.agencyCode}` : '';
+      const whatsappMsg = `Mercado Pago Card Brick - Costo Envío: ${this.shippingData?.shippingCost || 0}${agencyInfo}`;
+
+      const orderResult = await this.ordersService.createOrder(
+        this.cartItems,
+        this.shippingData!,
+        this.discountData,
+        this.subtotal,
+        this.total,
+        whatsappMsg
+      );
+
+      if (!orderResult.success || !orderResult.orderId) {
+        this.notificationService.showError('Error al crear orden', orderResult.error || 'No se pudo registrar tu pedido.');
+        this.isProcessing = false;
+        this.cdr.detectChanges();
+        return;
+      }
+
+      // 2. Procesar el pago llamando a la Edge Function process-payment
+      const response = await fetch(`${environment.SUPABASE_URL}/functions/v1/process-payment`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': environment.SUPABASE_KEY,
+          'Authorization': `Bearer ${environment.SUPABASE_KEY}`
+        },
+        body: JSON.stringify({
+          orderId: orderResult.orderId,
+          token: formData.token,
+          paymentMethodId: formData.payment_method_id,
+          installments: formData.installments,
+          payerEmail: formData.payer.email
+        })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: 'Error al procesar cobro' }));
+        this.notificationService.showError('Pago rechazado', errorData.error || 'Hubo un error al procesar el pago.');
+        
+        // Redirigir a pantalla de resultado fallido
+        setTimeout(() => {
+          this.router.navigate(['/checkout/resultado'], {
+            queryParams: { status: 'rejected', orderId: orderResult.orderId }
+          });
+        }, 1500);
+        return;
+      }
+
+      const paymentResult = await response.json();
+
+      // 3. Procesar el resultado
+      if (paymentResult.status === 'approved') {
+        this.cartService.clearCart();
+        this.notificationService.showSuccess('¡Pago Aprobado!', 'Tu pedido ha sido registrado con éxito.');
+        setTimeout(() => {
+          this.router.navigate(['/checkout/resultado'], {
+            queryParams: { status: 'approved', orderId: orderResult.orderId }
+          });
+        }, 1000);
+      } else {
+        // Puede ser pending, in_process, etc.
+        this.cartService.clearCart(); // Limpiamos carrito porque la orden ya existe en DB
+        this.notificationService.showInfo('Pago Pendiente', 'Tu pago está en proceso de validación.');
+        setTimeout(() => {
+          this.router.navigate(['/checkout/resultado'], {
+            queryParams: { status: 'pending', orderId: orderResult.orderId }
+          });
+        }, 1000);
+      }
+
+    } catch (error: any) {
+      console.error('Error procesando pago con Brick:', error);
+      this.notificationService.showError('Error de red', 'No se pudo conectar con el servidor de pagos.');
+      this.isProcessing = false;
+      this.cdr.detectChanges();
+    }
   }
 
   ngAfterViewInit(): void {}
 
-  ngOnDestroy(): void {}
-
-  async payWithMercadoPago() {
-    if (this.isProcessing) {
-      this.notificationService.showInfo(
-        'Procesando pago',
-        'Por favor espera mientras procesamos tu pago',
-        2000
-      );
-      return;
-    }
-
-    try {
-      // Validaciones iniciales
-      if (!this.shippingData) {
-        this.notificationService.showError(
-          'Datos incompletos',
-          'Por favor completa tus datos de envío antes de continuar',
-          4000
-        );
-        this.router.navigate(['/checkout/shipping']);
-        return;
-      }
-
-      if (!this.cartItems || this.cartItems.length === 0) {
-        this.notificationService.showError(
-          'Carrito vacío',
-          'No hay productos en tu carrito',
-          4000
-        );
-        this.router.navigate(['/cart']);
-        return;
-      }
-
-      this.isProcessing = true;
-      this.notificationService.showInfo(
-        'Procesando',
-        'Preparando tu pago con Mercado Pago...',
-        2000
-      );
-
-      // Preparar los items para Mercado Pago
-      const items = this.cartItems.map((item) => ({
-        title: item.name,
-        quantity: item.quantity,
-        unit_price: this.getDiscountedPrice(item) / item.quantity,
-        currency_id: 'ARS', // Moneda argentina
-        description: item.name,
-        category_id: 'others',
-        picture_url: item.variantMainImage || item.image || '',
-      }));
-
-      // Validar datos del comprador
-      const phoneNumber = this.shippingData.phone.replace(/\D/g, '');
-      if (!phoneNumber || phoneNumber.length < 8) {
-        this.notificationService.showError(
-          'Teléfono inválido',
-          'Por favor ingresa un número de teléfono válido',
-          4000
-        );
-        this.isProcessing = false;
-        return;
-      }
-
-      // Preparar los datos del comprador
-      const payer = {
-        name: this.shippingData.name,
-        surname: this.shippingData.surname,
-        email: this.shippingData.email,
-        phone: {
-          area_code: '11', // Código de área para Buenos Aires
-          number: phoneNumber,
-        },
-        address: {
-          zip_code: this.shippingData.zipCode,
-          street_name: this.shippingData.address,
-          city_name: this.shippingData.city,
-          state_name: this.shippingData.province,
-          neighborhood: this.shippingData.neighborhood || '',
-        },
-      };
-
-      // Crear la preferencia en el backend usando la función dynamic-task (Checkout Pro)
-      const response = await fetch(
-        `${environment.SUPABASE_URL}/functions/v1/dynamic-task`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            apikey: environment.SUPABASE_KEY,
-            Authorization: `Bearer ${environment.SUPABASE_KEY}`,
-          },
-          body: JSON.stringify({
-            items: items,
-            payer: payer,
-            back_urls: {
-              success: 'https://aldyapp.web.app/checkout/success',
-              failure: 'https://aldyapp.web.app/checkout/failure',
-              pending: 'https://aldyapp.web.app/checkout/pending',
-            },
-            auto_return: 'approved',
-          }),
-        }
-      );
-
-      if (!response.ok) {
-        const errorData = await response
-          .json()
-          .catch(() => ({ error: 'Error desconocido' }));
-        console.error('Error de Supabase:', errorData);
-
-        if (response.status === 500) {
-          this.notificationService.showError(
-            'Error del servidor',
-            'Hubo un problema al procesar tu pago. Por favor intenta nuevamente.',
-            5000
-          );
-        } else if (response.status === 401) {
-          this.notificationService.showError(
-            'Autorización inválida',
-            'Error de autenticación con el servicio de pagos',
-            4000
-          );
-        } else {
-          this.notificationService.showError(
-            'Error de pago',
-            errorData.error || 'No se pudo procesar tu pago',
-            4000
-          );
-        }
-        throw new Error(
-          `Error ${response.status}: ${
-            errorData.error || 'Error al procesar el pago'
-          }`
-        );
-      }
-
-      const { init_point, preference_id } = await response.json();
-
-      if (!init_point) {
-        this.notificationService.showError(
-          'Error de configuración',
-          'No se pudo obtener el enlace de pago',
-          4000
-        );
-        throw new Error('No se recibió el enlace de pago de Mercado Pago');
-      }
-
-      // Guardar la información de la orden antes de redirigir
-      const orderResult = await this.ordersService.createOrder(
-        this.cartItems,
-        this.shippingData,
-        this.discountData,
-        this.subtotal,
-        this.total,
-        `Mercado Pago - Preference ID: ${preference_id}`
-      );
-
-      if (!orderResult.success) {
-        console.error('Error al crear la orden:', orderResult.error);
-        this.notificationService.showWarn(
-          'Aviso',
-          'El pago fue procesado pero hubo un problema al guardar la orden',
-          5000
-        );
-      }
-
-      this.notificationService.showSuccess(
-        '¡Excelente!',
-        'Serás redirigido a Mercado Pago para completar tu compra',
-        3000
-      );
-
-      // Redirigir a la pasarela de Mercado Pago después de un breve delay
-      setTimeout(() => {
-        window.location.href = init_point;
-      }, 1500);
-    } catch (error) {
-      console.error('Error crítico en payWithMercadoPago:', error);
-
-      // Manejo específico de errores de red
-      if (
-        error instanceof TypeError &&
-        error.message.includes('Failed to fetch')
-      ) {
-        this.notificationService.showError(
-          'Sin conexión',
-          'No se pudo conectar con el servicio de pagos. Verifica tu conexión a internet.',
-          6000
-        );
-      } else if (error instanceof Error) {
-        this.notificationService.showError(
-          'Error de pago',
-          error.message,
-          5000
-        );
-      } else {
-        this.notificationService.showError(
-          'Error inesperado',
-          'Ocurrió un problema al procesar tu pago. Por favor intenta nuevamente.',
-          5000
-        );
-      }
-    } finally {
-      this.isProcessing = false;
-      this.cdr.detectChanges();
-    }
+  ngOnDestroy(): void {
+    this.cleanupBrick();
   }
 
   get subtotal(): number {
@@ -377,7 +333,8 @@ export class PaymentComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   get total(): number {
-    if (!this.discountData) return this.roundPrice(this.subtotal);
+    const shippingCost = this.shippingData?.shippingCost || 0;
+    if (!this.discountData) return this.roundPrice(this.subtotal + shippingCost);
     let discountValue = 0;
     if (this.discountData.discountType === 'fixed') {
       discountValue = this.discountData.discountAmount;
@@ -385,7 +342,7 @@ export class PaymentComponent implements OnInit, AfterViewInit, OnDestroy {
       discountValue = this.subtotal * (this.discountData.discountAmount / 100);
     }
     discountValue = this.roundPrice(discountValue);
-    return Math.max(this.roundPrice(this.subtotal - discountValue), 0);
+    return Math.max(this.roundPrice(this.subtotal + shippingCost - discountValue), 0);
   }
 
   onChangePickupPoint() {
@@ -416,6 +373,29 @@ export class PaymentComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private formatCurrency(amount: number): string {
     return `$${amount.toFixed(2)}`;
+  }
+
+  getColorHex(color: string): string {
+    if (!color) return '';
+    if (color.startsWith('#')) return color;
+    const map: Record<string, string> = {
+      'negro': '#000000',
+      'blanco': '#ffffff',
+      'rojo': '#e11d48',
+      'azul': '#2563eb',
+      'verde': '#16a34a',
+      'amarillo': '#ca8a04',
+      'rosa': '#db2777',
+      'gris': '#4b5563',
+      'naranja': '#ea580c',
+      'marrón': '#78350f',
+      'marron': '#78350f',
+      'beige': '#f5f5dc',
+      'celeste': '#38bdf8',
+      'lila': '#c084fc',
+      'violeta': '#7c3aed',
+    };
+    return map[color.toLowerCase().trim()] || color;
   }
 
   // Método para testing del skeleton loader

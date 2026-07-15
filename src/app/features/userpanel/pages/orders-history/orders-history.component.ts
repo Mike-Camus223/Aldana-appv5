@@ -105,7 +105,7 @@ export class OrdersHistoryComponent implements OnInit {
 
   viewOrderDetails(orderId: string) {
     console.log('Navegando a detalles de la orden:', orderId);
-    this.router.navigate(['/order-details', orderId])
+    this.router.navigate(['/panel/order-details', orderId])
       .then(success => {
         if (!success) {
           console.error('Error de navegación: No se pudo cargar la ruta');

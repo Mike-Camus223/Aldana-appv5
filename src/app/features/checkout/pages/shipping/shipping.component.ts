@@ -31,6 +31,7 @@ import {
 import { Router, RouterModule } from '@angular/router';
 import { onlyCuitValidator } from '../../../../shared/utils/validators/onlyCuit.validator';
 import { SupabaseService } from '../../../../core/services/data-access/supabase.service';
+import { MiCorreoService, ShippingRate, Agency } from '../../../../core/services/micorreo.service';
 import { DiscountData } from '../../../../core/services/shipping.service';
 import { AuthService } from '../../../../core/services/auth/auth.service';
 import {
@@ -99,6 +100,14 @@ export class ShippingComponent implements OnInit, OnDestroy {
     { id: 3, name: 'Rosario' },
   ];
 
+  isCalculatingShipping = false;
+  homeShippingPrice = 3500;
+  homeDeliveryTime = 'Llega en 3 a 5 días hábiles';
+  agencyShippingPrice = 2200;
+  agencyDeliveryTime = 'Llega en 4 a 6 días hábiles';
+  agencies: Agency[] = [];
+  selectedAgency: Agency | null = null;
+
   private destroy$ = new Subject<void>();
 
   constructor(
@@ -109,7 +118,8 @@ export class ShippingComponent implements OnInit, OnDestroy {
     private shippingService: ShippingService,
     private router: Router,
     private cuponService: CuponserviceService,
-    private authService: AuthService
+    private authService: AuthService,
+    private miCorreoService: MiCorreoService
   ) {}
 
   ngOnInit(): void {
@@ -167,6 +177,20 @@ export class ShippingComponent implements OnInit, OnDestroy {
       .subscribe((val) => this.toggleOtherPersonValidators(val));
 
     this.toggleOtherPersonValidators(this.form.get('otherPerson')?.value);
+
+    // Escuchar cambios de provincia para cargar agencias
+    this.form.get('province')?.valueChanges.pipe(takeUntil(this.destroy$)).subscribe((prov) => {
+      if (prov) {
+        const provName = typeof prov === 'object' ? prov.name : prov;
+        const letterCode = this.getProvinceLetterCode(provName);
+        this.loadAgencies(letterCode);
+      }
+    });
+
+    // Escuchar cambios de agencia seleccionada
+    this.form.get('agencyCode')?.valueChanges.pipe(takeUntil(this.destroy$)).subscribe((code) => {
+      this.selectedAgency = this.agencies.find(a => a.code === code) || null;
+    });
   }
 
   private initForm(): void {
@@ -175,7 +199,7 @@ export class ShippingComponent implements OnInit, OnDestroy {
 
     this.form = this.fb.group({
       email: [
-        { value: '', disabled: true },
+        { value: '', disabled: false }, // Habilitado para permitir ingresar correos de prueba de Mercado Pago
         [Validators.required, Validators.email],
       ],
       receiveOffers: [formDefaults.receiveOffers || false],
@@ -202,6 +226,7 @@ export class ShippingComponent implements OnInit, OnDestroy {
       zipCodeDisplay: [{ value: formDefaults.zipCode || '', disabled: true }],
       otherPersonName: [formDefaults.otherPersonName || ''],
       otherPersonSurname: [formDefaults.otherPersonSurname || ''],
+      agencyCode: [formDefaults.agencyCode || ''],
     });
   }
 
@@ -263,8 +288,95 @@ export class ShippingComponent implements OnInit, OnDestroy {
 
   continue(): void {
     if (this.form.get('zipCode')?.valid) {
-      this.showForm = true;
+      const zipCode = this.form.get('zipCode')?.value;
+      this.isCalculatingShipping = true;
+      this.notification.showInfo('Cotizando', 'Calculando el costo de envío para tu código postal...');
+
+      const itemsPayload = this.cartItems.map(item => ({ id: item.id.substring(0, 36), quantity: item.quantity }));
+
+      this.miCorreoService.getRates(zipCode, itemsPayload).then((rates) => {
+        const homeRate = rates.find(r => r.deliveryType === 'D');
+        const agencyRate = rates.find(r => r.deliveryType === 'S');
+
+        if (homeRate) {
+          this.homeShippingPrice = homeRate.price;
+          this.homeDeliveryTime = `Llega en ${homeRate.deliveryTimeMin}-${homeRate.deliveryTimeMax} días hábiles`;
+        }
+        if (agencyRate) {
+          this.agencyShippingPrice = agencyRate.price;
+          this.agencyDeliveryTime = `Llega en ${agencyRate.deliveryTimeMin}-${agencyRate.deliveryTimeMax} días hábiles`;
+        }
+
+        // Cargar agencias por defecto si la provincia ya está seleccionada o cargamos CABA por defecto
+        const selectedProv = this.form.get('province')?.value;
+        const provName = selectedProv ? (typeof selectedProv === 'object' ? selectedProv.name : selectedProv) : 'Ciudad Autónoma de Buenos Aires';
+        this.loadAgencies(this.getProvinceLetterCode(provName));
+
+        this.showForm = true;
+      }).catch(err => {
+        console.error('Error fetching rates:', err);
+        this.notification.showWarn('Servicio limitado', 'Se utilizarán tarifas de envío estándar de contingencia.');
+        // Tarifas fallback
+        this.homeShippingPrice = 3500;
+        this.agencyShippingPrice = 2200;
+        this.showForm = true;
+      }).finally(() => {
+        this.isCalculatingShipping = false;
+      });
     }
+  }
+
+  getProvinceLetterCode(provinceName: string): string {
+    const mapping: Record<string, string> = {
+      'Ciudad Autónoma de Buenos Aires': 'C',
+      'CABA': 'C',
+      'Buenos Aires': 'B',
+      'Córdoba': 'X',
+      'Santa Fe': 'S',
+      'Mendoza': 'M',
+      'Tucumán': 'T',
+      'Salta': 'A',
+      'Entre Ríos': 'E',
+      'Misiones': 'N',
+      'Chaco': 'H',
+      'Corrientes': 'W',
+      'Santiago del Estero': 'G',
+      'San Juan': 'J',
+      'Jujuy': 'Y',
+      'Río Negro': 'R',
+      'Neuquén': 'Q',
+      'Formosa': 'P',
+      'Chubut': 'U',
+      'San Luis': 'D',
+      'Catamarca': 'K',
+      'La Rioja': 'F',
+      'La Pampa': 'L',
+      'Santa Cruz': 'Z',
+      'Tierra del Fuego': 'V'
+    };
+    return mapping[provinceName] || 'C';
+  }
+
+  loadAgencies(letterCode: string): void {
+    this.miCorreoService.getAgencies(letterCode).then((agencies) => {
+      this.agencies = agencies;
+      if (agencies.length > 0) {
+        // Seleccionar la primera por defecto si no hay seleccionada
+        const currentCode = this.form.get('agencyCode')?.value;
+        if (!agencies.some(a => a.code === currentCode)) {
+          this.form.get('agencyCode')?.setValue(agencies[0].code);
+          this.selectedAgency = agencies[0];
+        } else {
+          this.selectedAgency = agencies.find(a => a.code === currentCode) || null;
+        }
+      } else {
+        this.form.get('agencyCode')?.setValue('');
+        this.selectedAgency = null;
+      }
+    }).catch(err => {
+      console.error('Error loading agencies:', err);
+      this.agencies = [];
+    });
   }
 
   changeZipCode(): void {
@@ -298,18 +410,9 @@ export class ShippingComponent implements OnInit, OnDestroy {
         return;
       }
 
-      // Obtener el email del formulario (está deshabilitado, usar getRawValue)
+      // Obtener el email del formulario usando getRawValue
       const formEmail = this.form.getRawValue().email;
 
-      // Validación adicional de seguridad
-      if (formEmail !== currentUser.email) {
-        this.notification.showError(
-          'Error de seguridad',
-          'El email de la cuenta no coincide. Por favor, inicia sesión nuevamente.'
-        );
-        this.router.navigate(['/auth/login']);
-        return;
-      }
       const nameToUse = formValue.otherPerson
         ? formValue.otherPersonName
         : formValue.name;
@@ -324,13 +427,17 @@ export class ShippingComponent implements OnInit, OnDestroy {
         apartment: formValue.apartment,
         zipCode: formValue.zipCode,
         neighborhood: formValue.neighborhood,
-        city: formValue.city,
-        province: formValue.province.name,
+        city: typeof formValue.city === 'object' ? formValue.city.name : formValue.city,
+        province: formValue.province?.name || formValue.province,
         phone: formValue.phone,
         invoiceToCompany: formValue.invoiceToCompany,
         dniOrCuit: formValue.cuit || formValue.hasDniCuit,
         razonSocial: formValue.socialReason,
         email: formEmail, // Usar el email del usuario autenticado
+        shippingCost: this.shippingCost,
+        deliveryType: this.selected === 'estandar' ? 'D' : 'S',
+        agencyCode: this.selected === 'retiro' ? formValue.agencyCode : undefined,
+        agencyName: this.selected === 'retiro' && this.selectedAgency ? this.selectedAgency.name : undefined,
       };
 
       const dataToSave = { ...formValue };
@@ -447,7 +554,12 @@ export class ShippingComponent implements OnInit, OnDestroy {
   }
 
   get shippingCost(): number {
-    return this.selected === 'expres' ? 15 : 0;
+    if (this.selected === 'estandar') {
+      return this.homeShippingPrice;
+    } else if (this.selected === 'retiro') {
+      return this.agencyShippingPrice;
+    }
+    return 0;
   }
 
   get total(): number {
@@ -455,6 +567,29 @@ export class ShippingComponent implements OnInit, OnDestroy {
       0,
       this.subtotal + this.shippingCost - this.appliedDiscount
     );
+  }
+
+  getColorHex(color: string): string {
+    if (!color) return '';
+    if (color.startsWith('#')) return color;
+    const map: Record<string, string> = {
+      'negro': '#000000',
+      'blanco': '#ffffff',
+      'rojo': '#e11d48',
+      'azul': '#2563eb',
+      'verde': '#16a34a',
+      'amarillo': '#ca8a04',
+      'rosa': '#db2777',
+      'gris': '#4b5563',
+      'naranja': '#ea580c',
+      'marrón': '#78350f',
+      'marron': '#78350f',
+      'beige': '#f5f5dc',
+      'celeste': '#38bdf8',
+      'lila': '#c084fc',
+      'violeta': '#7c3aed',
+    };
+    return map[color.toLowerCase().trim()] || color;
   }
 
   ngOnDestroy(): void {

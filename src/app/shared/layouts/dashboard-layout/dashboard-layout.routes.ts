@@ -29,6 +29,10 @@ export const ADMIN_ROUTES: Routes = [
         loadComponent: () => import('../../../features/dashboard/pages/users-management/users-management.component').then(c => c.UsersManagementComponent),
       },
       {
+        path: 'orders',
+        loadComponent: () => import('../../../features/dashboard/pages/orders-management/orders-management.component').then(c => c.OrdersManagementComponent),
+      },
+      {
         path: '**',
         redirectTo: 'panel-de-control',
       }
