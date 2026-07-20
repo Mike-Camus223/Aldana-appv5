@@ -1,12 +1,26 @@
 <div class="h-[72px] lg:h-[88px]"></div>
 
-<section class="flex flex-col lg:flex-row lg:min-h-[calc(100vh-88px)] bg-aldy-white">
+<section
+    class="flex flex-col lg:flex-row min-h-[calc(100vh-72px)] lg:min-h-[calc(100vh-88px)] bg-[#FEF2E5] overflow-hidden">
 
-    <div class="w-full lg:w-1/2 h-auto lg:h-auto overflow-hidden">
-        <img src="../../../../../assets/images/sections/misc/404_placeholder4.png" alt="404"
-            class="w-full h-auto lg:h-full object-contain lg:object-cover lg:object-[60%_50%] xl:object-[30%_30%] select-none pointer-events-none">
+    <!-- Imagen -->
+    <div class="relative w-full lg:w-1/2 h-[360px] sm:h-[460px] lg:h-auto overflow-hidden">
+
+        <img src="../../../../../assets/images/sections/collection/second_mannequin_av.png" alt="404" class="absolute bottom-0 left-1/2 -translate-x-1/2
+                   lg:left-[-300px] lg:translate-x-0
+                   w-[72%] sm:w-[75%] lg:w-[120%]
+                   h-auto object-contain
+                   opacity-80 select-none pointer-events-none">
+
+        <!-- Degradado desde la esquina inferior izquierda -->
+        <div
+            class="absolute inset-0 z-10 pointer-events-none
+                   bg-[radial-gradient(circle_at_bottom_left,_rgba(221,198,179,0.95)_0%,_rgba(221,198,179,0.65)_18%,_rgba(221,198,179,0.30)_35%,_transparent_60%)]">
+        </div>
+
     </div>
 
+    <!-- Contenido -->
     <div class="w-full lg:w-1/2 flex flex-col justify-center items-center text-center px-6 sm:px-12 py-12 lg:py-16">
 
         <h1
@@ -15,23 +29,26 @@
         </h1>
 
         <p
-            class="NewAldyTitle text-[24px] uppercase sm:text-[34px] lg:text-[36px]  xl:text-[46px] text-aldy-medium-2 -mt-1 sm:-mt-2">
+            class="NewAldyTitle uppercase text-[24px] sm:text-[34px] lg:text-[36px] xl:text-[46px] text-aldy-medium-2 -mt-1 sm:-mt-2">
             Página no encontrada
         </p>
 
         <div class="flex items-center gap-4 sm:gap-5 mt-5">
             <span class="w-12 sm:w-16 h-px bg-aldy-medium opacity-50"></span>
+
             <img src="../../../../../assets/svg/logos-03.svg" alt="AV" class="w-8 sm:w-10 opacity-70">
+
             <span class="w-12 sm:w-16 h-px bg-aldy-medium opacity-50"></span>
         </div>
 
         <p
-            class="NewAldyFontType4 text-center mt-6 max-w-[380px] text-aldy-green-gray leading-6 xl:leading-7 tracking-wider text-sm xl:text-base">
+            class="NewAldyFontType4 mt-6 max-w-[380px] text-center text-aldy-green-gray leading-6 xl:leading-7 tracking-wider text-sm xl:text-base">
             Parece que la página que buscas no existe.
             Pero no te preocupes, te ayudaremos a encontrar lo que buscas.
         </p>
+
         <button (click)="goHome()"
-            class="NewAldyFontType4 mt-8 uppercase cursor-pointer sm:mt-10 bg-aldy-medium hover:bg-aldy-medium-2 transition-colors duration-300 px-10 sm:px-12 py-3.5 sm:py-4 tracking-[0.2em] text-aldy-white text-xs">
+            class="NewAldyFontType4 mt-8 sm:mt-10 uppercase cursor-pointer bg-aldy-medium hover:bg-aldy-medium-2 transition-colors duration-300 px-10 sm:px-12 py-3.5 sm:py-4 tracking-[0.2em] text-aldy-white text-xs">
             Volver al inicio
         </button>
 

@@ -27,18 +27,20 @@ export class TextareaComponent implements ControlValueAccessor {
 
   value = '';
   disabled = false;
+  isFocused = false;
 
-  onChange = (_: any) => {};
-  onTouched = () => {};
+  onChange = (_: any) => { };
+  onTouched = () => { };
 
   constructor(
     @Self() @Optional() public ngControl: NgControl,
     @Optional() private controlContainer: ControlContainer
-  ){
-    if (ngControl) ngControl.valueAccessor = this;
+  ) {
+    if (ngControl) {
+      ngControl.valueAccessor = this;
+    }
   }
 
-  // ⭐ estado invalid real del form
   get invalid(): boolean {
     const c = this.ngControl?.control;
     const submitted = (this.controlContainer as any)?.submitted;
@@ -61,7 +63,16 @@ export class TextareaComponent implements ControlValueAccessor {
     this.disabled = isDisabled;
   }
 
-  onInput(event: Event) {
+  onFocus(): void {
+    this.isFocused = true;
+  }
+
+  onBlur(): void {
+    this.isFocused = false;
+    this.onTouched();
+  }
+
+  onInput(event: Event): void {
     const val = (event.target as HTMLTextAreaElement).value;
     this.value = val;
     this.onChange(val);

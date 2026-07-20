@@ -14,9 +14,9 @@ export type RevealDirection = 'up' | 'down' | 'left' | 'right';
   selector: '[appCardInitAnimation]'
 })
 export class CardInitAnimationDirective implements AfterViewInit, OnDestroy {
-  
+
   @Input('appCardInitAnimation') direction: RevealDirection = 'up';
-  
+
   private animation: gsap.core.Timeline | null = null;
   private scrollTrigger: ScrollTrigger | null = null;
   private destroy$ = new Subject<void>();
@@ -25,7 +25,7 @@ export class CardInitAnimationDirective implements AfterViewInit, OnDestroy {
   @Input() animationDelay: number = 0;
   @Input() gray: boolean = false;
 
-  constructor(private el: ElementRef, private renderer: Renderer2, private loaderService: LoaderService) {}
+  constructor(private el: ElementRef, private renderer: Renderer2, private loaderService: LoaderService) { }
 
   ngAfterViewInit(): void {
     const element = this.el.nativeElement;
@@ -57,15 +57,15 @@ export class CardInitAnimationDirective implements AfterViewInit, OnDestroy {
   private setupInitialStyles(element: HTMLElement): void {
     if (this.stylesInitialized) return;
     this.renderer.setStyle(element, 'transform', 'scale(1.5)');
-//     this.renderer.setStyle(
-//   element,
-//   'filter',
-//   this.gray ? 'blur(4px) grayscale(100%)' : 'blur(4px)'
-// );
+    //     this.renderer.setStyle(
+    //   element,
+    //   'filter',
+    //   this.gray ? 'blur(4px) grayscale(100%)' : 'blur(4px)'
+    // );
 
     this.renderer.setStyle(element, 'opacity', '0.7');
     this.renderer.setStyle(element, 'will-change', 'transform, filter, opacity, clip-path');
-        
+
     if (this.direction === 'up') {
       this.renderer.setStyle(element, 'clip-path', 'inset(100% 0 0 0)');
     } else if (this.direction === 'down') {
@@ -86,7 +86,7 @@ export class CardInitAnimationDirective implements AfterViewInit, OnDestroy {
 
     if (this.wave) {
       this.renderer.setAttribute(element, 'data-wave', 'true');
-      
+
       // Permitir que el layout se asiente antes de medir coordenadas
       setTimeout(() => {
         const siblings = Array.from(document.querySelectorAll('[data-wave="true"]'))
@@ -102,7 +102,7 @@ export class CardInitAnimationDirective implements AfterViewInit, OnDestroy {
         if (index !== -1) {
           this.animationDelay = index * 0.2; // Stagger de 200ms
         }
-        
+
         this.createScrollTrigger(element);
       }, 60);
     } else {
@@ -115,7 +115,7 @@ export class CardInitAnimationDirective implements AfterViewInit, OnDestroy {
       trigger: element,
       start: "top 85%",
       once: true,
-      markers: false, 
+      markers: false,
       onEnter: () => {
         this.startAnimation(element);
       }
