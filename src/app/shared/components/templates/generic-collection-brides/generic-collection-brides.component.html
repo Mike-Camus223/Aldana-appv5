@@ -13,7 +13,7 @@
     </div>
 
     <img src="../../../../../assets/images/sections/collection/fourth_mannequin_av.png" alt="mannequin"
-      class="absolute bottom-0 2xl:-bottom-5 -left-0 md:-left-30 w-4/9 xl:w-1/2 2xl:w-auto h-auto max-w-[45%] object-contain pointer-events-none select-none" />
+      class="absolute bottom-0 2xl:-bottom-5 -left-20 2xl:-left-30 w-4/9 xl:w-1/2 2xl:w-auto h-auto max-w-[45%] object-contain pointer-events-none select-none" />
 
     <div class="relative z-10 flex h-full flex-col items-center justify-center text-center px-8 py-10 w-full max-w-lg">
       <h1 appWordReveal
@@ -49,18 +49,19 @@
 
 <div *ngIf="collectionBanner" class="grid grid-cols-1 md:grid-rows-2 lg:hidden relative w-full overflow-hidden">
   <div class="grid grid-cols-1 md:grid-cols-[3fr_5fr] w-full">
-    <div class="relative flex items-end justify-start bg-[#FDF2E8] overflow-hidden min-h-[260px]">
-      <img src="../../../../../assets/images/sections/collection/mannequin_portrait.png"
-        class="w-full h-full object-contain md:object-cover object-left-top max-h-[420px] pointer-events-none select-none" />
+    <div class="relative flex items-end justify-start bg-[#FEF1E6] overflow-hidden min-h-[260px]">
+      <img src="../../../../../assets/images/sections/collection/fourth_mannequin_av.png"
+        class="relative -left-10 md:-left-3 w-full h-full object-contain md:object-cover object-left md:object-right-bottom max-h-[420px] pointer-events-none select-none" />
     </div>
 
     <div class="relative overflow-hidden min-h-[260px] hidden md:block">
       <div
-        class="absolute inset-0 bg-gradient-to-r from-[#FDF2E8] via-[#FDF2E8] via-[6%] to-transparent z-10 pointer-events-none">
+        class="absolute inset-0 bg-gradient-to-r from-[#FEF1E6] via-[#FEF1E6] via-[6%] to-transparent z-10 pointer-events-none">
       </div>
 
       <app-video [src]="collectionBanner" [muted]="true" [autoplay]="true" [showControls]="true"
-        [gradientOverlay]="false" [objectFit]="'object-cover'" height="h-full" width="w-full" />
+        [gradientOverlay]="false" [objectFit]="'object-cover'" height="h-full" width="w-full">
+      </app-video>
     </div>
   </div>
 
