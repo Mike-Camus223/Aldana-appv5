@@ -3,12 +3,11 @@ import {
   Input,
   Output,
   EventEmitter,
-  AfterViewInit,
-  OnDestroy,
+  HostListener,
+  Inject,
+  PLATFORM_ID
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { Fancybox } from '@fancyapps/ui';
-import '@fancyapps/ui/dist/fancybox/fancybox.css';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { MediaItem } from '../../../utils/models/objectsGallery.model';
 
 @Component({
@@ -18,58 +17,63 @@ import { MediaItem } from '../../../utils/models/objectsGallery.model';
   templateUrl: './gallery-gen-com.component.html',
   styleUrls: ['./gallery-gen-com.component.css'],
 })
-export class GalleryGenComComponent implements AfterViewInit, OnDestroy {
+export class GalleryGenComComponent {
   @Input() media: MediaItem[] = [];
-
   @Output() mediaClicked = new EventEmitter<MediaItem>();
 
-  ngAfterViewInit(): void {
-    Fancybox.bind("[data-fancybox='gallery']", {
-      Thumbs: true,
-      Toolbar: {
-        display: {
-          left: [],
-          middle: [],
-          right: ['toggleZoom', 'slideshow', 'fullscreen', 'thumbs', 'close'],
-        },
-      },
-      Carousel: {},
-    });
+  isOpen: boolean = false;
+  selectedIndex: number = 0;
+
+  constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
+
+  get currentItem(): MediaItem | null {
+    return this.media && this.media.length > 0 ? this.media[this.selectedIndex] : null;
   }
 
-  ngOnDestroy(): void {
-    Fancybox.destroy();
+  openLightbox(index: number, event: Event): void {
+    event.preventDefault();
+    if (!this.media || this.media.length === 0) return;
+
+    this.selectedIndex = index;
+    this.isOpen = true;
+    this.mediaClicked.emit(this.media[index]);
+
+    if (isPlatformBrowser(this.platformId)) {
+      document.body.style.overflow = 'hidden';
+    }
   }
 
-  handleClick(item: MediaItem, event: Event) {
-    this.mediaClicked.emit(item);
+  closeLightbox(): void {
+    this.isOpen = false;
+    if (isPlatformBrowser(this.platformId)) {
+      document.body.style.overflow = '';
+    }
+  }
 
-    if (item.type === 'video') {
-      event.preventDefault(); 
-      Fancybox.show([
-        {
-          src: item.url,
-          type: 'html5video', 
-          thumb: item.poster || undefined,
-          width: item.width || 1280,
-          height: item.height || 1920,
-        },
-      ], {
-        Thumbs: true,
-        Toolbar: {
-          display: {
-            left: [],
-            middle: [],
-            right: ['toggleZoom', 'slideshow', 'fullscreen', 'thumbs', 'close'],
-          },
-        },
-        ...( {
-          Video: {
-            autoplay: true,
-            muted: true,
-          },
-        } as any ),
-      });
+  nextMedia(event?: Event): void {
+    if (event) event.stopPropagation();
+    if (this.media.length > 0) {
+      this.selectedIndex = (this.selectedIndex + 1) % this.media.length;
+    }
+  }
+
+  prevMedia(event?: Event): void {
+    if (event) event.stopPropagation();
+    if (this.media.length > 0) {
+      this.selectedIndex = (this.selectedIndex - 1 + this.media.length) % this.media.length;
+    }
+  }
+
+  @HostListener('window:keydown', ['$event'])
+  handleKeydown(event: KeyboardEvent): void {
+    if (!this.isOpen) return;
+
+    if (event.key === 'Escape') {
+      this.closeLightbox();
+    } else if (event.key === 'ArrowRight') {
+      this.nextMedia();
+    } else if (event.key === 'ArrowLeft') {
+      this.prevMedia();
     }
   }
 }

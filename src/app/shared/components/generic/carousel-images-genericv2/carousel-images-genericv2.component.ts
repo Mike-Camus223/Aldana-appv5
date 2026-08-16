@@ -4,14 +4,13 @@ import {
   ElementRef,
   Input,
   ViewChild,
-  AfterViewInit,
-  OnDestroy,
   Output,
   EventEmitter,
   Inject,
-  PLATFORM_ID
+  PLATFORM_ID,
+  HostListener,
+  AfterViewInit
 } from '@angular/core';
-import KeenSlider, { KeenSliderInstance } from 'keen-slider';
 import { CardInitAnimationDirective } from '../../../utils/directives/card-init-animation.directive';
 
 @Component({
@@ -21,8 +20,8 @@ import { CardInitAnimationDirective } from '../../../utils/directives/card-init-
   templateUrl: './carousel-images-genericv2.component.html',
   styleUrls: ['./carousel-images-genericv2.component.css']
 })
-export class CarouselImagesGenericv2Component implements AfterViewInit, OnDestroy {
-  @ViewChild('sliderRef', { static: true }) sliderRef!: ElementRef<HTMLElement>;
+export class CarouselImagesGenericv2Component implements AfterViewInit {
+  @ViewChild('sliderRef', { static: false }) sliderRef!: ElementRef<HTMLElement>;
 
   @Input() images: any[] = [];
   @Input() aspectRatio: string = '4 / 5';
@@ -41,38 +40,63 @@ export class CarouselImagesGenericv2Component implements AfterViewInit, OnDestro
 
   @Output() imageClick = new EventEmitter<any>();
 
-  private sliderInstance: KeenSliderInstance | null = null;
+  currentPerView: number = 3;
+  currentSpacing: number = 15;
 
-  constructor(@Inject(PLATFORM_ID) private platformId: Object) { }
+  constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
 
   ngAfterViewInit(): void {
-    // Solo inicializar el slider en el navegador, no en el servidor
-    if (isPlatformBrowser(this.platformId) && this.images.length && this.sliderRef?.nativeElement) {
-      this.initializeSlider();
-    }
-  }
-
-  private initializeSlider(): void {
-    // Verificar nuevamente que estamos en el navegador
     if (isPlatformBrowser(this.platformId)) {
-      this.sliderInstance = new KeenSlider(this.sliderRef.nativeElement, {
-        loop: this.loop,
-        mode: 'snap',
-        slides: {
-          perView: this.slidesPerView,
-          spacing: this.spacing,
-        },
-        breakpoints: this.breakpoints
-      });
+      this.updateResponsiveConfig();
     }
   }
 
-  ngOnDestroy(): void {
-    this.sliderInstance?.destroy();
+  @HostListener('window:resize')
+  onResize(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      this.updateResponsiveConfig();
+    }
+  }
+
+  private updateResponsiveConfig(): void {
+    const width = window.innerWidth;
+    if (width >= 1024) {
+      this.currentPerView = this.breakpoints['(min-width: 1024px)']?.slides?.perView ?? 5;
+      this.currentSpacing = this.breakpoints['(min-width: 1024px)']?.slides?.spacing ?? this.spacing;
+    } else if (width >= 768) {
+      this.currentPerView = this.breakpoints['(min-width: 768px)']?.slides?.perView ?? 4;
+      this.currentSpacing = this.breakpoints['(min-width: 768px)']?.slides?.spacing ?? this.spacing;
+    } else if (width >= 640) {
+      this.currentPerView = this.breakpoints['(min-width: 640px)']?.slides?.perView ?? 3;
+      this.currentSpacing = this.breakpoints['(min-width: 640px)']?.slides?.spacing ?? this.spacing;
+    } else {
+      this.currentPerView = this.slidesPerView;
+      this.currentSpacing = this.spacing;
+    }
+  }
+
+  getSlideWidth(): string {
+    return `calc((100% - ${(this.currentPerView - 1) * this.currentSpacing}px) / ${this.currentPerView})`;
   }
 
   getPaddingBottom(): string {
     const [w, h] = this.aspectRatio.split('/').map(Number);
     return `${(h / w) * 100}%`;
+  }
+
+  scrollNext(): void {
+    if (this.sliderRef?.nativeElement) {
+      const container = this.sliderRef.nativeElement;
+      const scrollAmount = container.clientWidth * 0.8;
+      container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
+  }
+
+  scrollPrev(): void {
+    if (this.sliderRef?.nativeElement) {
+      const container = this.sliderRef.nativeElement;
+      const scrollAmount = container.clientWidth * 0.8;
+      container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+    }
   }
 }

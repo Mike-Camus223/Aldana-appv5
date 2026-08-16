@@ -1,21 +1,18 @@
+<!-- Grid de Galería -->
 <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-5 gap-4 mb-8">
-  <ng-container *ngFor="let item of media">
+  <ng-container *ngFor="let item of media; let i = index">
     <div class="flex flex-col items-center w-full">
-      <a
-        [href]="item.url"
-        data-fancybox="gallery"
-        class="group block overflow-hidden relative w-full"
-        [attr.data-width]="item.width || null"
-        [attr.data-height]="item.height || null"
-        [attr.data-aspect-ratio]="item.type === 'video' ? '16/9' : null"
-        (click)="handleClick(item, $event)"
+      <button
+        type="button"
+        (click)="openLightbox(i, $event)"
+        class="group block overflow-hidden relative w-full text-left cursor-pointer border-0 bg-transparent p-0"
       >
         <div
           [ngClass]="{
             'aspect-[4/4] overflow-hidden': item.fit === 'cover' || !item.fit,
             'h-auto': item.fit === 'contain'
           }"
-          class="w-full"
+          class="w-full relative"
         >
           <img
             [src]="item.poster || item.url"
@@ -26,12 +23,112 @@
             }"
             class="transition-transform duration-500 group-hover:scale-105"
           />
+
+          <!-- Icono indicador de video -->
+          <div *ngIf="item.type === 'video'" class="absolute inset-0 flex items-center justify-center">
+            <div class="w-12 h-12 rounded-full bg-black/50 text-white flex items-center justify-center backdrop-blur-sm group-hover:scale-110 transition-transform">
+              <i class="fa-solid fa-play text-lg ml-0.5"></i>
+            </div>
+          </div>
         </div>
 
         <div
           class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition duration-300 pointer-events-none"
         ></div>
-      </a>
+      </button>
     </div>
   </ng-container>
+</div>
+
+<!-- Modal Lightbox Nativo -->
+<div
+  *ngIf="isOpen && currentItem"
+  class="fixed inset-0 z-50 flex flex-col items-center justify-between bg-black/92 backdrop-blur-md p-4 sm:p-6 animate-fade-in select-none"
+  (click)="closeLightbox()"
+>
+  <!-- Botón Cerrar -->
+  <button
+    type="button"
+    aria-label="Cerrar modal"
+    (click)="closeLightbox()"
+    class="absolute top-4 right-4 z-50 w-11 h-11 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white transition-all cursor-pointer border border-white/20"
+  >
+    <i class="fa-solid fa-xmark text-xl"></i>
+  </button>
+
+  <!-- Contador de items -->
+  <div class="text-white/70 text-xs sm:text-sm tracking-widest uppercase font-light mt-2">
+    {{ selectedIndex + 1 }} / {{ media.length }}
+  </div>
+
+  <!-- Contenedor Principal de la Imagen / Video -->
+  <div class="relative w-full flex-1 flex items-center justify-center my-4 overflow-hidden" (click)="$event.stopPropagation()">
+    <!-- Botón Anterior -->
+    <button
+      *ngIf="media.length > 1"
+      type="button"
+      aria-label="Anterior"
+      (click)="prevMedia($event)"
+      class="absolute left-2 sm:left-6 z-40 w-12 h-12 flex items-center justify-center rounded-full bg-black/40 hover:bg-black/70 text-white transition-all cursor-pointer border border-white/10"
+    >
+      <i class="fa-solid fa-chevron-left text-lg"></i>
+    </button>
+
+    <!-- Contenido del Media -->
+    <div class="max-w-5xl max-h-[75vh] w-full h-full flex items-center justify-center p-2">
+      <ng-container [ngSwitch]="currentItem.type">
+        <video
+          *ngSwitchCase="'video'"
+          [src]="currentItem.url"
+          [poster]="currentItem.poster || ''"
+          controls
+          autoplay
+          playsinline
+          class="max-h-[72vh] max-w-full rounded-lg shadow-2xl object-contain"
+        ></video>
+
+        <img
+          *ngSwitchDefault
+          [src]="currentItem.url"
+          [alt]="currentItem.alt || 'Galería'"
+          class="max-h-[72vh] max-w-full object-contain rounded-lg shadow-2xl transition-all duration-300"
+        />
+      </ng-container>
+    </div>
+
+    <!-- Botón Siguiente -->
+    <button
+      *ngIf="media.length > 1"
+      type="button"
+      aria-label="Siguiente"
+      (click)="nextMedia($event)"
+      class="absolute right-2 sm:right-6 z-40 w-12 h-12 flex items-center justify-center rounded-full bg-black/40 hover:bg-black/70 text-white transition-all cursor-pointer border border-white/10"
+    >
+      <i class="fa-solid fa-chevron-right text-lg"></i>
+    </button>
+  </div>
+
+  <!-- Carrusel de Miniaturas inferior -->
+  <div
+    *ngIf="media.length > 1"
+    class="w-full max-w-2xl flex items-center justify-center gap-2 overflow-x-auto py-2 px-4 scrollbar-none"
+    (click)="$event.stopPropagation()"
+  >
+    <button
+      *ngFor="let item of media; let idx = index"
+      type="button"
+      (click)="selectedIndex = idx"
+      [class.ring-2]="idx === selectedIndex"
+      [class.ring-white]="idx === selectedIndex"
+      [class.opacity-100]="idx === selectedIndex"
+      [class.opacity-40]="idx !== selectedIndex"
+      class="w-12 h-12 sm:w-14 sm:h-14 flex-shrink-0 rounded-md overflow-hidden transition-all duration-200 cursor-pointer border border-white/10 hover:opacity-100"
+    >
+      <img
+        [src]="item.poster || item.url"
+        [alt]="item.alt || ''"
+        class="w-full h-full object-cover"
+      />
+    </button>
+  </div>
 </div>

@@ -1,8 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CommonModule, Location } from '@angular/common';
-import { AccordionModule } from 'primeng/accordion';
-import { ToastModule } from 'primeng/toast';
 import { FancyCarouselComponent } from '../../sections/fancy-carousel/fancy-carousel.component';
 import { ProductCarouselComponent } from '../../sections/product-carousel/product-carousel.component';
 import { Product, ProductVariant } from '../../../utils/models/Products-supabase.interface';
@@ -26,10 +24,8 @@ import { LoaderService } from '../../../../core/services/utils/loader.service';
   standalone: true,
   imports: [
     CommonModule,
-    AccordionModule,
     FancyCarouselComponent,
     RouterModule,
-    ToastModule,
     FormsModule,
     AcordiongenericComponent,
     LucideAngularModule,

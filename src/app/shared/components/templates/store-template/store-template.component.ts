@@ -3,8 +3,6 @@ import { CommonModule, isPlatformBrowser, Location } from '@angular/common';
 import { PLATFORM_ID } from '@angular/core';
 
 import { combineLatest } from 'rxjs';
-import { CheckboxModule } from 'primeng/checkbox';
-import { SliderModule } from 'primeng/slider';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { SupabaseService } from '../../../../core/services/data-access/supabase.service';
@@ -28,8 +26,6 @@ import { PaginatorComponent } from '../../generic/paginator/paginator.component'
   standalone: true,
   imports: [
     CommonModule,
-    CheckboxModule,
-    SliderModule,
     FormsModule,
     RouterModule,
     CardproductComponent,

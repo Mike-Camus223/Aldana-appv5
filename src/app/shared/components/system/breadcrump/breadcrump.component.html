@@ -1,23 +1,43 @@
-<div class="px-4 sm:px-6 lg:px-12 border-y-1 border-[#d9e2d8] bg-aldy-white  xl:px-16 2xl:px-24 w-full">
+<div class="px-4 sm:px-6 lg:px-12 border-y border-[#d9e2d8] bg-aldy-white xl:px-16 2xl:px-24 w-full py-2.5">
   <div class="max-w-screen-3xl mx-auto">
-    <p-breadcrumb [model]="items" class="max-w-full">
-      <ng-template let-item pTemplate="item">
-        <ng-container *ngIf="item.route; else elseBlock">
-          <a [routerLink]="item.route"
-             routerLinkActive="active-breadcrumb"
-             class="p-breadcrumb-item-link flex items-center tracking-wider NewAldyFontType4 font-light gap-2 text-xs sm:text-xs md:text-xs lg:text-xs xl:text-xs transition-colors">
-            <span *ngIf="item.icon" [ngClass]="item.icon" class="text-md pb-1"></span>
+    <nav aria-label="Breadcrumb" class="w-full">
+      <ol class="flex items-center flex-wrap gap-2 text-aldy-green-gray">
+        <li *ngFor="let item of items; let last = last" class="flex items-center gap-2">
+          <!-- Con routerLink -->
+          <a
+            *ngIf="item.route; else urlOrText"
+            [routerLink]="item.route"
+            [class.text-aldy-bold]="isActive(item) || last"
+            [class.font-medium]="isActive(item) || last"
+            class="flex items-center gap-1.5 tracking-wider NewAldyFontType4 font-light text-xs hover:text-aldy-bold transition-colors"
+          >
+            <span *ngIf="item.icon" [ngClass]="item.icon" class="text-sm"></span>
             <span *ngIf="item.label" class="truncate">{{ item.label }}</span>
           </a>
-        </ng-container>
-        <ng-template #elseBlock>
-          <a [href]="item.url"
-             class="p-breadcrumb-item-link flex items-center gap-2 tracking-wider NewAldyFontType4 font-light text-xs sm:text-xs md:text-xs lg:text-xs xl:text-xs">
-            <span *ngIf="item.icon" [ngClass]="item.icon" class="text-md pb-1"></span>
-            <span *ngIf="item.label" class="truncate">{{ item.label }}</span>
-          </a>
-        </ng-template>
-      </ng-template>
-    </p-breadcrumb>
+
+          <!-- Con URL o texto estático -->
+          <ng-template #urlOrText>
+            <a
+              *ngIf="item.url; else plainText"
+              [href]="item.url"
+              class="flex items-center gap-1.5 tracking-wider NewAldyFontType4 font-light text-xs hover:text-aldy-bold transition-colors"
+            >
+              <span *ngIf="item.icon" [ngClass]="item.icon" class="text-sm"></span>
+              <span *ngIf="item.label" class="truncate">{{ item.label }}</span>
+            </a>
+
+            <ng-template #plainText>
+              <span class="flex items-center gap-1.5 tracking-wider NewAldyFontType4 text-xs text-aldy-bold font-medium">
+                <span *ngIf="item.icon" [ngClass]="item.icon" class="text-sm"></span>
+                <span *ngIf="item.label" class="truncate">{{ item.label }}</span>
+              </span>
+            </ng-template>
+          </ng-template>
+
+          <!-- Separador Chevron -->
+          <i *ngIf="!last" class="fa-solid fa-chevron-right text-[10px] opacity-40 mx-0.5"></i>
+        </li>
+      </ol>
+    </nav>
   </div>
 </div>

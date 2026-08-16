@@ -68,18 +68,6 @@ export class GenericGalleryTemplComponent implements AfterViewInit, OnDestroy {
 
     if (isPlatformBrowser(this.platformId)) {
       this.applyColumnsForWidth(window.innerWidth);
-
-      const { Fancybox } = await import('@fancyapps/ui');
-      Fancybox.bind("[data-fancybox='gallery']", {
-        Thumbs: true,
-        Toolbar: {
-          display: {
-            left: [],
-            middle: [],
-            right: ['toggleZoom', 'slideshow', 'fullscreen', 'thumbs', 'close']
-          }
-        }
-      });
     }
   }
 

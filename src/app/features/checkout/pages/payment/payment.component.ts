@@ -8,10 +8,6 @@ import {
   ChangeDetectorRef,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AccordionModule } from 'primeng/accordion';
-import { PanelModule } from 'primeng/panel';
-import { ChipModule } from 'primeng/chip';
-import { ToastModule } from 'primeng/toast';
 import { FormsModule } from '@angular/forms';
 import { CartService } from '../../../../core/services/cart.service';
 import { CartItem } from '../../../../shared/utils/models/cartItems-model';
@@ -36,10 +32,6 @@ import { LUCIDE_ICONS, LucideAngularModule, LucideIconProvider, ShoppingBag } fr
   standalone: true,
   imports: [
     CommonModule,
-    PanelModule,
-    AccordionModule,
-    ChipModule,
-    ToastModule,
     FormsModule,
     AcordiongenericComponent,
     ButtonPrimaryDirective,

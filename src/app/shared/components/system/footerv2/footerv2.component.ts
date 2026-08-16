@@ -3,13 +3,11 @@ import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { AcordiongenericComponent } from '../../generic/acordiongeneric/acordiongeneric.component';
 import { LUCIDE_ICONS, LucideAngularModule, LucideIconProvider, Heart, Send } from 'lucide-angular';
-import { CardInitAnimationDirective } from '../../../utils/directives/card-init-animation.directive';
-
 
 @Component({
   selector: 'app-footerv2',
   standalone: true,
-  imports: [CommonModule, RouterModule, AcordiongenericComponent, LucideAngularModule, CardInitAnimationDirective],
+  imports: [CommonModule, RouterModule, AcordiongenericComponent, LucideAngularModule],
   templateUrl: './footerv2.component.html',
   styleUrl: './footerv2.component.css',
   providers: [
