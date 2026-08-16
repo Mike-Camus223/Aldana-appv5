@@ -1,7 +1,7 @@
 <div class="h-[72px] lg:h-[88px]"></div>
 
-<div class="min-h-[6rem] overflow-y-hidden bg-aldy-white h-full w-full flex flex-col items-center justify-center mt-10">
-  <div class="relative w-full max-w-screen px-2 xs:px-4 content-wrapper">
+<div class="min-h-[calc(100vh-72px)] lg:min-h-[calc(100vh-88px)] bg-aldy-white w-full flex flex-col items-center justify-start pt-10 pb-16">
+  <div class="relative w-full max-w-screen px-2 xs:px-4 content-wrapper flex flex-col items-center w-full flex-grow">
     <div class="searchbar-container">
       <div class="searchbar max-w-[18rem] xs:max-w-sm sm:max-w-xl md:max-w-4xl w-full">
         <input type="text"
@@ -188,51 +188,54 @@
         </div>
       </div>
     </div>
-  </div>
-</div>
 
-<div *ngIf="hasSearched && loading" class="pb-7 pt-5 flex items-center justify-center min-h-[160px] w-full mb-4">
-  <div class="w-full flex justify-center">
-    <div class="w-full max-w-[18rem] xs:max-w-sm sm:max-w-xl md:max-w-4xl">
-      <div class="w-full flex items-center justify-center">
-        <div class="spinner" style="animation: spin 0.7s linear infinite;"></div>
+    <!-- LOADING SPINNER (Moved inside content-wrapper) -->
+    <div *ngIf="hasSearched && loading" class="flex-grow flex items-center justify-center min-h-[300px] md:min-h-[400px] w-full py-12">
+      <div class="w-full flex justify-center">
+        <div class="w-full max-w-[18rem] xs:max-w-sm sm:max-w-xl md:max-w-4xl">
+          <div class="w-full flex items-center justify-center">
+            <div class="spinner" style="animation: spin 0.7s linear infinite;"></div>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-</div>
 
-<div *ngIf="!hasSearched || (!loading && originalProducts.length === 0)"
-  class="pb-7 pt-5 flex items-center justify-center min-h-[160px] w-full mb-4">
-  <div *ngIf="!hasSearched && recentSearches.length > 0 && originalProducts.length === 0"
-    class="w-full flex justify-center" [@cardEnterAnimation]="recentSearches.length">
-    <div class="w-full max-w-[18rem] xs:max-w-sm sm:max-w-xl md:max-w-4xl space-y-4">
-      <div class="flex items-center justify-between">
-        <h3 class="text-sm NewAldyFontType4 tracking-wider text-aldy-green-gray uppercase">Últimas búsquedas</h3>
+    <!-- RECENT SEARCHES OR NO RESULTS (Moved inside content-wrapper) -->
+    <div *ngIf="!hasSearched || (!loading && originalProducts.length === 0)"
+      class="pb-7 pt-5 flex items-center justify-center min-h-[160px] w-full mb-4">
+      <div *ngIf="!hasSearched && recentSearches.length > 0 && originalProducts.length === 0"
+        class="w-full flex justify-center" [@cardEnterAnimation]="recentSearches.length">
+        <div class="w-full max-w-[18rem] xs:max-w-sm sm:max-w-xl md:max-w-4xl space-y-4">
+          <div class="flex items-center justify-between">
+            <h3 class="text-sm NewAldyFontType4 tracking-wider text-aldy-green-gray uppercase">Últimas búsquedas</h3>
+          </div>
+          <ul class="space-y-3 text-sm font-semibold NewAldyFontType4 text-aldy-green-gray">
+            <li *ngFor="let optionsTracking of recentSearches; let i = index" [@cardEnterAnimation]
+              [style.animation-delay]="i * 100 + 'ms'">
+              <button type="button" appLinkHoverUnderline [underlineHeight]="'1px'" (click)="onRecentClick(optionsTracking)"
+                class="w-auto cursor-pointer text-left hover:text-aldy-medium-2">
+                {{ optionsTracking }}
+              </button>
+            </li>
+          </ul>
+        </div>
       </div>
-      <ul class="space-y-3 text-sm font-semibold NewAldyFontType4 text-aldy-green-gray">
-        <li *ngFor="let optionsTracking of recentSearches; let i = index" [@cardEnterAnimation]
-          [style.animation-delay]="i * 100 + 'ms'">
-          <button type="button" appLinkHoverUnderline [underlineHeight]="'1px'" (click)="onRecentClick(optionsTracking)"
-            class="w-auto cursor-pointer text-left hover:text-aldy-medium-2">
-            {{ optionsTracking }}
-          </button>
-        </li>
-      </ul>
-    </div>
-  </div>
 
-  <div *ngIf="hasSearched && !loading && originalProducts.length === 0" class="w-full flex justify-center"
-    [@cardEnterAnimation]="originalProducts.length">
-    <div class="w-full max-w-[18rem] xs:max-w-sm sm:max-w-xl md:max-w-4xl">
-      <div
-        class="text-center flex items-center justify-center text-aldy-green-gray px-2 xs:px-4 NewAldyFontType4 text-sm">
-        <span *ngIf="displayedSearchTerm">
-          No se encontraron resultados para "{{ displayedSearchTerm }}"
-        </span>
-        <span *ngIf="!displayedSearchTerm">
-          No se encontraron resultados para su búsqueda.
-        </span>
+      <div *ngIf="hasSearched && !loading && originalProducts.length === 0" class="w-full flex justify-center"
+        [@cardEnterAnimation]="originalProducts.length">
+        <div class="w-full max-w-[18rem] xs:max-w-sm sm:max-w-xl md:max-w-4xl">
+          <div
+            class="text-center flex items-center justify-center text-aldy-green-gray px-2 xs:px-4 NewAldyFontType4 text-sm">
+            <span *ngIf="displayedSearchTerm">
+              No se encontraron resultados para "{{ displayedSearchTerm }}"
+            </span>
+            <span *ngIf="!displayedSearchTerm">
+              No se encontraron resultados para su búsqueda.
+            </span>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-</div>
+
+  </div> <!-- Close content-wrapper -->
+</div> <!-- Close outer container -->

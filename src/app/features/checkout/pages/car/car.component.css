@@ -1,3 +1,8 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
 /* FADE SUAVE */
 .fade-up {
   opacity: 1 !important;
