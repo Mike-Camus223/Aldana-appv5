@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { AppMenuItem } from '../../../utils/models/app-menu-item.model';
@@ -8,6 +8,7 @@ import { AppMenuItem } from '../../../utils/models/app-menu-item.model';
   standalone: true,
   imports: [CommonModule, RouterModule],
   templateUrl: './breadcrump.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./breadcrump.component.css']
 })
 export class BreadcrumbComponent {

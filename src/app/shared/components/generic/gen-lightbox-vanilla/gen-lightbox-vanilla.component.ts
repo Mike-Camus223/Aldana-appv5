@@ -15,7 +15,8 @@ import {
   OnDestroy,
   Renderer2,
   Inject,
-  PLATFORM_ID
+  PLATFORM_ID,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { MediaItem } from '../../../utils/models/objectsGallery.model';
@@ -38,6 +39,7 @@ import {
   imports: [CommonModule, LucideAngularModule],
   templateUrl: './gen-lightbox-vanilla.component.html',
   styleUrls: ['./gen-lightbox-vanilla.component.css'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   providers: [
     {
       provide: LUCIDE_ICONS,

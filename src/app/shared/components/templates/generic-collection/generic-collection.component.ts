@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { BreadcrumbComponent } from '../../system/breadcrump/breadcrump.component';
@@ -25,6 +25,7 @@ type CollectionItemCard = {
   standalone: true,
   imports: [RouterModule, BreadcrumbComponent, CardInitAnimationDirective, VideoComponent, WordRevealDirective, FadeUpLetterDirective],
   templateUrl: './generic-collection.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./generic-collection.component.css'],
 })
 export class GenericCollectionComponent implements OnInit {

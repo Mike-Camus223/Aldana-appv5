@@ -3,11 +3,11 @@ import { OrderStatusComponent } from './order-status.component';
 import { OrdersService } from '../../../../core/services/orders/orders.service';
 import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
 import { of } from 'rxjs';
-import { Order } from '../../../../shared/utils/models/order.interface';
+import { OrderModel } from '../../../../shared/utils/models/order.interface';
 import { CommonModule } from '@angular/common';
 import { LucideAngularModule, Check, NotepadText, BookCheck, Package, Truck, House, Headset, ArrowDownToLine, LucideIconProvider, LUCIDE_ICONS } from 'lucide-angular';
 
-const createMockOrder = (overrides: Partial<Order> = {}): Order => ({
+const createMockOrder = (overrides: Partial<OrderModel> = {}): OrderModel => ({
   id: '1',
   order_number: 'ORD-123',
   customer_first_name: 'Test',

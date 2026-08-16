@@ -2,7 +2,8 @@ import {
   Component,
   Input,
   Optional,
-  Self
+  Self,
+  ChangeDetectionStrategy
 } from '@angular/core';
 
 import {
@@ -17,6 +18,7 @@ import { CommonModule } from '@angular/common';
   selector: 'app-textarea',
   standalone: true,
   imports: [CommonModule],
+  changeDetection: ChangeDetectionStrategy.Eager,
   templateUrl: './textarea.component.html'
 })
 export class TextareaComponent implements ControlValueAccessor {

@@ -1,5 +1,5 @@
 
-import { Component, OnInit, AfterViewInit, ElementRef, ViewChild, OnDestroy, HostListener } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ElementRef, ViewChild, OnDestroy, HostListener, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { LucideAngularModule, ChevronLeft, ChevronRight, LUCIDE_ICONS, LucideIconProvider } from 'lucide-angular';
 
@@ -36,6 +36,7 @@ type BridesProduct = {
   imports: [RouterModule, BreadcrumbComponent, GenGalleryVanillaComponent, LucideAngularModule, WordRevealDirective, FadeUpLetterDirective],
   templateUrl: './items-collection.component.html',
   styleUrls: ['./items-collection.component.css'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   providers: [
     {
       provide: LUCIDE_ICONS,

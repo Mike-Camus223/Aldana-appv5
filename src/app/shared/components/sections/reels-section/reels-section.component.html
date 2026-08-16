@@ -108,7 +108,7 @@ Usa AppGenericCarouselComponent + CarouselItemDirective
             @if (hasMultipleMedia) {
               <div
                 class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
-                @for (m of selectedReel.media; track trackByMediaIndex(i, m); let i = $index) {
+                @for (m of selectedReel.media; track i; let i = $index) {
                   <button
                     (click)="goToMedia(i)"
                     class="rounded-full transition-all duration-200 p-0 border-none cursor-pointer"
@@ -199,7 +199,7 @@ Usa AppGenericCarouselComponent + CarouselItemDirective
                 <!-- Solo esta parte scrollea -->
                 <div class="flex-1 overflow-y-auto min-h-0 scrollbar-hide">
                   <div class="space-y-0">
-                    @for (comment of selectedReel.comments; track trackByCommentIndex($index, comment)) {
+                    @for (comment of selectedReel.comments; track $index) {
                       <div
                         class="flex gap-3 px-6 py-2.5 transition-colors duration-150">
                         <div class="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 mt-0.5">
@@ -278,7 +278,7 @@ Usa AppGenericCarouselComponent + CarouselItemDirective
                 @if (hasMultipleMedia) {
                   <div
                     class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
-                    @for (m of selectedReel.media; track trackByMediaIndex(i, m); let i = $index) {
+                    @for (m of selectedReel.media; track i; let i = $index) {
                       <button
                         (click)="goToMedia(i)"
                         class="rounded-full transition-all duration-200 p-0 border-none cursor-pointer"
@@ -373,7 +373,7 @@ Usa AppGenericCarouselComponent + CarouselItemDirective
                     }
                     <!-- Lista de comentarios -->
                     <div class="space-y-0">
-                      @for (comment of selectedReel.comments; track trackByCommentIndex($index, comment)) {
+                      @for (comment of selectedReel.comments; track $index) {
                         <div
                           class="flex gap-3 px-6 py-2.5 transition-colors duration-150">
                           <div class="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 mt-0.5">

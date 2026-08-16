@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 
 import { MediaItem } from '../../../utils/models/objectsGallery.model';
 import { GenLightboxVanillaComponent } from '../gen-lightbox-vanilla/gen-lightbox-vanilla.component';
@@ -10,6 +10,7 @@ import { WordRevealDirective } from '../../../utils/directives/word-reveal.direc
   selector: 'app-gen-gallery-vanilla',
   standalone: true,
   imports: [GenLightboxVanillaComponent, CardInitAnimationDirective, WordRevealDirective],
+  changeDetection: ChangeDetectionStrategy.Eager,
   templateUrl: './gen-gallery-vanilla.component.html',
 })
 export class GenGalleryVanillaComponent {

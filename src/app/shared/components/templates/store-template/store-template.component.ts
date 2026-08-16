@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener, Inject, ElementRef, ViewChild } from '@angular/core';
+import { Component, OnInit, HostListener, Inject, ElementRef, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule, isPlatformBrowser, Location } from '@angular/common';
 import { PLATFORM_ID } from '@angular/core';
 
@@ -56,6 +56,7 @@ import { PaginatorComponent } from '../../generic/paginator/paginator.component'
       ])
     ])
   ],
+  changeDetection: ChangeDetectionStrategy.Eager,
   providers: [
     {
       provide: LUCIDE_ICONS,

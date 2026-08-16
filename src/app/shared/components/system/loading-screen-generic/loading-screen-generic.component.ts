@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild, AfterViewInit, Inject, PLATFORM_ID } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild, AfterViewInit, Inject, PLATFORM_ID, ChangeDetectionStrategy } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import gsap from 'gsap';
 import { LoaderService } from '../../../../core/services/utils/loader.service';
@@ -8,6 +8,7 @@ import { Subscription } from 'rxjs';
   selector: 'app-loading-screen-generic',
   standalone: true,
   templateUrl: './loading-screen-generic.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./loading-screen-generic.component.css']
 })
 export class LoadingScreenGenericComponent implements OnInit, OnDestroy, AfterViewInit {

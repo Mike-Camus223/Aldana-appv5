@@ -1,5 +1,5 @@
 
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { InputComponent } from '../../../../shared/components/generic/forms/input/input.component';
 import { SelectsComponent } from '../../../../shared/components/generic/forms/selects/selects.component';
@@ -26,6 +26,7 @@ import { take } from 'rxjs';
       })
     }
   ],
+  changeDetection: ChangeDetectionStrategy.Eager,
   templateUrl: './account-info.component.html'
 })
 export class AccountInfoComponent implements OnInit {

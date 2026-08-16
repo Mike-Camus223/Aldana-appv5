@@ -4,7 +4,8 @@ import {
   ElementRef,
   ViewChild,
   Inject,
-  PLATFORM_ID
+  PLATFORM_ID,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import gsap from 'gsap';
@@ -36,6 +37,7 @@ if (typeof window !== 'undefined') {
       })
     }
   ],
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./about-template.component.css'],
 })
 export class AboutTemplateComponent implements AfterViewInit {

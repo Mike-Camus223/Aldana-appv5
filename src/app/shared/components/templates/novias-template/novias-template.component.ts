@@ -1,5 +1,6 @@
 import {
   Component,
+  OnInit,
   AfterViewInit,
   Inject,
   PLATFORM_ID,
@@ -42,7 +43,7 @@ import { FadeUpLetterDirective } from "../../../utils/directives/fadeupletter.di
   templateUrl: './novias-template.component.html',
   styleUrls: ['./novias-template.component.css'],
 })
-export class NoviasTemplateComponent implements AfterViewInit, OnDestroy {
+export class NoviasTemplateComponent implements OnInit, AfterViewInit, OnDestroy {
   CollectionBrides: Collection[] = [];
   productColumns: number = 4;
   private userChoice: number | null = null;
@@ -58,14 +59,17 @@ export class NoviasTemplateComponent implements AfterViewInit, OnDestroy {
     private cdr: ChangeDetectorRef
   ) {}
 
-  async ngAfterViewInit() {
+  async ngOnInit() {
     try {
       const result = await this.CollectionService.getCollectionBrides();
       this.CollectionBrides = result ?? [];
+      this.cdr.detectChanges();
     } catch (error) {
       console.error('Error al obtener colecciones:', error);
     }
+  }
 
+  ngAfterViewInit() {
     if (isPlatformBrowser(this.platformId)) {
       this.applyColumnsForWidth(window.innerWidth);
     }
@@ -144,9 +148,11 @@ export class NoviasTemplateComponent implements AfterViewInit, OnDestroy {
         this.userChoice = cols;
         this.userChoiceBreakpoint = currentBreakpoint;
         this.productColumns = cols;
+        this.cdr.detectChanges();
       }
     }
   }
+
   goToCollection(slug: string) {
     this.router.navigate(['/novias-colecciones', slug]);
   }

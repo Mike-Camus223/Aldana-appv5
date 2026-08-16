@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { Footerv2Component } from '../../components/system/footerv2/footerv2.component';
 import { RouterOutlet } from '@angular/router';
@@ -19,6 +19,7 @@ gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
     Footerv2Component,
   ],
   templateUrl: './public-layout.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styles: ``
 })
 export class PublicLayoutComponent implements OnInit, OnDestroy, AfterViewInit {

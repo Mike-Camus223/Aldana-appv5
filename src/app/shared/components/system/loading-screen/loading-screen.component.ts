@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild, AfterViewInit, Output, EventEmitter, OnDestroy, Renderer2, Inject, PLATFORM_ID } from '@angular/core';
+import { Component, ElementRef, ViewChild, AfterViewInit, Output, EventEmitter, OnDestroy, Renderer2, Inject, PLATFORM_ID, ChangeDetectionStrategy } from '@angular/core';
 import { isPlatformBrowser, NgOptimizedImage } from '@angular/common';
 import { gsap } from 'gsap';
 import { DrawSVGPlugin } from 'gsap/DrawSVGPlugin';
@@ -11,6 +11,7 @@ gsap.registerPlugin(DrawSVGPlugin);
   selector: 'app-loading-screen',
   imports: [NgOptimizedImage],
   templateUrl: './loading-screen.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./loading-screen.component.css']
 })
 export class LoadingScreenComponent implements AfterViewInit, OnDestroy {

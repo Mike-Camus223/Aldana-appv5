@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { OrdersService } from '../../../../core/services/orders/orders.service';
@@ -11,6 +11,7 @@ import { AuthService } from '../../../../core/services/auth/auth.service';
   standalone: true,
   imports: [CommonModule, RouterModule],
   templateUrl: './result-screen.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./result-screen.component.css']
 })
 export class ResultScreenComponent implements OnInit {

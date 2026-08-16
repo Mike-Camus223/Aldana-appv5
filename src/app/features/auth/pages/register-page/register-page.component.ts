@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { passwordStrengthValidator } from '../../../../shared/utils/validators/PasswordStrengthValidator';
@@ -29,6 +29,7 @@ interface SignUpForm {
   imports: [RouterModule, ReactiveFormsModule, CommonModule, InputComponent, InputpasswordComponent, LucideAngularModule],
   templateUrl: './register-page.component.html',
   styleUrl: './register-page.component.css',
+  changeDetection: ChangeDetectionStrategy.Eager,
   providers: [
     {
       provide: LUCIDE_ICONS,

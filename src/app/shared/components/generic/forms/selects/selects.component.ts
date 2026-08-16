@@ -3,7 +3,8 @@ import {
   Input,
   Optional,
   Self,
-  HostListener
+  HostListener,
+  ChangeDetectionStrategy
 } from '@angular/core';
 
 import {
@@ -21,6 +22,7 @@ import { trigger, transition, style, animate } from '@angular/animations';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './selects.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   animations: [
     trigger('slideDown', [
       transition(':enter', [

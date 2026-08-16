@@ -5,7 +5,8 @@ import {
   PLATFORM_ID,
   OnDestroy,
   HostListener,
-  ChangeDetectorRef
+  ChangeDetectorRef,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import { isPlatformBrowser, CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
@@ -40,6 +41,7 @@ import { FadeUpLetterDirective } from "../../../utils/directives/fadeupletter.di
     ])
   ],
   templateUrl: './generic-gallery-templ.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./generic-gallery-templ.component.css']
 })
 export class GenericGalleryTemplComponent implements AfterViewInit, OnDestroy {

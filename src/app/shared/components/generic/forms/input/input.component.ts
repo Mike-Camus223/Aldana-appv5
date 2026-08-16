@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, Optional, Self } from '@angular/core';
+import { Component, Input, Optional, Self, ChangeDetectionStrategy } from '@angular/core';
 import { ControlValueAccessor, FormsModule, NgControl, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
@@ -7,6 +7,7 @@ import { ControlValueAccessor, FormsModule, NgControl, ReactiveFormsModule } fro
   standalone: true,
   imports: [CommonModule, FormsModule, ReactiveFormsModule],
   templateUrl: './input.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./input.component.css']
 })
 export class InputComponent implements ControlValueAccessor {

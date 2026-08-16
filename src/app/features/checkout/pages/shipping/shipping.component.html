@@ -815,7 +815,7 @@
                     'border-aldy-medium focus:border-aldy-medium':
                       !discountError && !form.get('discountCode')?.disabled,
                     'bg-aldy-white text-aldy-green-gray':
-                      form.get('discountCode')?.disabled
+                      $safeNavigationMigration(form.get('discountCode')?.disabled)
                   }"
                                                       class="peer block w-full border-b-1 px-2.5 pt-4 pb-2.5 text-sm bg-transparent appearance-none focus:outline-none focus:ring-0 transition-all duration-300 ease-in-out"
                                                       />
@@ -823,7 +823,7 @@
                   [ngClass]="{
                     'text-red-400 peer-focus:text-red-400': discountError,
                     'text-aldy-green-gray peer-disabled:text-aldy-green-gray':
-                      form.get('discountCode')?.disabled,
+                      $safeNavigationMigration(form.get('discountCode')?.disabled),
                     'text-aldy-green-gray-bold peer-focus:text-aldy-medium':
                       !discountError && !form.get('discountCode')?.disabled
                   }"

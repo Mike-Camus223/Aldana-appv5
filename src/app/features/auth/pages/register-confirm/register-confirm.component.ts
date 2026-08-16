@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 
 import { RouterModule, Router } from '@angular/router';
 import { ConfirmationGuard } from '../../../../core/guards/confirmation.guard';
@@ -8,6 +8,7 @@ import { ConfirmationGuard } from '../../../../core/guards/confirmation.guard';
   standalone: true,
   imports: [RouterModule],
   templateUrl: './register-confirm.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./register-confirm.component.css']
 })
 export class RegisterConfirmComponent {

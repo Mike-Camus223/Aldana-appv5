@@ -1,4 +1,4 @@
-import { Component, Input, Optional, Self } from '@angular/core';
+import { Component, Input, Optional, Self, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, ControlValueAccessor, NgControl } from '@angular/forms';
 import { Eye, EyeClosed, Lock, LUCIDE_ICONS, LucideAngularModule, LucideIconProvider } from 'lucide-angular';
@@ -8,6 +8,7 @@ import { Eye, EyeClosed, Lock, LUCIDE_ICONS, LucideAngularModule, LucideIconProv
   standalone: true,
   imports: [CommonModule, FormsModule, ReactiveFormsModule,LucideAngularModule],
   templateUrl: './inputpassword.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   providers: [
       {
         provide: LUCIDE_ICONS,

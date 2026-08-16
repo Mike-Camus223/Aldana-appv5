@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { FavoritesService } from '../../../../core/services/favorites/favorites.service';
 import { AuthService } from '../../../../core/services/auth/auth.service';
 import { Router } from '@angular/router';
@@ -21,6 +21,7 @@ import { Heart, HeartPlus, LUCIDE_ICONS, LucideAngularModule, LucideIconProvider
         })
       }
     ],
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./whitelist.component.css']
 })
 export class WhitelistComponent implements OnInit, OnDestroy {

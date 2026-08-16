@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { ModalComponent} from '../../generic/modal/modal.component';
 import { ModalAdsService } from '../../../../core/services/modal-ads.service';
 
@@ -8,6 +8,7 @@ import { ModalAdsService } from '../../../../core/services/modal-ads.service';
   standalone: true,
   imports: [CommonModule, ModalComponent],
   templateUrl: './discount-leaf.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './discount-leaf.component.css'
 })
 export class DiscountLeafComponent implements OnInit {

@@ -1,5 +1,5 @@
 
-import { Component, OnInit, inject, OnDestroy, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, OnInit, inject, OnDestroy, ViewChild, ElementRef, AfterViewInit, ChangeDetectionStrategy } from '@angular/core';
 import { NavigationEnd, NavigationStart, NavigationCancel, NavigationError, Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../core/services/auth/auth.service';
 import { User } from '@supabase/supabase-js';
@@ -13,6 +13,7 @@ import { Footerv2Component } from '../../shared/components/system/footerv2/foote
   standalone: true,
   imports: [RouterModule, Footerv2Component],
   templateUrl: './authPanel.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./authPanel.component.css']
 })
 export class AuthPanelComponent implements OnInit, AfterViewInit, OnDestroy {

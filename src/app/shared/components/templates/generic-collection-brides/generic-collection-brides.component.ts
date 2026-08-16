@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { AppMenuItem } from '../../../utils/models/app-menu-item.model';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { BreadcrumbComponent } from '../../system/breadcrump/breadcrump.component';
@@ -25,6 +25,7 @@ type BridesCollectionItemCard = {
   standalone: true,
   imports: [RouterModule, BreadcrumbComponent, CardInitAnimationDirective, VideoComponent, WordRevealDirective, FadeUpLetterDirective],
   templateUrl: './generic-collection-brides.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './generic-collection-brides.component.css'
 })
 export class GenericCollectionBridesComponent implements OnInit {

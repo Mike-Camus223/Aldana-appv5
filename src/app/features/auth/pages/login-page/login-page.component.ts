@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth/auth.service';
@@ -22,6 +22,7 @@ interface ForgotPasswordForm {
   standalone: true,
   imports: [RouterModule, ReactiveFormsModule, CommonModule, InputComponent, InputpasswordComponent,LucideAngularModule],
   templateUrl: './login-page.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   providers: [
         {
           provide: LUCIDE_ICONS,

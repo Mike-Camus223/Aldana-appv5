@@ -3,7 +3,8 @@ import {
   Component,
   Input,
   OnInit,
-  HostListener
+  HostListener,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { Product } from '../../../utils/models/Products-supabase.interface';
@@ -25,6 +26,7 @@ import {
     LucideAngularModule
 ],
   templateUrl: './product-carousel.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   providers: [
     {
       provide: LUCIDE_ICONS,

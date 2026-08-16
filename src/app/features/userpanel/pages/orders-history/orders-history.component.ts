@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { SelectsComponent } from '../../../../shared/components/generic/forms/selects/selects.component';
 import { PaginatorComponent } from '../../../../shared/components/generic/paginator/paginator.component';
@@ -11,6 +11,7 @@ import { OrderSummary } from '../../../../shared/utils/models/order.interface';
   standalone: true,
   imports: [CommonModule, SelectsComponent, PaginatorComponent],
   templateUrl: './orders-history.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./orders-history.component.css']
 })
 export class OrdersHistoryComponent implements OnInit {

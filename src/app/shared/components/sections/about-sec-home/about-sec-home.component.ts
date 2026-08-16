@@ -5,6 +5,7 @@ import {
   ViewChildren,
   QueryList,
   OnDestroy,
+  ChangeDetectionStrategy
 } from '@angular/core';
 
 import { gsap } from 'gsap';
@@ -30,6 +31,7 @@ if (typeof window !== 'undefined') {
     RouterModule
 ],
   templateUrl: './about-sec-home.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './about-sec-home.component.css',
 })
 export class AboutSecHomeComponent implements AfterViewInit, OnDestroy {

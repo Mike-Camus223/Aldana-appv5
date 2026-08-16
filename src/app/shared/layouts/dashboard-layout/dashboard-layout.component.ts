@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 
 import { RouterOutlet, RouterLink, Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth/auth.service';
@@ -7,6 +7,7 @@ import { AuthService } from '../../../core/services/auth/auth.service';
   selector: 'app-dashboard-layout',
   imports: [RouterOutlet, RouterLink],
   templateUrl: './dashboard-layout.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styles: `
     .sidebar {
       transition: transform 0.3s ease;

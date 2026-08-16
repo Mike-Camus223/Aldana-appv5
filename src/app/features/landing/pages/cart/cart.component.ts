@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 
 import { RouterModule, Router } from '@angular/router';
 import { CartService } from '../../../../core/services/cart.service';
@@ -8,6 +8,7 @@ import { CartService } from '../../../../core/services/cart.service';
   standalone: true,
   imports: [RouterModule],
   templateUrl: './cart.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./cart.component.css']
 })
 export class CartComponent {

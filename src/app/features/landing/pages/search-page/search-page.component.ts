@@ -7,7 +7,8 @@ import {
   PLATFORM_ID,
   Input,
   CUSTOM_ELEMENTS_SCHEMA,
-  OnInit
+  OnInit,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Subject, takeUntil } from 'rxjs';
@@ -70,6 +71,7 @@ import { ProductsService } from '../../../../core/services/data-access/products/
       ])
     ])
   ],
+  changeDetection: ChangeDetectionStrategy.Eager,
   providers: [
     {
       provide: LUCIDE_ICONS,

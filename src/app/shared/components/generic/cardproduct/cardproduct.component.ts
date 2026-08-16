@@ -12,7 +12,8 @@ import {
   Inject,
   OnDestroy,
   OnChanges,
-  SimpleChanges
+  SimpleChanges,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import { CommonModule, isPlatformBrowser, NgOptimizedImage } from '@angular/common';
 import { PLATFORM_ID } from '@angular/core';
@@ -49,6 +50,7 @@ import { Subscription } from 'rxjs';
   templateUrl: './cardproduct.component.html',
   styleUrls: ['./cardproduct.component.css'],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  changeDetection: ChangeDetectionStrategy.Eager,
   providers: [
     {
       provide: LUCIDE_ICONS,

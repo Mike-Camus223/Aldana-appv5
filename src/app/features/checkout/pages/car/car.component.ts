@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CartItem } from '../../../../shared/utils/models/cartItems-model';
 import { CartService } from '../../../../core/services/cart.service';
 import { Router } from '@angular/router';
@@ -12,6 +12,7 @@ import { NavbarPublicv3Component } from "../../../../shared/components/system/na
   standalone: true,
   imports: [CommonModule, FormsModule, NavbarPublicv3Component],
   templateUrl: './car.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./car.component.css'],
 })
 export class CarComponent implements OnInit {

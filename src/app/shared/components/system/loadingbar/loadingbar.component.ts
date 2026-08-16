@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges, ChangeDetectionStrategy } from '@angular/core';
 import { trigger, transition, style, animate } from '@angular/animations';
 
 
@@ -6,6 +6,7 @@ import { trigger, transition, style, animate } from '@angular/animations';
   selector: 'app-loadingbar',
   templateUrl: './loadingbar.component.html',
   imports: [],
+  changeDetection: ChangeDetectionStrategy.Eager,
   animations: [
     trigger('fade', [
       transition(':enter', [

@@ -3,7 +3,8 @@ import {
   AfterViewInit,
   ElementRef,
   ViewChild,
-  OnDestroy
+  OnDestroy,
+  ChangeDetectionStrategy
 } from '@angular/core';
 
 import {
@@ -27,6 +28,7 @@ gsap.registerPlugin(DrawSVGPlugin);
   imports: [LucideAngularModule, RouterModule],
   templateUrl: './triplesection.component.html',
   styleUrl: './triplesection.component.css',
+  changeDetection: ChangeDetectionStrategy.Eager,
   providers: [
     {
       provide: LUCIDE_ICONS,

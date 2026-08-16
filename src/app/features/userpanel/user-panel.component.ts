@@ -1,5 +1,5 @@
 
-import { Component, OnInit, inject, OnDestroy } from '@angular/core';
+import { Component, OnInit, inject, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { NavigationEnd, NavigationStart, NavigationCancel, NavigationError, Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../core/services/auth/auth.service';
 import { User } from '@supabase/supabase-js';
@@ -28,6 +28,7 @@ import { NavbarPublicv3Component } from '../../shared/components/system/navbar-p
         })
       }
     ],
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./user-panel.component.css']
 })
 export class UserPanelComponent implements OnInit, OnDestroy {

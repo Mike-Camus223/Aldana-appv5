@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CommonModule, Location } from '@angular/common';
 import { FancyCarouselComponent } from '../../sections/fancy-carousel/fancy-carousel.component';
@@ -31,6 +31,7 @@ import { LoaderService } from '../../../../core/services/utils/loader.service';
     LucideAngularModule,
     ProductCarouselComponent
   ],
+  changeDetection: ChangeDetectionStrategy.Eager,
   providers: [
     {
       provide: LUCIDE_ICONS,

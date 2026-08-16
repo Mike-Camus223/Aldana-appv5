@@ -112,7 +112,7 @@
       @if (block.metadata?.button?.url) {
         @if ((block.metadata?.button?.button_style ?? 'underline') === 'underline') {
           <a
-            [routerLink]="block.metadata?.button?.url"
+            [routerLink]="$safeNavigationMigration(block.metadata?.button?.url)"
             [target]="block.metadata?.button?.newTab ? '_blank' : '_self'"
             appLinkHoverUnderline
             [dynamicColor]="'text-aldy-green-gray-bold'"
@@ -122,7 +122,7 @@
         }
         @if (block.metadata?.button?.button_style === 'normal') {
           <a appFadeUpLetter
-            [routerLink]="block.metadata?.button?.url"
+            [routerLink]="$safeNavigationMigration(block.metadata?.button?.url)"
             [target]="block.metadata?.button?.newTab ? '_blank' : '_self'"
             class="bg-aldy-medium text-white text-xs tracking-widest py-3 px-8 uppercase hover:bg-aldy-medium-2 transition-colors duration-200 ease-in-out cursor-pointer inline-block">
             {{ block.metadata?.button?.label || 'Ver más' }}
@@ -149,7 +149,7 @@
           [class.mb-10]="!!block.metadata?.button?.url">
           @if (block.metadata?.inlineLink?.sl_position === 'inline-start') {
             <a
-              [routerLink]="block.metadata?.inlineLink?.sl_link"
+              [routerLink]="$safeNavigationMigration(block.metadata?.inlineLink?.sl_link)"
               [class]="block.metadata?.inlineLink?.sl_style">
               {{ block.metadata?.inlineLink?.sl_link_name }}
             </a>
@@ -157,7 +157,7 @@
           {{ block.content }}
           @if (block.metadata?.inlineLink?.sl_position === 'inline-end') {
             <a
-              [routerLink]="block.metadata?.inlineLink?.sl_link"
+              [routerLink]="$safeNavigationMigration(block.metadata?.inlineLink?.sl_link)"
               [class]="block.metadata?.inlineLink?.sl_style">
               {{ block.metadata?.inlineLink?.sl_link_name }}
             </a>

@@ -9,6 +9,7 @@ import {
   signal,
   OnChanges,
   SimpleChanges,
+  ChangeDetectionStrategy
 } from '@angular/core';
 
 @Component({
@@ -16,6 +17,7 @@ import {
   standalone: true,
   imports: [CommonModule],
   templateUrl: './video.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './video.component.css',
 })
 export class VideoComponent implements AfterViewInit, OnDestroy, OnChanges {

@@ -30,7 +30,7 @@
         <lucide-icon name="chevron-right" color="#AEC2A9" [strokeWidth]="1.5"></lucide-icon>
       </button>
 
-      @for (item of items; track trackByIndex(i, item); let i = $index) {
+      @for (item of items; track i; let i = $index) {
         <div #slideRef
           class="absolute inset-0 justify-center">
         <div class="

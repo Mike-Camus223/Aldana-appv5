@@ -60,6 +60,8 @@ export interface OrderProduct {
     user_id: string;
   }
   
+  export type Order = OrderModel;
+
   export interface OrderSummary {
     id: string;
     order_number: string;

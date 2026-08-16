@@ -7,7 +7,8 @@ import {
   OnInit,
   OnDestroy,
   PLATFORM_ID,
-  Inject
+  Inject,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Router, RouterModule, NavigationEnd } from '@angular/router';
@@ -61,6 +62,7 @@ interface RouterlinkNavbar {
       })
     }
   ],
+  changeDetection: ChangeDetectionStrategy.Eager,
   animations: [
     trigger('dropdownAnimation', [
       transition(':enter', [

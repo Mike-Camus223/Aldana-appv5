@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 
 import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
@@ -9,6 +9,7 @@ import { environment } from '../../../../../environments/environment';
   standalone: true,
   imports: [RouterModule],
   templateUrl: './register-success.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./register-success.component.css']
 })
 export class RegisterSuccessComponent implements OnInit {

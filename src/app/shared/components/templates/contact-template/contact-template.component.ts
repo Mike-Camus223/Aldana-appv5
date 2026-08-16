@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import { ReactiveFormsModule } from '@angular/forms';
@@ -21,6 +21,7 @@ import { CardInitAnimationDirective } from '../../../utils/directives/card-init-
     FadeUpLetterDirective,
     CardInitAnimationDirective
 ],
+  changeDetection: ChangeDetectionStrategy.Eager,
   templateUrl: './contact-template.component.html',
 })
 export class ContactTemplateComponent {

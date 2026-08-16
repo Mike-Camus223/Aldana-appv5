@@ -15,45 +15,55 @@
   },
   "private": true,
   "dependencies": {
-    "@angular/animations": "^21.2.20",
-    "@angular/cdk": "^21.2.14",
-    "@angular/common": "^21.2.20",
-    "@angular/compiler": "^21.2.20",
-    "@angular/core": "^21.2.20",
-    "@angular/forms": "^21.2.20",
-    "@angular/platform-browser": "^21.2.20",
-    "@angular/platform-browser-dynamic": "^21.2.20",
-    "@angular/router": "^21.2.20",
-    "@supabase/auth-js": "^2.71.1",
-    "@supabase/supabase-js": "^2.108.1",
-    "@tailwindcss/postcss": "^4.1.8",
+    "@angular/animations": "^22.1.2",
+    "@angular/cdk": "^22.1.2",
+    "@angular/common": "^22.1.2",
+    "@angular/compiler": "^22.1.2",
+    "@angular/core": "^22.1.2",
+    "@angular/forms": "^22.1.2",
+    "@angular/platform-browser": "^22.1.2",
+    "@angular/platform-browser-dynamic": "^22.1.2",
+    "@angular/platform-server": "^22.1.2",
+    "@angular/router": "^22.1.2",
+    "@angular/ssr": "^22.1.4",
+    "@supabase/auth-js": "^2.112.3",
+    "@supabase/supabase-js": "^2.112.3",
+    "@tailwindcss/postcss": "^4.3.3",
     "gsap": "^3.13.0",
     "lucide-angular": "^0.525.0",
-    "ngx-cookie-service": "^19.0.0",
+    "ngx-cookie-service": "^22.0.0",
     "postcss": "^8.5.4",
     "rxjs": "~7.8.0",
-    "tailwindcss": "^4.1.8",
+    "tailwindcss": "^4.3.3",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.0"
   },
   "devDependencies": {
-    "@angular/build": "^21.2.21",
-    "@angular/cli": "^21.2.21",
-    "@angular/compiler-cli": "^21.2.20",
+    "@angular/build": "^22.1.4",
+    "@angular/cli": "^22.1.4",
+    "@angular/compiler-cli": "^22.1.2",
     "@types/jasmine": "~5.1.0",
-    "@types/node": "^18.18.0",
+    "@types/node": "^26.2.0",
+    "istanbul-lib-instrument": "^6.0.3",
     "jasmine-core": "~5.6.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
-    "postcss": "^8.5.3",
     "typescript": "^6.0.3"
   },
   "overrides": {
+    "lucide-angular": {
+      "@angular/core": "$@angular/core",
+      "@angular/common": "$@angular/common"
+    },
+    "ngx-cookie-service": {
+      "@angular/core": "$@angular/core",
+      "@angular/common": "$@angular/common"
+    },
     "@supabase/supabase-js": {
-      "@supabase/auth-js": "2.61.0"
+      "@supabase/auth-js": "2.112.3"
     }
   }
 }

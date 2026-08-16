@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener, inject } from '@angular/core';
+import { Component, OnInit, HostListener, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import {
@@ -53,6 +53,7 @@ export interface SectionGroup {
     },
   ],
   templateUrl: './journal-post.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './journal-post.component.css',
 })
 export class JournalPostComponent implements OnInit {

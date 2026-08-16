@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { AboutSecHomeComponent } from '../../../../shared/components/sections/about-sec-home/about-sec-home.component';
 import { ReelsSectionComponent } from "../../../../shared/components/sections/reels-section/reels-section.component";
@@ -10,6 +10,7 @@ import { TriplesectionComponent } from '../../../../shared/components/sections/t
   standalone: true,
   imports: [RouterModule, WordRevealDirective, ReelsSectionComponent, TriplesectionComponent, AboutSecHomeComponent],
   templateUrl: './home.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styles: ``
 })
 export class HomeComponent {

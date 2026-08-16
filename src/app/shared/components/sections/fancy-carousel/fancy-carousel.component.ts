@@ -12,6 +12,7 @@ import {
   PLATFORM_ID,
   ViewChild,
   ElementRef,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import { GenLightboxVanillaComponent } from '../../generic/gen-lightbox-vanilla/gen-lightbox-vanilla.component';
 import { MediaItem } from '../../../utils/models/objectsGallery.model';
@@ -33,6 +34,7 @@ import {
   templateUrl: './fancy-carousel.component.html',
   styleUrls: ['./fancy-carousel.component.css'],
   encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Eager,
   providers: [
     {
       provide: LUCIDE_ICONS,

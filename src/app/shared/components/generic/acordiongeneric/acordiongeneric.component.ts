@@ -1,11 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, Output, EventEmitter, ViewChild, ElementRef, AfterViewInit, OnChanges, SimpleChanges, OnDestroy, ChangeDetectorRef, inject, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ViewChild, ElementRef, AfterViewInit, OnChanges, SimpleChanges, OnDestroy, ChangeDetectorRef, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
   selector: 'app-acordiongeneric',
   standalone: true,
   imports: [CommonModule],
   templateUrl: './acordiongeneric.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./acordiongeneric.component.css'],
 })
 export class AcordiongenericComponent implements AfterViewInit, OnChanges, OnDestroy, OnInit {

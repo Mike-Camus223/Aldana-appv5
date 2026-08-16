@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { OrdersService } from '../../../../core/services/orders/orders.service';
@@ -11,6 +11,7 @@ import { environment } from '../../../../../environments/environment';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './orders-management.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./orders-management.component.css']
 })
 export class OrdersManagementComponent implements OnInit {

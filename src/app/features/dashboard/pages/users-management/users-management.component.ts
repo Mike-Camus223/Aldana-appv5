@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 
 import { AuthService } from '../../../../core/services/auth/auth.service';
 
@@ -14,6 +14,7 @@ interface User {
   selector: 'app-users-management',
   imports: [],
   templateUrl: './users-management.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styles: ``
 })
 export class UsersManagementComponent implements OnInit {

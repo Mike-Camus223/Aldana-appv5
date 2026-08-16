@@ -5,7 +5,8 @@ import {
   QueryList,
   ViewChildren,
   ElementRef,
-  ChangeDetectorRef
+  ChangeDetectorRef,
+  ChangeDetectionStrategy
 } from '@angular/core';
 
 import { Subscription } from 'rxjs';
@@ -16,6 +17,7 @@ import { ToastMessage } from '../../../utils/models/toastOptions.model';
 @Component({
   selector: 'app-toast-notification',
   imports: [],
+  changeDetection: ChangeDetectionStrategy.Eager,
   templateUrl: './toast-notification.component.html'
 })
 export class ToastNotificationComponent implements OnInit, OnDestroy {

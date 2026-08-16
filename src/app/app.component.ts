@@ -1,5 +1,5 @@
 
-import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
+import { Component, OnInit, Inject, PLATFORM_ID, ChangeDetectionStrategy } from '@angular/core';
 import { Router, NavigationEnd, RouterOutlet } from '@angular/router';
 import { ViewportScroller, isPlatformBrowser } from '@angular/common';
 import { filter } from 'rxjs/operators';
@@ -20,6 +20,7 @@ import { LoaderService } from './core/services/utils/loader.service';
     DiscountLeafComponent
 ],
   templateUrl: './app.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {

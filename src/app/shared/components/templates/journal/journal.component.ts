@@ -3,6 +3,7 @@ import {
   OnDestroy,
   OnInit,
   inject,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -55,6 +56,7 @@ type QueryPatch = Record<string, string | number | null>;
   ],
   templateUrl: './journal.component.html',
   styleUrl: './journal.component.css',
+  changeDetection: ChangeDetectionStrategy.Eager,
   providers: [
     {
       provide: LUCIDE_ICONS,

@@ -1,5 +1,5 @@
 
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { AcordiongenericComponent } from '../../generic/acordiongeneric/acordiongeneric.component';
 import { LUCIDE_ICONS, LucideAngularModule, LucideIconProvider, Heart, Send } from 'lucide-angular';
@@ -10,6 +10,7 @@ import { LUCIDE_ICONS, LucideAngularModule, LucideIconProvider, Heart, Send } fr
   imports: [RouterModule, AcordiongenericComponent, LucideAngularModule],
   templateUrl: './footerv2.component.html',
   styleUrl: './footerv2.component.css',
+  changeDetection: ChangeDetectionStrategy.Eager,
   providers: [
     {
       provide: LUCIDE_ICONS,
