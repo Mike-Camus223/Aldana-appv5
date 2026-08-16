@@ -6,7 +6,7 @@ import {
   Inject,
   PLATFORM_ID
 } from '@angular/core';
-import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { isPlatformBrowser } from '@angular/common';
 import gsap from 'gsap';
 import ScrollTrigger from 'gsap/ScrollTrigger';
 import { ReelsSectionComponent } from "../../sections/reels-section/reels-section.component";
@@ -22,7 +22,7 @@ if (typeof window !== 'undefined') {
 @Component({
   selector: 'app-about-template',
   standalone: true,
-  imports: [CommonModule, CardInitAnimationDirective, LucideAngularModule, ReelsSectionComponent, WordRevealDirective, FadeUpLetterDirective],
+  imports: [CardInitAnimationDirective, LucideAngularModule, ReelsSectionComponent, WordRevealDirective, FadeUpLetterDirective],
   templateUrl: './about-template.component.html',
   providers: [
     {

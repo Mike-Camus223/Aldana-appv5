@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { AcordiongenericComponent } from '../../generic/acordiongeneric/acordiongeneric.component';
@@ -7,7 +7,7 @@ import { LUCIDE_ICONS, LucideAngularModule, LucideIconProvider, Heart, Send } fr
 @Component({
   selector: 'app-footerv2',
   standalone: true,
-  imports: [CommonModule, RouterModule, AcordiongenericComponent, LucideAngularModule],
+  imports: [RouterModule, AcordiongenericComponent, LucideAngularModule],
   templateUrl: './footerv2.component.html',
   styleUrl: './footerv2.component.css',
   providers: [

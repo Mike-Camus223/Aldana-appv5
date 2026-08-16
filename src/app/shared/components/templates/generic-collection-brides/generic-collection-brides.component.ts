@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AppMenuItem } from '../../../utils/models/app-menu-item.model';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { BreadcrumbComponent } from '../../system/breadcrump/breadcrump.component';
-import { CommonModule } from '@angular/common';
+
 import { CollectionBridesService } from '../../../../core/services/data-access/collection-brides/collection_brides.service';
 import { BridesProductsService } from '../../../../core/services/data-access/brides-products/brides-products.service';
 import { BridesProductUtils } from '../../../utils/dataEx/brides-products-utils';
@@ -23,7 +23,7 @@ type BridesCollectionItemCard = {
 @Component({
   selector: 'app-generic-collection-brides',
   standalone: true,
-  imports: [CommonModule, RouterModule, BreadcrumbComponent, CardInitAnimationDirective, VideoComponent, WordRevealDirective, FadeUpLetterDirective],
+  imports: [RouterModule, BreadcrumbComponent, CardInitAnimationDirective, VideoComponent, WordRevealDirective, FadeUpLetterDirective],
   templateUrl: './generic-collection-brides.component.html',
   styleUrl: './generic-collection-brides.component.css'
 })

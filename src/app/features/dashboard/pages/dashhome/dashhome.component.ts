@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 
 @Component({
   selector: 'app-dashhome',
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './dashhome.component.html',
   styles: ``
 })

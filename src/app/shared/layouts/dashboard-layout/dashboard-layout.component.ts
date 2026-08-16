@@ -1,11 +1,11 @@
 import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { RouterOutlet, RouterLink, Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth/auth.service';
 
 @Component({
   selector: 'app-dashboard-layout',
-  imports: [CommonModule, RouterOutlet, RouterLink],
+  imports: [RouterOutlet, RouterLink],
   templateUrl: './dashboard-layout.component.html',
   styles: `
     .sidebar {

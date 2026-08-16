@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 
 @Component({
   selector: 'app-product-storage',
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './product-storage.component.html',
   styles: ``
 })

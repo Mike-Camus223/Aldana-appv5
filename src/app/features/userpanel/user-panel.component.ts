@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, OnInit, inject, OnDestroy } from '@angular/core';
 import { NavigationEnd, NavigationStart, NavigationCancel, NavigationError, Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../core/services/auth/auth.service';
@@ -13,7 +13,7 @@ import { NavbarPublicv3Component } from '../../shared/components/system/navbar-p
 @Component({
   selector: 'app-user-panel',
   standalone: true,
-  imports: [CommonModule, RouterModule,LucideAngularModule,NavbarPublicv3Component],
+  imports: [RouterModule, LucideAngularModule, NavbarPublicv3Component],
   templateUrl: './user-panel.component.html',
   providers: [
       {

@@ -1,8 +1,9 @@
 <app-toast-notification></app-toast-notification>
-<app-loading-screen
-  *ngIf="showMainLoader"
-  (loadingFinished)="onMainLoadingFinished()">
-</app-loading-screen>
+@if (showMainLoader) {
+  <app-loading-screen
+    (loadingFinished)="onMainLoadingFinished()">
+  </app-loading-screen>
+}
 <router-outlet></router-outlet>
 <app-loading-screen-generic></app-loading-screen-generic>
 <app-discount-leaf></app-discount-leaf>

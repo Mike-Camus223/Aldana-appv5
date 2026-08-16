@@ -21,42 +21,60 @@
             <div>
               <app-input id="name" label="Nombre completo" formControlName="name"></app-input>
 
-              <div *ngIf="isInvalid('name')" class="text-red-400 text-xs mt-1">
-                <span *ngIf="contactForm.get('name')?.errors?.['required']">
-                  Por favor, ingresa tu nombre.
-                </span>
-                <span *ngIf="contactForm.get('name')?.errors?.['minlength']">
-                  Debe tener al menos 2 caracteres.
-                </span>
-              </div>
+              @if (isInvalid('name')) {
+                <div class="text-red-400 text-xs mt-1">
+                  @if (contactForm.get('name')?.errors?.['required']) {
+                    <span>
+                      Por favor, ingresa tu nombre.
+                    </span>
+                  }
+                  @if (contactForm.get('name')?.errors?.['minlength']) {
+                    <span>
+                      Debe tener al menos 2 caracteres.
+                    </span>
+                  }
+                </div>
+              }
             </div>
 
             <!-- Email -->
             <div>
               <app-input id="email" label="Correo electrónico*" formControlName="email"></app-input>
 
-              <div *ngIf="isInvalid('email')" class="text-red-400 text-xs mt-1">
-                <span *ngIf="contactForm.get('email')?.errors?.['required']">
-                  Por favor, ingresa tu correo electrónico.
-                </span>
-                <span *ngIf="contactForm.get('email')?.errors?.['email']">
-                  Formato de correo inválido.
-                </span>
-              </div>
+              @if (isInvalid('email')) {
+                <div class="text-red-400 text-xs mt-1">
+                  @if (contactForm.get('email')?.errors?.['required']) {
+                    <span>
+                      Por favor, ingresa tu correo electrónico.
+                    </span>
+                  }
+                  @if (contactForm.get('email')?.errors?.['email']) {
+                    <span>
+                      Formato de correo inválido.
+                    </span>
+                  }
+                </div>
+              }
             </div>
 
             <!-- Teléfono -->
             <div>
               <app-input id="phone" label="Teléfono*" [numericMax11]="true" formControlName="phone"></app-input>
 
-              <div *ngIf="isInvalid('phone')" class="text-red-400 text-xs mt-1">
-                <span *ngIf="contactForm.get('phone')?.errors?.['required']">
-                  Por favor, ingresa tu teléfono.
-                </span>
-                <span *ngIf="contactForm.get('phone')?.errors?.['pattern']">
-                  Número inválido.
-                </span>
-              </div>
+              @if (isInvalid('phone')) {
+                <div class="text-red-400 text-xs mt-1">
+                  @if (contactForm.get('phone')?.errors?.['required']) {
+                    <span>
+                      Por favor, ingresa tu teléfono.
+                    </span>
+                  }
+                  @if (contactForm.get('phone')?.errors?.['pattern']) {
+                    <span>
+                      Número inválido.
+                    </span>
+                  }
+                </div>
+              }
             </div>
 
             <!-- Departamento -->
@@ -65,23 +83,31 @@
                 formControlName="department">
               </app-selects>
 
-              <div *ngIf="isInvalid('department')" class="text-red-400 text-xs mt-1">
-                Seleccioná un departamento.
-              </div>
+              @if (isInvalid('department')) {
+                <div class="text-red-400 text-xs mt-1">
+                  Seleccioná un departamento.
+                </div>
+              }
             </div>
 
             <!-- Mensaje -->
             <div>
               <app-textarea id="message" label="Tu mensaje*" formControlName="message" [rows]="5"></app-textarea>
 
-              <div *ngIf="isInvalid('message')" class="text-red-400 text-xs mt-1">
-                <span *ngIf="contactForm.get('message')?.errors?.['required']">
-                  Escribí un mensaje.
-                </span>
-                <span *ngIf="contactForm.get('message')?.errors?.['minlength']">
-                  Debe tener al menos 10 caracteres.
-                </span>
-              </div>
+              @if (isInvalid('message')) {
+                <div class="text-red-400 text-xs mt-1">
+                  @if (contactForm.get('message')?.errors?.['required']) {
+                    <span>
+                      Escribí un mensaje.
+                    </span>
+                  }
+                  @if (contactForm.get('message')?.errors?.['minlength']) {
+                    <span>
+                      Debe tener al menos 10 caracteres.
+                    </span>
+                  }
+                </div>
+              }
             </div>
 
             <!-- Botón -->
@@ -147,22 +173,22 @@
       <img appCardInitAnimation="up" src="../../../../../assets/images/others/contact2.jpg"
         alt="asesoramiento personalizado" class="w-full h-52 md:h-[400px] object-cover object-[50%_35%]"
         draggable="false" />
-    </div>
-    <div class="flex flex-col items-center text-center space-y-3 w-full md:col-span-3 xl:col-span-1 p-6 order-2">
-      <h2 appWordReveal
-        class="text-lg lg:text-xl uppercase tracking-widest NewAldyTitle font-light text-aldy-green-gray-bold">
-        Asesoramiento
-      </h2>
-      <p appFadeUpLetter class="text-base NewAldyFontType4 lg:text-base text-aldy-green-gray leading-7 max-w-md">
-        En Aldana Vilcabana brindamos una asesoría exclusiva para realzar tu estilo personal y resaltar tu esencia con
-        elegancia.
-      </p>
-      <a appFadeUpLetter
-        href="https://wa.me/5491164082659?text=Hola%2C%20vengo%20por%20una%20asesor%C3%ADa%20personalizada.%20%C2%BFPodr%C3%ADas%20pasarme%20los%20detalles%3F"
-        target="_blank" rel="noopener noreferrer"
-        class="bg-aldy-medium text-white text-xs tracking-widest py-2.5 px-5 uppercase hover:bg-aldy-medium-2 transition-colors duration-200 ease-in-out cursor-pointer inline-block">
-        Reservar por WhatsApp
-      </a>
+      </div>
+      <div class="flex flex-col items-center text-center space-y-3 w-full md:col-span-3 xl:col-span-1 p-6 order-2">
+        <h2 appWordReveal
+          class="text-lg lg:text-xl uppercase tracking-widest NewAldyTitle font-light text-aldy-green-gray-bold">
+          Asesoramiento
+        </h2>
+        <p appFadeUpLetter class="text-base NewAldyFontType4 lg:text-base text-aldy-green-gray leading-7 max-w-md">
+          En Aldana Vilcabana brindamos una asesoría exclusiva para realzar tu estilo personal y resaltar tu esencia con
+          elegancia.
+        </p>
+        <a appFadeUpLetter
+          href="https://wa.me/5491164082659?text=Hola%2C%20vengo%20por%20una%20asesor%C3%ADa%20personalizada.%20%C2%BFPodr%C3%ADas%20pasarme%20los%20detalles%3F"
+          target="_blank" rel="noopener noreferrer"
+          class="bg-aldy-medium text-white text-xs tracking-widest py-2.5 px-5 uppercase hover:bg-aldy-medium-2 transition-colors duration-200 ease-in-out cursor-pointer inline-block">
+          Reservar por WhatsApp
+        </a>
+      </div>
     </div>
   </div>
-</div>

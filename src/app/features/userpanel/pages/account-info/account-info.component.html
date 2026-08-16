@@ -7,14 +7,18 @@
 
         <!-- Avatar -->
         <div class="relative w-[72px] h-[72px] shrink-0">
-          <div *ngIf="!userAvatarUrl"
-            class="w-[72px] h-[72px] rounded-full bg-[#6b8f6b] flex items-center justify-center text-white text-2xl font-light">
-            {{ getInitial() }}
-          </div>
-          <img *ngIf="userAvatarUrl"
-            [src]="userAvatarUrl"
-            alt="Foto de perfil"
-            class="w-[72px] h-[72px] rounded-full object-cover border border-[#e0d8cf]" />
+          @if (!userAvatarUrl) {
+            <div
+              class="w-[72px] h-[72px] rounded-full bg-[#6b8f6b] flex items-center justify-center text-white text-2xl font-light">
+              {{ getInitial() }}
+            </div>
+          }
+          @if (userAvatarUrl) {
+            <img
+              [src]="userAvatarUrl"
+              alt="Foto de perfil"
+              class="w-[72px] h-[72px] rounded-full object-cover border border-[#e0d8cf]" />
+          }
           <button type="button"
             class="absolute bottom-0 right-0 w-6 h-6 rounded-full bg-[#6b8f6b] hover:bg-[#5a7d5a] flex items-center justify-center text-white transition-colors duration-200 cursor-pointer">
             <lucide-icon name="pencil" [size]="11" [strokeWidth]="2"></lucide-icon>
@@ -70,18 +74,22 @@
         <div>
           <label class="block NewAldyFontType4 text-[9px] font-normal tracking-[0.18em] uppercase text-aldy-green-gray-bold mb-1.5">Nombre</label>
           <app-input id="firstName" formControlName="firstName"></app-input>
-          <p *ngIf="accountForm.get('firstName')?.invalid && accountForm.get('firstName')?.touched"
-            class="NewAldyFontType4 text-red-400 text-[10px] tracking-wider mt-1 font-light">
-            El nombre es obligatorio
-          </p>
+          @if (accountForm.get('firstName')?.invalid && accountForm.get('firstName')?.touched) {
+            <p
+              class="NewAldyFontType4 text-red-400 text-[10px] tracking-wider mt-1 font-light">
+              El nombre es obligatorio
+            </p>
+          }
         </div>
         <div>
           <label class="block NewAldyFontType4 text-[9px] font-normal tracking-[0.18em] uppercase text-aldy-green-gray-bold mb-1.5">Apellido</label>
           <app-input id="lastName" formControlName="lastName"></app-input>
-          <p *ngIf="accountForm.get('lastName')?.invalid && accountForm.get('lastName')?.touched"
-            class="NewAldyFontType4 text-red-400 text-[10px] tracking-wider mt-1 font-light">
-            El apellido es obligatorio
-          </p>
+          @if (accountForm.get('lastName')?.invalid && accountForm.get('lastName')?.touched) {
+            <p
+              class="NewAldyFontType4 text-red-400 text-[10px] tracking-wider mt-1 font-light">
+              El apellido es obligatorio
+            </p>
+          }
         </div>
       </div>
 
@@ -89,19 +97,27 @@
         <div>
           <label class="block NewAldyFontType4 text-[9px] font-normal tracking-[0.18em] uppercase text-aldy-green-gray-bold mb-1.5">Correo electrónico</label>
           <app-input id="email" type="email" formControlName="email"></app-input>
-          <div *ngIf="accountForm.get('email')?.invalid && accountForm.get('email')?.touched"
-            class="NewAldyFontType4 text-red-400 text-[10px] tracking-wider mt-1 font-light">
-            <span *ngIf="accountForm.get('email')?.errors?.['required']">El correo es obligatorio</span>
-            <span *ngIf="accountForm.get('email')?.errors?.['email']">Formato de correo incorrecto</span>
-          </div>
+          @if (accountForm.get('email')?.invalid && accountForm.get('email')?.touched) {
+            <div
+              class="NewAldyFontType4 text-red-400 text-[10px] tracking-wider mt-1 font-light">
+              @if (accountForm.get('email')?.errors?.['required']) {
+                <span>El correo es obligatorio</span>
+              }
+              @if (accountForm.get('email')?.errors?.['email']) {
+                <span>Formato de correo incorrecto</span>
+              }
+            </div>
+          }
         </div>
         <div>
           <label class="block NewAldyFontType4 text-[9px] font-normal tracking-[0.18em] uppercase text-aldy-green-gray-bold mb-1.5">Teléfono</label>
           <app-input id="phone" formControlName="phone" [numericMax11]="true" placeholder="Ingresa tu teléfono"></app-input>
-          <p *ngIf="accountForm.get('phone')?.invalid && accountForm.get('phone')?.touched"
-            class="NewAldyFontType4 text-red-400 text-[10px] tracking-wider mt-1 font-light">
-            El teléfono es obligatorio
-          </p>
+          @if (accountForm.get('phone')?.invalid && accountForm.get('phone')?.touched) {
+            <p
+              class="NewAldyFontType4 text-red-400 text-[10px] tracking-wider mt-1 font-light">
+              El teléfono es obligatorio
+            </p>
+          }
         </div>
       </div>
 
@@ -115,10 +131,12 @@
             optionLabel="label"
             optionValue="value">
           </app-selects>
-          <p *ngIf="accountForm.get('gender')?.invalid && accountForm.get('gender')?.touched"
-            class="NewAldyFontType4 text-red-400 text-[10px] tracking-wider mt-1 font-light">
-            Elegí una opción
-          </p>
+          @if (accountForm.get('gender')?.invalid && accountForm.get('gender')?.touched) {
+            <p
+              class="NewAldyFontType4 text-red-400 text-[10px] tracking-wider mt-1 font-light">
+              Elegí una opción
+            </p>
+          }
         </div>
       </div>
 
@@ -177,14 +195,18 @@
           class="px-6 py-2.5 text-white NewAldyFontType4 text-xs tracking-[0.15em] uppercase transition-colors duration-300
             disabled:bg-[#c8c0b8] disabled:cursor-not-allowed
             enabled:bg-aldy-medium enabled:hover:bg-aldy-medium-2 cursor-pointer">
-          <span *ngIf="!isSaving">Guardar cambios</span>
-          <span *ngIf="isSaving" class="flex items-center gap-2">
-            <svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            Guardando...
-          </span>
+          @if (!isSaving) {
+            <span>Guardar cambios</span>
+          }
+          @if (isSaving) {
+            <span class="flex items-center gap-2">
+              <svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Guardando...
+            </span>
+          }
         </button>
         <button type="button" (click)="onCancel()"
           class="NewAldyFontType4 text-xs font-light text-aldy-green-gray-bold underline underline-offset-4 bg-transparent border-none cursor-pointer hover:text-aldy-medium transition-colors duration-200 tracking-wider">

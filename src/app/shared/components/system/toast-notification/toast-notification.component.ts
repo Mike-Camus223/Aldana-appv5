@@ -7,7 +7,7 @@ import {
   ElementRef,
   ChangeDetectorRef
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { Subscription } from 'rxjs';
 import gsap from 'gsap';
 import { NotificationService } from '../../../../core/services/notification.service';
@@ -15,7 +15,7 @@ import { ToastMessage } from '../../../utils/models/toastOptions.model';
 
 @Component({
   selector: 'app-toast-notification',
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './toast-notification.component.html'
 })
 export class ToastNotificationComponent implements OnInit, OnDestroy {

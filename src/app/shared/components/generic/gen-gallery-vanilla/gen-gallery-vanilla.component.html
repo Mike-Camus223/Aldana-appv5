@@ -1,37 +1,46 @@
-<div *ngFor="let row of rows" class="mb-10">
-
-  <h3 appWordReveal class="text-xl NewAldyTitle tracking-widest text-aldy-green-gray-bold mb-10 uppercase">
-    {{ row.label }}
-  </h3>
-  <div class="grid grid-cols-2 lg:grid-cols-5 gap-4">
-    <div *ngFor="let item of row.items; let i = index"
-         (click)="openLightbox(row.items, i)"
-         class="cursor-pointer overflow-hidden group">
-      <div class="aspect-[3/5] w-full overflow-hidden relative">
-        <img *ngIf="item.type === 'image'"
-             [src]="item.url"
-             loading="lazy"
-             appCardInitAnimation="up"
-             decoding="async"
-             class="w-full h-full object-top object-cover" />
-        <video *ngIf="item.type === 'video'"
-               [src]="item.url"
-               [poster]="item.poster"
-               muted
-               loop
-               appCardInitAnimation="up"
-               preload="metadata"
-               class="w-full h-full object-coverr">
-        </video>
-        <div *ngIf="item.type === 'video'"
-             class="absolute top-3 right-3 bg-black px-1 py-0.5  lg:px-2 lg:py-1 rounded-full flex items-center gap-1.5 shadow-sm">
-          <div class="h-1 w-1 lg:w-1.5 lg:h-1.5 rounded-full bg-aldy-white animate-pulse"></div>
-          <span class="text-[8px] lg:text-[10px] tracking-[0.2em] uppercase text-white font-medium">Video</span>
+@for (row of rows; track row) {
+  <div class="mb-10">
+    <h3 appWordReveal class="text-xl NewAldyTitle tracking-widest text-aldy-green-gray-bold mb-10 uppercase">
+      {{ row.label }}
+    </h3>
+    <div class="grid grid-cols-2 lg:grid-cols-5 gap-4">
+      @for (item of row.items; track item; let i = $index) {
+        <div
+          (click)="openLightbox(row.items, i)"
+          class="cursor-pointer overflow-hidden group">
+          <div class="aspect-[3/5] w-full overflow-hidden relative">
+            @if (item.type === 'image') {
+              <img
+                [src]="item.url"
+                loading="lazy"
+                appCardInitAnimation="up"
+                decoding="async"
+                class="w-full h-full object-top object-cover" />
+            }
+            @if (item.type === 'video') {
+              <video
+                [src]="item.url"
+                [poster]="item.poster"
+                muted
+                loop
+                appCardInitAnimation="up"
+                preload="metadata"
+                class="w-full h-full object-coverr">
+              </video>
+            }
+            @if (item.type === 'video') {
+              <div
+                class="absolute top-3 right-3 bg-black px-1 py-0.5  lg:px-2 lg:py-1 rounded-full flex items-center gap-1.5 shadow-sm">
+                <div class="h-1 w-1 lg:w-1.5 lg:h-1.5 rounded-full bg-aldy-white animate-pulse"></div>
+                <span class="text-[8px] lg:text-[10px] tracking-[0.2em] uppercase text-white font-medium">Video</span>
+              </div>
+            }
+          </div>
         </div>
-      </div>
+      }
     </div>
   </div>
-</div>
+}
 <app-gen-lightbox-vanilla
   [isOpen]="lightboxOpen"
   [items]="lightboxItems"

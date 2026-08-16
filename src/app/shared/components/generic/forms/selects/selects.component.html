@@ -40,37 +40,34 @@
   </div>
 
   <!-- Dropdown -->
-  <div
-    *ngIf="isOpen"
-    @slideDown
-    class="absolute z-50 w-full mt-1 bg-aldy-white border border-[#e0d8cf] shadow-sm overflow-hidden">
-
-    <div class="max-h-52 overflow-y-auto">
-
-      <div
-        *ngFor="let option of options"
-        (click)="selectOption(option)"
-        class="flex items-center justify-between px-3.5 py-3 NewAldyFontType4 text-[13px] tracking-wide cursor-pointer transition-colors duration-150"
+  @if (isOpen) {
+    <div
+      @slideDown
+      class="absolute z-50 w-full mt-1 bg-aldy-white border border-[#e0d8cf] shadow-sm overflow-hidden">
+      <div class="max-h-52 overflow-y-auto">
+        @for (option of options; track option) {
+          <div
+            (click)="selectOption(option)"
+            class="flex items-center justify-between px-3.5 py-3 NewAldyFontType4 text-[13px] tracking-wide cursor-pointer transition-colors duration-150"
         [ngClass]="{
           'bg-aldy-light text-aldy-medium': isSelected(option),
           'text-[#5A5A4A] hover:bg-aldy-light': !isSelected(option)
         }">
-
-        <span>{{ getOptionLabel(option) }}</span>
-
-        <svg
-          *ngIf="isSelected(option)"
-          class="w-3.5 h-3.5 text-aldy-medium shrink-0"
-          fill="currentColor"
-          viewBox="0 0 20 20">
-          <path fill-rule="evenodd"
-            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-            clip-rule="evenodd"/>
-        </svg>
-
+            <span>{{ getOptionLabel(option) }}</span>
+            @if (isSelected(option)) {
+              <svg
+                class="w-3.5 h-3.5 text-aldy-medium shrink-0"
+                fill="currentColor"
+                viewBox="0 0 20 20">
+                <path fill-rule="evenodd"
+                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                  clip-rule="evenodd"/>
+                </svg>
+              }
+            </div>
+          }
+        </div>
       </div>
+    }
 
-    </div>
   </div>
-
-</div>

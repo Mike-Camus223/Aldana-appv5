@@ -1,7 +1,7 @@
 
 import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
 import { Router, NavigationEnd, RouterOutlet } from '@angular/router';
-import { CommonModule, ViewportScroller, isPlatformBrowser } from '@angular/common';
+import { ViewportScroller, isPlatformBrowser } from '@angular/common';
 import { filter } from 'rxjs/operators';
 import { LoadingScreenGenericComponent } from "./shared/components/system/loading-screen-generic/loading-screen-generic.component";
 import { LoadingScreenComponent } from './shared/components/system/loading-screen/loading-screen.component';
@@ -13,13 +13,12 @@ import { LoaderService } from './core/services/utils/loader.service';
   selector: 'app-root',
   standalone: true,
   imports: [
-    RouterOutlet, 
+    RouterOutlet,
     ToastNotificationComponent,
-    LoadingScreenGenericComponent, 
+    LoadingScreenGenericComponent,
     LoadingScreenComponent,
-    CommonModule,
     DiscountLeafComponent
-  ],
+],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })

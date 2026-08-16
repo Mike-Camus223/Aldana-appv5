@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MediaItem } from '../../../utils/models/objectsGallery.model';
 import { GenLightboxVanillaComponent } from '../gen-lightbox-vanilla/gen-lightbox-vanilla.component';
 import { CardInitAnimationDirective } from '../../../utils/directives/card-init-animation.directive';
@@ -9,7 +9,7 @@ import { WordRevealDirective } from '../../../utils/directives/word-reveal.direc
 @Component({
   selector: 'app-gen-gallery-vanilla',
   standalone: true,
-  imports: [CommonModule, GenLightboxVanillaComponent, CardInitAnimationDirective, WordRevealDirective],
+  imports: [GenLightboxVanillaComponent, CardInitAnimationDirective, WordRevealDirective],
   templateUrl: './gen-gallery-vanilla.component.html',
 })
 export class GenGalleryVanillaComponent {

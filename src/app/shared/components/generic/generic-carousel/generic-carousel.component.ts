@@ -43,7 +43,7 @@ export interface CarouselConfig {
       #carouselRoot
       (mouseenter)="onMouseEnter()"
       (mouseleave)="onMouseLeave()"
-    >
+      >
       <!-- Track wrapper -->
       <div class="relative overflow-hidden w-full" #trackWrapper>
         <div
@@ -54,24 +54,25 @@ export interface CarouselConfig {
           (touchstart)="onTouchStart($event)"
           (touchmove)="onTouchMove($event)"
           (touchend)="onTouchEnd($event)"
-        >
-          <div
-            *ngFor="let item of items; let i = index"
-            class="flex-shrink-0"
-            [style.width]="itemWidth"
-            #slideEl
           >
-            <ng-container [ngTemplateOutlet]="item.templateRef" />
-          </div>
+          @for (item of items; track item; let i = $index) {
+            <div
+              class="flex-shrink-0"
+              [style.width]="itemWidth"
+              #slideEl
+              >
+              <ng-container [ngTemplateOutlet]="item.templateRef" />
+            </div>
+          }
         </div>
       </div>
-
+    
       <!-- Prev Arrow -->
-      <button
-        *ngIf="config.showArrows !== false"
-        (click)="prev()"
-        [class.opacity-30]="!canGoPrev && !config.loop"
-        [class.pointer-events-none]="!canGoPrev && !config.loop"
+      @if (config.showArrows !== false) {
+        <button
+          (click)="prev()"
+          [class.opacity-30]="!canGoPrev && !config.loop"
+          [class.pointer-events-none]="!canGoPrev && !config.loop"
         class="
           absolute left-2 top-1/2 -translate-y-1/2 z-20
           flex items-center justify-center
@@ -82,19 +83,20 @@ export interface CarouselConfig {
           hover:bg-white/25 hover:scale-110 active:scale-95
           focus:outline-none focus:ring-2 focus:ring-white/40
         "
-        aria-label="Previous slide"
-      >
-        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
-        </svg>
-      </button>
-
+          aria-label="Previous slide"
+          >
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+      }
+    
       <!-- Next Arrow -->
-      <button
-        *ngIf="config.showArrows !== false"
-        (click)="next()"
-        [class.opacity-30]="!canGoNext && !config.loop"
-        [class.pointer-events-none]="!canGoNext && !config.loop"
+      @if (config.showArrows !== false) {
+        <button
+          (click)="next()"
+          [class.opacity-30]="!canGoNext && !config.loop"
+          [class.pointer-events-none]="!canGoNext && !config.loop"
         class="
           absolute right-2 top-1/2 -translate-y-1/2 z-20
           flex items-center justify-center
@@ -105,35 +107,38 @@ export interface CarouselConfig {
           hover:bg-white/25 hover:scale-110 active:scale-95
           focus:outline-none focus:ring-2 focus:ring-white/40
         "
-        aria-label="Next slide"
-      >
-        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
-        </svg>
-      </button>
-
+          aria-label="Next slide"
+          >
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+      }
+    
       <!-- Dots -->
-      <div
-        *ngIf="config.showDots !== false && totalPages > 1"
-        class="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5"
-        role="tablist"
-      >
-        <button
-          *ngFor="let page of pagesArray; let i = index"
-          (click)="goToPage(i)"
-          role="tab"
-          [attr.aria-selected]="currentPage() === i"
-          [attr.aria-label]="'Go to slide ' + (i + 1)"
-          class="rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-white/60"
+      @if (config.showDots !== false && totalPages > 1) {
+        <div
+          class="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5"
+          role="tablist"
+          >
+          @for (page of pagesArray; track page; let i = $index) {
+            <button
+              (click)="goToPage(i)"
+              role="tab"
+              [attr.aria-selected]="currentPage() === i"
+              [attr.aria-label]="'Go to slide ' + (i + 1)"
+              class="rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-white/60"
           [class]="
             currentPage() === i
               ? 'w-6 h-2 bg-white'
               : 'w-2 h-2 bg-white/40 hover:bg-white/70'
           "
-        ></button>
-      </div>
+            ></button>
+          }
+        </div>
+      }
     </div>
-  `,
+    `,
 })
 export class AppGenericCarouselComponent
   implements AfterContentInit, AfterViewInit, OnDestroy {

@@ -1,11 +1,11 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { trigger, transition, style, animate } from '@angular/animations';
-import { CommonModule } from '@angular/common';
+
 
 @Component({
   selector: 'app-loadingbar',
   templateUrl: './loadingbar.component.html',
-  imports: [CommonModule],
+  imports: [],
   animations: [
     trigger('fade', [
       transition(':enter', [

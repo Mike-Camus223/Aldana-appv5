@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { BreadcrumbComponent } from '../../system/breadcrump/breadcrump.component';
 import { AppMenuItem } from '../../../utils/models/app-menu-item.model';
@@ -23,7 +23,7 @@ type CollectionItemCard = {
 @Component({
   selector: 'app-generic-collection',
   standalone: true,
-  imports: [CommonModule, RouterModule, BreadcrumbComponent, CardInitAnimationDirective, VideoComponent, WordRevealDirective, FadeUpLetterDirective],
+  imports: [RouterModule, BreadcrumbComponent, CardInitAnimationDirective, VideoComponent, WordRevealDirective, FadeUpLetterDirective],
   templateUrl: './generic-collection.component.html',
   styleUrls: ['./generic-collection.component.css'],
 })

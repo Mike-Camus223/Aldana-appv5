@@ -1,4 +1,4 @@
-<ng-container *ngIf="isMobileView; else desktopView">
+@if (isMobileView) {
   <div #cardRoot
     class="relative flex flex-col bg-aldy-white border-1 border-aldy-medium/50 shadow-md overflow-hidden w-full mx-auto">
     <a [routerLink]="['/producto', product.slug]" [queryParams]="cardQueryParams" class="block relative">
@@ -10,8 +10,10 @@
             NUEVO
           </span>
         </div>
-        <img *ngIf="displayImage || product.main_image" #mobileImage [ngSrc]="displayImage || product.main_image"
-          [alt]="product.name" width="400" height="500" priority class="w-full h-full object-cover object-top" />
+        @if (displayImage || product.main_image) {
+          <img #mobileImage [ngSrc]="displayImage || product.main_image"
+            [alt]="product.name" width="400" height="500" priority class="w-full h-full object-cover object-top" />
+        }
         <button type="button" aria-label="Añadir a favoritos"
           (click)="$event.preventDefault(); $event.stopPropagation(); toggleWishlist($event)"
           class="absolute top-2 right-2 xs:top-3 xs:right-3 z-14 rounded-full bg-aldy-white flex items-center justify-center cursor-pointer"
@@ -22,34 +24,32 @@
         </button>
       </div>
     </a>
-
     <div class="flex flex-col px-2.5 xs:px-3 py-2.5">
       <h3 class="font-light NewAldyTitle text-aldy-green-gray-bold m-0 tracking-wide leading-tight break-words"
         style="font-size: clamp(12px, 3.6vw, 17px);">
         {{ product.name }}
       </h3>
-
       <div class="flex items-center justify-between gap-2 mt-1">
         <p class="font-medium NewAldyFontType4 text-aldy-green-gray-bold tracking-wide"
           style="font-size: clamp(11px, 3.2vw, 14px);">
           {{ product.price | currency:'ARS':'symbol-narrow':'1.2-2':'es-AR' }}
         </p>
-
         <div class="shrink-0 flex flex-wrap items-center justify-end gap-1.5 max-w-[45%]">
-          <button *ngFor="let color of product.variants" (click)="selectColor(color.color_name)"
-            [ngStyle]="{ backgroundColor: color.color_hex }" [attr.aria-pressed]="selectedColor === color.color_name"
-            [title]="color.color_name" aria-label="Elegir color"
-            class="rounded-full border-2 border-[#d9d0c7] cursor-pointer transition-all hover:scale-110 shrink-0"
+          @for (color of product.variants; track color) {
+            <button (click)="selectColor(color.color_name)"
+              [ngStyle]="{ backgroundColor: color.color_hex }" [attr.aria-pressed]="selectedColor === color.color_name"
+              [title]="color.color_name" aria-label="Elegir color"
+              class="rounded-full border-2 border-[#d9d0c7] cursor-pointer transition-all hover:scale-110 shrink-0"
             style="width: clamp(10px, 4vw, 22px); height: clamp(10px, 4vw, 22px);" [ngClass]="{
               'ring-2 ring-offset-1 ring-aldy-medium-2': selectedColor === color.color_name
             }">
-          </button>
+            </button>
+          }
         </div>
       </div>
     </div>
   </div>
-</ng-container>
-<ng-template #desktopView>
+} @else {
   <div #cardRoot
     class="relative overflow-hidden border-1 border-aldy-medium/50 shadow-md group aspect-[3/4] sm:aspect-[3/4] md:aspect-[3/5] lg:aspect-[3/5] xl:aspect-[3/5] bg-[#e4ddd6]">
     <div class="absolute top-3 left-0 z-10">
@@ -68,55 +68,63 @@
       appPanimationcard [disableHover]="isMobileView">
       <img #productImage [ngSrc]="currentImage" alt="{{ product.name }}" width="400" height="500" priority
         class="w-full h-full cursor-pointer object-cover object-top" />
-      <img *ngIf="hoverImage" data-overlay-image [ngSrc]="hoverImage" alt="{{ product.name }}" width="400" height="500"
-        priority class="absolute inset-0 w-full h-full object-cover object-top pointer-events-none" style="opacity:0" />
-    </a>
-    <div appMoveupFade class="absolute inset-0 flex items-end z-10 pointer-events-none">
-      <div class="w-full bg-aldy-white mx-3 mb-3 p-4 pointer-events-auto space-y-2">
-        <p class="text-[10px] tracking-widest NewAldyFontType4 uppercase text-aldy-medium-2 font-medium mb-2">Camisas
-        </p>
-        <div class="flex justify-between items-baseline">
-          <h3 class="text-xl font-light NewAldyTitle text-aldy-green-gray-bold m-0">
-            {{ product.name }}
-          </h3>
-          <span class="text-base font-medium NewAldyFontType4 text-aldy-green-gray-bold whitespace-nowrap ml-3">
-            {{ product.price | currency:'ARS':'symbol-narrow':'1.2-2':'es-AR' }}
-          </span>
-        </div>
-        <div class="flex items-center justify-center mb-4 gap-4 w-full">
-          <span class="flex-1 h-px bg-aldy-medium opacity-60"></span>
-          <span class="text-aldy-medium text-xs leading-none select-none">
-            ✦
-          </span>
-          <span class="flex-1 h-px bg-aldy-medium opacity-60"></span>
-        </div>
-        <div class="flex justify-between items-end gap-4">
-          <div *ngIf="!product.isBridal">
-            <p
-              class="text-[10px] tracking-widest uppercase text-aldy-green-gray-bold NewAldyFontType4 font-medium mb-2">
-              Tallas</p>
-            <div class="flex gap-1.5">
-              <button *ngFor="let size of product.sizes" (click)="selectSize(size)"
-                class="w-9 h-9 text-sm bg-aldy-white hover:bg-aldy-medium text-aldy-green-gray-bold transition-all cursor-pointer duration-400 hover:text-white flex items-center justify-center">
-                {{ size }}
-              </button>
-            </div>
+        @if (hoverImage) {
+          <img data-overlay-image [ngSrc]="hoverImage" alt="{{ product.name }}" width="400" height="500"
+            priority class="absolute inset-0 w-full h-full object-cover object-top pointer-events-none" style="opacity:0" />
+        }
+      </a>
+      <div appMoveupFade class="absolute inset-0 flex items-end z-10 pointer-events-none">
+        <div class="w-full bg-aldy-white mx-3 mb-3 p-4 pointer-events-auto space-y-2">
+          <p class="text-[10px] tracking-widest NewAldyFontType4 uppercase text-aldy-medium-2 font-medium mb-2">Camisas
+          </p>
+          <div class="flex justify-between items-baseline">
+            <h3 class="text-xl font-light NewAldyTitle text-aldy-green-gray-bold m-0">
+              {{ product.name }}
+            </h3>
+            <span class="text-base font-medium NewAldyFontType4 text-aldy-green-gray-bold whitespace-nowrap ml-3">
+              {{ product.price | currency:'ARS':'symbol-narrow':'1.2-2':'es-AR' }}
+            </span>
           </div>
-          <div>
-            <div class="flex gap-2 items-center mb-1">
-              <button *ngFor="let color of product.variants" (click)="selectColor(color.color_name)"
-                [ngStyle]="{ backgroundColor: color.color_hex }"
-                [attr.aria-pressed]="selectedColor === color.color_name"
-                [title]="color.isBase ? (color.color_name + ' (base)') : color.color_name" aria-label="Elegir color"
+          <div class="flex items-center justify-center mb-4 gap-4 w-full">
+            <span class="flex-1 h-px bg-aldy-medium opacity-60"></span>
+            <span class="text-aldy-medium text-xs leading-none select-none">
+              ✦
+            </span>
+            <span class="flex-1 h-px bg-aldy-medium opacity-60"></span>
+          </div>
+          <div class="flex justify-between items-end gap-4">
+            @if (!product.isBridal) {
+              <div>
+                <p
+                  class="text-[10px] tracking-widest uppercase text-aldy-green-gray-bold NewAldyFontType4 font-medium mb-2">
+                Tallas</p>
+                <div class="flex gap-1.5">
+                  @for (size of product.sizes; track size) {
+                    <button (click)="selectSize(size)"
+                      class="w-9 h-9 text-sm bg-aldy-white hover:bg-aldy-medium text-aldy-green-gray-bold transition-all cursor-pointer duration-400 hover:text-white flex items-center justify-center">
+                      {{ size }}
+                    </button>
+                  }
+                </div>
+              </div>
+            }
+            <div>
+              <div class="flex gap-2 items-center mb-1">
+                @for (color of product.variants; track color) {
+                  <button (click)="selectColor(color.color_name)"
+                    [ngStyle]="{ backgroundColor: color.color_hex }"
+                    [attr.aria-pressed]="selectedColor === color.color_name"
+                    [title]="color.isBase ? (color.color_name + ' (base)') : color.color_name" aria-label="Elegir color"
                 class="w-7 h-7 rounded-full border transition-all cursor-pointer" [ngClass]="{
                   'border-2 border-white ring-2 ring-[#7a9e87]': selectedColor === color.color_name,
                   'border-gray-300': selectedColor !== color.color_name
                 }">
-              </button>
+                  </button>
+                }
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
-</ng-template>
+  }

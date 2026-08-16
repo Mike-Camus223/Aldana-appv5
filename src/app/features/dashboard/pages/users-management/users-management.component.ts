@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { AuthService } from '../../../../core/services/auth/auth.service';
 
 interface User {
@@ -12,7 +12,7 @@ interface User {
 
 @Component({
   selector: 'app-users-management',
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './users-management.component.html',
   styles: ``
 })

@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, OnInit, inject, OnDestroy, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { NavigationEnd, NavigationStart, NavigationCancel, NavigationError, Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../core/services/auth/auth.service';
@@ -11,7 +11,7 @@ import { Footerv2Component } from '../../shared/components/system/footerv2/foote
 @Component({
   selector: 'app-auth-panel',
   standalone: true,
-  imports: [CommonModule, RouterModule, Footerv2Component],
+  imports: [RouterModule, Footerv2Component],
   templateUrl: './authPanel.component.html',
   styleUrls: ['./authPanel.component.css']
 })

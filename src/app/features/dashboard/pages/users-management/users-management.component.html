@@ -27,106 +27,114 @@
           placeholder="Buscar por email..."
           (input)="onSearchChange($event)"
           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-      </div>
-      <div class="md:w-48">
-        <select 
-          (change)="onRoleFilterChange($event)"
-          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-          <option value="all">Todos los roles</option>
-          <option value="admin">Solo Admins</option>
-          <option value="user">Solo Users</option>
-        </select>
+        </div>
+        <div class="md:w-48">
+          <select
+            (change)="onRoleFilterChange($event)"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            <option value="all">Todos los roles</option>
+            <option value="admin">Solo Admins</option>
+            <option value="user">Solo Users</option>
+          </select>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- Users Table -->
-  <div class="bg-white rounded-lg shadow overflow-hidden">
-    <div class="overflow-x-auto">
-      <table class="min-w-full divide-y divide-gray-200">
-        <thead class="bg-gray-50">
-          <tr>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Usuario</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rol</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Registro</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email Confirmado</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
-          </tr>
-        </thead>
-        <tbody class="bg-white divide-y divide-gray-200">
-          <tr *ngFor="let user of filteredUsers" class="hover:bg-gray-50">
-            <td class="px-6 py-4 whitespace-nowrap">
-              <div class="flex items-center">
-                <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
-                  <span class="text-white text-sm font-medium">
-                    {{ user.email.charAt(0).toUpperCase() }}
+    <!-- Users Table -->
+    <div class="bg-white rounded-lg shadow overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Usuario</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rol</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Registro</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email Confirmado</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            @for (user of filteredUsers; track user) {
+              <tr class="hover:bg-gray-50">
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="flex items-center">
+                    <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
+                      <span class="text-white text-sm font-medium">
+                        {{ user.email.charAt(0).toUpperCase() }}
+                      </span>
+                    </div>
+                    <div class="ml-4">
+                      <div class="text-sm font-medium text-gray-900">{{ user.email }}</div>
+                      <div class="text-sm text-gray-500">ID: {{ user.id }}</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span [class]="getRoleBadgeClass(user.role)" class="inline-flex px-2 py-1 text-xs font-semibold rounded-full">
+                    {{ getRoleDisplayName(user.role) }}
                   </span>
-                </div>
-                <div class="ml-4">
-                  <div class="text-sm font-medium text-gray-900">{{ user.email }}</div>
-                  <div class="text-sm text-gray-500">ID: {{ user.id }}</div>
-                </div>
-              </div>
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap">
-              <span [class]="getRoleBadgeClass(user.role)" class="inline-flex px-2 py-1 text-xs font-semibold rounded-full">
-                {{ getRoleDisplayName(user.role) }}
-              </span>
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-              {{ formatDate(user.created_at) }}
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap">
-              <span *ngIf="user.email_confirmed_at" class="inline-flex items-center px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
-                <i class="fas fa-check mr-1"></i>
-                Confirmado
-              </span>
-              <span *ngIf="!user.email_confirmed_at" class="inline-flex items-center px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                <i class="fas fa-clock mr-1"></i>
-                Pendiente
-              </span>
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-              <button
-                (click)="toggleUserRole(user)"
-                [class]="user.role === 'admin' ? 'bg-red-600 hover:bg-red-700' : 'bg-blue-600 hover:bg-blue-700'"
-                class="inline-flex items-center px-3 py-2 text-xs font-medium text-white rounded-md transition-colors">
-                <i [class]="user.role === 'admin' ? 'fas fa-user-minus' : 'fas fa-user-plus'" class="mr-1"></i>
-                {{ user.role === 'admin' ? 'Quitar Admin' : 'Hacer Admin' }}
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <!-- Empty State -->
-    <div *ngIf="filteredUsers.length === 0" class="text-center py-12">
-      <i class="fas fa-users text-gray-400 text-4xl mb-4"></i>
-      <h3 class="text-lg font-medium text-gray-900 mb-2">No se encontraron usuarios</h3>
-      <p class="text-gray-500">Intenta cambiar los filtros de búsqueda.</p>
-    </div>
-  </div>
-
-  <!-- SQL Queries Help -->
-  <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
-    <h3 class="text-lg font-medium text-blue-900 mb-4">
-      <i class="fas fa-database mr-2"></i>
-      Consultas SQL para Supabase
-    </h3>
-    <div class="space-y-4 text-sm">
-      <div>
-        <p class="font-medium text-blue-800 mb-2">Ver todos los usuarios con roles:</p>
-        <code class="block bg-white p-3 rounded border text-xs overflow-x-auto">
-aaa
-        </code>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {{ formatDate(user.created_at) }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  @if (user.email_confirmed_at) {
+                    <span class="inline-flex items-center px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                      <i class="fas fa-check mr-1"></i>
+                      Confirmado
+                    </span>
+                  }
+                  @if (!user.email_confirmed_at) {
+                    <span class="inline-flex items-center px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                      <i class="fas fa-clock mr-1"></i>
+                      Pendiente
+                    </span>
+                  }
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                  <button
+                    (click)="toggleUserRole(user)"
+                    [class]="user.role === 'admin' ? 'bg-red-600 hover:bg-red-700' : 'bg-blue-600 hover:bg-blue-700'"
+                    class="inline-flex items-center px-3 py-2 text-xs font-medium text-white rounded-md transition-colors">
+                    <i [class]="user.role === 'admin' ? 'fas fa-user-minus' : 'fas fa-user-plus'" class="mr-1"></i>
+                    {{ user.role === 'admin' ? 'Quitar Admin' : 'Hacer Admin' }}
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
       </div>
-      <div>
-        <p class="font-medium text-blue-800 mb-2">Convertir usuario a admin:</p>
-        <code class="block bg-white p-3 rounded border text-xs overflow-x-auto">
-aaa
-        </code>
+
+      <!-- Empty State -->
+      @if (filteredUsers.length === 0) {
+        <div class="text-center py-12">
+          <i class="fas fa-users text-gray-400 text-4xl mb-4"></i>
+          <h3 class="text-lg font-medium text-gray-900 mb-2">No se encontraron usuarios</h3>
+          <p class="text-gray-500">Intenta cambiar los filtros de búsqueda.</p>
+        </div>
+      }
+    </div>
+
+    <!-- SQL Queries Help -->
+    <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+      <h3 class="text-lg font-medium text-blue-900 mb-4">
+        <i class="fas fa-database mr-2"></i>
+        Consultas SQL para Supabase
+      </h3>
+      <div class="space-y-4 text-sm">
+        <div>
+          <p class="font-medium text-blue-800 mb-2">Ver todos los usuarios con roles:</p>
+          <code class="block bg-white p-3 rounded border text-xs overflow-x-auto">
+            aaa
+          </code>
+        </div>
+        <div>
+          <p class="font-medium text-blue-800 mb-2">Convertir usuario a admin:</p>
+          <code class="block bg-white p-3 rounded border text-xs overflow-x-auto">
+            aaa
+          </code>
+        </div>
       </div>
     </div>
   </div>
-</div>

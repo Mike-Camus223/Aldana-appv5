@@ -6,7 +6,7 @@ import {
   QueryList,
   OnDestroy,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Subject, takeUntil } from 'rxjs';
@@ -25,11 +25,10 @@ if (typeof window !== 'undefined') {
   selector: 'app-about-sec-home',
   standalone: true,
   imports: [
-    CommonModule,
     WordRevealDirective,
     FadeUpLetterDirective,
-    RouterModule,
-  ],
+    RouterModule
+],
   templateUrl: './about-sec-home.component.html',
   styleUrl: './about-sec-home.component.css',
 })

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { environment } from '../../../../../environments/environment';
@@ -7,7 +7,7 @@ import { environment } from '../../../../../environments/environment';
 @Component({
   selector: 'app-register-success',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [RouterModule],
   templateUrl: './register-success.component.html',
   styleUrls: ['./register-success.component.css']
 })

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+
 import { ReactiveFormsModule } from '@angular/forms';
 import { InputComponent } from '../../generic/forms/input/input.component';
 import { TextareaComponent } from '../../generic/forms/textarea/textarea.component';
@@ -13,7 +13,6 @@ import { CardInitAnimationDirective } from '../../../utils/directives/card-init-
   selector: 'app-contact-template',
   standalone: true,
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     InputComponent,
     TextareaComponent,
@@ -21,7 +20,7 @@ import { CardInitAnimationDirective } from '../../../utils/directives/card-init-
     WordRevealDirective,
     FadeUpLetterDirective,
     CardInitAnimationDirective
-  ],
+],
   templateUrl: './contact-template.component.html',
 })
 export class ContactTemplateComponent {

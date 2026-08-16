@@ -7,15 +7,16 @@
         <img [draggable]="false" src="../../../assets/svg/logo-4.svg" alt="Aldana Vilcabana" class="w-35 h-full object-contain">
       </div>
       <nav class="flex flex-col px-4 gap-0.5">
-        <a
-          *ngFor="let item of navItems"
-          [routerLink]="item.route"
-          routerLinkActive="bg-[#d6e4cf] text-[#4a6644]"
-          [routerLinkActiveOptions]="{exact: false}"
-          class="flex items-center gap-3 px-4 py-3.5 text-[#7a8c74] text-[11px] tracking-[0.2em] uppercase NewAldyFontType4 font-light hover:bg-[#e6ede2] transition-colors duration-200 cursor-pointer">
-          <lucide-icon [size]="17" [strokeWidth]="1.5" [name]="item.icon" class="shrink-0 text-[#7a9472]"></lucide-icon>
-          {{ item.title }}
-        </a>
+        @for (item of navItems; track item) {
+          <a
+            [routerLink]="item.route"
+            routerLinkActive="bg-[#d6e4cf] text-[#4a6644]"
+            [routerLinkActiveOptions]="{exact: false}"
+            class="flex items-center gap-3 px-4 py-3.5 text-[#7a8c74] text-[11px] tracking-[0.2em] uppercase NewAldyFontType4 font-light hover:bg-[#e6ede2] transition-colors duration-200 cursor-pointer">
+            <lucide-icon [size]="17" [strokeWidth]="1.5" [name]="item.icon" class="shrink-0 text-[#7a9472]"></lucide-icon>
+            {{ item.title }}
+          </a>
+        }
       </nav>
       <div class="mt-6 px-4">
         <div class="border-t border-[#d8cfc6] mb-2"></div>
@@ -36,17 +37,21 @@
           class="absolute inset-0 w-full h-full object-cover brightness-70 object-[65%_22%]"
           src="../../../assets/images/others/perfil_user.jpg"
           alt="wardrobe">
-        <div class="absolute inset-0 bg-black/20"></div>
-        <h1 class="relative text-3xl sm:text-5xl NewAldyTitle tracking-[0.3em] uppercase text-white font-light z-10">
-          Mi cuenta
-        </h1>
-      </div>
-      <main class="flex-1 bg-aldy-white relative px-8 py-10">
-        <div *ngIf="isLoading" class="loading-overlay">
-          <div class="spinner-aldy"></div>
+          <div class="absolute inset-0 bg-black/20"></div>
+          <h1 class="relative text-3xl sm:text-5xl NewAldyTitle tracking-[0.3em] uppercase text-white font-light z-10">
+            Mi cuenta
+          </h1>
         </div>
-        <router-outlet *ngIf="!isLoading"></router-outlet>
-      </main>
+        <main class="flex-1 bg-aldy-white relative px-8 py-10">
+          @if (isLoading) {
+            <div class="loading-overlay">
+              <div class="spinner-aldy"></div>
+            </div>
+          }
+          @if (!isLoading) {
+            <router-outlet></router-outlet>
+          }
+        </main>
+      </div>
     </div>
   </div>
-</div>

@@ -2,41 +2,54 @@
   <div class="max-w-screen-3xl mx-auto">
     <nav aria-label="Breadcrumb" class="w-full">
       <ol class="flex items-center flex-wrap gap-2 text-aldy-green-gray">
-        <li *ngFor="let item of items; let last = last" class="flex items-center gap-2">
-          <!-- Con routerLink -->
-          <a
-            *ngIf="item.route; else urlOrText"
-            [routerLink]="item.route"
-            [class.text-aldy-bold]="isActive(item) || last"
-            [class.font-medium]="isActive(item) || last"
-            class="flex items-center gap-1.5 tracking-wider NewAldyFontType4 font-light text-xs hover:text-aldy-bold transition-colors"
-          >
-            <span *ngIf="item.icon" [ngClass]="item.icon" class="text-sm"></span>
-            <span *ngIf="item.label" class="truncate">{{ item.label }}</span>
-          </a>
-
-          <!-- Con URL o texto estático -->
-          <ng-template #urlOrText>
-            <a
-              *ngIf="item.url; else plainText"
-              [href]="item.url"
-              class="flex items-center gap-1.5 tracking-wider NewAldyFontType4 font-light text-xs hover:text-aldy-bold transition-colors"
-            >
-              <span *ngIf="item.icon" [ngClass]="item.icon" class="text-sm"></span>
-              <span *ngIf="item.label" class="truncate">{{ item.label }}</span>
-            </a>
-
-            <ng-template #plainText>
-              <span class="flex items-center gap-1.5 tracking-wider NewAldyFontType4 text-xs text-aldy-bold font-medium">
-                <span *ngIf="item.icon" [ngClass]="item.icon" class="text-sm"></span>
-                <span *ngIf="item.label" class="truncate">{{ item.label }}</span>
-              </span>
-            </ng-template>
-          </ng-template>
-
-          <!-- Separador Chevron -->
-          <i *ngIf="!last" class="fa-solid fa-chevron-right text-[10px] opacity-40 mx-0.5"></i>
-        </li>
+        @for (item of items; track item; let last = $last) {
+          <li class="flex items-center gap-2">
+            <!-- Con routerLink -->
+            @if (item.route) {
+              <a
+                [routerLink]="item.route"
+                [class.text-aldy-bold]="isActive(item) || last"
+                [class.font-medium]="isActive(item) || last"
+                class="flex items-center gap-1.5 tracking-wider NewAldyFontType4 font-light text-xs hover:text-aldy-bold transition-colors"
+                >
+                @if (item.icon) {
+                  <span [ngClass]="item.icon" class="text-sm"></span>
+                }
+                @if (item.label) {
+                  <span class="truncate">{{ item.label }}</span>
+                }
+              </a>
+            } @else {
+              @if (item.url) {
+                <a
+                  [href]="item.url"
+                  class="flex items-center gap-1.5 tracking-wider NewAldyFontType4 font-light text-xs hover:text-aldy-bold transition-colors"
+                  >
+                  @if (item.icon) {
+                    <span [ngClass]="item.icon" class="text-sm"></span>
+                  }
+                  @if (item.label) {
+                    <span class="truncate">{{ item.label }}</span>
+                  }
+                </a>
+              } @else {
+                <span class="flex items-center gap-1.5 tracking-wider NewAldyFontType4 text-xs text-aldy-bold font-medium">
+                  @if (item.icon) {
+                    <span [ngClass]="item.icon" class="text-sm"></span>
+                  }
+                  @if (item.label) {
+                    <span class="truncate">{{ item.label }}</span>
+                  }
+                </span>
+              }
+            }
+            <!-- Con URL o texto estático -->
+            <!-- Separador Chevron -->
+            @if (!last) {
+              <i class="fa-solid fa-chevron-right text-[10px] opacity-40 mx-0.5"></i>
+            }
+          </li>
+        }
       </ol>
     </nav>
   </div>

@@ -6,11 +6,15 @@
       'text-aldy-medium-2': !isOpen()
     }">
     <div class="flex items-center gap-4">
-      <ng-container *ngIf="useIcon">
-        <i *ngIf="icon" [class]="icon" class="leading-none">
-        </i>
-        <img *ngIf="iconImg" [src]="iconImg" alt="icon_item" [class]="iconImgStyle">
-      </ng-container>
+      @if (useIcon) {
+        @if (icon) {
+          <i [class]="icon" class="leading-none">
+          </i>
+        }
+        @if (iconImg) {
+          <img [src]="iconImg" alt="icon_item" [class]="iconImgStyle">
+        }
+      }
       <div [class]="classTitle">{{ title }}</div>
     </div>
     <span class="relative w-5 h-5 flex items-center justify-center">

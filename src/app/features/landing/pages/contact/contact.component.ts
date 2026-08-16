@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { ContactTemplateComponent } from '../../../../shared/components/templates/contact-template/contact-template.component';
@@ -7,7 +7,7 @@ import { AppMenuItem } from '../../../../shared/utils/models/app-menu-item.model
 
 @Component({
   selector: 'app-contact',
-  imports: [CommonModule,RouterModule,ContactTemplateComponent,BreadcrumbComponent],
+  imports: [RouterModule, ContactTemplateComponent, BreadcrumbComponent],
   templateUrl: './contact.component.html',
   styleUrls: ['./contact.component.css']
 })

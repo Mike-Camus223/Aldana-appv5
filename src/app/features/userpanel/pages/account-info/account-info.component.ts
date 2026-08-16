@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { InputComponent } from '../../../../shared/components/generic/forms/input/input.component';
@@ -12,12 +12,11 @@ import { take } from 'rxjs';
   selector: 'app-account-info',
   standalone: true,
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     InputComponent,
     SelectsComponent,
     LucideAngularModule
-  ],
+],
   providers: [
     {
       provide: LUCIDE_ICONS,

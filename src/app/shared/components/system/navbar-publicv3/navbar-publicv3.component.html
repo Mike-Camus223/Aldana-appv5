@@ -13,13 +13,15 @@
 
     <!-- IZQUIERDA: LINKS -->
     <div class="flex items-center space-x-5 lg:space-x-5 xl:space-x-10  uppercase">
-      <a *ngFor="let link of leftLinks" appLinkHoverUnderline [routerLink]="link.link"
+      @for (link of leftLinks; track link) {
+        <a appLinkHoverUnderline [routerLink]="link.link"
         (mouseenter)="onInteractiveEnter()" [ngClass]="{
           'text-white hover:text-gray-300 border-white': isHomePage && !MoverScroll && !hoverNavbar,
           'text-aldy-medium hover:text-aldy-medium-2 border-aldy-medium hover:border-aldy-medium-2': !isHomePage || MoverScroll || hoverNavbar
         }" class="transition-colors font-light NewAldyTitle text-xs lg:text-xs xl:text-sm tracking-[0.15em] border-transparent pb-[1px]">
-        {{ link.label }}
-      </a>
+          {{ link.label }}
+        </a>
+      }
 
       <!-- DROPDOWN TIENDA -->
       <div class="relative " (mouseenter)="onDropdownMouseEnter()" (mouseleave)="onDropdownMouseLeave()">
@@ -38,156 +40,154 @@
             }" class="w-4 h-4 transition-transform duration-200"></lucide-icon>
         </div>
         <!-- DROPDOWN CONTENT -->
-        <div *ngIf="dropdownOpen" #dropdownRef @dropdownAnimation
-          class="absolute left-0 -translate-x-0 top-full mt-2 w-[900px] bg-aldy-white shadow-2xl z-50 border border-gray-100">
-          <div class="flex">
-            <!-- CATEGORÍAS A LA IZQUIERDA -->
-            <div class="w-1/3 bg-aldy-white p-8">
-              <h3 class="mb-8 text-2xl text-aldy-medium-2 uppercase font-light  NewAldyTitle tracking-widest">
-                categorias
-              </h3>
-              <ul class="space-y-4">
-                <li *ngFor="let item of tiendaItems">
-                  <div class="flex gap-3 items-center">
-                    <div class="h-2 w-2 bg-aldy-light rounded-full"></div>
-                    <a [routerLink]="['/tienda/categoria/general', normalizeCategory(item)]" (click)="closeDropdown()"
-                      class="block transition-all font-light NewAldyFontType4 text-sm duration-200 text-aldy-medium-2 hover:text-aldy-medium-2 hover:translate-x-1">
-                      {{ item }}
-                    </a>
-                  </div>
-                </li>
-              </ul>
-            </div>
-            <div class="w-2/3 p-8">
-              <div class="grid grid-cols-3 gap-6">
-
-                <!-- Vestidos -->
-                <a [routerLink]="['/tienda/categoria/general','vestidos']" class="group block">
-                  <div class="relative overflow-hidden mb-3 aspect-[3/4]">
-                    <img
-                      src="https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/products/vestidos/vestido_gladiolo/1752718247389.jpg"
-                      alt="Vestidos"
-                      class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
-                  </div>
-
-                  <h4 class="font-light NewAldyFontType4 text-aldy-medium-2 text-sm tracking-wider mb-1">
-                    VESTIDOS
-                  </h4>
-
-                  <p class="text-xs text-aldy-bold leading-relaxed">
-                    Elegantes diseños para ocasiones especiales
-                  </p>
-                </a>
-
-                <!-- Abrigos -->
-                <a [routerLink]="['/tienda/categoria/general','abrigos']" class="group block">
-                  <div class="relative overflow-hidden mb-3 aspect-[3/4]">
-                    <img
-                      src="https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/products/abrigos/buzos/buzo%20cactus/1752807793069.jpg"
-                      alt="Abrigos"
-                      class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
-                  </div>
-
-                  <h4 class="font-light NewAldyFontType4 text-aldy-medium-2 text-sm tracking-wider mb-1">
-                    ABRIGOS
-                  </h4>
-
-                  <p class="text-xs text-aldy-bold leading-relaxed">
-                    Comodidad y estilo para looks urbanos
-                  </p>
-                </a>
-
-                <!-- Pantalones -->
-                <a [routerLink]="['/tienda/categoria/general','pantalones']" class="group block">
-                  <div class="relative overflow-hidden mb-3 aspect-[3/4]">
-                    <img
-                      src="https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/products/pantalones/pantalon_cala/1752716551897.jpg"
-                      alt="Pantalones"
-                      class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
-                  </div>
-
-                  <h4 class="font-light NewAldyFontType4 text-aldy-medium-2 text-sm tracking-wider mb-1">
-                    PANTALONES
-                  </h4>
-
-                  <p class="text-xs text-aldy-bold leading-relaxed">
-                    Corte perfecto y versatilidad diaria
-                  </p>
-                </a>
-
+        @if (dropdownOpen) {
+          <div #dropdownRef @dropdownAnimation
+            class="absolute left-0 -translate-x-0 top-full mt-2 w-[900px] bg-aldy-white shadow-2xl z-50 border border-gray-100">
+            <div class="flex">
+              <!-- CATEGORÍAS A LA IZQUIERDA -->
+              <div class="w-1/3 bg-aldy-white p-8">
+                <h3 class="mb-8 text-2xl text-aldy-medium-2 uppercase font-light  NewAldyTitle tracking-widest">
+                  categorias
+                </h3>
+                <ul class="space-y-4">
+                  @for (item of tiendaItems; track item) {
+                    <li>
+                      <div class="flex gap-3 items-center">
+                        <div class="h-2 w-2 bg-aldy-light rounded-full"></div>
+                        <a [routerLink]="['/tienda/categoria/general', normalizeCategory(item)]" (click)="closeDropdown()"
+                          class="block transition-all font-light NewAldyFontType4 text-sm duration-200 text-aldy-medium-2 hover:text-aldy-medium-2 hover:translate-x-1">
+                          {{ item }}
+                        </a>
+                      </div>
+                    </li>
+                  }
+                </ul>
               </div>
+              <div class="w-2/3 p-8">
+                <div class="grid grid-cols-3 gap-6">
+                  <!-- Vestidos -->
+                  <a [routerLink]="['/tienda/categoria/general','vestidos']" class="group block">
+                    <div class="relative overflow-hidden mb-3 aspect-[3/4]">
+                      <img
+                        src="https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/products/vestidos/vestido_gladiolo/1752718247389.jpg"
+                        alt="Vestidos"
+                        class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                      </div>
+                      <h4 class="font-light NewAldyFontType4 text-aldy-medium-2 text-sm tracking-wider mb-1">
+                        VESTIDOS
+                      </h4>
+                      <p class="text-xs text-aldy-bold leading-relaxed">
+                        Elegantes diseños para ocasiones especiales
+                      </p>
+                    </a>
+                    <!-- Abrigos -->
+                    <a [routerLink]="['/tienda/categoria/general','abrigos']" class="group block">
+                      <div class="relative overflow-hidden mb-3 aspect-[3/4]">
+                        <img
+                          src="https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/products/abrigos/buzos/buzo%20cactus/1752807793069.jpg"
+                          alt="Abrigos"
+                          class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                        </div>
+                        <h4 class="font-light NewAldyFontType4 text-aldy-medium-2 text-sm tracking-wider mb-1">
+                          ABRIGOS
+                        </h4>
+                        <p class="text-xs text-aldy-bold leading-relaxed">
+                          Comodidad y estilo para looks urbanos
+                        </p>
+                      </a>
+                      <!-- Pantalones -->
+                      <a [routerLink]="['/tienda/categoria/general','pantalones']" class="group block">
+                        <div class="relative overflow-hidden mb-3 aspect-[3/4]">
+                          <img
+                            src="https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/products/pantalones/pantalon_cala/1752716551897.jpg"
+                            alt="Pantalones"
+                            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                          </div>
+                          <h4 class="font-light NewAldyFontType4 text-aldy-medium-2 text-sm tracking-wider mb-1">
+                            PANTALONES
+                          </h4>
+                          <p class="text-xs text-aldy-bold leading-relaxed">
+                            Corte perfecto y versatilidad diaria
+                          </p>
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              }
             </div>
-          </div>
-        </div>
-      </div>
-      <a routerLink="/journal" appLinkHoverUnderline
+            <a routerLink="/journal" appLinkHoverUnderline
         (mouseenter)="onInteractiveEnter()" [ngClass]="{
           'text-white hover:text-gray-300 border-white': isHomePage && !MoverScroll && !hoverNavbar,
           'text-aldy-medium hover:text-aldy-medium-2 border-aldy-medium hover:border-aldy-medium-2': !isHomePage || MoverScroll || hoverNavbar
         }" class="transition-colors font-light NewAldyTitle text-xs lg:text-xs xl:text-sm tracking-[0.15em] border-transparent pb-[1px]">
-        Diario
-      </a>
-    </div>
-    <div class="flex justify-center items-center">
-      <a href="/" class="flex justify-center items-center relative w-[4.5rem] h-[4.5rem]">
-        <img src="../../../../../assets/svg/logo_whiteAV.svg" alt="Aldana Vilcabana"
-          class="absolute inset-0 w-full h-full object-contain transition-opacity duration-300"
-          [class.opacity-0]="!isHomePage || MoverScroll || hoverNavbar"
-          [class.opacity-100]="isHomePage && !MoverScroll && !hoverNavbar">
-        <img src="../../../../../assets/svg/logo.svg" alt="Aldana Vilcabana"
-          class="absolute inset-0 w-full h-full object-contain transition-opacity duration-300"
-          [class.opacity-100]="!isHomePage || MoverScroll || hoverNavbar"
-          [class.opacity-0]="isHomePage && !MoverScroll && !hoverNavbar">
-      </a>
-    </div>
-    <div class="flex items-center space-x-5 lg:space-x-5 xl:space-x-10">
-      <div class="flex items-center space-x-5 lg:space-x-5 xl:space-x-10  uppercase">
-        <a *ngFor="let link of rightLinks" appLinkHoverUnderline [routerLink]="link.link"
+              Diario
+            </a>
+          </div>
+          <div class="flex justify-center items-center">
+            <a href="/" class="flex justify-center items-center relative w-[4.5rem] h-[4.5rem]">
+              <img src="../../../../../assets/svg/logo_whiteAV.svg" alt="Aldana Vilcabana"
+                class="absolute inset-0 w-full h-full object-contain transition-opacity duration-300"
+                [class.opacity-0]="!isHomePage || MoverScroll || hoverNavbar"
+                [class.opacity-100]="isHomePage && !MoverScroll && !hoverNavbar">
+                <img src="../../../../../assets/svg/logo.svg" alt="Aldana Vilcabana"
+                  class="absolute inset-0 w-full h-full object-contain transition-opacity duration-300"
+                  [class.opacity-100]="!isHomePage || MoverScroll || hoverNavbar"
+                  [class.opacity-0]="isHomePage && !MoverScroll && !hoverNavbar">
+                </a>
+              </div>
+              <div class="flex items-center space-x-5 lg:space-x-5 xl:space-x-10">
+                <div class="flex items-center space-x-5 lg:space-x-5 xl:space-x-10  uppercase">
+                  @for (link of rightLinks; track link) {
+                    <a appLinkHoverUnderline [routerLink]="link.link"
           (mouseenter)="onInteractiveEnter()" [ngClass]="{
             'text-white hover:text-gray-300 border-white': isHomePage && !MoverScroll && !hoverNavbar,
             'text-aldy-medium hover:text-aldy-medium-2 border-aldy-medium hover:border-aldy-medium-2': !isHomePage || MoverScroll || hoverNavbar
           }" class="transition-colors font-light NewAldyTitle text-xs lg:text-xs xl:text-sm tracking-[0.15em] border-transparent pb-[1px]">
-          {{ link.label }}
-        </a>
-      </div>
+                      {{ link.label }}
+                    </a>
+                  }
+                </div>
 
-      <!-- ÍCONOS -->
-      <div class="flex items-center space-x-5">
-        <a routerLink="/busqueda" class="cursor-pointer" (mouseenter)="onInteractiveEnter()">
-          <lucide-icon name="search" class="lg:w-5 lg:h-5 xl:w-6 xl:h-6 transition-colors duration-200 ease-in-out"
-            [ngClass]="iconColorClass"></lucide-icon>
-        </a>
+                <!-- ÍCONOS -->
+                <div class="flex items-center space-x-5">
+                  <a routerLink="/busqueda" class="cursor-pointer" (mouseenter)="onInteractiveEnter()">
+                    <lucide-icon name="search" class="lg:w-5 lg:h-5 xl:w-6 xl:h-6 transition-colors duration-200 ease-in-out"
+                    [ngClass]="iconColorClass"></lucide-icon>
+                  </a>
 
-        <a *ngIf="isAuthenticated" routerLink="/panel/favoritos" class="cursor-pointer"
-          (mouseenter)="onInteractiveEnter()">
-          <lucide-icon name="heart" class="lg:w-5 lg:h-5 xl:w-6 xl:h-6 transition-colors duration-200 ease-in-out"
-            [ngClass]="iconColorClass"></lucide-icon>
-        </a>
+                  @if (isAuthenticated) {
+                    <a routerLink="/panel/favoritos" class="cursor-pointer"
+                      (mouseenter)="onInteractiveEnter()">
+                      <lucide-icon name="heart" class="lg:w-5 lg:h-5 xl:w-6 xl:h-6 transition-colors duration-200 ease-in-out"
+                      [ngClass]="iconColorClass"></lucide-icon>
+                    </a>
+                  }
 
-        <button (click)="onUserButtonClick()" class="cursor-pointer" (mouseenter)="onInteractiveEnter()">
-          <lucide-icon name="user" class="lg:w-5 lg:h-5 xl:w-6 xl:h-6 transition-colors duration-200 ease-in-out"
-            [ngClass]="iconColorClass"></lucide-icon>
-        </button>
+                  <button (click)="onUserButtonClick()" class="cursor-pointer" (mouseenter)="onInteractiveEnter()">
+                    <lucide-icon name="user" class="lg:w-5 lg:h-5 xl:w-6 xl:h-6 transition-colors duration-200 ease-in-out"
+                    [ngClass]="iconColorClass"></lucide-icon>
+                  </button>
 
-        <div class="flex items-center cursor-pointer" (mouseenter)="onInteractiveEnter()">
-          <a routerLink="/checkout/carrito" class="cursor-pointer">
-            <lucide-icon name="shopping-bag" class="lg:w-5 lg:h-5 xl:w-6 xl:h-6 transition-colors duration-200 ease-in-out"
-              [ngClass]="iconColorClass"></lucide-icon>
-          </a>
+                  <div class="flex items-center cursor-pointer" (mouseenter)="onInteractiveEnter()">
+                    <a routerLink="/checkout/carrito" class="cursor-pointer">
+                      <lucide-icon name="shopping-bag" class="lg:w-5 lg:h-5 xl:w-6 xl:h-6 transition-colors duration-200 ease-in-out"
+                      [ngClass]="iconColorClass"></lucide-icon>
+                    </a>
           <span translate="no" class="text-xs lg:text-xs xl:text-base ml-1" [ngClass]="{
               'text-white border-white': isHomePage && !MoverScroll && !hoverNavbar,
               'text-aldy-medium border-aldy-medium hover:border-aldy-medium-2': !isHomePage || MoverScroll || hoverNavbar
             }">
-            {{ cartItemCount }}
-          </span>
-        </div>
-      </div>
-    </div>
-  </div>
-</nav>
-<!-- ========================================== -->
-<!-- NAVBAR MOBILE -->
-<!-- ========================================== -->
+                      {{ cartItemCount }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </nav>
+          <!-- ========================================== -->
+          <!-- NAVBAR MOBILE -->
+          <!-- ========================================== -->
 <nav [ngClass]="{
     'py-0': MoverScroll,
     'py-1': !MoverScroll,
@@ -196,129 +196,137 @@
     'bg-aldy-white shadow-md': menuOpen || !isHomePage || MoverScroll || hoverNavbar,
     'bg-gradient-to-b from-black/35 to-transparent': !menuOpen && isHomePage && !MoverScroll && !hoverNavbar
   }"
-  class="block lg:hidden w-full fixed top-0 z-[20] font-font-light NewAldyFontType4 text-sm transform transition-all duration-300 ease-in-out">
-  <div class="flex items-center justify-between h-16 px-[5%] relative">
+            class="block lg:hidden w-full fixed top-0 z-[20] font-font-light NewAldyFontType4 text-sm transform transition-all duration-300 ease-in-out">
+            <div class="flex items-center justify-between h-16 px-[5%] relative">
 
-    <!-- ICONOS IZQUIERDA -->
-    <div class="flex items-center gap-4 text-lg sm:text-xl">
-      <a routerLink="/busqueda" class="cursor-pointer">
+              <!-- ICONOS IZQUIERDA -->
+              <div class="flex items-center gap-4 text-lg sm:text-xl">
+                <a routerLink="/busqueda" class="cursor-pointer">
         <lucide-icon name="search" class="w-5 h-5" [ngClass]="{
             'text-white': !menuOpen && isHomePage && !MoverScroll && !hoverNavbar,
             'text-aldy-medium hover:text-aldy-medium-2': menuOpen || !isHomePage || MoverScroll || hoverNavbar
           }"></lucide-icon>
-      </a>
-      <a *ngIf="isAuthenticated" routerLink="/panel/favoritos" class="cursor-pointer">
+                </a>
+                @if (isAuthenticated) {
+                  <a routerLink="/panel/favoritos" class="cursor-pointer">
         <lucide-icon name="heart" class="w-5 h-5" [ngClass]="{
             'text-white': !menuOpen && isHomePage && !MoverScroll && !hoverNavbar,
             'text-aldy-medium hover:text-aldy-medium-2': menuOpen || !isHomePage || MoverScroll || hoverNavbar
           }"></lucide-icon>
-      </a>
-      <button (click)="onUserButtonClick()" class="cursor-pointer">
+                  </a>
+                }
+                <button (click)="onUserButtonClick()" class="cursor-pointer">
         <lucide-icon name="user" class="w-5 h-5" [ngClass]="{
             'text-white': !menuOpen && isHomePage && !MoverScroll && !hoverNavbar,
             'text-aldy-medium hover:text-aldy-medium-2': menuOpen || !isHomePage || MoverScroll || hoverNavbar
           }"></lucide-icon>
-      </button>
-    </div>
+                </button>
+              </div>
 
-    <!-- LOGO CENTRO MOBILE-->
-    <div class="flex items-center justify-center">
-      <a href="/" class="flex justify-center items-center relative w-[3rem] h-[3rem] sm:w-[3.5rem] sm:h-[3.5rem]">
+              <!-- LOGO CENTRO MOBILE-->
+              <div class="flex items-center justify-center">
+                <a href="/" class="flex justify-center items-center relative w-[3rem] h-[3rem] sm:w-[3.5rem] sm:h-[3.5rem]">
 
-        <!-- Logo blanco (por defecto, navbar oscuro) -->
-        <img src="../../../../../assets/svg/logo_whiteAV.svg" alt="Aldana Vilcabana"
-          class="absolute inset-0 w-full h-full object-contain transition-opacity duration-300"
-          [class.opacity-0]="!isHomePage || MoverScroll || hoverNavbar || menuOpen"
-          [class.opacity-100]="isHomePage && !MoverScroll && !hoverNavbar && !menuOpen">
+                  <!-- Logo blanco (por defecto, navbar oscuro) -->
+                  <img src="../../../../../assets/svg/logo_whiteAV.svg" alt="Aldana Vilcabana"
+                    class="absolute inset-0 w-full h-full object-contain transition-opacity duration-300"
+                    [class.opacity-0]="!isHomePage || MoverScroll || hoverNavbar || menuOpen"
+                    [class.opacity-100]="isHomePage && !MoverScroll && !hoverNavbar && !menuOpen">
 
-        <!-- Logo negro (navbar claro o menú abierto) -->
-        <img src="../../../../../assets/svg/logo.svg" alt="Aldana Vilcabana"
-          class="absolute inset-0 w-full h-full object-contain transition-opacity duration-300"
-          [class.opacity-100]="!isHomePage || MoverScroll || hoverNavbar || menuOpen"
-          [class.opacity-0]="isHomePage && !MoverScroll && !hoverNavbar && !menuOpen">
+                    <!-- Logo negro (navbar claro o menú abierto) -->
+                    <img src="../../../../../assets/svg/logo.svg" alt="Aldana Vilcabana"
+                      class="absolute inset-0 w-full h-full object-contain transition-opacity duration-300"
+                      [class.opacity-100]="!isHomePage || MoverScroll || hoverNavbar || menuOpen"
+                      [class.opacity-0]="isHomePage && !MoverScroll && !hoverNavbar && !menuOpen">
 
-      </a>
-    </div>
+                    </a>
+                  </div>
 
 
 
-    <!-- ICONOS DERECHA -->
-    <div class="flex items-center gap-4 text-lg sm:text-xl">
-      <div class="flex items-center">
-        <a routerLink="/checkout/carrito" class="cursor-pointer flex items-center">
+                  <!-- ICONOS DERECHA -->
+                  <div class="flex items-center gap-4 text-lg sm:text-xl">
+                    <div class="flex items-center">
+                      <a routerLink="/checkout/carrito" class="cursor-pointer flex items-center">
           <lucide-icon name="shopping-bag" class="w-5 h-5" [ngClass]="{
               'text-white': !menuOpen && isHomePage && !MoverScroll && !hoverNavbar,
               'text-aldy-medium hover:text-aldy-medium-2': menuOpen || !isHomePage || MoverScroll || hoverNavbar
             }"></lucide-icon>
-        </a>
+                      </a>
         <span class="text-sm ms-1" [ngClass]="{
             'text-white': !menuOpen && isHomePage && !MoverScroll && !hoverNavbar,
             'text-aldy-medium': menuOpen || !isHomePage || MoverScroll || hoverNavbar
           }">
-          {{ cartItemCount }}
-        </span>
-      </div>
+                        {{ cartItemCount }}
+                      </span>
+                    </div>
 
-      <!-- BOTÓN MENU / X -->
-      <button (click)="toggleMenu()" class="cursor-pointer flex items-center relative z-[20]">
-        <lucide-icon *ngIf="!menuOpen" name="menu" class="w-5 h-5" [ngClass]="{
+                    <!-- BOTÓN MENU / X -->
+                    <button (click)="toggleMenu()" class="cursor-pointer flex items-center relative z-[20]">
+                      @if (!menuOpen) {
+<lucide-icon name="menu" class="w-5 h-5" [ngClass]="{
             'text-white': isHomePage && !MoverScroll && !hoverNavbar,
             'text-aldy-medium hover:text-aldy-medium-2': !isHomePage || MoverScroll || hoverNavbar
           }"></lucide-icon>
-        <lucide-icon *ngIf="menuOpen" name="x" class="w-5 h-5 text-aldy-medium"></lucide-icon>
-      </button>
-    </div>
-  </div>
-</nav>
+                      }
+                      @if (menuOpen) {
+                        <lucide-icon name="x" class="w-5 h-5 text-aldy-medium"></lucide-icon>
+                      }
+                    </button>
+                  </div>
+                </div>
+              </nav>
 
 
-<!-- ========================================== -->
-<!-- SIDEBAR MOBILE (VIENE DESDE LA DERECHA) -->
-<!-- ========================================== -->
-<div *ngIf="menuOpen" @sidebarSlide
-  class="fixed top-[64px] right-0 bottom-0 h-[calc(100vh-64px)] w-screen max-w-screen bg-aldy-white shadow-2xl z-22 overflow-y-auto lg:hidden">
-  <div class="p-6 space-y-6 h-full">
-
-    <div class="flex justify-between items-center pb-4 border-b border-gray-200">
-      <h2 class="text-xl text-aldy-green-gray font-light NewAldyTitle tracking-[0.15em]">MENÚ</h2>
-    </div>
-
-    <div class="space-y-4">
-      <a routerLink="/acerca-de-mi" (click)="onMenuLinkClick()"
-        class="block text-aldy-green-gray hover:text-aldy-green-gray-bold tracking-[0.15em] uppercase font-light NewAldyTitle text-xs  transition-colors duration-200 py-3">
-        Acerca de mí
-      </a>
-      <a routerLink="/novias-colecciones" (click)="onMenuLinkClick()"
-        class="block text-aldy-green-gray hover:text-aldy-green-gray-bold tracking-[0.15em] uppercase font-light NewAldyTitle text-xs  transition-colors duration-200 py-3">
-        Novias
-      </a>
-      <!-- DROPDOWN TIENDA MOBILE -->
-      <div>
-        <button (click)="toggleMobileDropdown()"
-          class="w-full flex items-center justify-between text-aldy-green-gray hover:text-aldy-green-gray-bold tracking-[0.15em] uppercase font-light NewAldyTitle text-xs  transition-colors duration-200 py-3">
-          <span>Tienda</span>
-          <lucide-icon name="chevron-down" class="w-5 h-5 transition-transform duration-200 text-aldy-green-gray"
-            [ngClass]="{ 'rotate-180': mobileDropdownOpen }"></lucide-icon>
-        </button>
-        <div *ngIf="mobileDropdownOpen" @expandDropdown
-          class="pl-4 mt-2 space-y-3 border-l-2 border-aldy-medium hover:border-aldy-medium-2">
-          <a *ngFor="let item of tiendaItems" [routerLink]="['/tienda/categoria/general', normalizeCategory(item)]"
-            (click)="onMenuLinkClick()"
-            class="block text-md text-aldy-green-gray tracking-widest hover:text-aldy-green-gray-bold font-light NewAldyFontType4 text-xs transition-colors duration-200 py-2">
-            {{ item }}
-          </a>
-        </div>
-      </div>
-
-      <a routerLink="/colecciones" (click)="onMenuLinkClick()"
-        class="block text-aldy-green-gray hover:text-aldy-green-gray-bold tracking-[0.15em] uppercase font-light NewAldyTitle text-xs transition-colors duration-200 py-3">
-        Colecciones
-      </a>
-
-      <a routerLink="/contacto" (click)="onMenuLinkClick()"
-        class="block text-aldy-green-gray hover:text-aldy-green-gray-bold tracking-[0.15em] uppercase font-light NewAldyTitle text-xs transition-colors duration-200 py-3">
-        Contacto
-      </a>
-    </div>
-  </div>
-</div>
+              <!-- ========================================== -->
+              <!-- SIDEBAR MOBILE (VIENE DESDE LA DERECHA) -->
+              <!-- ========================================== -->
+              @if (menuOpen) {
+                <div @sidebarSlide
+                  class="fixed top-[64px] right-0 bottom-0 h-[calc(100vh-64px)] w-screen max-w-screen bg-aldy-white shadow-2xl z-22 overflow-y-auto lg:hidden">
+                  <div class="p-6 space-y-6 h-full">
+                    <div class="flex justify-between items-center pb-4 border-b border-gray-200">
+                      <h2 class="text-xl text-aldy-green-gray font-light NewAldyTitle tracking-[0.15em]">MENÚ</h2>
+                    </div>
+                    <div class="space-y-4">
+                      <a routerLink="/acerca-de-mi" (click)="onMenuLinkClick()"
+                        class="block text-aldy-green-gray hover:text-aldy-green-gray-bold tracking-[0.15em] uppercase font-light NewAldyTitle text-xs  transition-colors duration-200 py-3">
+                        Acerca de mí
+                      </a>
+                      <a routerLink="/novias-colecciones" (click)="onMenuLinkClick()"
+                        class="block text-aldy-green-gray hover:text-aldy-green-gray-bold tracking-[0.15em] uppercase font-light NewAldyTitle text-xs  transition-colors duration-200 py-3">
+                        Novias
+                      </a>
+                      <!-- DROPDOWN TIENDA MOBILE -->
+                      <div>
+                        <button (click)="toggleMobileDropdown()"
+                          class="w-full flex items-center justify-between text-aldy-green-gray hover:text-aldy-green-gray-bold tracking-[0.15em] uppercase font-light NewAldyTitle text-xs  transition-colors duration-200 py-3">
+                          <span>Tienda</span>
+                          <lucide-icon name="chevron-down" class="w-5 h-5 transition-transform duration-200 text-aldy-green-gray"
+                          [ngClass]="{ 'rotate-180': mobileDropdownOpen }"></lucide-icon>
+                        </button>
+                        @if (mobileDropdownOpen) {
+                          <div @expandDropdown
+                            class="pl-4 mt-2 space-y-3 border-l-2 border-aldy-medium hover:border-aldy-medium-2">
+                            @for (item of tiendaItems; track item) {
+                              <a [routerLink]="['/tienda/categoria/general', normalizeCategory(item)]"
+                                (click)="onMenuLinkClick()"
+                                class="block text-md text-aldy-green-gray tracking-widest hover:text-aldy-green-gray-bold font-light NewAldyFontType4 text-xs transition-colors duration-200 py-2">
+                                {{ item }}
+                              </a>
+                            }
+                          </div>
+                        }
+                      </div>
+                      <a routerLink="/colecciones" (click)="onMenuLinkClick()"
+                        class="block text-aldy-green-gray hover:text-aldy-green-gray-bold tracking-[0.15em] uppercase font-light NewAldyTitle text-xs transition-colors duration-200 py-3">
+                        Colecciones
+                      </a>
+                      <a routerLink="/contacto" (click)="onMenuLinkClick()"
+                        class="block text-aldy-green-gray hover:text-aldy-green-gray-bold tracking-[0.15em] uppercase font-light NewAldyTitle text-xs transition-colors duration-200 py-3">
+                        Contacto
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              }

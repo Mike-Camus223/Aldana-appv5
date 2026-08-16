@@ -1,30 +1,33 @@
 <div class="w-full mx-auto px-4 py-4 space-y-8">
-    <div class="mb-8 px-1 flex items-center justify-between">
-      <h2 class="text-2xl NewAldyTitle tracking-widest text-aldy-green-gray-bold font-light">
-        Mis Pedidos
-      </h2>
-      <!-- Pedidos <span class="text-gray-500">({{ orders.length }})</span> -->
-      <div>
-        <div class="relative w-48"> 
-          <app-selects 
-              id="sort-orders" 
-              label="Ordenar por" 
-              [options]="sortOptions" 
-              optionLabel="label"
-              optionValue="value">
-          </app-selects>
-        </div>
+  <div class="mb-8 px-1 flex items-center justify-between">
+    <h2 class="text-2xl NewAldyTitle tracking-widest text-aldy-green-gray-bold font-light">
+      Mis Pedidos
+    </h2>
+    <!-- Pedidos <span class="text-gray-500">({{ orders.length }})</span> -->
+    <div>
+      <div class="relative w-48">
+        <app-selects
+          id="sort-orders"
+          label="Ordenar por"
+          [options]="sortOptions"
+          optionLabel="label"
+          optionValue="value">
+        </app-selects>
       </div>
     </div>
+  </div>
 
-    <!-- Loading State -->
-    <div *ngIf="loading" class="flex justify-center items-center py-12">
+  <!-- Loading State -->
+  @if (loading) {
+    <div class="flex justify-center items-center py-12">
       <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-aldy-primary-500"></div>
       <span class="ml-3 text-gray-600">Cargando órdenes...</span>
     </div>
+  }
 
-    <!-- Error State -->
-    <div *ngIf="error && !loading" class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+  <!-- Error State -->
+  @if (error && !loading) {
+    <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
       <div class="flex">
         <div class="flex-shrink-0">
           <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
@@ -34,92 +37,105 @@
         <div class="ml-3">
           <h3 class="text-sm font-medium text-red-800">Error al cargar órdenes</h3>
           <p class="mt-1 text-sm text-red-700">{{ error }}</p>
-          <button 
-            (click)="loadUserOrders()" 
+          <button
+            (click)="loadUserOrders()"
             class="mt-2 text-sm bg-red-100 hover:bg-red-200 text-red-800 px-3 py-1 rounded transition-colors">
             Reintentar
           </button>
         </div>
       </div>
     </div>
+  }
 
-    <!-- Empty State -->
-    <div *ngIf="!loading && !error && orders.length === 0" class="text-center py-12">
+  <!-- Empty State -->
+  @if (!loading && !error && orders.length === 0) {
+    <div class="text-center py-12">
       <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
       </svg>
       <h3 class="mt-2 text-sm font-medium text-gray-900">No tienes órdenes</h3>
       <p class="mt-1 text-sm text-gray-500">Cuando realices tu primera compra, aparecerá aquí.</p>
     </div>
+  }
 
-    <!-- Lista paginada -->
-    <div *ngIf="!loading && !error && orders.length > 0" class="space-y-4 max-h-[65vh] overflow-y-auto p-1">
-      <div *ngFor="let order of paginatedOrders" 
-           class="hover:shadow-md transition-all duration-400 ease-in-out bg-white p-4 sm:p-6 border border-gray-200 rounded-lg">
-        <div class="flex items-center justify-between gap-6">
-          <div class="grid flex-1 grid-cols-1 gap-4 sm:grid-cols-4">
-            <div>
-              <dt class="text-sm text-gray-500">ID del Pedido</dt>
-              <dd class="mt-1 text-sm font-semibold text-gray-900">{{ order.order_number }}</dd>
+  <!-- Lista paginada -->
+  @if (!loading && !error && orders.length > 0) {
+    <div class="space-y-4 max-h-[65vh] overflow-y-auto p-1">
+      @for (order of paginatedOrders; track order) {
+        <div
+          class="hover:shadow-md transition-all duration-400 ease-in-out bg-white p-4 sm:p-6 border border-gray-200 rounded-lg">
+          <div class="flex items-center justify-between gap-6">
+            <div class="grid flex-1 grid-cols-1 gap-4 sm:grid-cols-4">
+              <div>
+                <dt class="text-sm text-gray-500">ID del Pedido</dt>
+                <dd class="mt-1 text-sm font-semibold text-gray-900">{{ order.order_number }}</dd>
+              </div>
+              <div>
+                <dt class="text-sm text-gray-500">Fecha de creación</dt>
+                <dd class="mt-1 text-sm text-gray-700">{{ formatDate(order.created_at) }}</dd>
+              </div>
+              <div>
+                <dt class="text-sm text-gray-500">Estado</dt>
+                <dd class="mt-1 text-sm font-medium" [ngClass]="getStatusClass(order.status)">
+                  {{ getStatusLabel(order.status) }}
+                </dd>
+              </div>
+              <div>
+                <dt class="text-sm text-gray-500">Total</dt>
+                <dd class="mt-1 text-sm font-semibold text-gray-900">{{ formatPrice(order.total_final) }}</dd>
+              </div>
             </div>
-            <div>
-              <dt class="text-sm text-gray-500">Fecha de creación</dt>
-              <dd class="mt-1 text-sm text-gray-700">{{ formatDate(order.created_at) }}</dd>
-            </div>
-            <div>
-              <dt class="text-sm text-gray-500">Estado</dt>
-              <dd class="mt-1 text-sm font-medium" [ngClass]="getStatusClass(order.status)">
-                {{ getStatusLabel(order.status) }}
-              </dd>
-            </div>
-            <div>
-              <dt class="text-sm text-gray-500">Total</dt>
-              <dd class="mt-1 text-sm font-semibold text-gray-900">{{ formatPrice(order.total_final) }}</dd>
+            <!-- Product Images Preview -->
+            <div class="flex -space-x-2 mr-4">
+              @for (image of getProductImages(order.products); track image; let i = $index) {
+                <div
+                  class="relative">
+                  <img
+                    [src]="image"
+                    class="w-10 h-10 rounded-full border-2 border-white object-cover"
+                    [alt]="'Producto ' + (i + 1)"
+                    onerror="this.src='https://via.placeholder.com/40'"
+                    />
+                  </div>
+                }
+                @if (order.totalItems > 4) {
+                  <div
+                    class="flex items-center justify-center w-10 h-10 rounded-full border-2 border-white bg-gray-100 text-xs font-medium text-gray-600">
+                    +{{ order.totalItems - 4 }}
+                  </div>
+                }
+              </div>
+              <div class="flex flex-col items-stretch space-y-2">
+                <button
+                  (click)="viewOrderDetails(order.id)"
+                  class="border border-gray-300 bg-white px-3 py-2 text-center text-sm text-gray-700 shadow-sm hover:bg-gray-50 transition-colors">
+                  Ver detalles
+                </button>
+                @if (order.status === 'in_transit' || order.status === 'completed') {
+                  <button
+                    class="transition-colors duration-500 ease-in-out border border-transparent bg-aldy-primary-500 px-3 py-2 text-center text-sm text-white shadow-sm hover:bg-aldy-primary-600">
+                    Seguir pedido
+                  </button>
+                }
+                @if (order.status === 'completed') {
+                  <button
+                    class="text-center transition-colors duration-500 ease-in-out text-sm text-aldy-primary-500 hover:text-aldy-primary-600">
+                    Descargar factura
+                  </button>
+                }
+              </div>
             </div>
           </div>
-          
-          <!-- Product Images Preview -->
-          <div class="flex -space-x-2 mr-4">
-            <div *ngFor="let image of getProductImages(order.products); let i = index" 
-                 class="relative">
-              <img 
-                [src]="image" 
-                class="w-10 h-10 rounded-full border-2 border-white object-cover"
-                [alt]="'Producto ' + (i + 1)"
-                onerror="this.src='https://via.placeholder.com/40'"
-              />
-            </div>
-            <div *ngIf="order.totalItems > 4" 
-                 class="flex items-center justify-center w-10 h-10 rounded-full border-2 border-white bg-gray-100 text-xs font-medium text-gray-600">
-              +{{ order.totalItems - 4 }}
-            </div>
-          </div>
-
-          <div class="flex flex-col items-stretch space-y-2">
-            <button 
-              (click)="viewOrderDetails(order.id)"
-              class="border border-gray-300 bg-white px-3 py-2 text-center text-sm text-gray-700 shadow-sm hover:bg-gray-50 transition-colors">
-              Ver detalles
-            </button>
-            <button 
-              *ngIf="order.status === 'in_transit' || order.status === 'completed'"
-              class="transition-colors duration-500 ease-in-out border border-transparent bg-aldy-primary-500 px-3 py-2 text-center text-sm text-white shadow-sm hover:bg-aldy-primary-600">
-              Seguir pedido
-            </button>
-            <button 
-              *ngIf="order.status === 'completed'"
-              class="text-center transition-colors duration-500 ease-in-out text-sm text-aldy-primary-500 hover:text-aldy-primary-600">
-              Descargar factura
-            </button>
-          </div>
-        </div>
+        }
       </div>
-    </div>
-    <div class="pt-4 lg:pt-6" *ngIf="!loading && !error && orders.length >= 5">
-      <app-paginator 
-        [currentPage]="currentPage"
-        [totalPages]="totalPages"
-        (pageChange)="onPageChange($event)">
-      </app-paginator>
-    </div>
-</div>
+    }
+    @if (!loading && !error && orders.length >= 5) {
+      <div class="pt-4 lg:pt-6">
+        <app-paginator
+          [currentPage]="currentPage"
+          [totalPages]="totalPages"
+          (pageChange)="onPageChange($event)">
+        </app-paginator>
+      </div>
+    }
+  </div>

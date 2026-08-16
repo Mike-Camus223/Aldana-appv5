@@ -1,59 +1,77 @@
 <div class="container mx-auto px-4 py-4">
   <h1 class="text-2xl NewAldyTitle tracking-widest text-aldy-green-gray-bold font-light mb-6">Mis Favoritos</h1>
 
-  <div *ngIf="isLoading" class="text-center py-12">
-    <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-900 mx-auto"></div>
-    <p class="mt-4">Cargando favoritos...</p>
-  </div>
+  @if (isLoading) {
+    <div class="text-center py-12">
+      <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-900 mx-auto"></div>
+      <p class="mt-4">Cargando favoritos...</p>
+    </div>
+  }
 
-  <div *ngIf="!isLoading && favorites.length === 0" class="text-center text-aldy-green-gray NewAldyFontType4 font-light tracking-wider text-sm py-12">
-    <p>No tienes productos favoritos aún</p>
-  </div>
+  @if (!isLoading && favorites.length === 0) {
+    <div class="text-center text-aldy-green-gray NewAldyFontType4 font-light tracking-wider text-sm py-12">
+      <p>No tienes productos favoritos aún</p>
+    </div>
+  }
 
   <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-    <div *ngFor="let fav of favorites"
-      class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
-      <div class="relative">
-        <img [src]="fav.product?.main_image || 'assets/images/placeholder-product.jpg'" [alt]="fav.product?.name"
-          class="w-full h-48 object-cover cursor-pointer" (click)="navigateToProduct(fav.product?.slug)">
-        <button type="button" (click)="toggleFavorite($event, fav.product.id)"
-          class="absolute top-2 right-2 z-10 cursor-pointer leading-none transition-colors focus:outline-none">
-          <lucide-icon [name]="fav.product.wishlisted ? 'heart' : 'heart-plus'"
-            [ngClass]="fav.product.wishlisted ? 'text-aldy-primary-600' : 'text-gray-300'">
-          </lucide-icon>
-        </button>
-      </div>
-      <div class="p-4">
-        <h3 class="font-semibold text-lg mb-2">{{ fav.product?.name }}</h3>
-        <p class="text-gray-800 font-bold text-lg mb-3">
-          {{ fav.product?.price | currency:'ARS':'symbol-narrow':'1.2-2':'es-AR' }}
-        </p>
-        <p class="text-gray-600 text-sm mb-4" *ngIf="fav.product?.description">
-          {{ fav.product.description }}
-        </p>
-        <p class="text-gray-600 text-sm mb-4" *ngIf="fav.product?.details">
-          {{ fav.product.details }}
-        </p>
-        <div *ngIf="fav.product?.variants?.length" class="mb-3">
-          <p class="text-sm text-gray-500 mb-2">Colores:</p>
-          <div class="flex flex-wrap gap-2">
-            <div *ngFor="let variant of fav.product.variants" class="w-5 h-5 rounded-full border border-gray-200"
-              [style.background]="variant.color_hex" [title]="variant.color_name">
-            </div>
+    @for (fav of favorites; track fav) {
+      <div
+        class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+        <div class="relative">
+          <img [src]="fav.product?.main_image || 'assets/images/placeholder-product.jpg'" [alt]="fav.product?.name"
+            class="w-full h-48 object-cover cursor-pointer" (click)="navigateToProduct(fav.product?.slug)">
+            <button type="button" (click)="toggleFavorite($event, fav.product.id)"
+              class="absolute top-2 right-2 z-10 cursor-pointer leading-none transition-colors focus:outline-none">
+              <lucide-icon [name]="fav.product.wishlisted ? 'heart' : 'heart-plus'"
+                [ngClass]="fav.product.wishlisted ? 'text-aldy-primary-600' : 'text-gray-300'">
+              </lucide-icon>
+            </button>
+          </div>
+          <div class="p-4">
+            <h3 class="font-semibold text-lg mb-2">{{ fav.product?.name }}</h3>
+            <p class="text-gray-800 font-bold text-lg mb-3">
+              {{ fav.product?.price | currency:'ARS':'symbol-narrow':'1.2-2':'es-AR' }}
+            </p>
+            @if (fav.product?.description) {
+              <p class="text-gray-600 text-sm mb-4">
+                {{ fav.product.description }}
+              </p>
+            }
+            @if (fav.product?.details) {
+              <p class="text-gray-600 text-sm mb-4">
+                {{ fav.product.details }}
+              </p>
+            }
+            @if (fav.product?.variants?.length) {
+              <div class="mb-3">
+                <p class="text-sm text-gray-500 mb-2">Colores:</p>
+                <div class="flex flex-wrap gap-2">
+                  @for (variant of fav.product.variants; track variant) {
+                    <div class="w-5 h-5 rounded-full border border-gray-200"
+                      [style.background]="variant.color_hex" [title]="variant.color_name">
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+            @if (fav.product?.sizes?.length) {
+              <div class="mb-4">
+                <p class="text-sm text-gray-500 mb-2">Tallas:</p>
+                <div class="flex flex-wrap gap-2">
+                  @for (size of fav.product.sizes; track size) {
+                    <span class="px-2 py-1 text-xs border rounded">
+                      {{ size }}
+                    </span>
+                  }
+                </div>
+              </div>
+            }
+            <button class="w-full bg-black text-white py-2 px-4 rounded-md hover:bg-gray-800 transition-colors">
+              Añadir al carrito
+            </button>
           </div>
         </div>
-        <div *ngIf="fav.product?.sizes?.length" class="mb-4">
-          <p class="text-sm text-gray-500 mb-2">Tallas:</p>
-          <div class="flex flex-wrap gap-2">
-            <span *ngFor="let size of fav.product.sizes" class="px-2 py-1 text-xs border rounded">
-              {{ size }}
-            </span>
-          </div>
-        </div>
-        <button class="w-full bg-black text-white py-2 px-4 rounded-md hover:bg-gray-800 transition-colors">
-          Añadir al carrito
-        </button>
-      </div>
+      }
     </div>
   </div>
-</div>

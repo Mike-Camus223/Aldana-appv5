@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, OnInit, AfterViewInit, ElementRef, ViewChild, OnDestroy, HostListener } from '@angular/core';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { LucideAngularModule, ChevronLeft, ChevronRight, LUCIDE_ICONS, LucideIconProvider } from 'lucide-angular';
@@ -33,7 +33,7 @@ type BridesProduct = {
 @Component({
   selector: 'app-items-collection',
   standalone: true,
-  imports: [CommonModule, RouterModule, BreadcrumbComponent, GenGalleryVanillaComponent, LucideAngularModule, WordRevealDirective, FadeUpLetterDirective],
+  imports: [RouterModule, BreadcrumbComponent, GenGalleryVanillaComponent, LucideAngularModule, WordRevealDirective, FadeUpLetterDirective],
   templateUrl: './items-collection.component.html',
   styleUrls: ['./items-collection.component.css'],
   providers: [
