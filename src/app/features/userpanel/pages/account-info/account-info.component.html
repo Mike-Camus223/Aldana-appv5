@@ -25,7 +25,7 @@
 
         <!-- Greeting -->
         <div class="flex-1">
-          <h2 class="NewAldyTitle font-light text-xl text-[#6b8f6b] mb-1 tracking-wide">
+          <h2 class="NewAldyTitle font-light text-xl text-aldy-green-gray-bold mb-1 tracking-[0.18em]">
             Hola, {{ displayName || 'Usuario' }}
           </h2>
           <p class="NewAldyFontType4 text-xs font-light text-aldy-green-gray-bold tracking-wider leading-relaxed">
@@ -38,7 +38,7 @@
         <div class="flex flex-col gap-4 border-l border-[#e0d8cf] pl-7 min-w-[240px]">
           <div class="flex items-start gap-3">
             <div
-              class="w-[34px] h-[34px] rounded-full bg-[#f5f1ec] flex items-center justify-center shrink-0 text-[#7a9472]">
+              class="w-[34px] h-[34px] rounded-full bg-[#f5f1ec] flex items-center justify-center shrink-0 text-aldy-green-gray-bold">
               <lucide-icon name="mail" [size]="15" [strokeWidth]="1.5"></lucide-icon>
             </div>
             <div>
@@ -49,11 +49,11 @@
           </div>
           <div class="flex items-start gap-3">
             <div
-              class="w-[34px] h-[34px] rounded-full bg-[#f5f1ec] flex items-center justify-center shrink-0 text-[#7a9472]">
+              class="w-[34px] h-[34px] rounded-full bg-[#f5f1ec] flex items-center justify-center shrink-0 text-aldy-green-gray-bold">
               <lucide-icon name="calendar" [size]="15" [strokeWidth]="1.5"></lucide-icon>
             </div>
             <div>
-              <p class="NewAldyFontType4 text-[9px] font-normal tracking-[0.18em] uppercase text-[#aaa] mb-0.5">Usuario
+              <p class="NewAldyFontType4 text-[9px] font-light tracking-[0.18em] uppercase text-[#aaa] mb-0.5">Usuario
                 desde</p>
               <p class="NewAldyFontType4 text-xs font-light text-aldy-green-gray-bold">Mayo 2024</p>
             </div>
@@ -68,7 +68,8 @@
 
       <!-- DATOS PERSONALES -->
       <div class="flex items-center gap-4 mb-6">
-        <span class="NewAldyFontType4 text-[10px] font-normal tracking-[0.22em] uppercase text-[#8a9e83] shrink-0">Datos
+        <span
+          class="NewAldyTitle text-[10px] font-light tracking-[0.22em] uppercase text-aldy-green-gray shrink-0">Datos
           Personales</span>
         <div class="flex-1 h-px bg-[#e0d8cf]"></div>
       </div>
@@ -76,7 +77,7 @@
       <div class="grid grid-cols-2 gap-6 mb-5">
         <div>
           <label
-            class="block NewAldyFontType4 text-[9px] font-normal tracking-[0.18em] uppercase text-aldy-green-gray-bold mb-1.5">Nombre</label>
+            class="block NewAldyFontType4 text-[9px] font-light tracking-[0.18em] uppercase text-aldy-green-gray mb-1.5">Nombre</label>
           <app-input id="firstName" formControlName="firstName"></app-input>
           @if (accountForm.get('firstName')?.invalid && accountForm.get('firstName')?.touched) {
           <p class="NewAldyFontType4 text-red-400 text-[10px] tracking-wider mt-1 font-light">
@@ -86,7 +87,7 @@
         </div>
         <div>
           <label
-            class="block NewAldyFontType4 text-[9px] font-normal tracking-[0.18em] uppercase text-aldy-green-gray-bold mb-1.5">Apellido</label>
+            class="block NewAldyFontType4 text-[9px] font-light tracking-[0.18em] uppercase text-aldy-green-gray-bold mb-1.5">Apellido</label>
           <app-input id="lastName" formControlName="lastName"></app-input>
           @if (accountForm.get('lastName')?.invalid && accountForm.get('lastName')?.touched) {
           <p class="NewAldyFontType4 text-red-400 text-[10px] tracking-wider mt-1 font-light">
@@ -147,16 +148,18 @@
         <div>
           <div class="flex items-center gap-4 mb-4">
             <span
-              class="NewAldyFontType4 text-[10px] font-normal tracking-[0.22em] uppercase text-[#8a9e83] shrink-0">Seguridad</span>
+              class="NewAldyTitle text-[10px] font-light tracking-[0.22em] uppercase text-aldy-green-gray-bold shrink-0">Seguridad</span>
             <div class="flex-1 h-px bg-[#e0d8cf]"></div>
           </div>
-          <div
-            class="border border-[#e0d8cf] rounded-sm p-4 flex items-start gap-4 bg-aldy-white hover:bg-[#f9f6f2] transition-colors duration-150 cursor-pointer">
-            <div class="w-10 h-10 rounded-full bg-[#f5f1ec] flex items-center justify-center shrink-0 text-[#7a9472]">
-              <lucide-icon name="lock" [size]="17" [strokeWidth]="1.5"></lucide-icon>
+          <div class="border border-[#e0d8cf] rounded-sm p-4 flex items-start gap-4">
+            <div
+              class="w-14 h-14 rounded-full bg-[#f5f1ec] flex items-center justify-center shrink-0 text-aldy-green-gray-bold">
+              <lucide-icon name="lock" [size]="22" [strokeWidth]="1.5"></lucide-icon>
             </div>
             <div class="flex-1">
-              <h4 class="NewAldyTitle font-light text-sm text-[#6b8f6b] mb-1 tracking-wide">Cambia tu contraseña</h4>
+              <h4 class="NewAldyTitle font-light text-xs text-aldy-green-gray-bold mb-1 tracking-[0.18em]">Cambia tu
+                contraseña
+              </h4>
               <p class="NewAldyFontType4 text-xs font-light text-aldy-green-gray-bold leading-relaxed tracking-wide">
                 Te recomendamos elegir una contraseña segura<br>para proteger tu cuenta.
               </p>
@@ -170,17 +173,18 @@
         <div>
           <div class="flex items-center gap-4 mb-4">
             <span
-              class="NewAldyFontType4 text-[10px] font-normal tracking-[0.22em] uppercase text-[#8a9e83] shrink-0">Direcciones
+              class="NewAldyTitle text-[10px] font-light tracking-[0.22em] uppercase text-aldy-green-gray-bold shrink-0">Direcciones
               de Entrega</span>
             <div class="flex-1 h-px bg-[#e0d8cf]"></div>
           </div>
-          <div
-            class="border border-[#e0d8cf] rounded-sm p-4 flex items-start gap-4 bg-aldy-white hover:bg-[#f9f6f2] transition-colors duration-150 cursor-pointer">
-            <div class="w-10 h-10 rounded-full bg-[#f5f1ec] flex items-center justify-center shrink-0 text-[#7a9472]">
-              <lucide-icon name="map-pin" [size]="17" [strokeWidth]="1.5"></lucide-icon>
+          <div class="border border-[#e0d8cf] rounded-sm p-4 flex items-start gap-4 bg-aldy-white">
+            <div
+              class="w-14 h-14 rounded-full bg-[#f5f1ec] flex items-center justify-center shrink-0 text-aldy-green-gray-bold">
+              <lucide-icon name="map-pin" [size]="22" [strokeWidth]="1.5"></lucide-icon>
             </div>
             <div class="flex-1">
-              <h4 class="NewAldyTitle font-light text-sm text-[#6b8f6b] mb-1 tracking-wide">Gestiona tus direcciones
+              <h4 class="NewAldyTitle font-light text-xs text-aldy-green-gray-bold mb-1 tracking-[0.18em]">Gestiona tus
+                direcciones
               </h4>
               <p class="NewAldyFontType4 text-xs font-light text-aldy-green-gray-bold leading-relaxed tracking-wide">
                 Agrega, edita o elimina tus<br>direcciones de entrega.
@@ -196,7 +200,7 @@
 
       <!-- Botones -->
       <div class="flex items-center gap-6 mt-2">
-        <button type="submit" [disabled]="accountForm.invalid || accountForm.pristine" class="px-6 py-2.5 text-white NewAldyFontType4 text-xs tracking-[0.15em] uppercase transition-colors duration-300
+        <button type="submit" [disabled]="accountForm.invalid || accountForm.pristine" class="px-6 py-2.5 text-white NewAldyFontType4 text-xs tracking-[0.10em] uppercase transition-colors duration-300
             disabled:bg-[#c8c0b8] disabled:cursor-not-allowed
             enabled:bg-aldy-medium enabled:hover:bg-aldy-medium-2 cursor-pointer">
           @if (!isSaving) {

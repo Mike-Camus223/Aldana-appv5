@@ -1,19 +1,33 @@
-import { Component, OnInit, inject, OnDestroy, AfterViewInit, ChangeDetectionStrategy } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  inject,
+  OnDestroy,
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  PLATFORM_ID,
+  Inject,
+  ViewChild,
+  ElementRef
+} from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { NavigationEnd, NavigationStart, NavigationCancel, NavigationError, Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../core/services/auth/auth.service';
 import { User } from '@supabase/supabase-js';
 import { filter } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 import { AppMenuItem } from '../../shared/utils/models/app-menu-item.model';
-import { Heart, House, LogOut, LUCIDE_ICONS, LucideAngularModule, LucideIconProvider, Package, Settings, UserRound } from 'lucide-angular';
+import { Heart, House, LogOut, LUCIDE_ICONS, LucideAngularModule, LucideIconProvider, Package, UserRound } from 'lucide-angular';
 import { LoaderService } from '../../core/services/utils/loader.service';
 import { NavbarPublicv3Component } from '../../shared/components/system/navbar-publicv3/navbar-publicv3.component';
 import { SmoothScrollService } from '../../core/services/utils/smooth-scroll.service';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 @Component({
   selector: 'app-user-panel',
   standalone: true,
-  imports: [RouterModule, LucideAngularModule, NavbarPublicv3Component],
+  imports: [CommonModule, RouterModule, LucideAngularModule, NavbarPublicv3Component],
   templateUrl: './user-panel.component.html',
   providers: [
     {
@@ -32,9 +46,13 @@ import { SmoothScrollService } from '../../core/services/utils/smooth-scroll.ser
   styleUrls: ['./user-panel.component.css']
 })
 export class UserPanelComponent implements OnInit, AfterViewInit, OnDestroy {
+  @ViewChild('asidePanel') asidePanelRef?: ElementRef;
+  @ViewChild('panelContainer') panelContainerRef?: ElementRef;
+
   currentUser: User | null = null;
   activeSection: string = 'control-panel';
   isLoading = false;
+  private pinTrigger?: ScrollTrigger;
   private authSubscription?: Subscription;
 
   breadcrumbItemsAccount: AppMenuItem[] = [
@@ -69,8 +87,11 @@ export class UserPanelComponent implements OnInit, AfterViewInit, OnDestroy {
   private router = inject(Router);
   private loaderService = inject(LoaderService);
   private smoothScroll = inject(SmoothScrollService);
+  private isBrowser: boolean;
 
-  constructor() {
+  constructor(@Inject(PLATFORM_ID) private platformId: Object) {
+    this.isBrowser = isPlatformBrowser(this.platformId);
+
     this.router.events
       .pipe(
         filter(event =>
@@ -90,13 +111,18 @@ export class UserPanelComponent implements OnInit, AfterViewInit, OnDestroy {
           setTimeout(() => {
             this.isLoading = false;
             this.smoothScroll.refresh();
-          }, 100);
+            this.initSidebarPin();
+          }, 150);
         }
       });
   }
 
   ngOnInit(): void {
     this.loaderService.setContext('user-panel');
+
+    if (this.isBrowser) {
+      gsap.registerPlugin(ScrollTrigger);
+    }
 
     this.authSubscription = this.authService.currentUser$.subscribe(user => {
       this.currentUser = user;
@@ -108,11 +134,36 @@ export class UserPanelComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngAfterViewInit(): void {
     this.smoothScroll.ensureSmoother();
+    setTimeout(() => {
+      this.initSidebarPin();
+    }, 200);
+  }
+
+  private initSidebarPin(): void {
+    if (!this.isBrowser) return;
+
+    this.pinTrigger?.kill();
+
+    if (this.asidePanelRef?.nativeElement && this.panelContainerRef?.nativeElement) {
+      const isDesktop = window.innerWidth >= 1024;
+      const topOffset = isDesktop ? '80px' : '72px';
+
+      this.pinTrigger = ScrollTrigger.create({
+        trigger: this.asidePanelRef.nativeElement,
+        start: `top ${topOffset}`,
+        endTrigger: this.panelContainerRef.nativeElement,
+        end: 'bottom bottom',
+        pin: true,
+        pinSpacing: false,
+        invalidateOnRefresh: true
+      });
+    }
   }
 
   ngOnDestroy() {
     this.loaderService.setContext('public');
     this.authSubscription?.unsubscribe();
+    this.pinTrigger?.kill();
   }
 
   onSignOut() {

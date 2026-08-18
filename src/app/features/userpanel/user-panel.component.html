@@ -1,16 +1,14 @@
-<header class="relative z-[999]">
+<header>
   <app-navbar-publicv3></app-navbar-publicv3>
 </header>
-
 <div id="smooth-wrapper" class="relative z-1">
   <div id="smooth-content">
-    <div class="h-[72px] bg-aldy-white lg:h-[88px]"></div>
-
+    <div class="h-[72px] bg-aldy-white lg:h-[80px]"></div>
     <div class="min-h-screen w-full bg-aldy-white overflow-x-hidden">
-      <div class="flex min-h-screen">
-
-        <aside class="sticky top-0 inset-0 flex flex-col w-[260px] shrink-0 bg-aldy-white border-r border-[#e0d8cf]">
-
+      <div #panelContainer class="flex min-h-screen relative items-start">
+        <aside #asidePanel
+          class="flex flex-col w-[260px] shrink-0 bg-aldy-white border-r border-[#e0d8cf] z-20 self-start"
+          style="min-height: calc(100vh - 80px);">
           <div class="px-8 flex items-center justify-center pt-10 pb-8">
             <img [draggable]="false" src="../../../assets/svg/logo-4.svg" alt="Aldana Vilcabana"
               class="w-35 h-full object-contain">
@@ -53,37 +51,28 @@
           </div>
 
         </aside>
-
         <div class="flex-1 flex flex-col min-h-screen">
-
           <div class="relative w-full h-65 flex items-center justify-center overflow-hidden shrink-0">
             <img class="absolute inset-0 w-full h-full object-cover brightness-70 object-[65%_22%]"
               src="../../../assets/images/others/perfil_user.jpg" alt="wardrobe">
-
             <div class="absolute inset-0 bg-black/20"></div>
-
             <h1
               class="relative text-3xl sm:text-5xl NewAldyTitle tracking-[0.3em] uppercase text-white font-light z-10">
               Mi cuenta
             </h1>
           </div>
-
           <main class="flex-1 bg-aldy-white relative px-8 py-10">
             @if (isLoading) {
             <div class="loading-overlay">
               <div class="spinner-aldy"></div>
             </div>
             }
-
             @if (!isLoading) {
             <router-outlet></router-outlet>
             }
           </main>
-
         </div>
-
       </div>
     </div>
-
   </div>
 </div>
