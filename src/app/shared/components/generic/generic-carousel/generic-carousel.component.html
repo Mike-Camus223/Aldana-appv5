@@ -1,0 +1,118 @@
+<!-- =========================================================
+     AppGenericCarouselComponent — Template
+     Tailwind CSS · GSAP · loop infinito con clones
+     ========================================================= -->
+
+<div class="relative w-full select-none group/carousel" #carouselRoot (mouseenter)="onMouseEnter()"
+    (mouseleave)="onMouseLeave()">
+
+    <!-- ── Track wrapper: overflow hidden ─────────────────── -->
+    <div class="overflow-hidden w-full" #trackWrapper>
+        <div class="flex will-change-transform cursor-grab active:cursor-grabbing" #track [style.gap.px]="gapVal"
+            (mousedown)="onDragStart($event)" (touchstart)="onTouchStart($event)" (touchmove)="onTouchMove($event)"
+            (touchend)="onTouchEnd($event)" (touchcancel)="onTouchEnd($event)" (dragstart)="$event.preventDefault()">
+
+            <!-- CLONES DEL FINAL (últimos N items) — inicio del track para loop infinito -->
+            @if (cloneCount > 0) {
+            @for (item of clonedEnd; track $index) {
+            <div class="relative flex-shrink-0 overflow-hidden" [style.width]="itemWidth"
+                (click)="onCardClick($event, getRealItemIndex(item))">
+                <ng-container [ngTemplateOutlet]="item.templateRef" />
+                @if (ornamentVal) {
+                <div
+                    class="absolute bottom-0 right-0 pointer-events-none bg-aldy-medium-2 z-10 w-full h-full [mask-image:radial-gradient(ellipse_100%_150%_at_0%_0%,transparent_0%,transparent_99.5%,black_100%)]">
+                </div>
+                <img [draggable]="false" src="../../../../../assets/svg/logo_whiteAV.svg" alt="AV"
+                    class="absolute pointer-events-none z-[11] right-5 bottom-6 w-8 h-8 object-contain" />
+                }
+            </div>
+            }
+            }
+
+            <!-- ITEMS REALES -->
+            @for (item of items; track item; let i = $index) {
+            <div class="relative flex-shrink-0 overflow-hidden" [style.width]="itemWidth"
+                (click)="onCardClick($event, i)">
+                <ng-container [ngTemplateOutlet]="item.templateRef" />
+
+                @if (ornamentVal) {
+                <div
+                    class="absolute bottom-0 right-0 pointer-events-none bg-aldy-medium-2 z-10 w-full h-full [mask-image:radial-gradient(ellipse_100%_150%_at_0%_0%,transparent_0%,transparent_99.5%,black_100%)]">
+                </div>
+
+                <img [draggable]="false" src="../../../../../assets/svg/logo_whiteAV.svg" alt="AV"
+                    class="absolute pointer-events-none z-[11] right-5 bottom-6 w-8 h-8 object-contain" />
+                }
+            </div>
+            }
+
+            <!-- CLONES DEL INICIO (primeros N items) — final del track para loop infinito -->
+            @if (cloneCount > 0) {
+            @for (item of clonedStart; track $index) {
+            <div class="relative flex-shrink-0 overflow-hidden" [style.width]="itemWidth"
+                (click)="onCardClick($event, getRealItemIndex(item))">
+                <ng-container [ngTemplateOutlet]="item.templateRef" />
+                @if (ornamentVal) {
+                <div
+                    class="absolute bottom-0 right-0 pointer-events-none bg-aldy-medium-2 z-10 w-full h-full [mask-image:radial-gradient(ellipse_100%_150%_at_0%_0%,transparent_0%,transparent_99.5%,black_100%)]">
+                </div>
+                <img [draggable]="false" src="../../../../../assets/svg/logo_whiteAV.svg" alt="AV"
+                    class="absolute pointer-events-none z-[11] right-5 bottom-6 w-8 h-8 object-contain" />
+                }
+            </div>
+            }
+            }
+
+        </div>
+    </div>
+
+    <!-- ── Flechas de navegación (animación slide-in en group-hover/carousel idéntica a product-carousel) ───────────────────────────── -->
+    @if (showArrowsVal && totalItems > 1) {
+    <!-- Flecha izquierda desktop -->
+    <!-- Flecha izquierda desktop -->
+    <button (click)="prev(); $event.stopPropagation()" type="button"
+        class="hidden md:flex group cursor-pointer absolute rounded-full top-1/2 left-[30px] z-30 w-12 h-12 bg-[#E6D6C7] hover:bg-aldy-medium items-center justify-center -translate-y-1/2 -translate-x-[30px] opacity-0 group-hover/carousel:opacity-100 group-hover/carousel:translate-x-0 transition-all duration-300 ease-out shadow-sm"
+        aria-label="Anterior">
+        <lucide-icon name="chevron-left" [size]="28" [strokeWidth]="2" class="text-aldy-white">
+        </lucide-icon>
+    </button>
+
+    <!-- Flecha derecha desktop -->
+    <button (click)="next(); $event.stopPropagation()" type="button"
+        class="hidden md:flex group cursor-pointer absolute rounded-full top-1/2 right-[30px] z-30 w-12 h-12 bg-[#E6D6C7] hover:bg-aldy-medium items-center justify-center -translate-y-1/2 translate-x-[30px] opacity-0 group-hover/carousel:opacity-100 group-hover/carousel:translate-x-0 transition-all duration-300 ease-out shadow-sm"
+        aria-label="Siguiente">
+        <lucide-icon name="chevron-right" [size]="28" [strokeWidth]="2" class="text-aldy-white">
+        </lucide-icon>
+    </button>
+    }
+</div>
+
+<!-- ── Controles móviles (flechas en pantalla pequeña si showArrowsVal) ──────── -->
+@if (showArrowsVal && totalItems > 1) {
+<div class="md:hidden flex justify-center gap-6 sm:gap-8 mt-4">
+    <button (click)="prev(); $event.stopPropagation()" type="button"
+        class="w-8 h-8 flex items-center justify-center hover:scale-110 border border-aldy-medium transition-all duration-250 cursor-pointer ease-in-out rounded-full"
+        aria-label="Anterior">
+        <lucide-icon name="chevron-left" color="#AEC2A9" [size]="20" [strokeWidth]="1"></lucide-icon>
+    </button>
+    <button (click)="next(); $event.stopPropagation()" type="button"
+        class="w-8 h-8 flex items-center justify-center hover:scale-110 border border-aldy-medium transition-all duration-250 cursor-pointer ease-in-out rounded-full"
+        aria-label="Siguiente">
+        <lucide-icon name="chevron-right" color="#AEC2A9" [size]="20" [strokeWidth]="1"></lucide-icon>
+    </button>
+</div>
+}
+
+<!-- ── Dots indicadores bolita (fuera del overflow-hidden) ──────── -->
+@if (showIndicatorsVal && totalPages > 1) {
+<div class="flex items-center justify-center gap-2 mt-4" role="tablist">
+    @for (p of pagesArray; track p; let i = $index) {
+    <button (click)="goToPage(i)" type="button" role="tab" [attr.aria-selected]="currentPage() === i"
+        [attr.aria-label]="'Página ' + (i + 1)"
+        class="rounded-full border-none p-0 outline-none cursor-pointer transition-all duration-300 ease-out" [ngClass]="currentPage() === i
+          ? 'w-3 h-3 bg-[#8fa88a] ring-2 ring-[#8fa88a]/30 scale-110'
+          : 'w-2.5 h-2.5 bg-[#c8d5c5]'">
+    </button>
+    }
+</div>
+}

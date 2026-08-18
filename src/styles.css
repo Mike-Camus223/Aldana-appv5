@@ -17,14 +17,14 @@
   --color-aldy-primary-1000: #293d3b;
 
   --color-aldy-white: #FEF5EC;
-  --color-aldy-light:#D2E4CC;
+  --color-aldy-light: #D2E4CC;
   --color-aldy-light-2: #A6B9A2;
-  --color-aldy-medium:#AEC2A9;
+  --color-aldy-medium: #AEC2A9;
   --color-aldy-medium-2: #97ad92;
   --color-aldy-bold: #778a72;
-  --color-aldy-bold-2:#5f6e5b;
-  --color-aldy-green-gray:#889287;
-  --color-aldy-green-gray-bold:#7e887d;
+  --color-aldy-bold-2: #5f6e5b;
+  --color-aldy-green-gray: #889287;
+  --color-aldy-green-gray-bold: #7e887d;
   --color-aldy-prueba: #D2E4CC;
 }
 
@@ -65,7 +65,7 @@
 
 @font-face {
   font-family: 'NewAldyFont-type4';
-  src:url('./assets/fonts/fonnts.com-Runda_Light.otf') format('truetype');
+  src: url('./assets/fonts/fonnts.com-Runda_Light.otf') format('truetype');
 }
 
 @font-face {
@@ -76,14 +76,37 @@
 /* =========================
    FONT CLASSES
 ========================= */
-.NewAldyTitle { font-family: 'NewAldyFont', sans-serif; }
-.NewAldyTitleCursive { font-family: 'NewAldyFontCursive'; }
-.NewAldyFontType1 { font-family: 'NewAldyFont-type1'; }
-.NewAldyFontType2 { font-family: 'NewAldyFont-type2'; }
-.NewAldyFontType3 { font-family: 'NewAldyFont-type3'; }
-.NewAldyFontType4 { font-family: 'NewAldyFont-type4'; }
-.NewAldyFontTypeAccent { font-family: 'accent-aldy'; }
-.cursiveTitle { font-family: 'Great Vibes', cursive; }
+.NewAldyTitle {
+  font-family: 'NewAldyFont', sans-serif;
+}
+
+.NewAldyTitleCursive {
+  font-family: 'NewAldyFontCursive';
+}
+
+.NewAldyFontType1 {
+  font-family: 'NewAldyFont-type1';
+}
+
+.NewAldyFontType2 {
+  font-family: 'NewAldyFont-type2';
+}
+
+.NewAldyFontType3 {
+  font-family: 'NewAldyFont-type3';
+}
+
+.NewAldyFontType4 {
+  font-family: 'NewAldyFont-type4';
+}
+
+.NewAldyFontTypeAccent {
+  font-family: 'accent-aldy';
+}
+
+.cursiveTitle {
+  font-family: 'Great Vibes', cursive;
+}
 
 
 
@@ -110,7 +133,8 @@
 /* SOLO RECTÁNGULO */
 ::-webkit-scrollbar-thumb {
   background: var(--color-aldy-medium);
-  border-radius: 0px; /* rectángulo puro */
+  border-radius: 0px;
+  /* rectángulo puro */
 }
 
 /* hover un poquito más oscuro */

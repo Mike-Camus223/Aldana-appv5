@@ -28,16 +28,16 @@ import { Heart, LUCIDE_ICONS, LucideAngularModule, LucideIconProvider, Sparkle }
     CarouselItemDirective,
     LucideAngularModule
   ],
-  templateUrl: './reels-section.component.html',providers: [
-      {
-        provide: LUCIDE_ICONS,
-        multi: true,
-        useValue: new LucideIconProvider({
-         Sparkle,
-         Heart
-        })
-      }
-    ],
+  templateUrl: './reels-section.component.html', providers: [
+    {
+      provide: LUCIDE_ICONS,
+      multi: true,
+      useValue: new LucideIconProvider({
+        Sparkle,
+        Heart
+      })
+    }
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 
 })
@@ -52,7 +52,7 @@ export class ReelsSectionComponent implements OnInit, OnDestroy {
   currentMediaIndex = 0;
   isMuted = true;
   mediaWidth = 1080;
-mediaHeight = 1920;
+  mediaHeight = 1920;
 
   // ── Datos ────────────────────────────────────────────────────────────────
   reels: any[] = [];
@@ -125,7 +125,8 @@ mediaHeight = 1920;
       gap: 8,
       loop: true,
       showArrows: true,
-      showDots: false,
+      showIndicators: true,
+      ornament: true,
       dragEnabled: true,
       animationDuration: 450,
     };
@@ -166,7 +167,7 @@ mediaHeight = 1920;
         return;
       }
 
-      this.reels = data.map((item: any) =>
+      this.reels = (data || []).slice(0, 6).map((item: any) =>
         Object.freeze({
           id: item.id,
           image_url: item.image_url || item.thumbnail_url,
@@ -244,27 +245,27 @@ mediaHeight = 1920;
 
   onMediaLoaded(event?: Event): void {
 
-  const target = event?.target as HTMLImageElement | HTMLVideoElement;
+    const target = event?.target as HTMLImageElement | HTMLVideoElement;
 
-  if (target) {
+    if (target) {
 
-    if ('naturalWidth' in target) {
+      if ('naturalWidth' in target) {
 
-      this.mediaWidth = target.naturalWidth || 1080;
-      this.mediaHeight = target.naturalHeight || 1920;
+        this.mediaWidth = target.naturalWidth || 1080;
+        this.mediaHeight = target.naturalHeight || 1920;
 
-    } else if ('videoWidth' in target) {
+      } else if ('videoWidth' in target) {
 
-      this.mediaWidth = target.videoWidth || 1080;
-      this.mediaHeight = target.videoHeight || 1920;
+        this.mediaWidth = target.videoWidth || 1080;
+        this.mediaHeight = target.videoHeight || 1920;
+
+      }
 
     }
 
+    this.isMediaLoading = false;
+    this.cdr.markForCheck();
   }
-
-  this.isMediaLoading = false;
-  this.cdr.markForCheck();
-}
 
   get currentMedia() {
     if (!this.selectedReel?.media || this.selectedReel.media.length === 0) {
@@ -279,16 +280,16 @@ mediaHeight = 1920;
 
   get mediaContainerWidth(): number {
 
-  if (this.isMobile) {
-    return 0;
+    if (this.isMobile) {
+      return 0;
+    }
+
+    const viewportHeight = window.innerHeight * 0.95;
+
+    return Math.round(
+      (this.mediaWidth * viewportHeight) / this.mediaHeight
+    );
   }
-
-  const viewportHeight = window.innerHeight * 0.95;
-
-  return Math.round(
-    (this.mediaWidth * viewportHeight) / this.mediaHeight
-  );
-}
 
   nextMedia(): void {
     if (this.selectedReel?.media &&
@@ -327,7 +328,7 @@ mediaHeight = 1920;
 
   // ── Scroll lock ───────────────────────────────────────────────────────────
 
- 
+
   // ── Avatar helpers ────────────────────────────────────────────────────────
 
   getInitials(username: string): string {
