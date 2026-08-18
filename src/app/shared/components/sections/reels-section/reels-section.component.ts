@@ -56,6 +56,7 @@ export class ReelsSectionComponent implements OnInit, OnDestroy {
 
   // ── Datos ────────────────────────────────────────────────────────────────
   reels: any[] = [];
+  loadingReels = true;
 
   // ── Config del carousel ──────────────────────────────────────────────────
   // El objeto se recalcula en handleResize() para ajustar visibleItems
@@ -158,12 +159,13 @@ export class ReelsSectionComponent implements OnInit, OnDestroy {
   // ── Carga de datos ────────────────────────────────────────────────────────
 
   private async loadInstagramReels(): Promise<void> {
+    this.loadingReels = true;
+    this.cdr.markForCheck();
     try {
       const { data, error } = await this.instagramService.getInstagramReels();
 
       if (error || !data || data.length === 0) {
         this.reels = [];
-        this.cdr.markForCheck();
         return;
       }
 
@@ -194,10 +196,10 @@ export class ReelsSectionComponent implements OnInit, OnDestroy {
           username: item.username || 'aldana_vilcabana',
         })
       );
-
-      this.cdr.markForCheck();
     } catch {
       this.reels = [];
+    } finally {
+      this.loadingReels = false;
       this.cdr.markForCheck();
     }
   }
@@ -223,11 +225,9 @@ export class ReelsSectionComponent implements OnInit, OnDestroy {
     this.currentMediaIndex = 0;
     this.isMuted = true;
     this.isMediaLoading = true;
-
-    setTimeout(() => {
-      this.showModal = true;
-      this.cdr.markForCheck();
-    }, 50);
+    this.showModal = true;
+    this.cdr.markForCheck();
+    this.forcePlayVideo();
   }
 
   onModalChange(isOpen: boolean): void {
@@ -238,40 +238,58 @@ export class ReelsSectionComponent implements OnInit, OnDestroy {
         this.selectedReel = null;
         this.cdr.markForCheck();
       }, 200);
+    } else {
+      this.forcePlayVideo();
     }
   }
 
   // ── Media helpers ─────────────────────────────────────────────────────────
 
+  private forcePlayVideo(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    setTimeout(() => {
+      const videos = document.querySelectorAll('video');
+      videos.forEach((v) => {
+        v.muted = this.isMuted;
+        const p = v.play();
+        if (p !== undefined) {
+          p.catch(() => {
+            v.muted = true;
+            this.isMuted = true;
+            v.play().catch(() => {});
+          });
+        }
+      });
+    }, 100);
+  }
+
   onMediaLoaded(event?: Event): void {
-
     const target = event?.target as HTMLImageElement | HTMLVideoElement;
-
     if (target) {
-
       if ('naturalWidth' in target) {
-
         this.mediaWidth = target.naturalWidth || 1080;
         this.mediaHeight = target.naturalHeight || 1920;
-
       } else if ('videoWidth' in target) {
-
         this.mediaWidth = target.videoWidth || 1080;
         this.mediaHeight = target.videoHeight || 1920;
-
       }
-
     }
-
     this.isMediaLoading = false;
     this.cdr.markForCheck();
   }
 
   get currentMedia() {
-    if (!this.selectedReel?.media || this.selectedReel.media.length === 0) {
-      return { url: this.selectedReel?.image_url, type: 'image' };
+    if (!this.selectedReel) return { url: '', type: 'image' };
+    if (!this.selectedReel.media || this.selectedReel.media.length === 0) {
+      return { url: this.selectedReel.image_url || '', type: 'image' };
     }
-    return this.selectedReel.media[this.currentMediaIndex];
+    const m = this.selectedReel.media[this.currentMediaIndex];
+    const rawType = String(m?.type || m?.media_type || this.selectedReel.media_type || '').toLowerCase();
+    const type = rawType.includes('video') || rawType.includes('reels') ? 'video' : 'image';
+    return {
+      url: m?.url || m?.media_url || m?.image_url || this.selectedReel.image_url || '',
+      type,
+    };
   }
 
   get hasMultipleMedia(): boolean {
@@ -279,13 +297,10 @@ export class ReelsSectionComponent implements OnInit, OnDestroy {
   }
 
   get mediaContainerWidth(): number {
-
     if (this.isMobile) {
       return 0;
     }
-
     const viewportHeight = window.innerHeight * 0.95;
-
     return Math.round(
       (this.mediaWidth * viewportHeight) / this.mediaHeight
     );
@@ -298,6 +313,7 @@ export class ReelsSectionComponent implements OnInit, OnDestroy {
       this.isMediaLoading = true;
       this.isMuted = true;
       this.cdr.markForCheck();
+      this.forcePlayVideo();
     }
   }
 
@@ -307,6 +323,7 @@ export class ReelsSectionComponent implements OnInit, OnDestroy {
       this.isMediaLoading = true;
       this.isMuted = true;
       this.cdr.markForCheck();
+      this.forcePlayVideo();
     }
   }
 
@@ -315,15 +332,43 @@ export class ReelsSectionComponent implements OnInit, OnDestroy {
     this.isMediaLoading = true;
     this.isMuted = true;
     this.cdr.markForCheck();
+    this.forcePlayVideo();
   }
 
   toggleMute(): void {
     this.isMuted = !this.isMuted;
+    if (isPlatformBrowser(this.platformId)) {
+      const videos = document.querySelectorAll('video');
+      videos.forEach((v) => {
+        v.muted = this.isMuted;
+        if (v.paused) {
+          v.play().catch(() => {});
+        }
+      });
+    }
     this.cdr.markForCheck();
   }
 
+  playVideo(event: Event): void {
+    const video = event.target as HTMLVideoElement;
+    if (video) {
+      video.muted = this.isMuted;
+      const p = video.play();
+      if (p !== undefined) {
+        p.catch(() => {
+          video.muted = true;
+          this.isMuted = true;
+          video.play().catch(() => {});
+        });
+      }
+    }
+    this.onMediaLoaded(event);
+  }
+
   isVideo(media: any): boolean {
-    return media?.type === 'video';
+    if (!media) return false;
+    const type = String(media.type || media.media_type || '').toLowerCase();
+    return type.includes('video') || type.includes('reels');
   }
 
   // ── Scroll lock ───────────────────────────────────────────────────────────

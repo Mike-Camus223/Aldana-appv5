@@ -35,7 +35,11 @@ Usa AppGenericCarouselComponent + CarouselItemDirective
     }
   </app-generic-carousel>
 
-  @if (!reels || reels.length === 0) {
+  @if (loadingReels) {
+  <div class="flex justify-center items-center py-12">
+    <div class="w-16 h-16 sm:w-20 sm:h-20 border-[8px] sm:border-[10px] border-[#D2E4CC] border-t-aldy-medium rounded-full animate-spin"></div>
+  </div>
+  } @else if (!reels || reels.length === 0) {
   <div class="text-center py-8">
     <p class="text-aldy-green-gray NewAldyFontType4 text-sm">
       No hay reels disponibles
@@ -69,7 +73,7 @@ Usa AppGenericCarouselComponent + CarouselItemDirective
         (load)="onMediaLoaded($event)" (error)="onMediaLoaded($event)" />
       }
       @if (isVideo(currentMedia)) {
-      <video [src]="currentMedia.url" autoplay loop playsinline [muted]="isMuted"
+      <video [src]="currentMedia.url" autoplay loop playsinline muted [muted]="isMuted"
         class="max-h-full w-auto object-contain" preload="metadata" (loadeddata)="onMediaLoaded($any($event))"
         (error)="onMediaLoaded($any($event))">
       </video>
@@ -246,7 +250,7 @@ Usa AppGenericCarouselComponent + CarouselItemDirective
         (load)="onMediaLoaded($event)" (error)="onMediaLoaded($event)" />
       }
       @if (isVideo(currentMedia)) {
-      <video [src]="currentMedia.url" autoplay loop playsinline [muted]="isMuted"
+      <video [src]="currentMedia.url" autoplay loop playsinline muted [muted]="isMuted"
         class="max-h-full w-auto object-contain" preload="metadata" (loadeddata)="onMediaLoaded($any($event))"
         (error)="onMediaLoaded($any($event))">
       </video>
