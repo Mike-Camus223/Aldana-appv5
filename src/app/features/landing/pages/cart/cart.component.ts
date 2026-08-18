@@ -37,7 +37,7 @@ export class CartComponent implements AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
-    this.smoothScroll.init();
+    this.smoothScroll.ensureSmoother();
   }
 
   ngOnDestroy(): void {

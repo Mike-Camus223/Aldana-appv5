@@ -45,6 +45,12 @@
   }
 }
 
+select option {
+  background-color: var(--color-aldy-white, #fbfbf9);
+  color: #5A5A4A;
+  font-family: 'NewAldyFont-type4', sans-serif;
+  font-size: 13px;
+}
 
 @media screen and (max-width: 460px) {
   .spinner {

@@ -6,7 +6,6 @@ import { Subscription } from 'rxjs';
 import { LoadingScreenGenericComponent } from "./shared/components/system/loading-screen-generic/loading-screen-generic.component";
 import { LoadingScreenComponent } from './shared/components/system/loading-screen/loading-screen.component';
 import { ToastNotificationComponent } from './shared/components/system/toast-notification/toast-notification.component';
-import { DiscountLeafComponent } from './shared/components/system/discount-leaf/discount-leaf.component';
 import { LoaderService } from './core/services/utils/loader.service';
 import { SmoothScrollService } from './core/services/utils/smooth-scroll.service';
 
@@ -17,8 +16,7 @@ import { SmoothScrollService } from './core/services/utils/smooth-scroll.service
     RouterOutlet,
     ToastNotificationComponent,
     LoadingScreenGenericComponent,
-    LoadingScreenComponent,
-    DiscountLeafComponent
+    LoadingScreenComponent
   ],
   templateUrl: './app.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
@@ -48,9 +46,6 @@ export class AppComponent implements OnInit, OnDestroy {
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe(() => {
         this.smoothScrollService.scrollToTop(false);
-        setTimeout(() => {
-          this.smoothScrollService.init('#smooth-wrapper', '#smooth-content');
-        }, 80);
       });
   }
 

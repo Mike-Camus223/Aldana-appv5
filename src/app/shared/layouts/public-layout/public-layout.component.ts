@@ -3,6 +3,7 @@ import { RouterOutlet } from '@angular/router';
 import { Footerv2Component } from '../../components/system/footerv2/footerv2.component';
 import { LoaderService } from '../../../core/services/utils/loader.service';
 import { NavbarPublicv3Component } from '../../components/system/navbar-publicv3/navbar-publicv3.component';
+import { DiscountLeafComponent } from '../../components/system/discount-leaf/discount-leaf.component';
 import { SmoothScrollService } from '../../../core/services/utils/smooth-scroll.service';
 
 @Component({
@@ -12,6 +13,7 @@ import { SmoothScrollService } from '../../../core/services/utils/smooth-scroll.
     RouterOutlet,
     NavbarPublicv3Component,
     Footerv2Component,
+    DiscountLeafComponent,
   ],
   templateUrl: './public-layout.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
@@ -22,7 +24,7 @@ export class PublicLayoutComponent implements OnInit, OnDestroy, AfterViewInit {
   private smoothScroll = inject(SmoothScrollService);
 
   ngAfterViewInit(): void {
-    this.smoothScroll.init();
+    this.smoothScroll.ensureSmoother();
   }
 
   ngOnInit(): void {

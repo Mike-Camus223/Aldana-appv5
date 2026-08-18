@@ -244,6 +244,9 @@ export class LoaderService {
         if (typeof ScrollTrigger !== 'undefined') {
           ScrollTrigger.refresh();
         }
+        if (typeof ScrollSmoother !== 'undefined') {
+          ScrollSmoother.get()?.refresh();
+        }
       }, 10);
     }
   }

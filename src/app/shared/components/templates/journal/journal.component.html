@@ -30,77 +30,68 @@
           Ver todo
         </button>
         @for (cat of categories; track cat) {
-          <button type="button" (click)="selectCategory(cat.slug)" appLinkHoverUnderline
-            [dynamicColor]="'text-aldy-green-gray-bold'"
+        <button type="button" (click)="selectCategory(cat.slug)" appLinkHoverUnderline
+          [dynamicColor]="'text-aldy-green-gray-bold'"
           class="text-lg NewAldyTitle tracking-widest uppercase bg-transparent border-0 cursor-pointer" [ngClass]="
-            isCategoryActive(cat.slug)
-              ? 'text-aldy-green-gray-bold'
-              : 'text-aldy-green-gray'
-          ">
-            {{ cat.name }}
-          </button>
+              isCategoryActive(cat.slug)
+                ? 'text-aldy-green-gray-bold'
+                : 'text-aldy-green-gray'
+            ">
+          {{ cat.name }}
+        </button>
         }
       </nav>
       <div class="mt-10 flex flex-wrap justify-center gap-4 sm:gap-6 items-center border-y border-[#aec2a9] py-4 px-2">
-        <div class="relative group h-[42px]">
+        <!-- Orden -->
+        <div
+          class="flex items-center justify-between border border-[#C8C4BA] bg-aldy-white px-3 w-full sm:w-auto min-w-[180px] sm:min-w-[210px]"
+          style="min-height:52px;">
           <select [value]="sortOrder" (change)="onSortChange($any($event.target).value)"
-            class="appearance-none h-full bg-transparent border border-aldy-medium-2 pl-4 pr-10 text-xs uppercase tracking-wider font-medium text-aldy-green-gray focus:outline-none cursor-pointer hover:bg-aldy-medium-2 hover:text-white transition-all duration-300 min-w-[200px]">
-            <option value="desc" class="text-aldy-green-gray bg-aldy-white">
-              Más recientes
-            </option>
-            <option value="asc" class="text-aldy-green-gray bg-aldy-white">
-              Más antiguas
-            </option>
+            class="flex-1 bg-transparent focus:outline-none NewAldyFontType4 tracking-wide appearance-none cursor-pointer pr-2 text-[#5A5A4A]"
+            style="font-size:13px;">
+            <option value="desc" class="text-[#5A5A4A] bg-aldy-white">Más recientes</option>
+            <option value="asc" class="text-[#5A5A4A] bg-aldy-white">Más antiguas</option>
           </select>
-          <lucide-icon name="chevron-down" [strokeWidth]="1.5" [size]="18"
-            class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-aldy-green-gray group-hover:text-white transition-colors">
-          </lucide-icon>
+          <lucide-icon name="chevron-down" [size]="14" color="#B0ADA5" [strokeWidth]="1.5"
+            class="flex-shrink-0 pointer-events-none"></lucide-icon>
         </div>
-        <div class="relative group h-[42px]">
+
+        <!-- Año -->
+        <div
+          class="flex items-center justify-between border border-[#C8C4BA] bg-aldy-white px-3 w-full sm:w-auto min-w-[180px] sm:min-w-[210px]"
+          style="min-height:52px;">
           <select [value]="numStr(selectedYear)" (change)="onYearChange($any($event.target).value)"
-            class="appearance-none h-full bg-transparent border border-aldy-medium-2 pl-4 pr-10 text-xs uppercase tracking-wider font-medium text-aldy-green-gray focus:outline-none cursor-pointer hover:bg-aldy-medium-2 hover:text-white transition-colors min-w-[180px]">
-            <option value="" class="text-aldy-green-gray bg-aldy-white">
-              Todos los años
-            </option>
+            class="flex-1 bg-transparent focus:outline-none NewAldyFontType4 tracking-wide appearance-none cursor-pointer pr-2"
+            style="font-size:13px;" [class.text-[#B0ADA5]]="!selectedYear" [class.text-[#5A5A4A]]="selectedYear">
+            <option value="" class="text-[#B0ADA5] bg-aldy-white">Todos los años</option>
             @for (year of yearOptions; track year) {
-              <option [value]="numStr(year)" class="text-aldy-green-gray bg-aldy-white">
-                {{ year }}
-              </option>
+            <option [value]="numStr(year)" class="text-[#5A5A4A] bg-aldy-white">
+              {{ year }}
+            </option>
             }
           </select>
-          <lucide-icon name="chevron-down" [strokeWidth]="1.5" [size]="18"
-            class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-aldy-green-gray group-hover:text-white transition-colors">
-          </lucide-icon>
+          <lucide-icon name="chevron-down" [size]="14" color="#B0ADA5" [strokeWidth]="1.5"
+            class="flex-shrink-0 pointer-events-none"></lucide-icon>
         </div>
-        <div class="relative h-[42px]" [class.group]="!isMonthDisabled">
+
+        <!-- Mes -->
+        <div
+          class="flex items-center justify-between border border-[#C8C4BA] bg-aldy-white px-3 w-full sm:w-auto min-w-[180px] sm:min-w-[210px]"
+          [class.opacity-40]="isMonthDisabled" [class.cursor-not-allowed]="isMonthDisabled" style="min-height:52px;">
           <select [value]="numStr(selectedMonth)" (change)="onMonthChange($any($event.target).value)"
             [disabled]="isMonthDisabled"
-            class="appearance-none h-full w-full bg-transparent border border-aldy-medium-2 pl-4 pr-10 text-xs uppercase tracking-wider font-medium focus:outline-none transition-colors min-w-[200px] text-aldy-green-gray"
-            [ngClass]="
-              isMonthDisabled
-                ? 'opacity-40 cursor-not-allowed'
-                : 'cursor-pointer hover:bg-aldy-medium-2 hover:text-white'
-            ">
-            <option value="" class="text-aldy-green-gray bg-aldy-white">
-              Todos los meses
-            </option>
+            class="flex-1 bg-transparent focus:outline-none NewAldyFontType4 tracking-wide appearance-none pr-2"
+            [class.cursor-not-allowed]="isMonthDisabled" [class.cursor-pointer]="!isMonthDisabled"
+            style="font-size:13px;" [class.text-[#B0ADA5]]="!selectedMonth" [class.text-[#5A5A4A]]="selectedMonth">
+            <option value="" class="text-[#B0ADA5] bg-aldy-white">Todos los meses</option>
             @for (month of monthOptions; track month) {
-              <option [value]="numStr(month)"
-                class="text-aldy-green-gray bg-aldy-white">
-                {{ monthLabels[month] || month }}
-              </option>
+            <option [value]="numStr(month)" class="text-[#5A5A4A] bg-aldy-white">
+              {{ monthLabels[month] || month }}
+            </option>
             }
           </select>
-          <div
-            class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-aldy-green-gray transition-colors"
-            [ngClass]="
-              isMonthDisabled
-                ? 'opacity-40'
-                : 'group-hover:text-white'
-            ">
-            <lucide-icon name="chevron-down" [strokeWidth]="1.5" [size]="18" color="currentColor">
-            </lucide-icon>
-          </div>
+          <lucide-icon name="chevron-down" [size]="14" color="#B0ADA5" [strokeWidth]="1.5"
+            class="flex-shrink-0 pointer-events-none"></lucide-icon>
         </div>
       </div>
     </header>
@@ -108,119 +99,115 @@
       <div class="transition-opacity duration-500 ease-out" [class.journal-content-dim]="loading"
         [class.journal-content-full]="!loading">
         @if (!loading && posts.length === 0) {
-          <div class="text-center NewAldyFontType4 text-aldy-green-gray text-sm">
-            No hay notas publicadas con estos filtros.
-          </div>
+        <div class="text-center NewAldyFontType4 text-aldy-green-gray text-sm">
+          No hay notas publicadas con estos filtros.
+        </div>
         }
         @if (posts.length > 0) {
-          <div class="grid md:grid-cols-3 gap-x-12 gap-y-14">
-            @for (post of posts; track trackByPostId($index, post)) {
-              <article>
-                @if (post.cachedHref; as href) {
-                  <a [routerLink]="href" class="block overflow-hidden">
-                    <img appCardInitAnimation="up" [src]="post.cachedCover" [alt]="post.title" loading="lazy"
-                      decoding="async" fetchpriority="low" width="900" height="1200"
-                      class="w-full aspect-[3/4] object-cover" [ngClass]="post.image_position" />
-                    </a>
-                  } @else {
-                    <div class="block overflow-hidden">
-                      <img appCardInitAnimation="up" [src]="post.cachedCover" [alt]="post.title" loading="lazy"
-                        decoding="async" fetchpriority="low" width="900" height="1200"
-                        class="w-full aspect-[3/4] object-cover" [ngClass]="post.image_position" />
-                      </div>
-                    }
-                    <div>
-                      <p class="text-xs mt-6 sm:text-sm font-light NewAldyFontType4 text-aldy-green-gray">
-                        {{ post.formattedDate }}
-                      </p>
-                      <h2 class="mt-2 text-lg sm:text-2xl NewAldyTitle text-aldy-green-gray-bold">
-                        {{ post.title }}
-                      </h2>
-                      @if (post.excerpt) {
-                        <p
-                          class="mt-4 line-clamp-3 text-ellipsis leading-6 mb-6 max-w-xl text-sm text-aldy-green-gray-bold NewAldyFontType4 tracking-wider">
-                          {{ post.excerpt }}
-                        </p>
-                      }
-                      @if (post.cachedHref; as link) {
-                        <a [routerLink]="link" appLinkHoverUnderline
-                          [dynamicColor]="'text-aldy-green-gray-bold'"
-                          class="tracking-wide text-md NewAldyTitle uppercase text-aldy-green-gray-bold inline-block">
-                          Ver novedad
-                        </a>
-                      }
-                    </div>
-                  </article>
-                }
-              </div>
+        <div class="grid md:grid-cols-3 gap-x-12 gap-y-14">
+          @for (post of posts; track trackByPostId($index, post)) {
+          <article>
+            @if (post.cachedHref; as href) {
+            <a [routerLink]="href" class="block overflow-hidden">
+              <img appCardInitAnimation="up" [src]="post.cachedCover" [alt]="post.title" loading="lazy" decoding="async"
+                fetchpriority="low" width="900" height="1200" class="w-full aspect-[3/4] object-cover"
+                [ngClass]="post.image_position" />
+            </a>
+            } @else {
+            <div class="block overflow-hidden">
+              <img appCardInitAnimation="up" [src]="post.cachedCover" [alt]="post.title" loading="lazy" decoding="async"
+                fetchpriority="low" width="900" height="1200" class="w-full aspect-[3/4] object-cover"
+                [ngClass]="post.image_position" />
+            </div>
             }
-            @if (!loading && posts.length > 0 && totalPages > 1) {
-              <div
-                class="flex justify-center items-center gap-2 mt-14 select-none text-aldy-medium-2">
-                <button type="button" (click)="prevPage()" [disabled]="currentPage === 1"
-                  class="w-10 h-10 border border-aldy-medium-2 rounded-none flex items-center justify-center NewAldyFontType4 text-sm cursor-pointer disabled:opacity-40 disabled:cursor-default"
-                  aria-label="Página anterior">
-                  ‹
-                </button>
-                @if (pagesArray.length <= 8) {
-                  @for (page of pagesArray; track page) {
-                    <button type="button" (click)="goToPage(page)"
-                      class="w-10 h-10 border border-aldy-medium-2 rounded-none flex items-center justify-center NewAldyFontType4 text-sm cursor-pointer"
-                      [ngClass]="page === currentPage ? 'font-semibold' : ''">
-                      {{ page }}
-                    </button>
-                  }
-                } @else {
-                  <button type="button" (click)="goToPage(1)"
-                    class="w-10 h-10 border border-aldy-medium-2 rounded-none flex items-center justify-center NewAldyFontType4 text-sm cursor-pointer"
-                    [ngClass]="currentPage === 1 ? 'font-semibold' : ''">
-                    1
-                  </button>
-                  <span class="px-2 NewAldyFontType4 text-sm">
-                    ...
-                  </span>
-                  @if (currentPage > 2) {
-                    <button type="button" (click)="goToPage(currentPage - 1)"
-                      class="w-10 h-10 border border-aldy-medium-2 rounded-none flex items-center justify-center NewAldyFontType4 text-sm cursor-pointer">
-                      {{ currentPage - 1 }}
-                    </button>
-                  }
-                  <button type="button" (click)="goToPage(currentPage)"
-                    class="w-10 h-10 border border-aldy-medium-2 rounded-none flex items-center justify-center NewAldyFontType4 text-sm cursor-pointer font-semibold">
-                    {{ currentPage }}
-                  </button>
-                  @if (currentPage < totalPages - 1) {
-                    <button type="button" (click)="goToPage(currentPage + 1)"
-                      class="w-10 h-10 border border-aldy-medium-2 rounded-none flex items-center justify-center NewAldyFontType4 text-sm cursor-pointer">
-                      {{ currentPage + 1 }}
-                    </button>
-                  }
-                  <span class="px-2 NewAldyFontType4 text-sm">
-                    ...
-                  </span>
-                  <button type="button" (click)="goToPage(totalPages)"
-                    class="w-10 h-10 border border-aldy-medium-2 rounded-none flex items-center justify-center NewAldyFontType4 text-sm cursor-pointer"
-              [ngClass]="
+            <div>
+              <p class="text-xs mt-6 sm:text-sm font-light NewAldyFontType4 text-aldy-green-gray">
+                {{ post.formattedDate }}
+              </p>
+              <h2 class="mt-2 text-lg sm:text-2xl NewAldyTitle text-aldy-green-gray-bold">
+                {{ post.title }}
+              </h2>
+              @if (post.excerpt) {
+              <p
+                class="mt-4 line-clamp-3 text-ellipsis leading-6 mb-6 max-w-xl text-sm text-aldy-green-gray-bold NewAldyFontType4 tracking-wider">
+                {{ post.excerpt }}
+              </p>
+              }
+              @if (post.cachedHref; as link) {
+              <a [routerLink]="link" appLinkHoverUnderline [dynamicColor]="'text-aldy-green-gray-bold'"
+                class="tracking-wide text-md NewAldyTitle uppercase text-aldy-green-gray-bold inline-block">
+                Ver novedad
+              </a>
+              }
+            </div>
+          </article>
+          }
+        </div>
+        }
+        @if (!loading && posts.length > 0 && totalPages > 1) {
+        <div class="flex justify-center items-center gap-2 mt-14 select-none text-aldy-medium-2">
+          <button type="button" (click)="prevPage()" [disabled]="currentPage === 1"
+            class="w-10 h-10 border border-aldy-medium-2 rounded-none flex items-center justify-center NewAldyFontType4 text-sm cursor-pointer disabled:opacity-40 disabled:cursor-default"
+            aria-label="Página anterior">
+            ‹
+          </button>
+          @if (pagesArray.length <= 8) { @for (page of pagesArray; track page) { <button type="button"
+            (click)="goToPage(page)"
+            class="w-10 h-10 border border-aldy-medium-2 rounded-none flex items-center justify-center NewAldyFontType4 text-sm cursor-pointer"
+            [ngClass]="page === currentPage ? 'font-semibold' : ''">
+            {{ page }}
+            </button>
+            }
+            } @else {
+            <button type="button" (click)="goToPage(1)"
+              class="w-10 h-10 border border-aldy-medium-2 rounded-none flex items-center justify-center NewAldyFontType4 text-sm cursor-pointer"
+              [ngClass]="currentPage === 1 ? 'font-semibold' : ''">
+              1
+            </button>
+            <span class="px-2 NewAldyFontType4 text-sm">
+              ...
+            </span>
+            @if (currentPage > 2) {
+            <button type="button" (click)="goToPage(currentPage - 1)"
+              class="w-10 h-10 border border-aldy-medium-2 rounded-none flex items-center justify-center NewAldyFontType4 text-sm cursor-pointer">
+              {{ currentPage - 1 }}
+            </button>
+            }
+            <button type="button" (click)="goToPage(currentPage)"
+              class="w-10 h-10 border border-aldy-medium-2 rounded-none flex items-center justify-center NewAldyFontType4 text-sm cursor-pointer font-semibold">
+              {{ currentPage }}
+            </button>
+            @if (currentPage < totalPages - 1) { <button type="button" (click)="goToPage(currentPage + 1)"
+              class="w-10 h-10 border border-aldy-medium-2 rounded-none flex items-center justify-center NewAldyFontType4 text-sm cursor-pointer">
+              {{ currentPage + 1 }}
+              </button>
+              }
+              <span class="px-2 NewAldyFontType4 text-sm">
+                ...
+              </span>
+              <button type="button" (click)="goToPage(totalPages)"
+                class="w-10 h-10 border border-aldy-medium-2 rounded-none flex items-center justify-center NewAldyFontType4 text-sm cursor-pointer"
+                [ngClass]="
                 currentPage === totalPages
                   ? 'font-semibold'
                   : ''
               ">
-                    {{ totalPages }}
-                  </button>
-                }
-                <button type="button" (click)="nextPage()" [disabled]="currentPage === totalPages"
-                  class="w-10 h-10 border border-aldy-medium-2 rounded-none flex items-center justify-center NewAldyFontType4 text-sm cursor-pointer disabled:opacity-40 disabled:cursor-default"
-                  aria-label="Página siguiente">
-                  ›
-                </button>
-              </div>
-            }
-          </div>
-          @if (loading) {
-            <div class="journal-spinner-overlay">
-              <div class="spinner"></div>
-            </div>
-          }
+                {{ totalPages }}
+              </button>
+              }
+              <button type="button" (click)="nextPage()" [disabled]="currentPage === totalPages"
+                class="w-10 h-10 border border-aldy-medium-2 rounded-none flex items-center justify-center NewAldyFontType4 text-sm cursor-pointer disabled:opacity-40 disabled:cursor-default"
+                aria-label="Página siguiente">
+                ›
+              </button>
         </div>
+        }
       </div>
-    </section>
+      @if (loading) {
+      <div class="journal-spinner-overlay">
+        <div class="spinner"></div>
+      </div>
+      }
+    </div>
+  </div>
+</section>

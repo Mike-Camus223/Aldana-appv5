@@ -85,7 +85,7 @@ export default class DashboardLayoutComponent implements AfterViewInit, OnDestro
   }
 
   ngAfterViewInit(): void {
-    this.smoothScroll.init();
+    this.smoothScroll.ensureSmoother();
   }
 
   ngOnDestroy(): void {

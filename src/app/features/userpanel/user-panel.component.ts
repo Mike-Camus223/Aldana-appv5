@@ -107,7 +107,7 @@ export class UserPanelComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
-    this.smoothScroll.init();
+    this.smoothScroll.ensureSmoother();
   }
 
   ngOnDestroy() {

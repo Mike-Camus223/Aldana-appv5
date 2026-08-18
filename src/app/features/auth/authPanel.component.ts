@@ -74,7 +74,7 @@ export class AuthPanelComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
-    this.smoothScroll.init();
+    this.smoothScroll.ensureSmoother();
     this.scheduleArrow();
   }
 
