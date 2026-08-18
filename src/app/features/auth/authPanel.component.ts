@@ -1,4 +1,3 @@
-
 import { Component, OnInit, inject, OnDestroy, ViewChild, ElementRef, AfterViewInit, ChangeDetectionStrategy } from '@angular/core';
 import { NavigationEnd, NavigationStart, NavigationCancel, NavigationError, Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../core/services/auth/auth.service';
@@ -7,6 +6,7 @@ import { filter } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 import { LoaderService } from '../../core/services/utils/loader.service';
 import { Footerv2Component } from '../../shared/components/system/footerv2/footerv2.component';
+import { SmoothScrollService } from '../../core/services/utils/smooth-scroll.service';
 
 @Component({
   selector: 'app-auth-panel',
@@ -28,6 +28,7 @@ export class AuthPanelComponent implements OnInit, AfterViewInit, OnDestroy {
   private authService = inject(AuthService);
   private router = inject(Router);
   private loaderService = inject(LoaderService);
+  private smoothScroll = inject(SmoothScrollService);
 
   private arrowTimeout: any = null;
   private initialTimeout: any = null;
@@ -51,8 +52,8 @@ export class AuthPanelComponent implements OnInit, AfterViewInit, OnDestroy {
         if (event instanceof NavigationEnd || event instanceof NavigationCancel || event instanceof NavigationError) {
           setTimeout(() => {
             this.isLoading = false;
+            this.smoothScroll.refresh();
           }, 100);
-          // Cada vez que cambia la ruta, reinicia el timer de la flecha
           this.resetArrow();
           this.scheduleArrow();
         }
@@ -73,6 +74,7 @@ export class AuthPanelComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
+    this.smoothScroll.init();
     this.scheduleArrow();
   }
 
@@ -82,7 +84,6 @@ export class AuthPanelComponent implements OnInit, AfterViewInit, OnDestroy {
     this.authSubscription?.unsubscribe();
   }
 
-  // Aparece a los 4s si hay contenido para scrollear
   private scheduleArrow(): void {
     this.initialTimeout = setTimeout(() => {
       const el = this.scrollCol?.nativeElement;
@@ -92,7 +93,6 @@ export class AuthPanelComponent implements OnInit, AfterViewInit, OnDestroy {
     }, 4000);
   }
 
-  // Al scroll o click: oculta, espera 4s, reaparece si aún hay contenido abajo
   onScroll(): void {
     this.hideArrowTemporarily();
   }
@@ -110,7 +110,6 @@ export class AuthPanelComponent implements OnInit, AfterViewInit, OnDestroy {
     this.clearTimers();
     this.arrowTimeout = setTimeout(() => {
       const el = this.scrollCol?.nativeElement;
-      // Solo reaparece si no está al final del scroll
       if (el && el.scrollTop + el.clientHeight < el.scrollHeight - 10) {
         this.showArrow = true;
       }

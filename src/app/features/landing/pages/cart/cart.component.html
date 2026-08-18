@@ -1,30 +1,7 @@
-<!-- <div class="px-4 sm:px-6 lg:px-12 xl:px-16 2xl:px-24 w-full">
-  <div class="max-w-screen-lg mx-auto">
-    <div class="flex w-full h-10 tracking-wider NewAldyFontType4 text-sm uppercase items-center justify-center gap-2">
-      <a [routerLink]="canAccess('carrito') ? '/checkout/carrito' : null"
-        routerLinkActive="after:content-[''] after:block after:w-full after:h-[1px] after:bg-aldy-green-gray after:mt-0.1"
-        [routerLinkActiveOptions]="{ exact: true }" class="relative" [class.pointer-events-none]="!canAccess('carrito')"
-        [class.text-gray-aldy-green-gray]="!canAccess('carrito')">
-        Carrito
-      </a>
-      <div class="w-5 h-1 border-b-2 border-aldy-green-gray"></div>
-      <button (click)="goToEnvio()" [disabled]="!canAccess('envio')"
-        class="relative tracking-wider NewAldyFontType4 text-sm uppercase bg-transparent border-none p-0 font-inherit cursor-pointer"
-        [class.pointer-events-none]="!canAccess('envio')" [class.text-gray-aldy-green-gray]="!canAccess('envio')">
-        Envío
-        <span *ngIf="router.url === '/checkout/envio'"
-          class="absolute left-0 -bottom-[1px] w-full h-[1px] bg-aldy-green-gray"></span>
-      </button>
-      <div class="w-5 h-1 border-b-2 border-aldy-green-gray"></div>
-      <a [routerLink]="canAccess('pago') ? '/checkout/pago' : null"
-        routerLinkActive="after:content-[''] after:block after:w-full after:h-[1px] after:bg-aldy-green-gray after:mt-0.1"
-        [routerLinkActiveOptions]="{ exact: true }" class="relative" [class.pointer-events-none]="!canAccess('pago')"
-        [class.text-gray-aldy-green-gray]="!canAccess('pago')">
-        Pago
-      </a>
-    </div>
+<div id="smooth-wrapper">
+  <div id="smooth-content">
+    <section>
+      <router-outlet></router-outlet>
+    </section>
   </div>
-</div> -->
-<section>
-  <router-outlet></router-outlet>
-</section>
+</div>

@@ -108,8 +108,6 @@
   font-family: 'Great Vibes', cursive;
 }
 
-
-
 /* =========================
    CUSTOM SCROLLBAR (GLOBAL)
 ========================= */
@@ -147,6 +145,8 @@
 ========================= */
 #smooth-wrapper {
   overflow: hidden;
+  position: relative;
+  z-index: 1;
 }
 
 #smooth-content {

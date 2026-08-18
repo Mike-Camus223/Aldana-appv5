@@ -1,7 +1,9 @@
-import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
-
-import { RouterOutlet, RouterLink, Router } from '@angular/router';
+import { Component, inject, ChangeDetectionStrategy, AfterViewInit, OnDestroy } from '@angular/core';
+import { RouterOutlet, RouterLink, Router, NavigationEnd } from '@angular/router';
 import { AuthService } from '../../../core/services/auth/auth.service';
+import { SmoothScrollService } from '../../../core/services/utils/smooth-scroll.service';
+import { filter } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-dashboard-layout',
@@ -25,9 +27,11 @@ import { AuthService } from '../../../core/services/auth/auth.service';
     }
   `
 })
-export default class DashboardLayoutComponent {
+export default class DashboardLayoutComponent implements AfterViewInit, OnDestroy {
   private authService = inject(AuthService);
   private router = inject(Router);
+  private smoothScroll = inject(SmoothScrollService);
+  private routerSubscription?: Subscription;
   
   sidebarOpen = true;
   
@@ -69,9 +73,30 @@ export default class DashboardLayoutComponent {
       active: false
     }
   ];
+
+  constructor() {
+    this.routerSubscription = this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe(() => {
+        setTimeout(() => {
+          this.smoothScroll.refresh();
+        }, 100);
+      });
+  }
+
+  ngAfterViewInit(): void {
+    this.smoothScroll.init();
+  }
+
+  ngOnDestroy(): void {
+    this.routerSubscription?.unsubscribe();
+  }
   
   toggleSidebar() {
     this.sidebarOpen = !this.sidebarOpen;
+    setTimeout(() => {
+      this.smoothScroll.refresh();
+    }, 350);
   }
   
   setActiveMenuItem(route: string) {

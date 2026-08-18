@@ -170,7 +170,7 @@ export class AuthService {
     // Check if current URL has a confirmation token
     const searchParams = new URLSearchParams(window.location.search);
     const hashParams = new URLSearchParams(window.location.hash.substring(1));
-    
+
     // Buscar en ambos lugares (query params y hash)
     const accessToken = searchParams.get('access_token') || hashParams.get('access_token');
     const type = searchParams.get('type') || hashParams.get('type');
@@ -324,7 +324,7 @@ export class AuthService {
         this.logSecurityEvent('SIGNUP_SUCCESS', email);
 
         ConfirmationGuard.setConfirmationState('confirmar-registro');
-        
+
         // Log de depuración
         console.log('AuthService - Confirmation state set for confirmar-registro');
         console.log('AuthService - Navigating to /confirmar-registro');
@@ -345,13 +345,13 @@ export class AuthService {
 
   // authrapidobyproviders //
   async signInWithOAuth(provider: 'google' | 'facebook' | 'apple') {
-  await this.supabase.auth.signInWithOAuth({
-    provider,
-    options: {
-      redirectTo: `${window.location.origin}/panel/panel-control`
-    }
-  });
-}
+    await this.supabase.auth.signInWithOAuth({
+      provider,
+      options: {
+        redirectTo: `${window.location.origin}/panel/panel-control`
+      }
+    });
+  }
   /**
    * Cierra la sesión del usuario
    */
@@ -369,7 +369,7 @@ export class AuthService {
 
       this.stopSessionMonitoring();
       this.logSecurityEvent('SIGNOUT_SUCCESS', userEmail);
-      this.router.navigate(['/home']);
+      this.router.navigate(['/']);
       return { success: true };
     } catch (error) {
       this.logSecurityEvent('SIGNOUT_ERROR', 'unknown', { error: (error as Error).message });

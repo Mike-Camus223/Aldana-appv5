@@ -1,14 +1,9 @@
-import { Component, OnInit, OnDestroy, AfterViewInit, ChangeDetectionStrategy } from '@angular/core';
-import { Router } from '@angular/router';
-import { Footerv2Component } from '../../components/system/footerv2/footerv2.component';
+import { Component, OnInit, OnDestroy, AfterViewInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { Footerv2Component } from '../../components/system/footerv2/footerv2.component';
 import { LoaderService } from '../../../core/services/utils/loader.service';
 import { NavbarPublicv3Component } from '../../components/system/navbar-publicv3/navbar-publicv3.component';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { ScrollSmoother } from 'gsap/ScrollSmoother';
-
-gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
+import { SmoothScrollService } from '../../../core/services/utils/smooth-scroll.service';
 
 @Component({
   selector: 'app-public-layout',
@@ -23,25 +18,14 @@ gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
   styles: ``
 })
 export class PublicLayoutComponent implements OnInit, OnDestroy, AfterViewInit {
-
-  constructor(
-    private loaderService: LoaderService,
-    private router: Router
-  ) { }
+  private loaderService = inject(LoaderService);
+  private smoothScroll = inject(SmoothScrollService);
 
   ngAfterViewInit(): void {
-    ScrollSmoother.get()?.kill();
-
-    ScrollSmoother.create({
-      wrapper: '#smooth-wrapper',
-      content: '#smooth-content',
-      smooth: 1.4,
-      effects: true
-    });
+    this.smoothScroll.init();
   }
 
   ngOnInit(): void {
-    // Configure route matchers where the generic loader should be skipped
     this.loaderService.setSkipGenericLoaderMatchers([
       /^\/checkout\/(?!carrito).*/,
     ]);
@@ -49,4 +33,3 @@ export class PublicLayoutComponent implements OnInit, OnDestroy, AfterViewInit {
 
   ngOnDestroy(): void {}
 }
-

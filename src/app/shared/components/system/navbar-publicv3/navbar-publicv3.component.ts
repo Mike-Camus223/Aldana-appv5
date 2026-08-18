@@ -8,7 +8,9 @@ import {
   OnDestroy,
   PLATFORM_ID,
   Inject,
-  ChangeDetectionStrategy
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  inject
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Router, RouterModule, NavigationEnd } from '@angular/router';
@@ -24,6 +26,8 @@ import { CartItem } from '../../../utils/models/cartItems-model';
 import { LinkHoverUnderlineDirective } from '../../../utils/directives/link-hover-underline.directive';
 import { filter } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import {
   Search,
   User,
@@ -104,6 +108,8 @@ interface RouterlinkNavbar {
 })
 export class NavbarPublicv3Component implements OnInit, OnDestroy {
   private isBrowser: boolean;
+  private cdr = inject(ChangeDetectorRef);
+  private scrollTriggerInstance?: any;
   lastScrollTop = 0;
   showNavbar = true;
   scrollThreshold = 100;
@@ -153,35 +159,54 @@ export class NavbarPublicv3Component implements OnInit, OnDestroy {
         this.menuOpen = false;
         this.dropdownOpen = false;
         this.mobileDropdownOpen = false;
+        this.cdr.markForCheck();
       });
   }
 
   private updatePageStatus(): void {
-    this.isHomePage = this.router.url === '/' || this.router.url === '/home';
+    const url = (this.router.url || '').split('?')[0].split('#')[0];
+
     let route = this.router.routerState.root;
     while (route.firstChild) {
       route = route.firstChild;
     }
-    this.isErrorPage = route.routeConfig?.path === '**' || route.routeConfig?.path === 'error';
+    const pathConfig = route.routeConfig?.path;
+    const isWildcardOrErrorPath = pathConfig === '**' || pathConfig === 'error';
+    const isErrorUrl = url === '/error' || url.startsWith('/error');
+
+    this.isErrorPage = isWildcardOrErrorPath || isErrorUrl;
+    this.isHomePage = !this.isErrorPage && (url === '/' || url === '/home');
   }
 
   ngOnInit(): void {
     this.updatePageStatus();
 
+    if (this.isBrowser) {
+      gsap.registerPlugin(ScrollTrigger);
+      this.scrollTriggerInstance = ScrollTrigger.create({
+        onUpdate: (self) => {
+          this.handleScrollUpdate(self.scroll());
+        }
+      });
+    }
+
     this.cartService.cartItems$.subscribe(items => {
       this.cartItems = items;
       this.cartItemCount = items.reduce((acc, item) => acc + item.quantity, 0);
+      this.cdr.markForCheck();
     });
 
     this.authSubscription.add(
       this.authService.currentUser$.subscribe(user => {
         this.isAuthenticated = !!user;
+        this.cdr.markForCheck();
       })
     );
   }
 
   ngOnDestroy(): void {
     this.authSubscription.unsubscribe();
+    this.scrollTriggerInstance?.kill();
     if (this.isBrowser && this.menuOpen) {
       document.body.style.overflow = '';
     }
@@ -192,28 +217,32 @@ export class NavbarPublicv3Component implements OnInit, OnDestroy {
     if (!this.isBrowser) return;
 
     const currentScroll = window.scrollY || document.documentElement.scrollTop;
+    this.handleScrollUpdate(currentScroll);
+  }
 
-    // Si el dropdown está abierto, no ocultar el navbar
+  private handleScrollUpdate(currentScroll: number) {
     if (this.dropdownOpen) {
       this.lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
       this.MoverScroll = currentScroll > 10;
+      this.cdr.detectChanges();
       return;
     }
 
     if (currentScroll < this.scrollThreshold) {
       this.showNavbar = true;
-    } else if (currentScroll > this.lastScrollTop) {
+    } else if (currentScroll > this.lastScrollTop + 4) {
       this.showNavbar = false;
       this.menuOpen = false;
       if (this.isBrowser) {
         document.body.style.overflow = '';
       }
-    } else if (currentScroll < this.lastScrollTop) {
+    } else if (currentScroll < this.lastScrollTop - 4) {
       this.showNavbar = true;
     }
 
     this.lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
     this.MoverScroll = currentScroll > 10;
+    this.cdr.detectChanges();
   }
 
   onInteractiveEnter() {
@@ -237,6 +266,7 @@ export class NavbarPublicv3Component implements OnInit, OnDestroy {
       !this.dropdownRef.nativeElement.contains(event.target)
     ) {
       this.dropdownOpen = false;
+      this.cdr.markForCheck();
     }
   }
 
@@ -249,6 +279,7 @@ export class NavbarPublicv3Component implements OnInit, OnDestroy {
     }
 
     document.body.style.overflow = this.menuOpen ? 'hidden' : '';
+    this.cdr.markForCheck();
   }
 
   toggleMobileDropdown() {
@@ -282,25 +313,132 @@ export class NavbarPublicv3Component implements OnInit, OnDestroy {
     this.router.navigate(['/tienda/categoria/general', this.normalizeCategory(item)]);
   }
 
-  get iconColorClass(): Record<string, boolean> {
-    const active = this.isHomePage ? this.MoverScroll || this.hoverNavbar : true;
-
-    return {
-      'text-white hover:text-gray-300': this.isHomePage && !active,
-      'text-aldy-medium hover:text-aldy-medium-2': !this.isHomePage || active
-    };
-  }
-
-  onDropdownMouseEnter() {
+  onDropdownMouseEnter(): void {
     this.dropdownOpen = true;
   }
 
-  onDropdownMouseLeave() {
+  onDropdownMouseLeave(): void {
     this.dropdownOpen = false;
   }
 
+  // --- 3 Estados del Navbar (Home, Normal, Error 404) ---
+
+  // Fondo Desktop
+  get desktopNavBgClass(): Record<string, boolean> {
+    if (this.isErrorPage) {
+      return { 'bg-[#FEF2E5] bg-opacity-100': true };
+    }
+    const isSolid = !this.isHomePage || this.MoverScroll || this.hoverNavbar;
+    return {
+      'bg-aldy-white bg-opacity-100': isSolid,
+      'bg-transparent': !isSolid
+    };
+  }
+
+  // Fondo Mobile
+  get mobileNavBgClass(): Record<string, boolean> {
+    if (this.isErrorPage) {
+      return { 'bg-[#FEF2E5] shadow-md': true };
+    }
+    const isSolid = this.menuOpen || !this.isHomePage || this.MoverScroll || this.hoverNavbar;
+    return {
+      'bg-aldy-white shadow-md': isSolid,
+      'bg-gradient-to-b from-black/35 to-transparent': !isSolid
+    };
+  }
+
+  // Texto / Links
+  get linkTextClass(): Record<string, boolean> {
+    if (this.isErrorPage) {
+      return {
+        'text-aldy-medium-2 hover:text-aldy-medium-2 border-aldy-medium-2 hover:border-aldy-medium-2': true
+      };
+    }
+    const isSolid = !this.isHomePage || this.MoverScroll || this.hoverNavbar;
+    return {
+      'text-aldy-medium hover:text-aldy-medium-2 border-aldy-medium hover:border-aldy-medium-2': isSolid,
+      'text-white hover:text-gray-300 border-white': !isSolid
+    };
+  }
+
+  // Chevron Tienda
+  get chevronColorClass(): Record<string, boolean> {
+    if (this.isErrorPage) {
+      return {
+        'text-aldy-medium-2 hover:text-aldy-medium-2': true,
+        'rotate-180': this.dropdownOpen
+      };
+    }
+    const isSolid = !this.isHomePage || this.MoverScroll || this.hoverNavbar;
+    return {
+      'text-aldy-medium hover:text-aldy-medium-2': isSolid,
+      'text-white': !isSolid,
+      'rotate-180': this.dropdownOpen
+    };
+  }
+
+  // Íconos Desktop
+  get iconColorClass(): Record<string, boolean> {
+    if (this.isErrorPage) {
+      return { 'text-aldy-medium-2 hover:text-aldy-medium-2': true };
+    }
+    const isSolid = !this.isHomePage || this.MoverScroll || this.hoverNavbar;
+    return {
+      'text-aldy-medium hover:text-aldy-medium-2': isSolid,
+      'text-white hover:text-gray-300': !isSolid
+    };
+  }
+
+  // Íconos Mobile
+  get mobileIconColorClass(): Record<string, boolean> {
+    if (this.isErrorPage) {
+      return { 'text-aldy-medium-2 hover:text-aldy-medium-2': true };
+    }
+    const isSolid = this.menuOpen || !this.isHomePage || this.MoverScroll || this.hoverNavbar;
+    return {
+      'text-aldy-medium hover:text-aldy-medium-2': isSolid,
+      'text-white': !isSolid
+    };
+  }
+
+  // Badge Carrito Desktop
+  get cartBadgeClass(): Record<string, boolean> {
+    if (this.isErrorPage) {
+      return { 'text-aldy-medium-2 border-aldy-medium-2 hover:border-aldy-medium-2': true };
+    }
+    const isSolid = !this.isHomePage || this.MoverScroll || this.hoverNavbar;
+    return {
+      'text-aldy-medium border-aldy-medium hover:border-aldy-medium-2': isSolid,
+      'text-white border-white': !isSolid
+    };
+  }
+
+  // Badge Carrito Mobile
+  get mobileCartBadgeClass(): Record<string, boolean> {
+    if (this.isErrorPage) {
+      return { 'text-aldy-medium-2': true };
+    }
+    const isSolid = this.menuOpen || !this.isHomePage || this.MoverScroll || this.hoverNavbar;
+    return {
+      'text-aldy-medium': isSolid,
+      'text-white': !isSolid
+    };
+  }
+
+  // Logo Blanco vs Oscuro
+  get isWhiteLogo(): boolean {
+    if (this.isErrorPage) return false;
+    return this.isHomePage && !this.MoverScroll && !this.hoverNavbar && !this.menuOpen;
+  }
+
+  // Color de subrayado en hover
+  get underlineDynamicColor(): string {
+    if (this.isErrorPage) return '#7a8c6e';
+    const isSolid = !this.isHomePage || this.MoverScroll || this.hoverNavbar;
+    return isSolid ? 'white' : '#AEC2A9';
+  }
+
   onUserButtonClick(): void {
-    // Cerrar todos los menús desplegables
     this.menuOpen = false;
     this.dropdownOpen = false;
     this.mobileDropdownOpen = false;
@@ -309,16 +447,13 @@ export class NavbarPublicv3Component implements OnInit, OnDestroy {
       document.body.style.overflow = '';
     }
 
-    // Navegar según el estado de autenticación
     if (this.isAuthenticated) {
-      // Usuario autenticado
       if (this.authService.isAdmin()) {
         this.router.navigate(['/admin/panel-de-control']);
       } else {
         this.router.navigate(['/panel/panel-control']);
       }
     } else {
-      // Usuario no autenticado
       this.router.navigate(['/cuenta/iniciar-sesion']);
     }
   }
@@ -331,5 +466,3 @@ export class NavbarPublicv3Component implements OnInit, OnDestroy {
     return this.navLinks.slice(2);
   }
 }
-
-

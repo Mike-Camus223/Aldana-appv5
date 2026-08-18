@@ -1,176 +1,160 @@
 <div class="w-full flex flex-col items-center">
-
   <!-- Logo -->
   <div class="w-full flex justify-center mb-5">
     <a routerLink="/">
       <img [draggable]="false" src="../../../../../assets/svg/logo-4.svg" alt="Aldana Vilcabana"
         class="h-24 w-auto object-contain" />
+    </a>
+  </div>
+  @if (!isForgotPassword) {
+  <form class="w-full" [formGroup]="formLogin" (ngSubmit)="onSubmit()">
+    <!-- Bienvenida -->
+    <div class="mb-7 text-center">
+      <p class="NewAldyFontType4 tracking-[0.28em] uppercase text-[12px] mb-1 text-aldy-green-gray">BIENVENIDO</p>
+      <p class="NewAldyFontType4 tracking-wider text-[12px] text-[#8A8A7A]">Iniciá sesión para continuar</p>
+    </div>
+    <!-- Email -->
+    <div class="mb-5">
+      <p class="NewAldyFontType4 tracking-[0.2em] uppercase text-[10px] mb-2 text-aldy-green-gray">
+        Correo electrónico
+      </p>
+      <div class="relative flex items-center">
+        <span class="absolute left-3 z-10 pointer-events-none text-[#B0ADA5]">
+          <lucide-icon name="mail" [size]="17" color="#889287" [strokeWidth]="1.5">
+          </lucide-icon>
+        </span>
+        <div class="w-full [&_input]:pl-9">
+          <app-input label="tu@email.com" formControlName="email"></app-input>
+        </div>
+      </div>
+      @if (formLogin.get('email')?.touched) {
+      <div class="NewAldyFontType4 text-[12px] tracking-wider mt-1.5 text-red-400">
+        @if (formLogin.get('email')?.hasError('required')) {
+        <p>El correo es obligatorio</p>
+        }
+        @if (formLogin.get('email')?.hasError('email')) {
+        <p>Ingresá un correo válido</p>
+        }
+      </div>
+      }
+    </div>
+    <div class="mb-2">
+      <p class="NewAldyFontType4 tracking-[0.2em] uppercase text-[10px] mb-2 text-aldy-green-gray">
+        Contraseña
+      </p>
+      <app-inputpassword label="Contraseña" formControlName="password"></app-inputpassword>
+      @if (formLogin.get('password')?.touched || authError) {
+      <div class="NewAldyFontType4 text-[12px] tracking-wider mt-1.5 text-red-400">
+        @if (formLogin.get('password')?.hasError('required')) {
+        <p>La contraseña es obligatoria</p>
+        }
+        @if (formLogin.get('password')?.hasError('minlength')) {
+        <p>Mínimo 6 caracteres</p>
+        }
+        @if (authError && !formLogin.get('password')?.hasError('required') &&
+        !formLogin.get('password')?.hasError('minlength')) {
+        <p>
+          {{ authError }}
+        </p>
+        }
+      </div>
+      }
+    </div>
+    <div class="flex justify-start pt-2 mb-6">
+      <a href="#" (click)="showForgotPassword($event)"
+        class="NewAldyFontType4 text-[12px] tracking-wider text-[#8A8A7A] hover:underline transition">
+        ¿Olvidaste tu contraseña?
       </a>
     </div>
-
-    <!-- LOGIN FORM -->
-    @if (!isForgotPassword) {
-      <form class="w-full" [formGroup]="formLogin" (ngSubmit)="onSubmit()">
-        <!-- Bienvenida -->
-        <div class="mb-7 text-center">
-          <p class="NewAldyFontType4 tracking-[0.28em] uppercase text-[12px] mb-1 text-aldy-green-gray">BIENVENIDO</p>
-          <p class="NewAldyFontType4 tracking-wider text-[12px] text-[#8A8A7A]">Iniciá sesión para continuar</p>
-        </div>
-        <!-- Email -->
-        <div class="mb-5">
-          <p class="NewAldyFontType4 tracking-[0.2em] uppercase text-[10px] mb-2 text-aldy-green-gray">
-            Correo electrónico
-          </p>
-          <div class="relative flex items-center">
-            <span class="absolute left-3 z-10 pointer-events-none text-[#B0ADA5]">
-              <lucide-icon name="mail" [size]="17" color="#889287" [strokeWidth]="1.5">
-              </lucide-icon>
-            </span>
-            <div class="w-full [&_input]:pl-9">
-              <app-input label="tu@email.com" formControlName="email"></app-input>
-            </div>
-          </div>
-          @if (formLogin.get('email')?.touched) {
-            <div class="NewAldyFontType4 text-[12px] tracking-wider mt-1.5 text-red-400"
-              >
-              @if (formLogin.get('email')?.hasError('required')) {
-                <p>El correo es obligatorio</p>
-              }
-              @if (formLogin.get('email')?.hasError('email')) {
-                <p>Ingresá un correo válido</p>
-              }
-            </div>
-          }
-        </div>
-        <!-- Password -->
-        <div class="mb-2">
-          <p class="NewAldyFontType4 tracking-[0.2em] uppercase text-[10px] mb-2 text-aldy-green-gray">
-            Contraseña
-          </p>
-          <app-inputpassword label="Contraseña" formControlName="password"></app-inputpassword>
-          @if (formLogin.get('password')?.touched || authError) {
-            <div class="NewAldyFontType4 text-[12px] tracking-wider mt-1.5 text-red-400"
-              >
-              @if (formLogin.get('password')?.hasError('required')) {
-                <p>La contraseña es obligatoria</p>
-              }
-              @if (formLogin.get('password')?.hasError('minlength')) {
-                <p>Mínimo 6 caracteres</p>
-              }
-              @if (authError && !formLogin.get('password')?.hasError('required') && !formLogin.get('password')?.hasError('minlength')) {
-                <p
-                  >
-                  {{ authError }}
-                </p>
-              }
-            </div>
-          }
-        </div>
-        <!-- Forgot -->
-        <div class="flex justify-start pt-2 mb-6">
-          <a href="#" (click)="showForgotPassword($event)"
-            class="NewAldyFontType4 text-[12px] tracking-wider text-[#8A8A7A] hover:underline transition">
-            ¿Olvidaste tu contraseña?
-          </a>
-        </div>
-        <!-- Submit -->
-        <div class="mb-5">
-          <button type="submit" [ngClass]="{'cursor-pointer': !isSubmitting,'cursor-wait': isSubmitting}"
-            class="w-full py-4 text-center transition focus:outline-none bg-aldy-medium-2 text-white hover:opacity-90"
-            [class.bg-aldy-medium-2]="isSubmitting">
-            <span class="NewAldyFontType4 uppercase text-xs tracking-[0.25em]">
-              {{ isSubmitting ? 'Ingresando...' : 'Iniciar Sesión' }}
-            </span>
-          </button>
-        </div>
-        <!-- Register -->
-        <div class="flex items-center justify-center gap-2 w-full mb-8">
-          <p class="NewAldyFontType4 text-[12px] tracking-wider text-[#8A8A7A]">
-            ¿No tenés cuenta aún?
-          </p>
-          <a routerLink="/cuenta/registro"
-            class="NewAldyFontType4 text-[12px] tracking-wider text-aldy-green-gray hover:underline transition">
-            Crear cuenta
-          </a>
-        </div>
-        <!-- Divider -->
-        <div class="relative my-6">
-          <div class="absolute inset-0 flex items-center">
-            <div class="w-full border-t border-[#C8C4BA]"></div>
-          </div>
-          <div class="relative flex justify-center">
-            <span class="px-5 NewAldyFontType4 text-[11px] tracking-[0.22em] uppercase bg-[#F5F0EB] text-aldy-green-gray">
-              O iniciá rápido con
-            </span>
-          </div>
-        </div>
-        <!-- Social -->
-        <div class="flex justify-center gap-5 mb-8">
-          <button type="button" (click)="onFacebookLogin()"
-            class="w-11 h-11 cursor-pointer flex items-center justify-center rounded-full bg-[#195AD9] hover:opacity-90 transition">
-            <i class="fab fa-facebook text-white text-lg"></i>
-          </button>
-          <button type="button" (click)="onGoogleLogin()"
-            class="w-11 h-11 cursor-pointer flex items-center justify-center rounded-full bg-red-500 border border-[#C8C4BA] hover:opacity-90 transition">
-            <i class="fab fa-google text-lg text-white"></i>
-          </button>
-          <button type="button" (click)="onAppleLogin()"
-            class="w-11 h-11 cursor-pointer flex items-center justify-center rounded-full bg-[#1A1A1A] hover:opacity-90 transition">
-            <i class="fab fa-apple text-white text-lg"></i>
-          </button>
-        </div>
-      </form>
-    }
-
-    <!-- FORGOT PASSWORD -->
-    @if (isForgotPassword) {
-      <div class="w-full flex flex-col">
-        <form class="w-full flex flex-col" [formGroup]="formForgotPassword" (ngSubmit)="onForgotPasswordSubmit()">
-          <h2 class="NewAldyFontType4 tracking-[0.2em] uppercase text-[10px] my-2 text-aldy-green-gray">
-            ¿Has olvidado tu contraseña?
-          </h2>
-          <div class="mb-4 w-full">
-            <p class="NewAldyFontType4 tracking-[0.2em] uppercase text-[10px] mb-2 text-aldy-green-gray">
-              Email
-            </p>
-            <app-input label="Email" formControlName="email"></app-input>
-            @if (formForgotPassword.get('email')?.touched) {
-              <div class="NewAldyFontType4 text-[12px] tracking-wider mt-1.5 text-red-400"
-                >
-                @if (formForgotPassword.get('email')?.hasError('required')) {
-                  <p>El correo es obligatorio</p>
-                }
-                @if (formForgotPassword.get('email')?.hasError('email')) {
-                  <p>Ingresá un correo válido</p>
-                }
-              </div>
-            }
-          </div>
-          <div class="mb-4 w-full">
-            <button type="submit" [ngClass]="{'cursor-pointer': !isSubmitting,'cursor-wait': isSubmitting}"
-              class="w-full py-4 text-center transition focus:outline-none bg-aldy-medium text-white hover:bg-aldy-medium-2">
-              <span class="NewAldyFontType4 uppercase text-xs tracking-[0.25em]">
-                {{ isSubmitting ? 'Enviando...' : 'Enviar' }}
-              </span>
-            </button>
-          </div>
-          <a href="#" (click)="backToLogin($event)"
-            class="NewAldyFontType4 text-[11px] tracking-wider text-aldy-green-gray hover:underline transition mb-5">
-            « Volver a la identificación
-          </a>
-          <p class="NewAldyFontType4 text-[12px] leading-relaxed text-start text-[#8A8A7A]">
-            Indicá tu usuario o email y te enviaremos instrucciones para generar una nueva contraseña.
-          </p>
-        </form>
-      </div>
-    }
-
-    <!-- Footer -->
-    <div class="text-center mt-4 w-full">
-      <p class="NewAldyFontType4 tracking-wider text-[10.5px] leading-relaxed text-[#8A8A7A]">
-        Al iniciar sesión, aceptás nuestras
-        <a href="#" class="hover:underline text-[#8A8A7A]">Políticas de Privacidad</a> y
-        <a href="#" class="hover:underline text-[#8A8A7A]">Términos de Servicio</a>.
-      </p>
+    <div class="mb-5">
+      <button type="submit" [ngClass]="{'cursor-pointer': !isSubmitting,'cursor-wait': isSubmitting}"
+        class="w-full py-4 text-center transition focus:outline-none bg-aldy-medium-2 text-white hover:opacity-90"
+        [class.bg-aldy-medium-2]="isSubmitting">
+        <span class="NewAldyFontType4 uppercase text-xs tracking-[0.25em]">
+          {{ isSubmitting ? 'Ingresando...' : 'Iniciar Sesión' }}
+        </span>
+      </button>
     </div>
+    <div class="flex items-center justify-center gap-2 w-full mb-8">
+      <p class="NewAldyFontType4 text-[12px] tracking-wider text-[#8A8A7A]">
+        ¿No tenés cuenta aún?
+      </p>
+      <a routerLink="/cuenta/registro"
+        class="NewAldyFontType4 text-[12px] tracking-wider text-aldy-green-gray hover:underline transition">
+        Crear cuenta
+      </a>
+    </div>
+    <div class="relative my-6">
+      <div class="absolute inset-0 flex items-center">
+        <div class="w-full border-t border-[#C8C4BA]"></div>
+      </div>
+      <div class="relative flex justify-center">
+        <span class="px-5 NewAldyFontType4 text-[11px] tracking-[0.22em] uppercase bg-[#F5F0EB] text-aldy-green-gray">
+          O iniciá rápido con
+        </span>
+      </div>
+    </div>
+    <div class="flex justify-center gap-5 mb-8">
+      <button type="button" (click)="onFacebookLogin()"
+        class="w-11 h-11 cursor-pointer flex items-center justify-center rounded-full bg-[#195AD9] hover:opacity-90 transition">
+        <i class="fab fa-facebook text-white text-lg"></i>
+      </button>
+      <button type="button" (click)="onGoogleLogin()"
+        class="w-11 h-11 cursor-pointer flex items-center justify-center rounded-full bg-red-500 border border-[#C8C4BA] hover:opacity-90 transition">
+        <i class="fab fa-google text-lg text-white"></i>
+      </button>
+      <button type="button" (click)="onAppleLogin()"
+        class="w-11 h-11 cursor-pointer flex items-center justify-center rounded-full bg-[#1A1A1A] hover:opacity-90 transition">
+        <i class="fab fa-apple text-white text-lg"></i>
+      </button>
+    </div>
+  </form>
+  }
+  @if (isForgotPassword) {
+  <div class="w-full flex flex-col">
+    <form class="w-full flex flex-col" [formGroup]="formForgotPassword" (ngSubmit)="onForgotPasswordSubmit()">
+      <h2 class="NewAldyFontType4 tracking-[0.2em] uppercase text-[10px] my-2 text-aldy-green-gray">
+        ¿Has olvidado tu contraseña?
+      </h2>
+      <div class="mb-4 w-full">
+        <p class="NewAldyFontType4 tracking-[0.2em] uppercase text-[10px] mb-2 text-aldy-green-gray">
+          Email
+        </p>
+        <app-input label="Email" formControlName="email"></app-input>
+        @if (formForgotPassword.get('email')?.touched) {
+        <div class="NewAldyFontType4 text-[12px] tracking-wider mt-1.5 text-red-400">
+          @if (formForgotPassword.get('email')?.hasError('required')) {
+          <p>El correo es obligatorio</p>
+          }
+          @if (formForgotPassword.get('email')?.hasError('email')) {
+          <p>Ingresá un correo válido</p>
+          }
+        </div>
+        }
+      </div>
+      <div class="mb-4 w-full">
+        <button type="submit" [ngClass]="{'cursor-pointer': !isSubmitting,'cursor-wait': isSubmitting}"
+          class="w-full py-4 text-center transition focus:outline-none bg-aldy-medium text-white hover:bg-aldy-medium-2">
+          <span class="NewAldyFontType4 uppercase text-xs tracking-[0.25em]">
+            {{ isSubmitting ? 'Enviando...' : 'Enviar' }}
+          </span>
+        </button>
+      </div>
+      <a href="#" (click)="backToLogin($event)"
+        class="NewAldyFontType4 text-[11px] tracking-wider text-aldy-green-gray hover:underline transition mb-5">
+        « Volver a la identificación
+      </a>
+      <p class="NewAldyFontType4 text-[12px] leading-relaxed text-start text-[#8A8A7A]">
+        Indicá tu usuario o email y te enviaremos instrucciones para generar una nueva contraseña.
+      </p>
+    </form>
   </div>
+  }
+  <div class="text-center mt-4 w-full">
+    <p class="NewAldyFontType4 tracking-wider text-[10.5px] leading-relaxed text-[#8A8A7A]">
+      Al iniciar sesión, aceptás nuestras
+      <a href="#" class="hover:underline text-[#8A8A7A]">Políticas de Privacidad</a> y
+      <a href="#" class="hover:underline text-[#8A8A7A]">Términos de Servicio</a>.
+    </p>
+  </div>
+</div>

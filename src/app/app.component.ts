@@ -1,13 +1,14 @@
-
-import { Component, OnInit, Inject, PLATFORM_ID, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Inject, PLATFORM_ID, ChangeDetectionStrategy, inject } from '@angular/core';
 import { Router, NavigationEnd, RouterOutlet } from '@angular/router';
-import { ViewportScroller, isPlatformBrowser } from '@angular/common';
+import { isPlatformBrowser } from '@angular/common';
 import { filter } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
 import { LoadingScreenGenericComponent } from "./shared/components/system/loading-screen-generic/loading-screen-generic.component";
 import { LoadingScreenComponent } from './shared/components/system/loading-screen/loading-screen.component';
 import { ToastNotificationComponent } from './shared/components/system/toast-notification/toast-notification.component';
 import { DiscountLeafComponent } from './shared/components/system/discount-leaf/discount-leaf.component';
 import { LoaderService } from './core/services/utils/loader.service';
+import { SmoothScrollService } from './core/services/utils/smooth-scroll.service';
 
 @Component({
   selector: 'app-root',
@@ -18,18 +19,19 @@ import { LoaderService } from './core/services/utils/loader.service';
     LoadingScreenGenericComponent,
     LoadingScreenComponent,
     DiscountLeafComponent
-],
+  ],
   templateUrl: './app.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, OnDestroy {
   title = 'Aldyapp2';
   showMainLoader = false;
+  private smoothScrollService = inject(SmoothScrollService);
+  private routerSubscription?: Subscription;
 
   constructor(
     private router: Router,
-    private viewportScroller: ViewportScroller,
     private loaderService: LoaderService,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {
@@ -42,11 +44,19 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.router.events
+    this.routerSubscription = this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe(() => {
-        this.viewportScroller.scrollToPosition([0, 0]);
+        this.smoothScrollService.scrollToTop(false);
+        setTimeout(() => {
+          this.smoothScrollService.init('#smooth-wrapper', '#smooth-content');
+        }, 80);
       });
+  }
+
+  ngOnDestroy(): void {
+    this.routerSubscription?.unsubscribe();
+    this.smoothScrollService.destroy();
   }
 
   onMainLoadingFinished(): void {
