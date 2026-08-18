@@ -8,16 +8,14 @@
         <!-- Avatar -->
         <div class="relative w-[72px] h-[72px] shrink-0">
           @if (!userAvatarUrl) {
-            <div
-              class="w-[72px] h-[72px] rounded-full bg-[#6b8f6b] flex items-center justify-center text-white text-2xl font-light">
-              {{ getInitial() }}
-            </div>
+          <div
+            class="w-[72px] h-[72px] rounded-full bg-[#6b8f6b] flex items-center justify-center text-white text-2xl font-light">
+            {{ getInitial() }}
+          </div>
           }
           @if (userAvatarUrl) {
-            <img
-              [src]="userAvatarUrl"
-              alt="Foto de perfil"
-              class="w-[72px] h-[72px] rounded-full object-cover border border-[#e0d8cf]" />
+          <img [src]="userAvatarUrl" alt="Foto de perfil"
+            class="w-[72px] h-[72px] rounded-full object-cover border border-[#e0d8cf]" />
           }
           <button type="button"
             class="absolute bottom-0 right-0 w-6 h-6 rounded-full bg-[#6b8f6b] hover:bg-[#5a7d5a] flex items-center justify-center text-white transition-colors duration-200 cursor-pointer">
@@ -39,20 +37,24 @@
         <!-- Meta info -->
         <div class="flex flex-col gap-4 border-l border-[#e0d8cf] pl-7 min-w-[240px]">
           <div class="flex items-start gap-3">
-            <div class="w-[34px] h-[34px] rounded-full bg-[#f5f1ec] flex items-center justify-center shrink-0 text-[#7a9472]">
+            <div
+              class="w-[34px] h-[34px] rounded-full bg-[#f5f1ec] flex items-center justify-center shrink-0 text-[#7a9472]">
               <lucide-icon name="mail" [size]="15" [strokeWidth]="1.5"></lucide-icon>
             </div>
             <div>
-              <p class="NewAldyFontType4 text-[9px] font-normal tracking-[0.18em] uppercase text-[#aaa] mb-0.5">Correo electrónico</p>
+              <p class="NewAldyFontType4 text-[9px] font-normal tracking-[0.18em] uppercase text-[#aaa] mb-0.5">Correo
+                electrónico</p>
               <p class="NewAldyFontType4 text-xs font-light text-aldy-green-gray-bold">{{ displayEmail }}</p>
             </div>
           </div>
           <div class="flex items-start gap-3">
-            <div class="w-[34px] h-[34px] rounded-full bg-[#f5f1ec] flex items-center justify-center shrink-0 text-[#7a9472]">
+            <div
+              class="w-[34px] h-[34px] rounded-full bg-[#f5f1ec] flex items-center justify-center shrink-0 text-[#7a9472]">
               <lucide-icon name="calendar" [size]="15" [strokeWidth]="1.5"></lucide-icon>
             </div>
             <div>
-              <p class="NewAldyFontType4 text-[9px] font-normal tracking-[0.18em] uppercase text-[#aaa] mb-0.5">Miembro desde</p>
+              <p class="NewAldyFontType4 text-[9px] font-normal tracking-[0.18em] uppercase text-[#aaa] mb-0.5">Usuario
+                desde</p>
               <p class="NewAldyFontType4 text-xs font-light text-aldy-green-gray-bold">Mayo 2024</p>
             </div>
           </div>
@@ -66,76 +68,75 @@
 
       <!-- DATOS PERSONALES -->
       <div class="flex items-center gap-4 mb-6">
-        <span class="NewAldyFontType4 text-[10px] font-normal tracking-[0.22em] uppercase text-[#8a9e83] shrink-0">Datos Personales</span>
+        <span class="NewAldyFontType4 text-[10px] font-normal tracking-[0.22em] uppercase text-[#8a9e83] shrink-0">Datos
+          Personales</span>
         <div class="flex-1 h-px bg-[#e0d8cf]"></div>
       </div>
 
       <div class="grid grid-cols-2 gap-6 mb-5">
         <div>
-          <label class="block NewAldyFontType4 text-[9px] font-normal tracking-[0.18em] uppercase text-aldy-green-gray-bold mb-1.5">Nombre</label>
+          <label
+            class="block NewAldyFontType4 text-[9px] font-normal tracking-[0.18em] uppercase text-aldy-green-gray-bold mb-1.5">Nombre</label>
           <app-input id="firstName" formControlName="firstName"></app-input>
           @if (accountForm.get('firstName')?.invalid && accountForm.get('firstName')?.touched) {
-            <p
-              class="NewAldyFontType4 text-red-400 text-[10px] tracking-wider mt-1 font-light">
-              El nombre es obligatorio
-            </p>
+          <p class="NewAldyFontType4 text-red-400 text-[10px] tracking-wider mt-1 font-light">
+            El nombre es obligatorio
+          </p>
           }
         </div>
         <div>
-          <label class="block NewAldyFontType4 text-[9px] font-normal tracking-[0.18em] uppercase text-aldy-green-gray-bold mb-1.5">Apellido</label>
+          <label
+            class="block NewAldyFontType4 text-[9px] font-normal tracking-[0.18em] uppercase text-aldy-green-gray-bold mb-1.5">Apellido</label>
           <app-input id="lastName" formControlName="lastName"></app-input>
           @if (accountForm.get('lastName')?.invalid && accountForm.get('lastName')?.touched) {
-            <p
-              class="NewAldyFontType4 text-red-400 text-[10px] tracking-wider mt-1 font-light">
-              El apellido es obligatorio
-            </p>
+          <p class="NewAldyFontType4 text-red-400 text-[10px] tracking-wider mt-1 font-light">
+            El apellido es obligatorio
+          </p>
           }
         </div>
       </div>
 
       <div class="grid grid-cols-2 gap-6 mb-5">
         <div>
-          <label class="block NewAldyFontType4 text-[9px] font-normal tracking-[0.18em] uppercase text-aldy-green-gray-bold mb-1.5">Correo electrónico</label>
+          <label
+            class="block NewAldyFontType4 text-[9px] font-normal tracking-[0.18em] uppercase text-aldy-green-gray-bold mb-1.5">Correo
+            electrónico</label>
           <app-input id="email" type="email" formControlName="email"></app-input>
           @if (accountForm.get('email')?.invalid && accountForm.get('email')?.touched) {
-            <div
-              class="NewAldyFontType4 text-red-400 text-[10px] tracking-wider mt-1 font-light">
-              @if (accountForm.get('email')?.errors?.['required']) {
-                <span>El correo es obligatorio</span>
-              }
-              @if (accountForm.get('email')?.errors?.['email']) {
-                <span>Formato de correo incorrecto</span>
-              }
-            </div>
+          <div class="NewAldyFontType4 text-red-400 text-[10px] tracking-wider mt-1 font-light">
+            @if (accountForm.get('email')?.errors?.['required']) {
+            <span>El correo es obligatorio</span>
+            }
+            @if (accountForm.get('email')?.errors?.['email']) {
+            <span>Formato de correo incorrecto</span>
+            }
+          </div>
           }
         </div>
         <div>
-          <label class="block NewAldyFontType4 text-[9px] font-normal tracking-[0.18em] uppercase text-aldy-green-gray-bold mb-1.5">Teléfono</label>
-          <app-input id="phone" formControlName="phone" [numericMax11]="true" placeholder="Ingresa tu teléfono"></app-input>
+          <label
+            class="block NewAldyFontType4 text-[9px] font-normal tracking-[0.18em] uppercase text-aldy-green-gray-bold mb-1.5">Teléfono</label>
+          <app-input id="phone" formControlName="phone" [numericMax11]="true"
+            placeholder="Ingresa tu teléfono"></app-input>
           @if (accountForm.get('phone')?.invalid && accountForm.get('phone')?.touched) {
-            <p
-              class="NewAldyFontType4 text-red-400 text-[10px] tracking-wider mt-1 font-light">
-              El teléfono es obligatorio
-            </p>
+          <p class="NewAldyFontType4 text-red-400 text-[10px] tracking-wider mt-1 font-light">
+            El teléfono es obligatorio
+          </p>
           }
         </div>
       </div>
 
       <div class="grid grid-cols-2 gap-6 mb-8">
         <div>
-          <label class="block NewAldyFontType4 text-[9px] font-normal tracking-[0.18em] uppercase text-aldy-green-gray-bold mb-1.5">Género</label>
-          <app-selects
-            id="gender"
-            formControlName="gender"
-            [options]="genderOptions"
-            optionLabel="label"
+          <label
+            class="block NewAldyFontType4 text-[9px] font-normal tracking-[0.18em] uppercase text-aldy-green-gray-bold mb-1.5">Género</label>
+          <app-selects id="gender" formControlName="gender" [options]="genderOptions" optionLabel="label"
             optionValue="value">
           </app-selects>
           @if (accountForm.get('gender')?.invalid && accountForm.get('gender')?.touched) {
-            <p
-              class="NewAldyFontType4 text-red-400 text-[10px] tracking-wider mt-1 font-light">
-              Elegí una opción
-            </p>
+          <p class="NewAldyFontType4 text-red-400 text-[10px] tracking-wider mt-1 font-light">
+            Elegí una opción
+          </p>
           }
         </div>
       </div>
@@ -145,10 +146,12 @@
 
         <div>
           <div class="flex items-center gap-4 mb-4">
-            <span class="NewAldyFontType4 text-[10px] font-normal tracking-[0.22em] uppercase text-[#8a9e83] shrink-0">Seguridad</span>
+            <span
+              class="NewAldyFontType4 text-[10px] font-normal tracking-[0.22em] uppercase text-[#8a9e83] shrink-0">Seguridad</span>
             <div class="flex-1 h-px bg-[#e0d8cf]"></div>
           </div>
-          <div class="border border-[#e0d8cf] rounded-sm p-4 flex items-start gap-4 bg-aldy-white hover:bg-[#f9f6f2] transition-colors duration-150 cursor-pointer">
+          <div
+            class="border border-[#e0d8cf] rounded-sm p-4 flex items-start gap-4 bg-aldy-white hover:bg-[#f9f6f2] transition-colors duration-150 cursor-pointer">
             <div class="w-10 h-10 rounded-full bg-[#f5f1ec] flex items-center justify-center shrink-0 text-[#7a9472]">
               <lucide-icon name="lock" [size]="17" [strokeWidth]="1.5"></lucide-icon>
             </div>
@@ -166,15 +169,19 @@
 
         <div>
           <div class="flex items-center gap-4 mb-4">
-            <span class="NewAldyFontType4 text-[10px] font-normal tracking-[0.22em] uppercase text-[#8a9e83] shrink-0">Direcciones de Entrega</span>
+            <span
+              class="NewAldyFontType4 text-[10px] font-normal tracking-[0.22em] uppercase text-[#8a9e83] shrink-0">Direcciones
+              de Entrega</span>
             <div class="flex-1 h-px bg-[#e0d8cf]"></div>
           </div>
-          <div class="border border-[#e0d8cf] rounded-sm p-4 flex items-start gap-4 bg-aldy-white hover:bg-[#f9f6f2] transition-colors duration-150 cursor-pointer">
+          <div
+            class="border border-[#e0d8cf] rounded-sm p-4 flex items-start gap-4 bg-aldy-white hover:bg-[#f9f6f2] transition-colors duration-150 cursor-pointer">
             <div class="w-10 h-10 rounded-full bg-[#f5f1ec] flex items-center justify-center shrink-0 text-[#7a9472]">
               <lucide-icon name="map-pin" [size]="17" [strokeWidth]="1.5"></lucide-icon>
             </div>
             <div class="flex-1">
-              <h4 class="NewAldyTitle font-light text-sm text-[#6b8f6b] mb-1 tracking-wide">Gestiona tus direcciones</h4>
+              <h4 class="NewAldyTitle font-light text-sm text-[#6b8f6b] mb-1 tracking-wide">Gestiona tus direcciones
+              </h4>
               <p class="NewAldyFontType4 text-xs font-light text-aldy-green-gray-bold leading-relaxed tracking-wide">
                 Agrega, edita o elimina tus<br>direcciones de entrega.
               </p>
@@ -189,23 +196,23 @@
 
       <!-- Botones -->
       <div class="flex items-center gap-6 mt-2">
-        <button
-          type="submit"
-          [disabled]="accountForm.invalid || accountForm.pristine"
-          class="px-6 py-2.5 text-white NewAldyFontType4 text-xs tracking-[0.15em] uppercase transition-colors duration-300
+        <button type="submit" [disabled]="accountForm.invalid || accountForm.pristine" class="px-6 py-2.5 text-white NewAldyFontType4 text-xs tracking-[0.15em] uppercase transition-colors duration-300
             disabled:bg-[#c8c0b8] disabled:cursor-not-allowed
             enabled:bg-aldy-medium enabled:hover:bg-aldy-medium-2 cursor-pointer">
           @if (!isSaving) {
-            <span>Guardar cambios</span>
+          <span>Guardar cambios</span>
           }
           @if (isSaving) {
-            <span class="flex items-center gap-2">
-              <svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-              Guardando...
-            </span>
+          <span class="flex items-center gap-2">
+            <svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
+              viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+              </path>
+            </svg>
+            Guardando...
+          </span>
           }
         </button>
         <button type="button" (click)="onCancel()"

@@ -1,63 +1,89 @@
 <header class="relative z-[999]">
   <app-navbar-publicv3></app-navbar-publicv3>
 </header>
+
 <div id="smooth-wrapper" class="relative z-1">
   <div id="smooth-content">
     <div class="h-[72px] bg-aldy-white lg:h-[88px]"></div>
+
     <div class="min-h-screen w-full bg-aldy-white overflow-x-hidden">
       <div class="flex min-h-screen">
+
         <aside class="sticky top-0 inset-0 flex flex-col w-[260px] shrink-0 bg-aldy-white border-r border-[#e0d8cf]">
+
           <div class="px-8 flex items-center justify-center pt-10 pb-8">
-            <img [draggable]="false" src="../../../assets/svg/logo-4.svg" alt="Aldana Vilcabana" class="w-35 h-full object-contain">
+            <img [draggable]="false" src="../../../assets/svg/logo-4.svg" alt="Aldana Vilcabana"
+              class="w-35 h-full object-contain">
           </div>
-          <nav class="flex flex-col px-4 gap-0.5">
+
+          <nav class="flex flex-col px-4 gap-4">
             @for (item of navItems; track item) {
-              <a
-                [routerLink]="item.route"
-                routerLinkActive="bg-[#d6e4cf] text-[#4a6644]"
-                [routerLinkActiveOptions]="{exact: false}"
-                class="flex items-center gap-3 px-4 py-3.5 text-[#7a8c74] text-[11px] tracking-[0.2em] uppercase NewAldyFontType4 font-light hover:bg-[#e6ede2] transition-colors duration-200 cursor-pointer">
-                <lucide-icon [size]="17" [strokeWidth]="1.5" [name]="item.icon" class="shrink-0 text-[#7a9472]"></lucide-icon>
+            <a [routerLink]="item.route"
+              class="group flex items-center justify-start gap-3 px-4 py-3.5 text-[#5F5C5A] text-[11px] tracking-[0.2em] uppercase NewAldyTitle font-light hover:bg-[#EAE8DF] hover:text-aldy-green-gray transition-colors duration-200 cursor-pointer">
+
+              <lucide-icon [size]="17" [strokeWidth]="1.5" [name]="item.icon"
+                class="shrink-0 text-[#5F5C5A] group-hover:text-aldy-green-gray transition-colors duration-200">
+              </lucide-icon>
+
+              <span class="leading-none">
                 {{ item.title }}
-              </a>
+              </span>
+
+            </a>
             }
           </nav>
-          <div class="mt-6 px-4">
-            <div class="border-t border-[#d8cfc6] mb-2"></div>
-            <button
-              (click)="onSignOut()"
-              class="w-full flex items-center gap-3 px-4 py-3.5 text-[#7a8c74] text-[11px] tracking-[0.2em] uppercase NewAldyFontType4 font-light hover:bg-[#e6ede2] transition-colors duration-200 cursor-pointer">
-              <lucide-icon [size]="17" [strokeWidth]="1.5" name="log-out" class="shrink-0 text-[#7a9472]"></lucide-icon>
-              Cerrar Sesión
+
+          <div class="mt-4 mb-4 px-4">
+            <button (click)="onSignOut()"
+              class="group w-full flex items-center justify-start gap-3 px-4 py-3.5 text-[#5F5C5A] text-[11px] tracking-[0.2em] uppercase NewAldyTitle font-light hover:bg-[#EAE8DF] hover:text-aldy-green-gray transition-colors duration-200 cursor-pointer">
+
+              <lucide-icon [size]="17" [strokeWidth]="1.5" name="log-out"
+                class="shrink-0 text-[#5F5C5A] group-hover:text-aldy-green-gray transition-colors duration-200">
+              </lucide-icon>
+
+              <span class="leading-none">
+                Cerrar Sesión
+              </span>
+
             </button>
           </div>
+
           <div class="mt-auto pb-8 text-center">
             <span class="text-[#c4b8a8] text-base tracking-widest select-none">˜ ˜ ˜</span>
           </div>
+
         </aside>
+
         <div class="flex-1 flex flex-col min-h-screen">
+
           <div class="relative w-full h-65 flex items-center justify-center overflow-hidden shrink-0">
-            <img
-              class="absolute inset-0 w-full h-full object-cover brightness-70 object-[65%_22%]"
-              src="../../../assets/images/others/perfil_user.jpg"
-              alt="wardrobe">
+            <img class="absolute inset-0 w-full h-full object-cover brightness-70 object-[65%_22%]"
+              src="../../../assets/images/others/perfil_user.jpg" alt="wardrobe">
+
             <div class="absolute inset-0 bg-black/20"></div>
-            <h1 class="relative text-3xl sm:text-5xl NewAldyTitle tracking-[0.3em] uppercase text-white font-light z-10">
+
+            <h1
+              class="relative text-3xl sm:text-5xl NewAldyTitle tracking-[0.3em] uppercase text-white font-light z-10">
               Mi cuenta
             </h1>
           </div>
+
           <main class="flex-1 bg-aldy-white relative px-8 py-10">
             @if (isLoading) {
-              <div class="loading-overlay">
-                <div class="spinner-aldy"></div>
-              </div>
+            <div class="loading-overlay">
+              <div class="spinner-aldy"></div>
+            </div>
             }
+
             @if (!isLoading) {
-              <router-outlet></router-outlet>
+            <router-outlet></router-outlet>
             }
           </main>
+
         </div>
+
       </div>
     </div>
+
   </div>
 </div>

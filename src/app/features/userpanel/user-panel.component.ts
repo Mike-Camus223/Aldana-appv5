@@ -5,7 +5,7 @@ import { User } from '@supabase/supabase-js';
 import { filter } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 import { AppMenuItem } from '../../shared/utils/models/app-menu-item.model';
-import { Heart, LogOut, LUCIDE_ICONS, LucideAngularModule, LucideIconProvider, Package, Settings, UserRound } from 'lucide-angular';
+import { Heart, House, LogOut, LUCIDE_ICONS, LucideAngularModule, LucideIconProvider, Package, Settings, UserRound } from 'lucide-angular';
 import { LoaderService } from '../../core/services/utils/loader.service';
 import { NavbarPublicv3Component } from '../../shared/components/system/navbar-publicv3/navbar-publicv3.component';
 import { SmoothScrollService } from '../../core/services/utils/smooth-scroll.service';
@@ -16,18 +16,18 @@ import { SmoothScrollService } from '../../core/services/utils/smooth-scroll.ser
   imports: [RouterModule, LucideAngularModule, NavbarPublicv3Component],
   templateUrl: './user-panel.component.html',
   providers: [
-      {
-        provide: LUCIDE_ICONS,
-        multi: true,
-        useValue: new LucideIconProvider({
-          Settings,
-          UserRound,
-          Package,
-          LogOut,
-          Heart
-        })
-      }
-    ],
+    {
+      provide: LUCIDE_ICONS,
+      multi: true,
+      useValue: new LucideIconProvider({
+        UserRound,
+        Package,
+        LogOut,
+        Heart,
+        House
+      })
+    }
+  ],
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./user-panel.component.css']
 })
@@ -38,14 +38,14 @@ export class UserPanelComponent implements OnInit, AfterViewInit, OnDestroy {
   private authSubscription?: Subscription;
 
   breadcrumbItemsAccount: AppMenuItem[] = [
-      { label: 'INICIO', route: '/' },
-      { label: 'MI CUENTA', route: '/panel/panel-control' }
-    ];
-  
+    { label: 'INICIO', route: '/' },
+    { label: 'MI CUENTA', route: '/panel/panel-control' }
+  ];
+
   navItems = [
     {
       title: 'Panel de Control',
-      icon: 'settings',
+      icon: 'house',
       route: 'panel-control'
     },
     {
@@ -64,17 +64,17 @@ export class UserPanelComponent implements OnInit, AfterViewInit, OnDestroy {
       route: 'favoritos'
     },
   ];
-  
+
   private authService = inject(AuthService);
   private router = inject(Router);
   private loaderService = inject(LoaderService);
   private smoothScroll = inject(SmoothScrollService);
 
   constructor() {
-    this.router.events   
+    this.router.events
       .pipe(
-        filter(event => 
-          event instanceof NavigationStart || 
+        filter(event =>
+          event instanceof NavigationStart ||
           event instanceof NavigationEnd ||
           event instanceof NavigationCancel ||
           event instanceof NavigationError
@@ -97,7 +97,7 @@ export class UserPanelComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit(): void {
     this.loaderService.setContext('user-panel');
-    
+
     this.authSubscription = this.authService.currentUser$.subscribe(user => {
       this.currentUser = user;
       if (!user) {
