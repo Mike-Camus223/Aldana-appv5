@@ -2,8 +2,9 @@
 <!-- NAVBAR DESKTOP -->
 <!-- ========================================== -->
 <nav (mouseleave)="onNavbarLeave()" [ngClass]="{
-    'bg-aldy-white bg-opacity-100': !isHomePage || MoverScroll || hoverNavbar,
-    'bg-transparent': isHomePage && !MoverScroll && !hoverNavbar,
+    'bg-[#FEF2E5] bg-opacity-100': isErrorPage,
+    'bg-aldy-white bg-opacity-100': !isErrorPage && (!isHomePage || MoverScroll || hoverNavbar),
+    'bg-transparent': !isErrorPage && (isHomePage && !MoverScroll && !hoverNavbar),
     'py-0': MoverScroll,
     'py-1': !MoverScroll,
     'translate-y-0': showNavbar,
@@ -189,12 +190,13 @@
           <!-- NAVBAR MOBILE -->
           <!-- ========================================== -->
 <nav [ngClass]="{
+    'bg-[#FEF2E5] shadow-md': isErrorPage,
     'py-0': MoverScroll,
     'py-1': !MoverScroll,
     'translate-y-0': showNavbar,
     '-translate-y-full': !showNavbar,
-    'bg-aldy-white shadow-md': menuOpen || !isHomePage || MoverScroll || hoverNavbar,
-    'bg-gradient-to-b from-black/35 to-transparent': !menuOpen && isHomePage && !MoverScroll && !hoverNavbar
+    'bg-aldy-white shadow-md': !isErrorPage && (menuOpen || !isHomePage || MoverScroll || hoverNavbar),
+    'bg-gradient-to-b from-black/35 to-transparent': !isErrorPage && (!menuOpen && isHomePage && !MoverScroll && !hoverNavbar)
   }"
             class="block lg:hidden w-full fixed top-0 z-[20] font-font-light NewAldyFontType4 text-sm transform transition-all duration-300 ease-in-out">
             <div class="flex items-center justify-between h-16 px-[5%] relative">

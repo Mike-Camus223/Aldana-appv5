@@ -73,9 +73,12 @@ Usa AppGenericCarouselComponent + CarouselItemDirective
         (load)="onMediaLoaded($event)" (error)="onMediaLoaded($event)" />
       }
       @if (isVideo(currentMedia)) {
-      <video [src]="currentMedia.url" autoplay loop playsinline muted [muted]="isMuted"
-        class="max-h-full w-auto object-contain" preload="metadata" (loadeddata)="onMediaLoaded($any($event))"
-        (error)="onMediaLoaded($any($event))">
+      <video [src]="currentMedia.url" autoplay loop playsinline muted
+        referrerpolicy="no-referrer"
+        class="max-h-full w-auto object-contain" preload="auto"
+        (canplay)="onMediaLoaded()"
+        (loadeddata)="onMediaLoaded()"
+        (error)="onVideoError()">
       </video>
       }
       @if (isVideo(currentMedia)) {
@@ -250,9 +253,12 @@ Usa AppGenericCarouselComponent + CarouselItemDirective
         (load)="onMediaLoaded($event)" (error)="onMediaLoaded($event)" />
       }
       @if (isVideo(currentMedia)) {
-      <video [src]="currentMedia.url" autoplay loop playsinline muted [muted]="isMuted"
-        class="max-h-full w-auto object-contain" preload="metadata" (loadeddata)="onMediaLoaded($any($event))"
-        (error)="onMediaLoaded($any($event))">
+      <video [src]="currentMedia.url" autoplay loop playsinline muted
+        referrerpolicy="no-referrer"
+        class="max-h-full w-auto object-contain" preload="auto"
+        (canplay)="onMediaLoaded()"
+        (loadeddata)="onMediaLoaded()"
+        (error)="onVideoError()">
       </video>
       }
       @if (isVideo(currentMedia)) {

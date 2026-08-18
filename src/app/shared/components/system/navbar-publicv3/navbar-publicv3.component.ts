@@ -108,6 +108,7 @@ export class NavbarPublicv3Component implements OnInit, OnDestroy {
   showNavbar = true;
   scrollThreshold = 100;
   isHomePage = false;
+  isErrorPage = false;
   MoverScroll = false;
   dropdownOpen = false;
   mobileDropdownOpen = false;
@@ -148,15 +149,24 @@ export class NavbarPublicv3Component implements OnInit, OnDestroy {
     this.router.events
       .pipe(filter(e => e instanceof NavigationEnd))
       .subscribe(() => {
-        this.isHomePage = this.router.url === '/' || this.router.url === '/home';
+        this.updatePageStatus();
         this.menuOpen = false;
         this.dropdownOpen = false;
         this.mobileDropdownOpen = false;
       });
   }
 
-  ngOnInit(): void {
+  private updatePageStatus(): void {
     this.isHomePage = this.router.url === '/' || this.router.url === '/home';
+    let route = this.router.routerState.root;
+    while (route.firstChild) {
+      route = route.firstChild;
+    }
+    this.isErrorPage = route.routeConfig?.path === '**' || route.routeConfig?.path === 'error';
+  }
+
+  ngOnInit(): void {
+    this.updatePageStatus();
 
     this.cartService.cartItems$.subscribe(items => {
       this.cartItems = items;

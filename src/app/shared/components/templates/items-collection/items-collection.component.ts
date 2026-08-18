@@ -250,14 +250,14 @@ private updateVisibleProducts() {
 
     if (this.isBrides) {
       this.breadcrumbItems = [
-        { label: 'INICIO', route: '/home' },
+        { label: 'INICIO', route: '/' },
         { label: 'NOVIAS COLECCIONES', route: '/novias-colecciones' },
         { label: this.collectionSlug.toUpperCase(), route: `/novias-colecciones/${this.collectionSlug}` },
         { label: this.product.name.toUpperCase(), route: `/novias-colecciones/${this.collectionSlug}/${this.product.slug}` }
       ];
     } else {
       this.breadcrumbItems = [
-        { label: 'INICIO', route: '/home' },
+        { label: 'INICIO', route: '/' },
         { label: 'COLECCIONES', route: '/colecciones' },
         { label: this.collectionSlug.toUpperCase(), route: `/colecciones/${this.collectionSlug}` },
         { label: this.product.name.toUpperCase(), route: `/colecciones/${this.collectionSlug}/${this.product.slug}` }

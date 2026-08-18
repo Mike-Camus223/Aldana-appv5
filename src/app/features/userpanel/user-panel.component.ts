@@ -38,7 +38,7 @@ export class UserPanelComponent implements OnInit, OnDestroy {
   private authSubscription?: Subscription;
 
   breadcrumbItemsAccount: AppMenuItem[] = [
-      { label: 'INICIO', route: '/home' },
+      { label: 'INICIO', route: '/' },
       { label: 'MI CUENTA', route: '/panel/panel-control' }
     ];
   

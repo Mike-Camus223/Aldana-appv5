@@ -14,7 +14,7 @@ import { StoreTemplateComponent } from '../../../../shared/components/templates/
 export class ShopComponent {
 
   breadcrumbItemsShop: AppMenuItem[] = [
-    {label: 'INICIO', route: '/home'},
+    {label: 'INICIO', route: '/'},
     {label: 'TIENDA', route: '/store'}
   ];
 

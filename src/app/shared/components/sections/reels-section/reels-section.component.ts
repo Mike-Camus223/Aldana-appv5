@@ -9,6 +9,7 @@ import {
   ChangeDetectorRef,
 } from '@angular/core';
 import { PLATFORM_ID } from '@angular/core';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { Subject } from 'rxjs';
 import { debounceTime, takeUntil } from 'rxjs/operators';
 import { ModalComponent } from '../../generic/modal/modal.component';
@@ -73,6 +74,7 @@ export class ReelsSectionComponent implements OnInit, OnDestroy {
   constructor(
     private instagramService: InstagramserviceService,
     private cdr: ChangeDetectorRef,
+    private sanitizer: DomSanitizer,
     @Inject(PLATFORM_ID) private platformId: Object,
   ) {
     this.resizeSubject$
@@ -224,7 +226,8 @@ export class ReelsSectionComponent implements OnInit, OnDestroy {
     this.selectedReel = reel;
     this.currentMediaIndex = 0;
     this.isMuted = true;
-    this.isMediaLoading = true;
+    const mediaType = String(reel.media_type || '').toLowerCase();
+    this.isMediaLoading = !mediaType.includes('video') && !mediaType.includes('reels');
     this.showModal = true;
     this.cdr.markForCheck();
     this.forcePlayVideo();
@@ -247,32 +250,33 @@ export class ReelsSectionComponent implements OnInit, OnDestroy {
 
   private forcePlayVideo(): void {
     if (!isPlatformBrowser(this.platformId)) return;
+    // Esperar a que el DOM renderice el <video>
     setTimeout(() => {
-      const videos = document.querySelectorAll('video');
+      const videos = document.querySelectorAll<HTMLVideoElement>('video');
       videos.forEach((v) => {
-        v.muted = this.isMuted;
-        const p = v.play();
-        if (p !== undefined) {
-          p.catch(() => {
-            v.muted = true;
-            this.isMuted = true;
-            v.play().catch(() => {});
-          });
-        }
+        v.muted = true;
+        v.play().catch(() => {
+          // Si falla sin mute, ya está muted — no hay más que hacer
+        });
       });
-    }, 100);
+    }, 200);
   }
 
   onMediaLoaded(event?: Event): void {
-    const target = event?.target as HTMLImageElement | HTMLVideoElement;
-    if (target) {
-      if ('naturalWidth' in target) {
+    if (event) {
+      const target = event.target as HTMLImageElement;
+      if (target && 'naturalWidth' in target) {
         this.mediaWidth = target.naturalWidth || 1080;
         this.mediaHeight = target.naturalHeight || 1920;
-      } else if ('videoWidth' in target) {
-        this.mediaWidth = target.videoWidth || 1080;
-        this.mediaHeight = target.videoHeight || 1920;
       }
+    }
+    this.isMediaLoading = false;
+    this.cdr.markForCheck();
+  }
+
+  onVideoError(): void {
+    if (this.selectedReel) {
+      this.selectedReel.media_url = '';
     }
     this.isMediaLoading = false;
     this.cdr.markForCheck();
@@ -280,15 +284,28 @@ export class ReelsSectionComponent implements OnInit, OnDestroy {
 
   get currentMedia() {
     if (!this.selectedReel) return { url: '', type: 'image' };
+
+    const mediaType = String(this.selectedReel.media_type || '').toLowerCase();
+    const isVideoType = mediaType.includes('video') || mediaType.includes('reels');
+
+    // Si es video y tiene URL de video directa (mp4)
+    if (isVideoType && this.selectedReel.media_url) {
+      return {
+        url: this.selectedReel.media_url,
+        type: 'video',
+      };
+    }
+
+    // Para carousel o fallback a imagen de thumbnail si no hay stream mp4
     if (!this.selectedReel.media || this.selectedReel.media.length === 0) {
       return { url: this.selectedReel.image_url || '', type: 'image' };
     }
     const m = this.selectedReel.media[this.currentMediaIndex];
-    const rawType = String(m?.type || m?.media_type || this.selectedReel.media_type || '').toLowerCase();
-    const type = rawType.includes('video') || rawType.includes('reels') ? 'video' : 'image';
+    const rawType = String(m?.type || m?.media_type || '').toLowerCase();
+    const isMVideo = (rawType.includes('video') || rawType.includes('reels')) && !!(m?.url || m?.media_url);
     return {
       url: m?.url || m?.media_url || m?.image_url || this.selectedReel.image_url || '',
-      type,
+      type: isMVideo ? 'video' : 'image',
     };
   }
 
@@ -335,6 +352,13 @@ export class ReelsSectionComponent implements OnInit, OnDestroy {
     this.forcePlayVideo();
   }
 
+  openInInstagram(): void {
+    const url = this.selectedReel?.post_url;
+    if (url && isPlatformBrowser(this.platformId)) {
+      window.open(url, '_blank', 'noopener,noreferrer');
+    }
+  }
+
   toggleMute(): void {
     this.isMuted = !this.isMuted;
     if (isPlatformBrowser(this.platformId)) {
@@ -349,26 +373,25 @@ export class ReelsSectionComponent implements OnInit, OnDestroy {
     this.cdr.markForCheck();
   }
 
-  playVideo(event: Event): void {
-    const video = event.target as HTMLVideoElement;
-    if (video) {
-      video.muted = this.isMuted;
-      const p = video.play();
-      if (p !== undefined) {
-        p.catch(() => {
-          video.muted = true;
-          this.isMuted = true;
-          video.play().catch(() => {});
-        });
-      }
-    }
-    this.onMediaLoaded(event);
-  }
 
   isVideo(media: any): boolean {
     if (!media) return false;
     const type = String(media.type || media.media_type || '').toLowerCase();
     return type.includes('video') || type.includes('reels');
+  }
+
+  /**
+   * Genera la URL embed de Instagram a partir del permalink.
+   * Ejemplo: https://www.instagram.com/reel/ABC123/ → https://www.instagram.com/p/ABC123/embed/
+   */
+  getEmbedUrl(reel: any): SafeResourceUrl {
+    const postUrl: string = reel?.post_url || '';
+    const match = postUrl.match(/\/(reel|p)\/([A-Za-z0-9_-]+)/);
+    const shortcode = match ? match[2] : '';
+    const embedUrl = shortcode
+      ? `https://www.instagram.com/p/${shortcode}/embed/`
+      : postUrl;
+    return this.sanitizer.bypassSecurityTrustResourceUrl(embedUrl);
   }
 
   // ── Scroll lock ───────────────────────────────────────────────────────────

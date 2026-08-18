@@ -16,7 +16,7 @@ import { GenericGalleryTemplComponent } from "../../../../shared/components/temp
 export class GalleryComponent {
 
   breadcrumbItems: AppMenuItem[] = [
-    { label: 'INICIO', route: '/home' },
+    { label: 'INICIO', route: '/' },
     { label: 'COLECCIONES', route: '/colecciones' }
   ];
 

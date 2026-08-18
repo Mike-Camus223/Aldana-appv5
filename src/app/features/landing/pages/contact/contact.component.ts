@@ -15,7 +15,7 @@ import { AppMenuItem } from '../../../../shared/utils/models/app-menu-item.model
 export class ContactComponent {
 
    breadcrumbItems: AppMenuItem[] = [
-    { label: 'INICIO', route: '/home' },
+    { label: 'INICIO', route: '/' },
     { label: 'CONTACTO', route: '/contact' }
   ];
 }

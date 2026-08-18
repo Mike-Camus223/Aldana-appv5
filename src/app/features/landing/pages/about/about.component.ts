@@ -15,7 +15,7 @@ import { RouterModule } from '@angular/router';
 export class AboutComponent {
 
   breadcrumbItemsAbout: AppMenuItem[] = [
-    { label: 'INICIO', route: '/home' },
+    { label: 'INICIO', route: '/' },
     { label: 'ACERCA DE MÍ', route: '/acerca-de-mi' }
   ];
 

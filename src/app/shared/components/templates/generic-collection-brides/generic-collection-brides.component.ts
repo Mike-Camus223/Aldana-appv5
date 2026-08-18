@@ -55,7 +55,7 @@ export class GenericCollectionBridesComponent implements OnInit {
     if (!col?.id) return;
 
     this.breadcrumbItems = [
-      { label: 'INICIO', route: '/home' },
+      { label: 'INICIO', route: '/' },
       { label: 'NOVIAS COLECCIONES', route: '/novias-colecciones' },
       { label: String(col.name || '').toUpperCase(), route: `/novias-colecciones/${slug}` }
     ];
