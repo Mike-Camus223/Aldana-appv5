@@ -369,7 +369,7 @@ export class AuthService {
 
       this.stopSessionMonitoring();
       this.logSecurityEvent('SIGNOUT_SUCCESS', userEmail);
-      this.router.navigate(['/']);
+      this.router.navigate(['/cuenta/iniciar-sesion']);
       return { success: true };
     } catch (error) {
       this.logSecurityEvent('SIGNOUT_ERROR', 'unknown', { error: (error as Error).message });

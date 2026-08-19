@@ -1,14 +1,13 @@
-<header>
+<header class="relative z-[999]">
   <app-navbar-publicv3></app-navbar-publicv3>
 </header>
 <div id="smooth-wrapper" class="relative z-1">
   <div id="smooth-content">
     <div class="h-[72px] bg-aldy-white lg:h-[80px]"></div>
-    <div class="min-h-screen w-full bg-aldy-white overflow-x-hidden">
-      <div class="flex min-h-screen relative items-start">
-        <aside
-          class="sticky top-0 flex flex-col w-[260px] shrink-0 bg-aldy-white border-r border-[#e0d8cf] z-20 self-start"
-          style="height: calc(100vh - 80px);">
+    <div class="min-h-screen w-full bg-aldy-white">
+      <div #panelContainer class="flex min-h-screen relative items-start">
+        <aside #panelAside
+          class="flex flex-col w-[260px] shrink-0 bg-aldy-white border-r border-[#e0d8cf] z-20 self-start h-[calc(100vh-72px)] lg:h-[calc(100vh-80px)]">
           <div class="px-8 flex items-center justify-center pt-10 pb-8">
             <img [draggable]="false" src="../../../assets/svg/logo-4.svg" alt="Aldana Vilcabana"
               class="w-35 h-full object-contain">
@@ -17,12 +16,18 @@
           <nav class="flex flex-col px-4 gap-2">
             @for (item of navItems; track item.route) {
             <a [routerLink]="item.route"
-              routerLinkActive="bg-[#EAE8DF] text-aldy-green-gray-bold font-normal"
-              [routerLinkActiveOptions]="{exact: false}"
-              class="group flex items-center justify-start gap-3 px-4 py-3.5 text-[#5F5C5A] text-[11px] tracking-[0.2em] uppercase NewAldyTitle font-light hover:bg-[#EAE8DF] hover:text-aldy-green-gray transition-colors duration-200 cursor-pointer">
+              (click)="activeSection = item.route"
+              [class.bg-[#EAE8DF]]="activeSection === item.route"
+              [class.text-aldy-green-gray-bold]="activeSection === item.route"
+              [class.font-normal]="activeSection === item.route"
+              [class.text-[#5F5C5A]]="activeSection !== item.route"
+              [class.font-light]="activeSection !== item.route"
+              class="group flex items-center justify-start gap-3 px-4 py-3.5 text-[11px] tracking-[0.2em] uppercase NewAldyTitle hover:bg-[#EAE8DF] hover:text-aldy-green-gray transition-colors duration-200 cursor-pointer">
 
               <lucide-icon [size]="17" [strokeWidth]="1.5" [name]="item.icon"
-                class="shrink-0 text-[#5F5C5A] group-hover:text-aldy-green-gray transition-colors duration-200">
+                [class.text-aldy-green-gray-bold]="activeSection === item.route"
+                [class.text-[#5F5C5A]]="activeSection !== item.route"
+                class="shrink-0 group-hover:text-aldy-green-gray transition-colors duration-200">
               </lucide-icon>
 
               <span class="leading-none">
