@@ -19,7 +19,6 @@ import {
   standalone: true,
   imports: [CommonModule, FormsModule, LucideAngularModule, SelectsComponent, PaginatorComponent],
   templateUrl: './orders-history.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
   providers: [
     {
       provide: LUCIDE_ICONS,
@@ -41,7 +40,7 @@ export class OrdersHistoryComponent implements OnInit {
   ];
 
   orders: OrderSummary[] = [];
-  loading = true;
+  loading = false;
   error: string | null = null;
   currentPage = 1;
   pageSize = 5;
@@ -65,16 +64,20 @@ export class OrdersHistoryComponent implements OnInit {
     this.loadUserOrders();
   }
 
-  async loadUserOrders() {
-    this.loading = true;
+  async loadUserOrders(forceRefresh = false) {
+    if (this.orders.length === 0) {
+      this.loading = true;
+    }
     this.error = null;
 
     try {
-      const result = await this.ordersService.getUserOrders();
+      const result = await this.ordersService.getUserOrders(forceRefresh);
 
       if (result.success && result.orders && result.orders.length > 0) {
         this.orders = result.orders;
         this.applySort();
+      } else if (result.success && result.orders) {
+        this.orders = [];
       } else {
         this.orders = [];
         this.error = result.error || null;

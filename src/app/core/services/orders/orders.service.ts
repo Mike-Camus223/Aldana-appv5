@@ -171,8 +171,15 @@ export class OrdersService {
   }
 
 
-  async getUserOrders(): Promise<{ success: boolean; orders?: OrderSummary[]; error?: string }> {
+  private cachedOrders: OrderSummary[] | null = null;
+  private lastOrdersFetch = 0;
+
+  async getUserOrders(forceRefresh: boolean = false): Promise<{ success: boolean; orders?: OrderSummary[]; error?: string }> {
     try {
+      if (!forceRefresh && this.cachedOrders && (Date.now() - this.lastOrdersFetch < 60000)) {
+        return { success: true, orders: this.cachedOrders };
+      }
+
       if (!this.authService.isAuthenticated()) {
         return { success: false, error: 'Usuario no autenticado' };
       }
@@ -212,12 +219,20 @@ export class OrdersService {
         totalItems: Array.isArray(order.products) ? order.products.reduce((sum: number, product: any) => sum + (product.quantity || 0), 0) : 0
       }));
 
+      this.cachedOrders = orderSummaries;
+      this.lastOrdersFetch = Date.now();
+
       return { success: true, orders: orderSummaries };
 
     } catch (error: any) {
       console.error('Error en getUserOrders:', error);
       return { success: false, error: error.message || 'Error desconocido' };
     }
+  }
+
+  clearOrdersCache(): void {
+    this.cachedOrders = null;
+    this.lastOrdersFetch = 0;
   }
 
 

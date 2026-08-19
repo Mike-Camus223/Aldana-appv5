@@ -330,7 +330,7 @@ export class WhitelistComponent implements OnInit, OnDestroy {
       this.isSelectionMode = false;
       this.notificationService.showSuccess(
         'Elementos eliminados',
-        count === 1 ? 'Producto eliminado de favoritos' : `${count} productos eliminados de la lista de favoritos`,
+        count === 1 ? 'Elemento eliminado de favoritos' : `${count} elementos eliminados de la lista de favoritos`,
         3000
       );
     } catch (error) {
