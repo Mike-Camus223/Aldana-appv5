@@ -95,7 +95,7 @@ export class StoreTemplateComponent implements OnInit {
     qpColl: string | null;
     qpBridesColl: string | null;
   } | null = null;
-  readonly maxPages: number = 16;
+  readonly maxPages: number = 4;
   currentPage: number = 1;
   pagedProducts: Product[] = [];
   pagesArray: number[] = [];

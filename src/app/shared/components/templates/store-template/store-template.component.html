@@ -415,7 +415,7 @@
         }
         <div>
           @if (!loading && filteredProducts.length > 0) {
-          <app-paginator class="pt-4 w-full flex" [currentPage]="currentPage" [totalPages]="totalPages"
+          <app-paginator class="pt-4 w-full justify-center flex" [currentPage]="currentPage" [totalPages]="totalPages"
             (pageChange)="goToPage($event)">
           </app-paginator>
           }

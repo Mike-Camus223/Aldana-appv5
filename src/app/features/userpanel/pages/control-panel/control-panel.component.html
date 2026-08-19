@@ -1,6 +1,4 @@
 <div class="w-full max-w-7xl mx-auto">
-
-  <!-- Greeting -->
   <div class="mb-8">
     <h2 class="text-lg md:text-xl NewAldyTitle font-light text-aldy-green-gray-bold tracking-[0.18em]">
       Hola, {{ (user | async)?.user_metadata?.['full_name'] || (user | async)?.user_metadata?.['name'] || 'Usuario' }}
@@ -9,11 +7,7 @@
       Desde tu cuenta puedes gestionar tus pedidos, datos y preferencias.
     </p>
   </div>
-
-  <!-- Cards Grid -->
   <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
-
-    <!-- Mis Pedidos -->
     <div class="border border-[#e8e0d8] bg-aldy-white p-4 space-y-4 hover:shadow-sm transition-shadow duration-300">
       <div class="flex items-center gap-4">
         <div class="w-14 h-14 rounded-full bg-[#f5f1ec] flex items-center justify-center shrink-0">

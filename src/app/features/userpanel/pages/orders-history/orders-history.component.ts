@@ -1,23 +1,43 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { SelectsComponent } from '../../../../shared/components/generic/forms/selects/selects.component';
 import { PaginatorComponent } from '../../../../shared/components/generic/paginator/paginator.component';
 import { OrdersService } from '../../../../core/services/orders/orders.service';
 import { OrderSummary } from '../../../../shared/utils/models/order.interface';
+import {
+  ChevronRight,
+  Package,
+  LUCIDE_ICONS,
+  LucideAngularModule,
+  LucideIconProvider
+} from 'lucide-angular';
 
 @Component({
   selector: 'app-orders-history',
   standalone: true,
-  imports: [CommonModule, SelectsComponent, PaginatorComponent],
+  imports: [CommonModule, FormsModule, LucideAngularModule, SelectsComponent, PaginatorComponent],
   templateUrl: './orders-history.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
+  providers: [
+    {
+      provide: LUCIDE_ICONS,
+      multi: true,
+      useValue: new LucideIconProvider({
+        ChevronRight,
+        Package
+      })
+    }
+  ],
   styleUrls: ['./orders-history.component.css']
 })
 export class OrdersHistoryComponent implements OnInit {
   sortOptions = [
-    { label: 'Fecha de creación', value: 'creationDate' },
-    { label: 'Estado', value: 'status' }
+    { label: 'Más recientes', value: 'recent' },
+    { label: 'Más antiguas', value: 'oldest' },
+    { label: 'Mayor valor', value: 'highest' },
+    { label: 'Menor valor', value: 'lowest' }
   ];
 
   orders: OrderSummary[] = [];
@@ -25,15 +45,21 @@ export class OrdersHistoryComponent implements OnInit {
   error: string | null = null;
   currentPage = 1;
   pageSize = 5;
+  selectedSort = 'recent';
 
   get totalPages(): number {
-    return Math.ceil(this.orders.length / this.pageSize);
+    return Math.max(1, Math.ceil(this.orders.length / this.pageSize));
+  }
+
+  get paginatedOrders(): OrderSummary[] {
+    const start = (this.currentPage - 1) * this.pageSize;
+    return this.orders.slice(start, start + this.pageSize);
   }
 
   constructor(
     private ordersService: OrdersService,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.loadUserOrders();
@@ -45,11 +71,13 @@ export class OrdersHistoryComponent implements OnInit {
 
     try {
       const result = await this.ordersService.getUserOrders();
-      
-      if (result.success && result.orders) {
+
+      if (result.success && result.orders && result.orders.length > 0) {
         this.orders = result.orders;
+        this.applySort();
       } else {
-        this.error = result.error || 'Error al cargar las órdenes';
+        this.orders = [];
+        this.error = result.error || null;
       }
     } catch (error: any) {
       this.error = 'Error inesperado al cargar las órdenes';
@@ -59,18 +87,33 @@ export class OrdersHistoryComponent implements OnInit {
     }
   }
 
-  get paginatedOrders() {
-    const start = (this.currentPage - 1) * this.pageSize;
-    return this.orders.slice(start, start + this.pageSize);
+  onSortChange(sort: string) {
+    this.selectedSort = sort;
+    this.applySort();
+    this.currentPage = 1;
+  }
+
+  private applySort() {
+    if (this.selectedSort === 'recent') {
+      this.orders.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    } else if (this.selectedSort === 'oldest') {
+      this.orders.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+    } else if (this.selectedSort === 'highest') {
+      this.orders.sort((a, b) => (b.total_final || 0) - (a.total_final || 0));
+    } else if (this.selectedSort === 'lowest') {
+      this.orders.sort((a, b) => (a.total_final || 0) - (b.total_final || 0));
+    }
   }
 
   onPageChange(page: number) {
-    this.currentPage = page;
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+    }
   }
 
   getStatusLabel(status: string): string {
     const statusMap: { [key: string]: string } = {
-      'pending': 'Pendiente',
+      'pending': 'En preparación',
       'in_transit': 'En camino',
       'completed': 'Entregado',
       'rejected': 'Cancelado'
@@ -78,47 +121,71 @@ export class OrdersHistoryComponent implements OnInit {
     return statusMap[status] || status;
   }
 
-  getStatusClass(status: string): string {
-    const classMap: { [key: string]: string } = {
-      'pending': 'text-yellow-600',
-      'in_transit': 'text-blue-600',
-      'completed': 'text-green-600',
-      'rejected': 'text-red-600'
-    };
-    return classMap[status] || 'text-gray-600';
+  getStatusBadgeClass(status: string): string {
+    switch (status) {
+      case 'completed':
+        return 'bg-[#E2EAE0] text-[#556F52]';
+      case 'pending':
+        return 'bg-[#F5EBE1] text-[#947659]';
+      case 'in_transit':
+        return 'bg-[#E3EAF2] text-[#4A6785]';
+      case 'rejected':
+        return 'bg-[#FBEAEA] text-[#9E5252]';
+      default:
+        return 'bg-[#F5EBE1] text-[#947659]';
+    }
   }
 
   formatDate(dateString: string): string {
+    if (!dateString) return '';
     const date = new Date(dateString);
     return date.toLocaleDateString('es-AR', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit'
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric'
     });
   }
 
   formatPrice(price: number): string {
+    if (price === undefined || price === null || isNaN(price)) return '$0';
     return new Intl.NumberFormat('es-AR', {
       style: 'currency',
-      currency: 'ARS'
+      currency: 'ARS',
+      maximumFractionDigits: 0
     }).format(price);
   }
 
-  viewOrderDetails(orderId: string) {
-    console.log('Navegando a detalles de la orden:', orderId);
-    this.router.navigate(['/panel/order-details', orderId])
-      .then(success => {
-        if (!success) {
-          console.error('Error de navegación: No se pudo cargar la ruta');
-        }
-      })
-      .catch(error => {
-        console.error('Error de navegación:', error);
-      });
+  getTotalProductsCount(order: OrderSummary): number {
+    if (order.totalItems && order.totalItems > 0) return order.totalItems;
+    if (Array.isArray(order.products) && order.products.length > 0) {
+      return order.products.reduce((acc, p) => acc + (p.quantity || 1), 0);
+    }
+    return 1;
   }
 
-  getProductImages(products: any[]): string[] {
-    if (!Array.isArray(products)) return [];
-    return products.slice(0, 4).map(product => product.image || 'https://via.placeholder.com/60');
+  getExtraProductsCount(order: OrderSummary): number {
+    const total = this.getTotalProductsCount(order);
+    return total > 1 ? total - 1 : 0;
+  }
+
+  getMainImage(order: OrderSummary): string {
+    if (Array.isArray(order.products) && order.products.length > 0) {
+      const img = order.products[0]?.image;
+      if (img && typeof img === 'string' && img.trim()) return img;
+    }
+    return '';
+  }
+
+  formatOrderNumber(num: string): string {
+    return num || '';
+  }
+
+  formatPrettyDate(dateString: string): string {
+    return this.formatDate(dateString);
+  }
+
+  viewOrderDetails(orderId: string) {
+    if (!orderId) return;
+    this.router.navigate(['/panel/order-details', orderId]);
   }
 }
