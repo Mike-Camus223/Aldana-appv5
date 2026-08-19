@@ -23,6 +23,8 @@ import { SmoothScrollService } from '../../core/services/utils/smooth-scroll.ser
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
+import { OrdersService } from '../../core/services/orders/orders.service';
+
 gsap.registerPlugin(ScrollTrigger);
 
 @Component({
@@ -87,6 +89,7 @@ export class UserPanelComponent implements OnInit, AfterViewInit, OnDestroy {
   private router = inject(Router);
   private loaderService = inject(LoaderService);
   private smoothScroll = inject(SmoothScrollService);
+  private ordersService = inject(OrdersService);
   private isBrowser: boolean;
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object) {
@@ -105,13 +108,11 @@ export class UserPanelComponent implements OnInit, AfterViewInit, OnDestroy {
       .subscribe((event) => {
         if (event instanceof NavigationStart) {
           this.updateActiveSectionFromUrl(event.url);
-          this.isLoading = true;
           return;
         }
 
         if (event instanceof NavigationEnd || event instanceof NavigationCancel || event instanceof NavigationError) {
           this.updateActiveSectionFromUrl(this.router.url);
-          this.isLoading = false;
           this.smoothScroll.refresh();
         }
       });
@@ -136,6 +137,9 @@ export class UserPanelComponent implements OnInit, AfterViewInit, OnDestroy {
       this.currentUser = user;
       if (!user) {
         this.router.navigate(['/login']);
+      } else {
+        // Pre-cargar órdenes en segundo plano para que abran instantáneamente
+        this.ordersService.getUserOrders(false).catch(() => { });
       }
     });
   }

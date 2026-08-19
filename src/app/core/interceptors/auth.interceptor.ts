@@ -12,34 +12,24 @@ export class AuthInterceptor implements HttpInterceptor {
   private isRefreshing = false;
   private refreshTokenSubject: BehaviorSubject<any> = new BehaviorSubject<any>(null);
   
-  // URLs que no requieren autenticación
+  // URLs que no requieren autenticación interceptada (incluye Supabase SDK que ya gestiona sus propios tokens)
   private readonly PUBLIC_URLS = [
     '/auth/',
     '/public/',
-    'supabase.co/auth/v1/signup',
-    'supabase.co/auth/v1/token',
-    'supabase.co/auth/v1/recover'
+    'supabase.co',
+    'supabase.in'
   ];
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    // Log de request para auditoría
-    this.logRequest(request);
-
-    // Verificar si es una URL pública
+    // Si es una URL pública o del SDK de Supabase, dejar pasar directamente sin interceptar
     if (this.isPublicUrl(request.url)) {
       return next.handle(request);
     }
 
-    // Obtener token de autenticación
+    // Obtener token de autenticación para APIs externas / backend
     const session = this.authService.getCurrentSession();
     
     if (session?.access_token) {
-      // Verificar si el token está próximo a expirar
-      if (this.isTokenNearExpiry(session)) {
-        console.warn('Token próximo a expirar, iniciando refresh automático');
-        return this.handleTokenRefresh(request, next);
-      }
-
       // Agregar token a la request
       request = this.addTokenToRequest(request, session.access_token);
     }
@@ -164,7 +154,7 @@ export class AuthInterceptor implements HttpInterceptor {
     
     // Cerrar sesión y redirigir
     this.authService.signOut().then(() => {
-      this.router.navigate(['/login'], {
+      this.router.navigate(['/cuenta/iniciar-sesion'], {
         queryParams: { reason: 'session_invalid' }
       });
     });

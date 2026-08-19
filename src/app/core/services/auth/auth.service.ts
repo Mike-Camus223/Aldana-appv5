@@ -116,8 +116,8 @@ export class AuthService {
       }, warningTime);
     }
 
-    // Verificar periódicamente el estado de la sesión
-    this.sessionTimeoutSubscription = timer(0, this.SESSION_CHECK_INTERVAL).subscribe(() => {
+    // Verificar periódicamente el estado de la sesión (después del primer intervalo)
+    this.sessionTimeoutSubscription = timer(this.SESSION_CHECK_INTERVAL, this.SESSION_CHECK_INTERVAL).subscribe(() => {
       this.checkSessionValidity();
     });
   }
@@ -133,9 +133,9 @@ export class AuthService {
   }
 
   /**
-   * Verifica la validez de la sesión actual
+   * Verifica la validez de la sesión actual y refresca si es necesario
    */
-  private checkSessionValidity(): void {
+  private async checkSessionValidity(): Promise<void> {
     const session = this.getCurrentSession();
     if (!session || !session.expires_at) return;
 
@@ -143,9 +143,21 @@ export class AuthService {
     const currentTime = new Date();
 
     if (currentTime >= expirationTime) {
-      console.warn('Session expired, signing out automatically');
-      this.logSecurityEvent('SESSION_AUTO_EXPIRED', session.user?.email || 'unknown');
-      this.signOut();
+      try {
+        const { data, error } = await this.supabase.auth.refreshSession();
+        if (error || !data.session) {
+          this.stopSessionMonitoring();
+          this.sessionSubject.next(null);
+          this.currentUserSubject.next(null);
+        } else {
+          this.sessionSubject.next(data.session);
+          this.currentUserSubject.next(data.session.user ?? null);
+        }
+      } catch (err) {
+        this.stopSessionMonitoring();
+        this.sessionSubject.next(null);
+        this.currentUserSubject.next(null);
+      }
     }
   }
 
