@@ -5,18 +5,20 @@
   <div id="smooth-content">
     <div class="h-[72px] bg-aldy-white lg:h-[80px]"></div>
     <div class="min-h-screen w-full bg-aldy-white overflow-x-hidden">
-      <div #panelContainer class="flex min-h-screen relative items-start">
-        <aside #asidePanel
-          class="flex flex-col w-[260px] shrink-0 bg-aldy-white border-r border-[#e0d8cf] z-20 self-start"
-          style="min-height: calc(100vh - 80px);">
+      <div class="flex min-h-screen relative items-start">
+        <aside
+          class="sticky top-0 flex flex-col w-[260px] shrink-0 bg-aldy-white border-r border-[#e0d8cf] z-20 self-start"
+          style="height: calc(100vh - 80px);">
           <div class="px-8 flex items-center justify-center pt-10 pb-8">
             <img [draggable]="false" src="../../../assets/svg/logo-4.svg" alt="Aldana Vilcabana"
               class="w-35 h-full object-contain">
           </div>
 
-          <nav class="flex flex-col px-4 gap-4">
-            @for (item of navItems; track item) {
+          <nav class="flex flex-col px-4 gap-2">
+            @for (item of navItems; track item.route) {
             <a [routerLink]="item.route"
+              routerLinkActive="bg-[#EAE8DF] text-aldy-green-gray-bold font-normal"
+              [routerLinkActiveOptions]="{exact: false}"
               class="group flex items-center justify-start gap-3 px-4 py-3.5 text-[#5F5C5A] text-[11px] tracking-[0.2em] uppercase NewAldyTitle font-light hover:bg-[#EAE8DF] hover:text-aldy-green-gray transition-colors duration-200 cursor-pointer">
 
               <lucide-icon [size]="17" [strokeWidth]="1.5" [name]="item.icon"
@@ -51,6 +53,7 @@
           </div>
 
         </aside>
+
         <div class="flex-1 flex flex-col min-h-screen">
           <div class="relative w-full h-65 flex items-center justify-center overflow-hidden shrink-0">
             <img class="absolute inset-0 w-full h-full object-cover brightness-70 object-[65%_22%]"
@@ -67,9 +70,7 @@
               <div class="spinner"></div>
             </div>
             }
-            @if (!isLoading) {
             <router-outlet></router-outlet>
-            }
           </main>
         </div>
       </div>

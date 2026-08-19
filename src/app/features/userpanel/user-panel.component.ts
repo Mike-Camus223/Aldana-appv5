@@ -6,9 +6,7 @@ import {
   AfterViewInit,
   ChangeDetectionStrategy,
   PLATFORM_ID,
-  Inject,
-  ViewChild,
-  ElementRef
+  Inject
 } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { NavigationEnd, NavigationStart, NavigationCancel, NavigationError, Router, RouterModule } from '@angular/router';
@@ -21,8 +19,6 @@ import { Heart, House, LogOut, LUCIDE_ICONS, LucideAngularModule, LucideIconProv
 import { LoaderService } from '../../core/services/utils/loader.service';
 import { NavbarPublicv3Component } from '../../shared/components/system/navbar-publicv3/navbar-publicv3.component';
 import { SmoothScrollService } from '../../core/services/utils/smooth-scroll.service';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 @Component({
   selector: 'app-user-panel',
@@ -46,13 +42,9 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
   styleUrls: ['./user-panel.component.css']
 })
 export class UserPanelComponent implements OnInit, AfterViewInit, OnDestroy {
-  @ViewChild('asidePanel') asidePanelRef?: ElementRef;
-  @ViewChild('panelContainer') panelContainerRef?: ElementRef;
-
   currentUser: User | null = null;
   activeSection: string = 'control-panel';
   isLoading = false;
-  private pinTrigger?: ScrollTrigger;
   private authSubscription?: Subscription;
 
   breadcrumbItemsAccount: AppMenuItem[] = [
@@ -111,18 +103,13 @@ export class UserPanelComponent implements OnInit, AfterViewInit, OnDestroy {
           setTimeout(() => {
             this.isLoading = false;
             this.smoothScroll.refresh();
-            this.initSidebarPin();
-          }, 500);
+          }, 150);
         }
       });
   }
 
   ngOnInit(): void {
     this.loaderService.setContext('user-panel');
-
-    if (this.isBrowser) {
-      gsap.registerPlugin(ScrollTrigger);
-    }
 
     this.authSubscription = this.authService.currentUser$.subscribe(user => {
       this.currentUser = user;
@@ -134,36 +121,11 @@ export class UserPanelComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngAfterViewInit(): void {
     this.smoothScroll.ensureSmoother();
-    setTimeout(() => {
-      this.initSidebarPin();
-    }, 200);
-  }
-
-  private initSidebarPin(): void {
-    if (!this.isBrowser) return;
-
-    this.pinTrigger?.kill();
-
-    if (this.asidePanelRef?.nativeElement && this.panelContainerRef?.nativeElement) {
-      const isDesktop = window.innerWidth >= 1024;
-      const topOffset = isDesktop ? '80px' : '72px';
-
-      this.pinTrigger = ScrollTrigger.create({
-        trigger: this.asidePanelRef.nativeElement,
-        start: `top ${topOffset}`,
-        endTrigger: this.panelContainerRef.nativeElement,
-        end: 'bottom bottom',
-        pin: true,
-        pinSpacing: false,
-        invalidateOnRefresh: true
-      });
-    }
   }
 
   ngOnDestroy() {
     this.loaderService.setContext('public');
     this.authSubscription?.unsubscribe();
-    this.pinTrigger?.kill();
   }
 
   onSignOut() {

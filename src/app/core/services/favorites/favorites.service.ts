@@ -62,6 +62,10 @@ export class FavoritesService {
     }
   }
 
+  async refreshFavorites() {
+    await this.loadFavorites();
+  }
+
   async toggleFavorite(productId: string): Promise<{ success: boolean; message: string }> {
     const user = this.authService.getCurrentUser();
     if (!user) {
@@ -123,6 +127,27 @@ export class FavoritesService {
     } catch (error) {
       console.error('Error checking favorite:', error);
       return false;
+    }
+  }
+
+  async removeMultipleFavorites(productIds: string[]): Promise<{ success: boolean; message: string }> {
+    const user = this.authService.getCurrentUser();
+    if (!user) return { success: false, message: 'Debes iniciar sesión' };
+    if (!productIds.length) return { success: true, message: 'Nada para eliminar' };
+
+    try {
+      const { error } = await this.supabase['supabase']
+        .from('user_favorites')
+        .delete()
+        .eq('user_id', user.id)
+        .in('product_id', productIds);
+
+      if (error) throw error;
+      await this.loadFavorites();
+      return { success: true, message: 'Favoritos eliminados correctamente' };
+    } catch (error) {
+      console.error('Error removing multiple favorites:', error);
+      return { success: false, message: 'Error al eliminar favoritos' };
     }
   }
 
