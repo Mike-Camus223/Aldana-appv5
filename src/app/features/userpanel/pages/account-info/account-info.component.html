@@ -1,6 +1,6 @@
 <div class="w-full max-w-7xl mx-auto">
   <div class="bg-aldy-white">
-    <div class="bg-aldy-white border border-[#e0d8cf] rounded-sm p-6 mb-8">
+    <div class="bg-aldy-white border border-[#e0d8cf] p-6 mb-8">
       <div class="flex items-start gap-5">
         <!-- Avatar -->
         <div class="relative w-[72px] h-[72px] shrink-0">
@@ -14,8 +14,8 @@
           <img [src]="userAvatarUrl" alt="Foto de perfil"
             class="w-[72px] h-[72px] rounded-full object-cover border border-[#e0d8cf]" />
           }
-          <button type="button"
-            class="absolute bottom-0 right-0 w-6 h-6 rounded-full bg-[#6b8f6b] hover:bg-[#5a7d5a] flex items-center justify-center text-white transition-colors duration-200 cursor-pointer">
+          <button type="button" (click)="openAvatarModal()" title="Cambiar foto de perfil"
+            class="absolute bottom-0 right-0 w-6 h-6 rounded-full bg-[#6b8f6b] hover:bg-[#5a7d5a] flex items-center justify-center text-white transition-colors duration-200 cursor-pointer shadow-sm">
             <lucide-icon name="pencil" [size]="11" [strokeWidth]="2"></lucide-icon>
           </button>
         </div>
@@ -52,7 +52,7 @@
             <div>
               <p class="NewAldyFontType4 text-[9px] font-light tracking-[0.18em] uppercase text-[#aaa] mb-0.5">Usuario
                 desde</p>
-              <p class="NewAldyFontType4 text-xs font-light text-aldy-green-gray-bold">Mayo 2024</p>
+              <p class="NewAldyFontType4 text-xs font-light text-aldy-green-gray-bold">{{ createdAtFormatted }}</p>
             </div>
           </div>
         </div>
@@ -77,8 +77,8 @@
             class="block NewAldyFontType4 text-[9px] font-light tracking-[0.18em] uppercase text-aldy-green-gray mb-1.5">Nombre</label>
           <app-input id="firstName" formControlName="firstName"></app-input>
           @if (accountForm.get('firstName')?.invalid && accountForm.get('firstName')?.touched) {
-          <p class="NewAldyFontType4 text-red-400 text-[10px] tracking-wider mt-1 font-light">
-            El nombre es obligatorio
+          <p class="NewAldyFontType4 text-aldy-green-gray text-[10px] tracking-wider mt-1 font-light">
+            El nombre es obligatorio (solo letras)
           </p>
           }
         </div>
@@ -87,8 +87,8 @@
             class="block NewAldyFontType4 text-[9px] font-light tracking-[0.18em] uppercase text-aldy-green-gray-bold mb-1.5">Apellido</label>
           <app-input id="lastName" formControlName="lastName"></app-input>
           @if (accountForm.get('lastName')?.invalid && accountForm.get('lastName')?.touched) {
-          <p class="NewAldyFontType4 text-red-400 text-[10px] tracking-wider mt-1 font-light">
-            El apellido es obligatorio
+          <p class="NewAldyFontType4 text-aldy-green-gray text-[10px] tracking-wider mt-1 font-light">
+            El apellido es obligatorio (solo letras)
           </p>
           }
         </div>
@@ -100,16 +100,6 @@
             class="block NewAldyFontType4 text-[9px] font-normal tracking-[0.18em] uppercase text-aldy-green-gray-bold mb-1.5">Correo
             electrónico</label>
           <app-input id="email" type="email" formControlName="email"></app-input>
-          @if (accountForm.get('email')?.invalid && accountForm.get('email')?.touched) {
-          <div class="NewAldyFontType4 text-red-400 text-[10px] tracking-wider mt-1 font-light">
-            @if (accountForm.get('email')?.errors?.['required']) {
-            <span>El correo es obligatorio</span>
-            }
-            @if (accountForm.get('email')?.errors?.['email']) {
-            <span>Formato de correo incorrecto</span>
-            }
-          </div>
-          }
         </div>
         <div>
           <label
@@ -117,7 +107,7 @@
           <app-input id="phone" formControlName="phone" [numericMax11]="true"
             placeholder="Ingresa tu teléfono"></app-input>
           @if (accountForm.get('phone')?.invalid && accountForm.get('phone')?.touched) {
-          <p class="NewAldyFontType4 text-red-400 text-[10px] tracking-wider mt-1 font-light">
+          <p class="NewAldyFontType4 text-aldy-green-gray text-[10px] tracking-wider mt-1 font-light">
             El teléfono es obligatorio
           </p>
           }
@@ -132,7 +122,7 @@
             optionValue="value">
           </app-selects>
           @if (accountForm.get('gender')?.invalid && accountForm.get('gender')?.touched) {
-          <p class="NewAldyFontType4 text-red-400 text-[10px] tracking-wider mt-1 font-light">
+          <p class="NewAldyFontType4 text-aldy-green-gray text-[10px] tracking-wider mt-1 font-light">
             Elegí una opción
           </p>
           }
@@ -148,7 +138,7 @@
               class="NewAldyTitle text-[10px] font-light tracking-[0.22em] uppercase text-aldy-green-gray-bold shrink-0">Seguridad</span>
             <div class="flex-1 h-px bg-[#e0d8cf]"></div>
           </div>
-          <div class="border border-[#e0d8cf] rounded-sm p-4 flex items-start gap-4">
+          <div class="border border-[#e0d8cf] p-4 flex items-start gap-4">
             <div
               class="w-14 h-14 rounded-full bg-[#f5f1ec] flex items-center justify-center shrink-0 text-aldy-green-gray-bold">
               <lucide-icon name="lock" [size]="22" [strokeWidth]="1.5"></lucide-icon>
@@ -174,7 +164,7 @@
               de Entrega</span>
             <div class="flex-1 h-px bg-[#e0d8cf]"></div>
           </div>
-          <div class="border border-[#e0d8cf] rounded-sm p-4 flex items-start gap-4 bg-aldy-white">
+          <div class="border border-[#e0d8cf] p-4 flex items-start gap-4 bg-aldy-white">
             <div
               class="w-14 h-14 rounded-full bg-[#f5f1ec] flex items-center justify-center shrink-0 text-aldy-green-gray-bold">
               <lucide-icon name="map-pin" [size]="22" [strokeWidth]="1.5"></lucide-icon>
@@ -197,7 +187,7 @@
 
       <!-- Botones -->
       <div class="flex items-center gap-6 mt-2">
-        <button type="submit" [disabled]="accountForm.invalid || accountForm.pristine" class="px-6 py-2.5 text-white NewAldyFontType4 text-xs tracking-[0.10em] uppercase transition-colors duration-300
+        <button type="submit" [disabled]="accountForm.invalid || accountForm.pristine || isSaving" class="px-6 py-2.5 text-white NewAldyFontType4 text-xs tracking-[0.10em] uppercase transition-colors duration-300
             disabled:bg-[#c8c0b8] disabled:cursor-not-allowed
             enabled:bg-aldy-medium enabled:hover:bg-aldy-medium-2 cursor-pointer">
           @if (!isSaving) {
@@ -225,3 +215,175 @@
     </form>
   </div>
 </div>
+
+<!-- Modal de Foto de Perfil (Fiel al Layout de Referencia y al Sistema de Diseño) -->
+<app-modal [(open)]="isAvatarModalOpen" Mostyles="w-full max-w-2xl bg-aldy-white p-6 sm:p-8 border border-[#e0d8cf]">
+  <div class="flex flex-col">
+    <!-- Encabezado del modal -->
+    <div class="pb-4 mb-6 border-b border-[#e0d8cf] text-center relative">
+      <h3 class="NewAldyTitle font-light text-lg sm:text-xl text-aldy-green-gray-bold tracking-[0.18em]">
+        Actualizar Foto de Perfil
+      </h3>
+    </div>
+
+    <!-- Contenido en 2 columnas -->
+    <div class="grid grid-cols-1 sm:grid-cols-12 gap-6 items-start mb-6">
+
+      <!-- Columna Izquierda: Nombre y Marco Cuadrado con Preview -->
+      <div class="sm:col-span-5 flex flex-col items-center sm:items-start">
+        <h4
+          class="NewAldyTitle text-base font-normal text-aldy-green-gray-bold tracking-wide mb-3 truncate w-full text-center sm:text-left">
+          {{ displayName || 'Usuario' }}
+        </h4>
+
+        <div
+          class="w-48 h-48 sm:w-full sm:h-52 border border-[#e0d8cf] bg-[#f5f1ec] flex items-center justify-center p-3 relative">
+          <div
+            class="w-36 h-36 rounded-full overflow-hidden border border-[#d5cdc4] bg-aldy-white flex items-center justify-center shadow-inner">
+            @if (previewUrl) {
+            <img [src]="previewUrl" alt="Vista previa" class="w-full h-full object-cover" />
+            } @else if (userAvatarUrl) {
+            <img [src]="userAvatarUrl" alt="Foto actual" class="w-full h-full object-cover" />
+            } @else {
+            <div class="w-full h-full bg-[#6b8f6b] flex items-center justify-center text-white text-4xl font-light">
+              {{ getInitial() }}
+            </div>
+            }
+          </div>
+
+          @if (previewUrl) {
+          <div
+            class="absolute top-2 right-2 px-2 py-0.5 bg-aldy-medium text-white text-[9px] NewAldyFontType4 tracking-wider uppercase">
+            Nueva
+          </div>
+          }
+        </div>
+      </div>
+
+      <!-- Columna Derecha: Dropzone y Especificaciones -->
+      <div class="sm:col-span-7 flex flex-col">
+        <h4 class="NewAldyTitle text-xs font-normal tracking-[0.15em] uppercase text-aldy-green-gray-bold mb-3">
+          Subir nueva foto
+        </h4>
+
+        <!-- Input oculto -->
+        <input #fileInput type="file" accept="image/png, image/jpeg, image/jpg, image/webp" class="hidden"
+          (change)="onFileSelected($event)" />
+
+        <!-- Zona Drag & Drop -->
+        <div (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)" (drop)="onFileDrop($event)"
+          (click)="!isUploadingAvatar && !isProcessingFile && triggerFileInput()" [ngClass]="{
+            'border-aldy-medium bg-[#f5f1ec]': isDragging,
+            'border-[#d5cdc4] hover:border-aldy-medium bg-[#fbf9f6]/80': !isDragging && !isUploadingAvatar && !isProcessingFile,
+            'cursor-not-allowed opacity-90': isUploadingAvatar || isProcessingFile
+          }"
+          class="border-2 border-dashed p-6 min-h-[150px] flex flex-col items-center justify-center cursor-pointer transition-colors duration-200 mb-4 group text-center">
+
+          @if (!isUploadingAvatar && !isProcessingFile && !previewUrl) {
+          <div
+            class="w-12 h-12 rounded-full bg-[#f5f1ec] group-hover:bg-[#eae5df] flex items-center justify-center text-aldy-green-gray-bold mb-2.5 transition-colors">
+            <lucide-icon name="image" [size]="22" [strokeWidth]="1.5"></lucide-icon>
+          </div>
+
+          <p class="NewAldyFontType4 text-xs font-light text-aldy-green-gray-bold tracking-wider mb-1">
+            <span class="font-normal text-aldy-medium underline underline-offset-2">Subir</span> o arrastra tu archivo
+            aquí
+          </p>
+          <span class="NewAldyFontType4 text-[10px] font-light text-aldy-green-gray truncate max-w-[220px]">
+            Haz clic para buscar en tu dispositivo
+          </span>
+          } @else if (!isUploadingAvatar && !isProcessingFile && previewUrl) {
+          <div class="w-12 h-12 rounded-full bg-[#eef5ee] flex items-center justify-center text-aldy-medium mb-2.5">
+            <lucide-icon name="check" [size]="22" [strokeWidth]="2"></lucide-icon>
+          </div>
+
+          <p class="NewAldyFontType4 text-xs font-normal text-aldy-green-gray-bold tracking-wider mb-1">
+            Imagen seleccionada
+          </p>
+          <span class="NewAldyFontType4 text-[11px] font-light text-aldy-medium truncate max-w-[240px] mb-1">
+            {{ selectedFile?.name }}
+          </span>
+          <span class="NewAldyFontType4 text-[10px] font-light text-aldy-green-gray">
+            Haz clic en Guardar para confirmar o aquí para cambiar
+          </span>
+          } @else {
+          <div class="py-2 flex flex-col items-center justify-center gap-2.5">
+            <div class="spinner"></div>
+            <span class="NewAldyFontType4 text-xs font-light text-aldy-green-gray tracking-wider">
+              {{ isUploadingAvatar ? 'Guardando en tu cuenta...' : 'Cargando archivo...' }}
+            </span>
+          </div>
+          }
+        </div>
+
+        <!-- Notas y especificaciones -->
+        <div class="space-y-1 text-aldy-green-gray NewAldyFontType4 text-[11px] font-light leading-relaxed">
+          <p>Formatos admitidos: .jpg, .jpeg, .png, .webp</p>
+          <p>Tamaño máximo permitido: 5 MB (se optimiza a WebP automáticamente).</p>
+          <p class="text-[10px] text-aldy-green-gray/80">Para mejores resultados, sube una imagen cuadrada de al menos
+            200 x 200 px.</p>
+        </div>
+
+        <!-- Cooldown / Intentos info -->
+        @if (isInAvatarCooldown) {
+        <div class="mt-3 p-3 bg-[#f5f1ec] border border-[#e0d8cf] flex items-start gap-2.5">
+          <lucide-icon name="alert-circle" [size]="15" [strokeWidth]="1.5"
+            class="text-aldy-green-gray-bold shrink-0 mt-0.5"></lucide-icon>
+          <p class="NewAldyFontType4 text-[11px] font-light text-aldy-green-gray-bold leading-relaxed">
+            Has alcanzado el límite de 4 cambios. Podrás volver a actualizarla el <span class="font-normal">{{
+              avatarCooldownUntil }}</span>.
+          </p>
+        </div>
+        } @else {
+        <div
+          class="mt-2.5 flex items-center justify-between text-aldy-green-gray NewAldyFontType4 text-[10px] font-light">
+          <span>Cambios disponibles esta semana:</span>
+          <span class="font-normal text-aldy-green-gray-bold">{{ avatarRemainingChanges }} de 4</span>
+        </div>
+        }
+
+      </div>
+
+    </div>
+
+    <!-- Footer con Botones -->
+    <div class="flex items-center justify-between pt-4 border-t border-[#e0d8cf]">
+      <div>
+        @if (userAvatarUrl && !selectedFile) {
+        <button type="button" (click)="removeCurrentAvatar()" [disabled]="isUploadingAvatar || isInAvatarCooldown"
+          class="flex items-center gap-1.5 text-xs text-aldy-green-gray hover:text-aldy-green-gray-bold transition-colors duration-200 cursor-pointer NewAldyFontType4 font-light tracking-wider disabled:opacity-50">
+          <lucide-icon name="trash-2" [size]="14" [strokeWidth]="1.5"></lucide-icon>
+          <span>Eliminar foto</span>
+        </button>
+        }
+      </div>
+
+      <div class="flex items-center gap-4">
+        <button type="button" (click)="closeAvatarModal()" [disabled]="isUploadingAvatar"
+          class="NewAldyFontType4 text-xs font-light text-aldy-green-gray hover:text-aldy-green-gray-bold underline underline-offset-4 bg-transparent border-none cursor-pointer transition-colors duration-200 tracking-wider disabled:opacity-50">
+          Cancelar
+        </button>
+
+        <button type="button" (click)="uploadSelectedAvatar()"
+          [disabled]="!selectedFile || isUploadingAvatar || isInAvatarCooldown"
+          class="px-7 py-2.5 bg-aldy-medium text-white text-xs NewAldyFontType4 tracking-[0.10em] uppercase hover:bg-aldy-medium-2 transition-colors duration-300 cursor-pointer disabled:bg-[#c8c0b8] disabled:cursor-not-allowed">
+          @if (!isUploadingAvatar) {
+          <span>Guardar</span>
+          } @else {
+          <span class="flex items-center gap-2">
+            <svg class="animate-spin h-3.5 w-3.5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
+              viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+              </path>
+            </svg>
+            Guardando...
+          </span>
+          }
+        </button>
+      </div>
+    </div>
+
+  </div>
+</app-modal>

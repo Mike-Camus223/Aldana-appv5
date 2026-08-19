@@ -60,6 +60,50 @@ export class AuthService {
   }
 
   /**
+   * Carga el perfil del usuario desde public.profiles y lo combina con el usuario sincronizando cooldown
+   */
+  async loadUserProfile(user: User): Promise<User> {
+    try {
+      const { data: profile } = await this.supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .maybeSingle();
+
+      if (profile) {
+        const now = new Date();
+        const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
+        let changeCount = profile.avatar_change_count || 0;
+        let cooldownUntil = profile.avatar_cooldown_until;
+
+        // Si el cooldown expiró o ya pasaron 7 días desde el último cambio, reiniciar ciclo a 0 consumidos
+        if (cooldownUntil && new Date(cooldownUntil) <= now) {
+          cooldownUntil = null;
+          changeCount = 0;
+        } else if (profile.avatar_updated_at && (now.getTime() - new Date(profile.avatar_updated_at).getTime() >= SEVEN_DAYS_MS)) {
+          changeCount = 0;
+          cooldownUntil = null;
+        }
+
+        user.user_metadata = {
+          ...(user.user_metadata || {}),
+          full_name: profile.full_name || user.user_metadata?.['full_name'],
+          phone: profile.phone || user.user_metadata?.['phone'],
+          gender: profile.gender || user.user_metadata?.['gender'],
+          avatar_url: profile.avatar_url || user.user_metadata?.['avatar_url'] || user.user_metadata?.['picture'],
+          custom_avatar_url: profile.avatar_url,
+          avatar_updated_at: profile.avatar_updated_at,
+          avatar_change_count: changeCount,
+          avatar_cooldown_until: cooldownUntil
+        };
+      }
+      return user;
+    } catch (e) {
+      return user;
+    }
+  }
+
+  /**
    * Inicializa la autenticación y escucha cambios de estado
    */
   private async initializeAuth(): Promise<void> {
@@ -67,17 +111,25 @@ export class AuthService {
       const { data: { session } } = await this.supabase.auth.getSession();
 
       this.sessionSubject.next(session);
-      this.currentUserSubject.next(session?.user ?? null);
-
-      if (session) {
+      
+      if (session?.user) {
+        const enrichedUser = await this.loadUserProfile(session.user);
+        this.currentUserSubject.next(enrichedUser);
         this.startSessionMonitoring(session);
         this.logSecurityEvent('SESSION_INITIALIZED', session.user?.email || 'unknown');
+      } else {
+        this.currentUserSubject.next(null);
       }
 
       this.supabase.auth.onAuthStateChange(async (event, session) => {
-
         this.sessionSubject.next(session);
-        this.currentUserSubject.next(session?.user ?? null);
+
+        if (session?.user) {
+          const enrichedUser = await this.loadUserProfile(session.user);
+          this.currentUserSubject.next(enrichedUser);
+        } else {
+          this.currentUserSubject.next(null);
+        }
 
         if (event === 'SIGNED_IN' && session?.user) {
           this.startSessionMonitoring(session);
@@ -365,27 +417,34 @@ export class AuthService {
     });
   }
   /**
-   * Cierra la sesión del usuario
+   * Cierra la sesión del usuario de forma segura sin bucles
    */
   async signOut(): Promise<{ success: boolean; error?: string }> {
     try {
       const currentUser = this.getCurrentUser();
       const userEmail = currentUser?.email || 'unknown';
 
-      const { error } = await this.supabase.auth.signOut();
+      // 1. Limpiar estado local y monitoreo de inmediato
+      this.stopSessionMonitoring();
+      this.sessionSubject.next(null);
+      this.currentUserSubject.next(null);
 
-      if (error) {
-        this.logSecurityEvent('SIGNOUT_FAILED', userEmail, { error: error.message });
-        return { success: false, error: error.message };
+      // 2. Intentar invalidar en Supabase sin propagar error si ya expiró
+      try {
+        await this.supabase.auth.signOut();
+      } catch (err) {
+        // Silencioso si la sesión ya no existía en el backend (403/404)
       }
 
-      this.stopSessionMonitoring();
       this.logSecurityEvent('SIGNOUT_SUCCESS', userEmail);
-      this.router.navigate(['/cuenta/iniciar-sesion']);
+      await this.router.navigate(['/cuenta/iniciar-sesion']);
       return { success: true };
     } catch (error) {
-      this.logSecurityEvent('SIGNOUT_ERROR', 'unknown', { error: (error as Error).message });
-      return { success: false, error: 'Error al cerrar sesión' };
+      this.stopSessionMonitoring();
+      this.sessionSubject.next(null);
+      this.currentUserSubject.next(null);
+      await this.router.navigate(['/cuenta/iniciar-sesion']);
+      return { success: true };
     }
   }
 
@@ -651,7 +710,7 @@ export class AuthService {
   }
 
   /**
-   * Actualiza los datos del usuario actual
+   * Actualiza los datos del usuario actual y sincroniza la columna de teléfono en Supabase
    */
   async updateUserData(data: {
     firstName: string;
@@ -665,17 +724,76 @@ export class AuthService {
         return { success: false, error: 'No hay usuario autenticado' };
       }
 
-      const { error } = await this.supabase.auth.updateUser({
-        phone: data.phone,
-        data: {
-          full_name: `${data.firstName} ${data.lastName}`.trim(),
-          gender: data.gender
-        }
-      });
+      const cleanPhone = data.phone?.trim() || '';
+      const fullName = `${data.firstName} ${data.lastName}`.trim();
 
-      if (error) {
-        this.logSecurityEvent('USER_DATA_UPDATE_FAILED', currentUser.email || 'unknown', { error: error.message });
-        return { success: false, error: error.message };
+      // Guardar en metadata (JSONB)
+      const metadata: Record<string, any> = {
+        full_name: fullName,
+        gender: data.gender,
+        phone: cleanPhone
+      };
+
+      // Formatear a E.164 para la columna nativa auth.users.phone
+      const digitsOnly = cleanPhone.replace(/\D/g, '');
+      let e164Phone: string | undefined = undefined;
+
+      if (digitsOnly.length >= 6 && digitsOnly.length <= 15) {
+        if (cleanPhone.startsWith('+')) {
+          e164Phone = '+' + digitsOnly;
+        } else if (digitsOnly.startsWith('54')) {
+          e164Phone = '+' + digitsOnly;
+        } else {
+          // Por defecto código de país de Argentina (+54)
+          e164Phone = '+54' + digitsOnly;
+        }
+      }
+
+      let updatedData: any = null;
+
+      // Intentar actualizar con el campo phone si es válido
+      if (e164Phone) {
+        const res = await this.supabase.auth.updateUser({
+          phone: e164Phone,
+          data: metadata
+        });
+
+        if (res.error) {
+          console.warn('Advertencia al sincronizar columna phone en Supabase, reintentando con metadata:', res.error.message);
+          // Si Supabase rechaza el formato phone raíz, actualizar metadata
+          const fallbackRes = await this.supabase.auth.updateUser({ data: metadata });
+          if (fallbackRes.error) {
+            return { success: false, error: fallbackRes.error.message };
+          }
+          updatedData = fallbackRes.data;
+        } else {
+          updatedData = res.data;
+        }
+      } else {
+        const res = await this.supabase.auth.updateUser({ data: metadata });
+        if (res.error) {
+          return { success: false, error: res.error.message };
+        }
+        updatedData = res.data;
+      }
+
+      // 2. Persistir en la tabla public.profiles de Supabase
+      try {
+        await this.supabase.from('profiles').upsert({
+          id: currentUser.id,
+          email: currentUser.email,
+          full_name: fullName,
+          phone: cleanPhone,
+          gender: data.gender,
+          updated_at: new Date().toISOString()
+        });
+      } catch (err) {
+        console.warn('Error al guardar en tabla profiles:', err);
+      }
+
+      if (updatedData?.user) {
+        const enrichedUser = await this.loadUserProfile(updatedData.user);
+        this.currentUserSubject.next(enrichedUser);
       }
 
       this.logSecurityEvent('USER_DATA_UPDATE_SUCCESS', currentUser.email || 'unknown');
@@ -683,6 +801,229 @@ export class AuthService {
     } catch (error) {
       this.logSecurityEvent('USER_DATA_UPDATE_ERROR', 'unknown', { error: (error as Error).message });
       return { success: false, error: 'Error al actualizar los datos' };
+    }
+  }
+
+  /**
+   * Comprime y recorta la imagen a formato WebP optimizado (400x400 px)
+   */
+  async compressAvatar(file: File): Promise<File> {
+    return new Promise((resolve) => {
+      try {
+        if (typeof document === 'undefined') {
+          resolve(file);
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const img = new Image();
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const size = 400;
+            canvas.width = size;
+            canvas.height = size;
+            const ctx = canvas.getContext('2d');
+            if (!ctx) {
+              resolve(file);
+              return;
+            }
+
+            const minDim = Math.min(img.width, img.height);
+            const startX = (img.width - minDim) / 2;
+            const startY = (img.height - minDim) / 2;
+
+            ctx.drawImage(img, startX, startY, minDim, minDim, 0, 0, size, size);
+
+            canvas.toBlob((blob) => {
+              if (blob) {
+                resolve(new File([blob], 'avatar.webp', { type: 'image/webp' }));
+              } else {
+                resolve(file);
+              }
+            }, 'image/webp', 0.85);
+          };
+          img.onerror = () => resolve(file);
+          img.src = e.target?.result as string;
+        };
+        reader.onerror = () => resolve(file);
+        reader.readAsDataURL(file);
+      } catch {
+        resolve(file);
+      }
+    });
+  }
+
+  /**
+   * Sube una imagen de avatar a Supabase Storage con compresión WebP, cooldown y reemplazo de 1 solo archivo
+   */
+  async uploadAvatar(file: File): Promise<{ success: boolean; avatarUrl?: string; error?: string }> {
+    try {
+      const currentUser = this.getCurrentUser();
+      if (!currentUser) {
+        return { success: false, error: 'No hay usuario autenticado' };
+      }
+
+      // Validar tipo permitido
+      const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg'];
+      if (!validTypes.includes(file.type)) {
+        return { success: false, error: 'Formato no soportado. Usa JPG, PNG o WEBP' };
+      }
+
+      // Validar tamaño máximo antes de compresión (máx 5MB)
+      const MAX_SIZE = 5 * 1024 * 1024;
+      if (file.size > MAX_SIZE) {
+        return { success: false, error: 'La imagen supera los 5MB permitidos' };
+      }
+
+      // 1. Verificar Cooldown y Límites de Cambio en Supabase
+      const { data: profile } = await this.supabase
+        .from('profiles')
+        .select('avatar_updated_at, avatar_change_count, avatar_cooldown_until')
+        .eq('id', currentUser.id)
+        .maybeSingle();
+
+      const now = new Date();
+      if (profile?.avatar_cooldown_until) {
+        const cooldownDate = new Date(profile.avatar_cooldown_until);
+        if (cooldownDate > now) {
+          const formattedDate = cooldownDate.toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+          return {
+            success: false,
+            error: `Has alcanzado el límite de 4 cambios de foto. Podrás volver a actualizarla el ${formattedDate}.`
+          };
+        }
+      }
+
+      // Calcular contador y cooldown (4 cambios por período de 7 días)
+      let changeCount = 1;
+      let cooldownUntil: string | null = null;
+      const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
+
+      if (profile?.avatar_updated_at) {
+        const lastUpdate = new Date(profile.avatar_updated_at).getTime();
+        if (now.getTime() - lastUpdate < SEVEN_DAYS_MS) {
+          changeCount = (profile.avatar_change_count || 0) + 1;
+          if (changeCount >= 4) {
+            cooldownUntil = new Date(now.getTime() + SEVEN_DAYS_MS).toISOString();
+          }
+        }
+      }
+
+      // 2. Compresión automática del lado del cliente a WebP (400x400)
+      const compressedFile = await this.compressAvatar(file);
+
+      // 3. Ruta única por usuario (Estrategia: 1 usuario = 1 archivo en Storage, sobreescritura automática)
+      const filePath = `avatars/avatar_${currentUser.id}.webp`;
+
+      const { error: uploadError } = await this.supabase.storage
+        .from('aldana-app')
+        .upload(filePath, compressedFile, {
+          contentType: 'image/webp',
+          cacheControl: '3600',
+          upsert: true
+        });
+
+      if (uploadError) {
+        console.error('Error al subir avatar a Storage:', uploadError);
+        return { success: false, error: uploadError.message || 'Error al subir archivo' };
+      }
+
+      // 4. Obtener URL pública con parámetro de timestamp para invalidar caché local del navegador
+      const { data: urlData } = this.supabase.storage
+        .from('aldana-app')
+        .getPublicUrl(filePath);
+
+      const publicUrl = `${urlData.publicUrl}?t=${Date.now()}`;
+
+      // 5. Persistir en la tabla public.profiles de Supabase
+      try {
+        await this.supabase.from('profiles').upsert({
+          id: currentUser.id,
+          email: currentUser.email,
+          avatar_url: publicUrl,
+          avatar_updated_at: now.toISOString(),
+          avatar_change_count: changeCount,
+          avatar_cooldown_until: cooldownUntil,
+          updated_at: now.toISOString()
+        });
+      } catch (err) {
+        console.warn('Error al actualizar avatar en tabla profiles:', err);
+      }
+
+      // 6. Actualizar metadatos del usuario en Supabase Auth
+      const { data: updatedData } = await this.supabase.auth.updateUser({
+        data: {
+          custom_avatar_url: publicUrl,
+          avatar_url: publicUrl,
+          picture: publicUrl
+        }
+      });
+
+      if (updatedData?.user) {
+        const enrichedUser = await this.loadUserProfile(updatedData.user);
+        this.currentUserSubject.next(enrichedUser);
+      }
+
+      this.logSecurityEvent('AVATAR_UPDATE_SUCCESS', currentUser.email || 'unknown');
+      return { success: true, avatarUrl: publicUrl };
+    } catch (error: any) {
+      console.error('Error en uploadAvatar:', error);
+      return { success: false, error: error.message || 'Error inesperado al subir avatar' };
+    }
+  }
+
+  /**
+   * Elimina la foto de perfil del usuario actual, borrando el archivo físico del Storage y limpiando la BD
+   */
+  async removeAvatar(): Promise<{ success: boolean; error?: string }> {
+    try {
+      const currentUser = this.getCurrentUser();
+      if (!currentUser) {
+        return { success: false, error: 'No hay usuario autenticado' };
+      }
+
+      // 1. Borrar archivo físico de Supabase Storage para liberar espacio
+      try {
+        await this.supabase.storage
+          .from('aldana-app')
+          .remove([`avatars/avatar_${currentUser.id}.webp`]);
+      } catch (storageErr) {
+        console.warn('Advertencia al borrar archivo del Storage:', storageErr);
+      }
+
+      // 2. Limpiar en la tabla profiles
+      try {
+        await this.supabase.from('profiles').update({
+          avatar_url: null,
+          updated_at: new Date().toISOString()
+        }).eq('id', currentUser.id);
+      } catch (err) {
+        console.warn('Error al eliminar avatar en profiles:', err);
+      }
+
+      // 3. Limpiar en auth.users
+      const { data: updatedData, error } = await this.supabase.auth.updateUser({
+        data: {
+          custom_avatar_url: null,
+          avatar_url: null,
+          picture: null
+        }
+      });
+
+      if (error) {
+        return { success: false, error: error.message };
+      }
+
+      if (updatedData?.user) {
+        const enrichedUser = await this.loadUserProfile(updatedData.user);
+        this.currentUserSubject.next(enrichedUser);
+      }
+
+      this.logSecurityEvent('AVATAR_REMOVE_SUCCESS', currentUser.email || 'unknown');
+      return { success: true };
+    } catch (error: any) {
+      return { success: false, error: error.message || 'Error al eliminar avatar' };
     }
   }
 

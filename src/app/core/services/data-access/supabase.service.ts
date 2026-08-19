@@ -9,7 +9,14 @@ export class SupabaseService {
   constructor() {
     this.supabase = createClient(
       environment.SUPABASE_URL,
-      environment.SUPABASE_KEY
+      environment.SUPABASE_KEY,
+      {
+        auth: {
+          persistSession: false,
+          autoRefreshToken: false,
+          detectSessionInUrl: false
+        }
+      }
     );
   }
 
