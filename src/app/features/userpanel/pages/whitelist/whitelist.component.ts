@@ -306,7 +306,7 @@ export class WhitelistComponent implements OnInit, OnDestroy {
       await this.favoritesService.toggleFavorite(productId);
       this.selectedIds.delete(productId);
       this.notificationService.showSuccess(
-        'Favoritos',
+        'Eliminado con éxito',
         productName ? `"${productName}" eliminado de favoritos` : 'Producto eliminado de la lista de favoritos',
         3000
       );
@@ -329,7 +329,7 @@ export class WhitelistComponent implements OnInit, OnDestroy {
       this.selectedIds.clear();
       this.isSelectionMode = false;
       this.notificationService.showSuccess(
-        'Favoritos',
+        'Elementos eliminados',
         count === 1 ? 'Producto eliminado de favoritos' : `${count} productos eliminados de la lista de favoritos`,
         3000
       );
