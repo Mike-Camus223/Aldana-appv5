@@ -1,5 +1,4 @@
 <div class="w-full max-w-7xl mx-auto">
-  <!-- Header: Title & Original Select Dropdown -->
   <div class="mb-8 px-1 flex items-center justify-between gap-4 flex-wrap">
     <h2 class="text-xl NewAldyTitle font-light text-aldy-green-gray-bold tracking-[0.18em]">
       Mis Pedidos
@@ -10,48 +9,49 @@
       </app-selects>
     </div>
   </div>
-  <!-- Loading State -->
   @if (loading) {
-  <div class="flex justify-center items-center py-16">
-    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-aldy-medium"></div>
-    <span class="ml-3 text-xs text-aldy-green-gray NewAldyFontType4">Cargando pedidos...</span>
+  <div class="flex justify-center items-center py-20 min-h-[300px]">
+    <div class="spinner"></div>
   </div>
   }
-
-  <!-- Error State -->
   @if (error && !loading) {
-  <div class="bg-[#FBEAEA] border border-[#F0D5D5] rounded-xl p-4 text-center">
-    <p class="text-xs text-[#9E5252] NewAldyFontType4 font-light">{{ error }}</p>
+  <div class="border border-[#EAE5DF] bg-aldy-white rounded-xl p-4 text-center">
+    <p class="text-xs text-aldy-green-gray-bold AldyFontType4 font-light">{{ error }}</p>
     <button (click)="loadUserOrders()"
-      class="mt-2 text-xs text-aldy-green-gray-bold underline NewAldyFontType4 cursor-pointer">
+      class="mt-4 px-5 py-2 bg-aldy-medium text-white text-xs NewAldyFontType4 tracking-[0.10em] uppercase hover:bg-aldy-medium-2 transition-colors duration-300 cursor-pointer">
       Reintentar
     </button>
   </div>
   }
-
-  <!-- Empty State -->
   @if (!loading && !error && orders.length === 0) {
-  <div class="text-center py-16 border border-[#EAE5DF] bg-aldy-white rounded-xl">
-    <h3 class="NewAldyTitle text-lg font-light text-aldy-green-gray-bold tracking-wide">No tienes pedidos</h3>
-    <p class="text-xs text-aldy-green-gray NewAldyFontType4 font-light mt-1">
-      Cuando realices tu primera compra, aparecerá aquí.
-    </p>
+  <div class="flex items-center justify-center gap-10 px-10 py-7 border border-[#EAE5DF] bg-aldy-white rounded-xl">
+    <div class="flex-shrink-0 w-60 h-60 rounded-full flex items-center justify-center overflow-hidden">
+      <img src="../../../../../assets/images/sections/misc/circle_mannequin.png" alt="Maniquí AV"
+        class="w-full h-full object-cover scale-125" />
+    </div>
+    <div class="flex flex-col items-start">
+      <h3 class="NewAldyTitle text-xl font-light text-aldy-green-gray-bold tracking-wider">
+        Aún no tienes pedidos
+      </h3>
+      <p class="mt-2 text-xs text-aldy-green-gray-bold  NewAldyFontType4 tracking-wider font-light leading-relaxed">
+        Cuando realices tu primera compra,<br>
+        tus pedidos aparecerán aquí.
+      </p>
+      <button
+        class="mt-4 px-5 py-2 bg-aldy-medium text-white text-xs NewAldyFontType4 tracking-[0.10em] uppercase hover:bg-aldy-medium-2 transition-colors duration-300 cursor-pointer">
+        Ir a la tienda
+      </button>
+    </div>
   </div>
   }
-
-  <!-- Orders List (Design matching mockup with real data) -->
   @if (!loading && !error && orders.length > 0) {
   <div class="space-y-4">
     @for (order of paginatedOrders; track order.id || $index) {
     <div (click)="viewOrderDetails(order.id)"
       class="border border-[#EAE5DF] bg-aldy-white p-3 flex items-center justify-between gap-4 sm:gap-6 hover:border-[#D5CDC4] hover:shadow-[0_2px_12px_rgba(0,0,0,0.03)] transition-all duration-300 cursor-pointer group">
-
-      <!-- Left Image with Badge -->
       <div class="relative shrink-0 w-20 h-20 sm:w-26 sm:h-26 rounded-lg bg-[#f5f1ec] overflow-visible">
         <img [src]="getMainImage(order)" [alt]="'Pedido #' + order.order_number"
           class="w-full h-full object-cover rounded-lg" onerror="this.src='assets/images/Novias.jpeg'" />
-
-        <!-- Real Extra Products Badge -->
         @if (getExtraProductsCount(order) > 0) {
         <div
           class="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-aldy-medium-2 text-white text-[10px] font-light NewAldyFontType4 flex items-center justify-center shadow-sm z-10">
@@ -59,10 +59,7 @@
         </div>
         }
       </div>
-
-      <!-- Middle Info Details -->
       <div class="flex-1 min-w-0 flex flex-col justify-between self-stretch py-0.5">
-        <!-- Row 1: Title and Status -->
         <div class="flex items-center gap-3 flex-wrap">
           <h3 class="NewAldyTitle font-light text-base sm:text-lg text-aldy-green-gray-bold tracking-wide">
             Pedido #{{ formatOrderNumber(order.order_number) }}
@@ -72,13 +69,9 @@
             {{ getStatusLabel(order.status) }}
           </span>
         </div>
-
-        <!-- Row 2: Date -->
         <div class="text-xs text-aldy-green-gray/80 NewAldyFontType4 font-light mt-1">
           {{ formatPrettyDate(order.created_at) }}
         </div>
-
-        <!-- Row 3: Products Count & Total -->
         <div
           class="flex NewAldyFontType4 text-xs font-light leading-relaxed tracking-wide text-aldy-green-gray  items-center gap-6 mt-3">
           <span>{{ getTotalProductsCount(order) }} {{ getTotalProductsCount(order) === 1 ? 'producto' : 'productos'
@@ -87,19 +80,14 @@
               formatPrice(order.total_final) }}</strong></span>
         </div>
       </div>
-
-      <!-- Right: Ver detalles link -->
       <div
         class="shrink-0 flex items-center gap-1 NewAldyFontType4 text-[9px] font-light tracking-[0.18em] uppercase text-aldy-green-gray">
         <span>Ver detalles</span>
         <lucide-icon name="chevron-right" class="-translate-y-[1px]" [size]="15" [strokeWidth]="1.5"></lucide-icon>
       </div>
-
     </div>
     }
   </div>
-
-  <!-- Original Paginator Component -->
   @if (totalPages > 1) {
   <div class="pt-4 lg:pt-6">
     <app-paginator [currentPage]="currentPage" [totalPages]="totalPages" (pageChange)="onPageChange($event)">
@@ -107,5 +95,4 @@
   </div>
   }
   }
-
 </div>

@@ -112,7 +112,7 @@ export class UserPanelComponent implements OnInit, AfterViewInit, OnDestroy {
             this.isLoading = false;
             this.smoothScroll.refresh();
             this.initSidebarPin();
-          }, 150);
+          }, 500);
         }
       });
   }
