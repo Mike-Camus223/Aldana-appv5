@@ -66,6 +66,7 @@ import { BehaviorSubject } from 'rxjs';
 import { isPlatformBrowser } from '@angular/common';
 import { CookiesService } from './cookies.service';
 import { SupabaseService } from './data-access/supabase.service';
+import { NewsletterService } from './newsletter/newsletter.service';
 
 @Injectable({
   providedIn: 'root'
@@ -83,7 +84,8 @@ export class ModalAdsService {
   constructor(
     @Inject(PLATFORM_ID) platformId: Object,
     private cookies: CookiesService,
-    private supabase: SupabaseService
+    private supabase: SupabaseService,
+    private newsletterService: NewsletterService
   ) {
     this.isBrowser = isPlatformBrowser(platformId);
     this.initializeState();
@@ -129,24 +131,19 @@ export class ModalAdsService {
     this.scheduleNextCheck(nextTime);
   }
 
-  async subscribe(email: string): Promise<{ ok: boolean; error?: string }> {
+  async subscribe(email: string): Promise<{ ok: boolean; alreadySubscribed?: boolean; error?: string }> {
     try {
-      const origin = this.isBrowser ? window.location.pathname : 'ssr';
-      const { data, error } = await this.supabaseSubscribe(email, origin);
+      const res = await this.newsletterService.subscribe(email, 'popup_descuento', true);
       this.cookies.setDays(this.SUBSCRIBED_KEY, '1', 365);
       this.showSubject.next(false);
       this.clearTimer();
-      return { ok: true, error: error ? 'registrado localmente' : undefined };
+      return { ok: res.success, alreadySubscribed: res.alreadySubscribed, error: res.error };
     } catch {
       this.cookies.setDays(this.SUBSCRIBED_KEY, '1', 365);
       this.showSubject.next(false);
       this.clearTimer();
       return { ok: true, error: 'offline' };
     }
-  }
-
-  private supabaseSubscribe(email: string, origin: string) {
-    return this.supabase.subscribeEmail(email, origin);
   }
 
   private scheduleNextCheck(dismissUntil: number) {

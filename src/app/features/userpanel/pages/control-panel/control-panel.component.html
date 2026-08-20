@@ -78,16 +78,35 @@
           <lucide-icon name="send" [size]="22" [strokeWidth]="1.5" class="text-aldy-green-gray-bold"></lucide-icon>
         </div>
         <div class="flex-1 min-w-0">
-          <h3 class="text-xs NewAldyTitle tracking-[0.18em] uppercase text-aldy-green-gray-bold font-light mb-1.5">
-            Newsletter</h3>
-          <p class="text-xs text-aldy-green-gray-bold  NewAldyFontType4 tracking-wider font-light leading-relaxed">
-            Suscríbete y recibe novedades y promociones exclusivas.
+          <div class="flex items-center gap-2 mb-1.5">
+            <h3 class="text-xs NewAldyTitle tracking-[0.18em] uppercase text-aldy-green-gray-bold font-light">
+              Newsletter
+            </h3>
+            @if (isNewsletterSubscribed) {
+            <span
+              class="px-2 py-0.5 bg-[#eef5ee] text-aldy-medium text-[9px] NewAldyFontType4 tracking-wider uppercase font-medium flex items-center gap-1">
+              <lucide-icon name="check" [size]="10" [strokeWidth]="2.5"></lucide-icon> Suscrito
+            </span>
+            }
+          </div>
+          <p class="text-xs text-aldy-green-gray-bold NewAldyFontType4 tracking-wider font-light leading-relaxed">
+            {{ isNewsletterSubscribed ? 'Estás recibiendo las novedades y promociones exclusivas en tu correo.' :
+            'Suscríbete y recibe novedades y promociones exclusivas.' }}
           </p>
         </div>
       </div>
-      <button
-        class="px-5 py-2 bg-aldy-medium text-white text-xs NewAldyFontType4 tracking-[0.10em] uppercase hover:bg-aldy-medium-2 transition-colors duration-300 cursor-pointer">
-        Gestionar suscripción
+      <button (click)="toggleNewsletter()" [disabled]="isLoadingNewsletter" [ngClass]="{
+          'bg-aldy-medium hover:bg-aldy-medium-2 text-white': !isNewsletterSubscribed,
+          'bg-transparent border border-[#d5cdc4] text-aldy-green-gray hover:text-aldy-green-gray-bold hover:border-aldy-green-gray-bold': isNewsletterSubscribed
+        }"
+        class="px-5 py-2 text-xs NewAldyFontType4 tracking-[0.10em] uppercase transition-colors duration-300 cursor-pointer disabled:opacity-50 flex items-center gap-2">
+        @if (isLoadingNewsletter) {
+        <span>Procesando...</span>
+        } @else if (isNewsletterSubscribed) {
+        <span>Cancelar suscripción</span>
+        } @else {
+        <span>Suscribirme</span>
+        }
       </button>
     </div>
 
