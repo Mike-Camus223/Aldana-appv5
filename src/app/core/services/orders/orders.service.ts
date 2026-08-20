@@ -180,16 +180,17 @@ export class OrdersService {
         return { success: true, orders: this.cachedOrders };
       }
 
-      if (!this.authService.isAuthenticated()) {
+      let userId = this.authService.getCurrentUser()?.id;
+      const supabaseClient = this.authService.getAuthenticatedClient();
+
+      if (!userId) {
+        const { data: { user } } = await supabaseClient.auth.getUser();
+        userId = user?.id;
+      }
+
+      if (!userId) {
         return { success: false, error: 'Usuario no autenticado' };
       }
-
-      const currentUser = this.authService.getCurrentUser();
-      if (!currentUser?.id) {
-        return { success: false, error: 'No se pudo verificar la identidad del usuario' };
-      }
-
-      const supabaseClient = this.authService.getAuthenticatedClient();
       
       const { data, error } = await supabaseClient
         .from('orders')
@@ -201,7 +202,7 @@ export class OrdersService {
           total_final,
           products
         `)
-        .eq('user_id', currentUser.id)
+        .eq('user_id', userId)
         .order('created_at', { ascending: false });
 
       if (error) {

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { SelectsComponent } from '../../../../shared/components/generic/forms/selects/selects.component';
@@ -57,7 +57,8 @@ export class OrdersHistoryComponent implements OnInit {
 
   constructor(
     private ordersService: OrdersService,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) { }
 
   ngOnInit() {
@@ -67,6 +68,7 @@ export class OrdersHistoryComponent implements OnInit {
   async loadUserOrders(forceRefresh = false) {
     if (this.orders.length === 0) {
       this.loading = true;
+      this.cdr.detectChanges();
     }
     this.error = null;
 
@@ -87,6 +89,7 @@ export class OrdersHistoryComponent implements OnInit {
       console.error('Error loading orders:', error);
     } finally {
       this.loading = false;
+      this.cdr.detectChanges();
     }
   }
 
@@ -116,10 +119,11 @@ export class OrdersHistoryComponent implements OnInit {
 
   getStatusLabel(status: string): string {
     const statusMap: { [key: string]: string } = {
-      'pending': 'En preparación',
+      'pending': 'Pago pendiente',
+      'preparing': 'En preparación',
       'in_transit': 'En camino',
       'completed': 'Entregado',
-      'rejected': 'Cancelado'
+      'rejected': 'Pago rechazado'
     };
     return statusMap[status] || status;
   }
@@ -128,8 +132,10 @@ export class OrdersHistoryComponent implements OnInit {
     switch (status) {
       case 'completed':
         return 'bg-[#E2EAE0] text-[#556F52]';
-      case 'pending':
+      case 'preparing':
         return 'bg-[#F5EBE1] text-[#947659]';
+      case 'pending':
+        return 'bg-[#FDF6B2] text-[#92400E]';
       case 'in_transit':
         return 'bg-[#E3EAF2] text-[#4A6785]';
       case 'rejected':

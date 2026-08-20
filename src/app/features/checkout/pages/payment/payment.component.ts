@@ -254,10 +254,14 @@ export class PaymentComponent implements OnInit, AfterViewInit, OnDestroy {
         const errorData = await response.json().catch(() => ({ error: 'Error al procesar cobro' }));
         this.notificationService.showError('Pago rechazado', errorData.error || 'Hubo un error al procesar el pago.');
         
-        // Redirigir a pantalla de resultado fallido
+        // Redirigir a pantalla de resultado fallido pasando el detalle exacto
         setTimeout(() => {
           this.router.navigate(['/checkout/resultado'], {
-            queryParams: { status: 'rejected', orderId: orderResult.orderId }
+            queryParams: { 
+              status: 'rejected', 
+              orderId: orderResult.orderId,
+              detail: errorData.status_detail || errorData.error || 'cc_rejected_other_reason'
+            }
           });
         }, 1500);
         return;
@@ -280,7 +284,11 @@ export class PaymentComponent implements OnInit, AfterViewInit, OnDestroy {
         this.notificationService.showInfo('Pago Pendiente', 'Tu pago está en proceso de validación.');
         setTimeout(() => {
           this.router.navigate(['/checkout/resultado'], {
-            queryParams: { status: 'pending', orderId: orderResult.orderId }
+            queryParams: { 
+              status: 'pending', 
+              orderId: orderResult.orderId,
+              detail: paymentResult.statusDetail || paymentResult.status || 'in_process'
+            }
           });
         }, 1000);
       }

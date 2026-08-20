@@ -1,12 +1,38 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, OnDestroy } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { ArrowDownToLine, Book, BookCheck, Check, Headset, House, LUCIDE_ICONS, LucideAngularModule, LucideIconProvider, NotepadText, Package, Truck } from 'lucide-angular';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import {
+  ArrowDownToLine,
+  Book,
+  BookCheck,
+  Check,
+  CheckCircle2,
+  Headset,
+  House,
+  LUCIDE_ICONS,
+  LucideAngularModule,
+  LucideIconProvider,
+  NotepadText,
+  Package,
+  Truck,
+  AlertCircle,
+  Clock,
+  RotateCcw,
+  MessageCircle,
+  CreditCard,
+  ShieldAlert,
+  ChevronLeft,
+  MapPin,
+  Mail,
+  Phone
+} from 'lucide-angular';
 import { OrdersService } from '../../../../core/services/orders/orders.service';
+import { InvoiceService } from '../../../../core/services/invoice/invoice.service';
 import { OrderModel, OrderProduct } from '../../../../shared/utils/models/order.interface';
 import { AuthService } from '../../../../core/services/auth/auth.service';
+import { getPaymentRejectionInfo, PaymentRejectionInfo } from '../../../utils/helpers/payment-status-helper';
 
-interface Step {
+export interface Step {
   id: number;
   label: string;
   date: string;
@@ -16,16 +42,55 @@ interface Step {
   icon: string;
 }
 
+export interface Order {
+  id: string;
+  order_number: string;
+  status: 'pending' | 'preparing' | 'in_transit' | 'completed' | 'rejected';
+  created_at: string;
+  updated_at: string;
+  total_final: number;
+  subtotal: number;
+  discount_applied?: number;
+  discount_code?: string;
+  customer_first_name: string;
+  customer_last_name: string;
+  customer_email?: string;
+  customer_phone?: string;
+  customer_notes?: string;
+  seller_notes?: string;
+  address_street: string;
+  address_number: string;
+  address_apartment?: string;
+  postal_code?: string;
+  city: string;
+  province: string;
+  payment_method?: 'mercadopago' | 'transfer' | 'cash';
+  payment_status?: 'pending' | 'approved' | 'rejected';
+  whatsapp_message?: string;
+  wamid?: string;
+  estimated_delivery_at?: string;
+  products: Array<{
+    id: string;
+    name: string;
+    price: number;
+    quantity: number;
+    image?: string;
+    color?: string;
+    size?: string;
+  }>;
+}
+
 @Component({
   selector: 'app-order-status',
   standalone: true,
-  imports: [CommonModule, LucideAngularModule],
+  imports: [CommonModule, RouterModule, LucideAngularModule],
   providers: [
     {
       provide: LUCIDE_ICONS,
       multi: true,
       useValue: new LucideIconProvider({
         Check,
+        CheckCircle2,
         NotepadText,
         BookCheck,
         Book,
@@ -33,7 +98,17 @@ interface Step {
         Truck,
         House,
         Headset,
-        ArrowDownToLine
+        ArrowDownToLine,
+        AlertCircle,
+        Clock,
+        RotateCcw,
+        MessageCircle,
+        CreditCard,
+        ShieldAlert,
+        ChevronLeft,
+        MapPin,
+        Mail,
+        Phone
       })
     }
   ],
@@ -42,6 +117,8 @@ interface Step {
 })
 export class OrderStatusComponent implements OnInit, OnDestroy {
   order: Order | null = null;
+  paymentRecord: any = null;
+  rejectionInfo: PaymentRejectionInfo | null = null;
   loading = true;
   error: string | null = null;
   steps: Step[] = [];
@@ -51,21 +128,20 @@ export class OrderStatusComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     private ordersService: OrdersService,
+    private invoiceService: InvoiceService,
     private cdr: ChangeDetectorRef,
     private authService: AuthService
   ) {}
 
   ngOnInit() {
-    // Manejar el parámetro de ruta inicial
     const orderId = this.route.snapshot.paramMap.get('id');
     if (orderId) {
       this.loadOrderDetails(orderId);
     } else {
-      this.error = 'ID de orden no válido';
+      this.error = 'ID de pedido no válido';
       this.loading = false;
     }
 
-    // Suscribirse a cambios en los parámetros de ruta
     this.route.paramMap.subscribe(params => {
       const newOrderId = params.get('id');
       if (newOrderId) {
@@ -82,18 +158,45 @@ export class OrderStatusComponent implements OnInit, OnDestroy {
       const result = await this.ordersService.getUserOrderById(orderId);
       
       if (result.success && result.order) {
-        this.order = result.order;
+        this.order = result.order as Order;
+        
+        // Obtener datos del pago si existe
+        await this.loadPaymentDetails(orderId);
+        
         this.updateSteps();
         this.setupRealtime(orderId);
       } else {
-        this.error = result.error || 'Error al cargar los detalles de la orden';
+        this.error = result.error || 'Error al cargar los detalles del pedido';
       }
     } catch (error: any) {
-      this.error = 'Error inesperado al cargar la orden';
+      this.error = 'Error inesperado al cargar el pedido';
       console.error('Error loading order details:', error);
     } finally {
       this.loading = false;
       this.cdr.detectChanges();
+    }
+  }
+
+  private async loadPaymentDetails(orderId: string) {
+    try {
+      const supabase = this.authService.getAuthenticatedClient();
+      const { data: payment } = await supabase
+        .from('payments')
+        .select('*')
+        .eq('order_id', orderId)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (payment) {
+        this.paymentRecord = payment;
+        const mpDetail = payment.metadata?.status_detail || payment.status;
+        this.rejectionInfo = getPaymentRejectionInfo(mpDetail, this.order?.whatsapp_message);
+      } else if (this.order?.status === 'rejected') {
+        this.rejectionInfo = getPaymentRejectionInfo('', this.order?.whatsapp_message);
+      }
+    } catch (e) {
+      console.warn('Error fetching payment record:', e);
     }
   }
 
@@ -114,7 +217,6 @@ export class OrderStatusComponent implements OnInit, OnDestroy {
           filter: `id=eq.${orderId}`,
         },
         (payload: any) => {
-          console.log('🔄 Actualización en tiempo real recibida:', payload.new);
           this.order = payload.new;
           this.updateSteps();
           this.cdr.detectChanges();
@@ -132,11 +234,10 @@ export class OrderStatusComponent implements OnInit, OnDestroy {
   private updateSteps() {
     if (!this.order) return;
   
-    const orderDate = new Date(this.order.created_at);
     const formattedDate = this.formatDate(this.order.created_at);
     const formattedTime = this.formatTime(this.order.created_at);
   
-    // Define all possible steps in order
+    // Pasos del proceso logístico
     const allSteps: Step[] = [
       {
         id: 1,
@@ -149,15 +250,6 @@ export class OrderStatusComponent implements OnInit, OnDestroy {
       },
       {
         id: 2,
-        label: 'Pedido aceptado',
-        date: '',
-        time: '',
-        active: false,
-        completed: false,
-        icon: 'Book'
-      },
-      {
-        id: 3,
         label: 'En preparación',
         date: '',
         time: '',
@@ -166,7 +258,7 @@ export class OrderStatusComponent implements OnInit, OnDestroy {
         icon: 'Package'
       },
       {
-        id: 4,
+        id: 3,
         label: 'En camino',
         date: '',
         time: '',
@@ -175,8 +267,8 @@ export class OrderStatusComponent implements OnInit, OnDestroy {
         icon: 'Truck'
       },
       {
-        id: 5,
-        label: 'Entregado en domicilio',
+        id: 4,
+        label: this.isSucursal ? 'Listo para retirar en sucursal' : 'Entregado en domicilio',
         date: '',
         time: '',
         active: false,
@@ -185,54 +277,41 @@ export class OrderStatusComponent implements OnInit, OnDestroy {
       }
     ];
   
-    // Update steps based on order status
     switch (this.order.status) {
       case 'pending':
-        // Only first step is completed
         this.steps = allSteps.map((step, index) => ({
           ...step,
           active: index === 0,
           completed: index === 0
         }));
         break;
+
+      case 'preparing':
+        this.steps = allSteps.map((step, index) => ({
+          ...step,
+          completed: index <= 1,
+          active: index === 1
+        }));
+        break;
         
       case 'in_transit':
-        // First 4 steps completed, 4th active
-        this.steps = allSteps.map((step, index) => {
-          if (index < 3) {
-            return { ...step, completed: true, active: false };
-          } else if (index === 3) {
-            return {
-              ...step,
-              completed: true,
-              active: true,
-              date: formattedDate,
-              time: formattedTime
-            };
-          }
-          return step;
-        });
+        this.steps = allSteps.map((step, index) => ({
+          ...step,
+          completed: index <= 2,
+          active: index === 2
+        }));
         break;
         
       case 'completed':
-        // All steps completed
-        this.steps = allSteps.map((step, index) => ({
+        this.steps = allSteps.map(step => ({
           ...step,
           completed: true,
-          active: false,
-          date: index === 4 ? formattedDate : step.date,
-          time: index === 4 ? formattedTime : step.time
+          active: false
         }));
         break;
         
       case 'rejected':
-        // Only first step shown, marked as rejected
-        this.steps = [{
-          ...allSteps[0],
-          label: 'Pedido rechazado',
-          completed: true,
-          active: false
-        }];
+        this.steps = [];
         break;
     }
     
@@ -240,6 +319,7 @@ export class OrderStatusComponent implements OnInit, OnDestroy {
   }
 
   formatDate(dateString: string): string {
+    if (!dateString) return '';
     const date = new Date(dateString);
     return date.toLocaleDateString('es-AR', {
       day: '2-digit',
@@ -249,6 +329,7 @@ export class OrderStatusComponent implements OnInit, OnDestroy {
   }
 
   formatTime(dateString: string): string {
+    if (!dateString) return '';
     const date = new Date(dateString);
     return date.toLocaleTimeString('es-AR', {
       hour: '2-digit',
@@ -259,132 +340,68 @@ export class OrderStatusComponent implements OnInit, OnDestroy {
   formatPrice(price: number): string {
     return new Intl.NumberFormat('es-AR', {
       style: 'currency',
-      currency: 'ARS'
-    }).format(price);
+      currency: 'ARS',
+      maximumFractionDigits: 0
+    }).format(price || 0);
   }
 
   getStatusLabel(status: string): string {
     const statusLabels: { [key: string]: string } = {
-      'pending': 'Pendiente',
+      'pending': 'Pago pendiente',
+      'preparing': 'En preparación',
       'in_transit': 'En camino',
-      'completed': 'Completado',
-      'rejected': 'Rechazado'
+      'completed': 'Entregado',
+      'rejected': 'Pago rechazado'
     };
     return statusLabels[status] || status;
   }
 
-  getStatusClass(): string {
-    if (!this.order) return '';
-    
-    const classMap: { [key: string]: string } = {
-      'pending': 'bg-yellow-100 text-yellow-700',
-      'in_transit': 'bg-blue-100 text-blue-700',
-      'completed': 'bg-green-100 text-green-700',
-      'rejected': 'bg-red-100 text-red-700'
-    };
-    return classMap[this.order.status] || 'bg-gray-100 text-gray-700';
+  getStatusBadgeClass(status: string): string {
+    switch (status) {
+      case 'completed':
+        return 'bg-[#E2EAE0] text-[#556F52]';
+      case 'preparing':
+      case 'pending':
+        return 'bg-[#F5EBE1] text-[#947659]';
+      case 'in_transit':
+        return 'bg-[#E3EAF2] text-[#4A6785]';
+      case 'rejected':
+        return 'bg-[#FBEAEA] text-[#9E5252]';
+      default:
+        return 'bg-[#F5EBE1] text-[#947659]';
+    }
   }
 
-  getFullAddress(): string {
-    if (!this.order) return '';
-    
-    const parts = [
-      this.order.address_street,
-      this.order.address_number,
-      this.order.address_apartment,
-      this.order.city,
-      this.order.province
-    ].filter(Boolean);
-    
-    return parts.join(', ');
+  get isSucursal(): boolean {
+    return !!(this.order?.whatsapp_message && this.order.whatsapp_message.includes('Agencia:'));
   }
 
-  getCustomerName(): string {
-    if (!this.order) return '';
-    return `${this.order.customer_first_name} ${this.order.customer_last_name}`;
-  }
-
-  goBack(): void {
-    this.router.navigate(['/orders-history']);
+  get agencyCode(): string | null {
+    if (!this.isSucursal || !this.order?.whatsapp_message) return null;
+    return this.order.whatsapp_message.split('Agencia:')[1]?.trim() || null;
   }
 
   downloadInvoice() {
-    if (!this.order) return;
-    
-    // In a real implementation, you would call a service to generate/download the invoice
-    console.log('Downloading invoice for order:', this.order.id);
-    // Example: this.orderService.downloadInvoice(this.order.id).subscribe(...);
-    
-    // For demo purposes, we'll show an alert
-    alert('La factura se está generando y se descargará automáticamente.');
+    if (!this.order?.id) return;
+    this.invoiceService.downloadInvoice(this.order.id);
   }
 
   contactSupport() {
     if (!this.order) return;
-    
-    // In a real implementation, you might open a support chat or redirect to a contact form
-    console.log('Contacting support for order:', this.order.id);
-    
-    // For demo purposes, we'll open WhatsApp with a pre-filled message
-    const phoneNumber = '+5491122334455'; // Replace with your support number
-    const message = `Hola, necesito ayuda con mi pedido #${this.order.order_number}`;
+    const phoneNumber = '5491122334455';
+    const message = `Hola, tengo una consulta sobre mi pedido #${this.order.order_number}`;
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
   }
 
-  trackOrder(): void {
-    if (!this.order?.wamid) {
-      console.warn('No tracking information available for this order');
-      return;
-    }
-    
-    console.log('Tracking order:', this.order.wamid);
-    // Example: window.open(`https://tracking.example.com/?id=${this.order.wamid}`, '_blank');
+  goBack(): void {
+    this.router.navigate(['/panel/orders-history']);
   }
 
-  getTotal(): number {
-    return this.order?.total_final || 0;
-  }
-
-  getVariantInfo(product: OrderProduct): string {
+  getVariantInfo(product: any): string {
     const parts = [];
     if (product.color) parts.push(product.color);
     if (product.size) parts.push(product.size);
     return parts.join(' • ');
   }
-}
-
-export interface Order {
-  id: string;
-  order_number: string;
-  status: 'pending' | 'in_transit' | 'completed' | 'rejected';
-  created_at: string;
-  updated_at: string;
-  total_final: number;
-  subtotal: number;
-  discount_applied?: number;
-  discount_code?: string;
-  customer_first_name: string;
-  customer_last_name: string;
-  customer_phone?: string;
-  customer_notes?: string;
-  seller_notes?: string;
-  address_street: string;
-  address_number: string;
-  address_apartment?: string;
-  city: string;
-  province: string;
-  payment_method?: 'mercadopago' | 'transfer' | 'cash';
-  payment_status?: 'pending' | 'approved' | 'rejected';
-  wamid?: string; // For WhatsApp message ID
-  estimated_delivery_at?: string;
-  products: Array<{
-    id: string;
-    name: string;
-    price: number;
-    quantity: number;
-    image?: string;
-    color?: string;
-    size?: string;
-  }>;
 }

@@ -92,74 +92,76 @@
           <div class="w-full md:w-1/2 flex justify-center">
             <div class="relative w-full">
               <div class="space-y-6">
-                <section class="border-b border-aldy-medium py-4 flex justify-between items-start">
-                  <div class="flex items-start gap-4">
-                    <i class="fa-regular fa-envelope text-aldy-green-gray mt-1"></i>
-                    <div>
-                      <p class="text-sm NewAldyFontType4 tracking-wider text-aldy-green-gray-bold">
-                        {{ shippingData?.email }}
-                      </p>
-                    </div>
-                  </div>
-                </section>
-                <section class="border-b border-aldy-medium py-4 flex justify-between items-start">
-                  <div class="flex items-start gap-4">
-                    <i class="fa-solid fa-box text-aldy-green-gray mt-1"></i>
-                    <div>
-                      <p class="text-sm NewAldyTitle tracking-widest text-aldy-green-gray-bold uppercase">
-                        {{ shippingData?.deliveryType === 'S' ? 'Retiro en Sucursal Correo Argentino' : 'Envío a Domicilio - Correo Argentino' }}
-                      </p>
-                      @if (shippingData?.deliveryType === 'S') {
-                        <p class="text-sm NewAldyFontType4 tracking-wider text-aldy-green-gray">
-                          {{ shippingData?.agencyName || ('Sucursal ' + shippingData?.agencyCode) || 'Sucursal seleccionada' }}
+                @if (shippingData; as ship) {
+                  <section class="border-b border-aldy-medium py-4 flex justify-between items-start">
+                    <div class="flex items-start gap-4">
+                      <i class="fa-regular fa-envelope text-aldy-green-gray mt-1"></i>
+                      <div>
+                        <p class="text-sm NewAldyFontType4 tracking-wider text-aldy-green-gray-bold">
+                          {{ ship.email }}
                         </p>
-                      } @else {
-                        <p class="text-sm NewAldyFontType4 tracking-wider text-aldy-green-gray">
-                          {{ shippingData?.address }} {{ shippingData?.apartment ? 'Depto ' + shippingData?.apartment : '' }}, {{ shippingData?.city }}, {{ shippingData?.province }}
-                        </p>
-                      }
+                      </div>
                     </div>
-                  </div>
-                  <button
-                    type="button"
-                    (click)="onChangePickupPoint()"
-                    class="text-xs cursor-pointer NewAldyFontType4 tracking-wider text-aldy-green-gray hover:underline"
-                    >
-                    Cambiar
-                  </button>
-                </section>
-                <section class="border-b border-aldy-medium py-4 flex justify-between items-start">
-                  <div class="flex items-start gap-4">
-                    <i class="fa-regular fa-user text-aldy-green-gray mt-1"></i>
-                    <div>
-                      <p class="text-sm NewAldyTitle tracking-widest text-aldy-green-gray-bold uppercase">
-                        Datos de cobranza y entrega
-                      </p>
-                      <p class="text-sm NewAldyFontType4 tracking-wider text-aldy-green-gray">
-                        {{ shippingData?.name }} {{ shippingData?.surname }}
-                      </p>
-                      <p class="text-sm NewAldyFontType4 tracking-wider text-aldy-green-gray">
-                        {{ shippingData?.address }}
-                      </p>
-                      <p class="text-sm NewAldyFontType4 tracking-wider text-aldy-green-gray">
-                        CP {{ shippingData?.zipCode }}
-                        @if (shippingData?.neighborhood) {
-                          <span> - {{ shippingData?.neighborhood }}</span>
+                  </section>
+                  <section class="border-b border-aldy-medium py-4 flex justify-between items-start">
+                    <div class="flex items-start gap-4">
+                      <i class="fa-solid fa-box text-aldy-green-gray mt-1"></i>
+                      <div>
+                        <p class="text-sm NewAldyTitle tracking-widest text-aldy-green-gray-bold uppercase">
+                          {{ ship.deliveryType === 'S' ? 'Retiro en Sucursal Correo Argentino' : 'Envío a Domicilio - Correo Argentino' }}
+                        </p>
+                        @if (ship.deliveryType === 'S') {
+                          <p class="text-sm NewAldyFontType4 tracking-wider text-aldy-green-gray">
+                            {{ ship.agencyName || ('Sucursal ' + ship.agencyCode) || 'Sucursal seleccionada' }}
+                          </p>
+                        } @else {
+                          <p class="text-sm NewAldyFontType4 tracking-wider text-aldy-green-gray">
+                            {{ ship.address }} {{ ship.apartment ? 'Depto ' + ship.apartment : '' }}, {{ ship.city }}, {{ ship.province }}
+                          </p>
                         }
-                      </p>
-                      <p class="text-sm NewAldyFontType4 tracking-wider text-aldy-green-gray">
-                        {{ shippingData?.city }}, {{ shippingData?.province }} - {{ shippingData?.phone }}
-                      </p>
+                      </div>
                     </div>
-                  </div>
-                  <button
-                    type="button"
-                    (click)="onChangeBillingData()"
-                    class="text-xs cursor-pointer NewAldyFontType4 tracking-wider text-aldy-green-gray hover:underline"
-                    >
-                    Cambiar
-                  </button>
-                </section>
+                    <button
+                      type="button"
+                      (click)="onChangePickupPoint()"
+                      class="text-xs cursor-pointer NewAldyFontType4 tracking-wider text-aldy-green-gray hover:underline"
+                      >
+                      Cambiar
+                    </button>
+                  </section>
+                  <section class="border-b border-aldy-medium py-4 flex justify-between items-start">
+                    <div class="flex items-start gap-4">
+                      <i class="fa-regular fa-user text-aldy-green-gray mt-1"></i>
+                      <div>
+                        <p class="text-sm NewAldyTitle tracking-widest text-aldy-green-gray-bold uppercase">
+                          Datos de cobranza y entrega
+                        </p>
+                        <p class="text-sm NewAldyFontType4 tracking-wider text-aldy-green-gray">
+                          {{ ship.name }} {{ ship.surname }}
+                        </p>
+                        <p class="text-sm NewAldyFontType4 tracking-wider text-aldy-green-gray">
+                          {{ ship.address }}
+                        </p>
+                        <p class="text-sm NewAldyFontType4 tracking-wider text-aldy-green-gray">
+                          CP {{ ship.zipCode }}
+                          @if (ship.neighborhood) {
+                            <span> - {{ ship.neighborhood }}</span>
+                          }
+                        </p>
+                        <p class="text-sm NewAldyFontType4 tracking-wider text-aldy-green-gray">
+                          {{ ship.city }}, {{ ship.province }} - {{ ship.phone }}
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      (click)="onChangeBillingData()"
+                      class="text-xs cursor-pointer NewAldyFontType4 tracking-wider text-aldy-green-gray hover:underline"
+                      >
+                      Cambiar
+                    </button>
+                  </section>
+                }
                 <section class="border-b border-aldy-medium py-4 flex justify-between items-center">
                   <div class="flex items-center gap-4 text-aldy-green-gray">
                     <i class="fa-regular fa-comment"></i>
@@ -268,7 +270,7 @@
                   <span class="text-xs uppercase NewAldyFontType4 tracking-wider text-aldy-green-gray">Envío</span>
                   <span class="text-sm NewAldyFontType4 tracking-wider text-aldy-green-gray">
                     @if (shippingData?.shippingCost && shippingData!.shippingCost > 0) {
-                      {{ shippingData?.shippingCost | currency:'ARS':'symbol-narrow':'1.2-2':'es-AR' }}
+                      {{ shippingData.shippingCost | currency:'ARS':'symbol-narrow':'1.2-2':'es-AR' }}
                     } @else {
                       Gratis
                     }
