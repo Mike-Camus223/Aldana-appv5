@@ -107,16 +107,22 @@
                     <i class="fa-solid fa-box text-aldy-green-gray mt-1"></i>
                     <div>
                       <p class="text-sm NewAldyTitle tracking-widest text-aldy-green-gray-bold uppercase">
-                        Retiras en correo argentino - Gratis
+                        {{ shippingData?.deliveryType === 'S' ? 'Retiro en Sucursal Correo Argentino' : 'Envío a Domicilio - Correo Argentino' }}
                       </p>
-                      <p class="text-sm NewAldyFontType4 tracking-wider text-aldy-green-gray">
-                        Correo argentino sucursal 112 Ciudad Autónoma de Buenos Aires.
-                      </p>
+                      @if (shippingData?.deliveryType === 'S') {
+                        <p class="text-sm NewAldyFontType4 tracking-wider text-aldy-green-gray">
+                          {{ shippingData?.agencyName || ('Sucursal ' + shippingData?.agencyCode) || 'Sucursal seleccionada' }}
+                        </p>
+                      } @else {
+                        <p class="text-sm NewAldyFontType4 tracking-wider text-aldy-green-gray">
+                          {{ shippingData?.address }} {{ shippingData?.apartment ? 'Depto ' + shippingData?.apartment : '' }}, {{ shippingData?.city }}, {{ shippingData?.province }}
+                        </p>
+                      }
                     </div>
                   </div>
                   <button
                     type="button"
-                    (click)="modalPickupOpen = true"
+                    (click)="onChangePickupPoint()"
                     class="text-xs cursor-pointer NewAldyFontType4 tracking-wider text-aldy-green-gray hover:underline"
                     >
                     Cambiar
@@ -127,7 +133,7 @@
                     <i class="fa-regular fa-user text-aldy-green-gray mt-1"></i>
                     <div>
                       <p class="text-sm NewAldyTitle tracking-widest text-aldy-green-gray-bold uppercase">
-                        Datos de cobranza
+                        Datos de cobranza y entrega
                       </p>
                       <p class="text-sm NewAldyFontType4 tracking-wider text-aldy-green-gray">
                         {{ shippingData?.name }} {{ shippingData?.surname }}
@@ -144,17 +150,11 @@
                       <p class="text-sm NewAldyFontType4 tracking-wider text-aldy-green-gray">
                         {{ shippingData?.city }}, {{ shippingData?.province }} - {{ shippingData?.phone }}
                       </p>
-                      <p class="mt-4 text-sm NewAldyTitle tracking-widest text-aldy-green-gray-bold uppercase">
-                        Persona que retirará el pedido
-                      </p>
-                      <p class="text-sm NewAldyFontType4 tracking-wider text-aldy-green-gray">
-                        {{ shippingData?.name }} {{ shippingData?.surname }}
-                      </p>
                     </div>
                   </div>
                   <button
                     type="button"
-                    (click)="modalAddressOpen = true"
+                    (click)="onChangeBillingData()"
                     class="text-xs cursor-pointer NewAldyFontType4 tracking-wider text-aldy-green-gray hover:underline"
                     >
                     Cambiar
@@ -266,7 +266,13 @@
                 </div>
                 <div class="flex justify-between">
                   <span class="text-xs uppercase NewAldyFontType4 tracking-wider text-aldy-green-gray">Envío</span>
-                  <span class="text-sm NewAldyFontType4 tracking-wider text-aldy-green-gray">Gratis</span>
+                  <span class="text-sm NewAldyFontType4 tracking-wider text-aldy-green-gray">
+                    @if (shippingData?.shippingCost && shippingData!.shippingCost > 0) {
+                      {{ shippingData?.shippingCost | currency:'ARS':'symbol-narrow':'1.2-2':'es-AR' }}
+                    } @else {
+                      Gratis
+                    }
+                  </span>
                 </div>
                 <div class="flex justify-between font-light text-base pt-2">
                   <span class="text-sm uppercase NewAldyFontType4 tracking-wider text-aldy-green-gray">Total</span>

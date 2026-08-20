@@ -39,7 +39,13 @@ serve(async (req: Request) => {
     }
   }
 
-  const isMockMode = !mpAccessToken;
+  if (!mpAccessToken) {
+    console.error("❌ MP_ACCESS_TOKEN no encontrado en system_tokens ni en Deno.env");
+    return new Response(JSON.stringify({ error: "Credenciales de Mercado Pago no configuradas en el servidor" }), {
+      status: 500,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
 
   try {
     const body = await req.json();
@@ -47,6 +53,13 @@ serve(async (req: Request) => {
 
     if (!orderId) {
       return new Response(JSON.stringify({ error: "orderId es requerido" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    if (!token) {
+      return new Response(JSON.stringify({ error: "Token de tarjeta de Mercado Pago es requerido" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -68,81 +81,65 @@ serve(async (req: Request) => {
 
     const transactionAmount = Number(order.total_final);
 
-    // 2. Procesar el pago
-    let mpPayment: any = {};
-    if (isMockMode || token === "mock_token") {
-      // Modo Mock si no hay clave de Mercado Pago o si se solicita una simulación
-      console.log("⚠️ Modo Mock activado para Mercado Pago");
-      mpPayment = {
-        id: `mock_mp_${Date.now()}`,
-        status: "approved",
-        status_detail: "accredited",
-        payment_method_id: paymentMethodId || "visa",
-        payment_type_id: "credit_card",
-        installments: installments || 1,
-        transaction_details: {
-          total_paid_amount: transactionAmount,
-          installment_amount: transactionAmount / (installments || 1),
-        },
-      };
-    } else {
-      const finalPayerEmail = payerEmail || order.customer_email || "comprador_prueba@test.com";
-      console.log("🧪 Usando email del comprador:", finalPayerEmail);
-      console.log("🪙 Usando token de tarjeta recibido:", token);
+    // 2. Procesar el pago REAL con la API de Mercado Pago
+    const finalPayerEmail = payerEmail || order.customer_email || "test_user_80507629@testuser.com";
+    console.log("🧪 Email del comprador:", finalPayerEmail);
+    console.log("🪙 Token de tarjeta recibido:", token);
 
-      // Clave de idempotencia ÚNICA por intento (orderId + timestamp) para evitar
-      // que MP devuelva un resultado cacheado de un intento anterior fallido.
-      const idempotencyKey = `${orderId}_${Date.now()}`;
+    // Clave de idempotencia ÚNICA por intento (orderId + timestamp)
+    const idempotencyKey = `idempotencyKeyPostPay_${orderId}_${Date.now()}_3903103294423702`;
 
-      // Checkout API de Mercado Pago
-      console.log("💳 Llamando a Mercado Pago API con token prefijo:", mpAccessToken.substring(0, 15));
-      const mpResponse = await fetch("https://api.mercadopago.com/v1/payments", {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${mpAccessToken}`,
-          "Content-Type": "application/json",
-          "X-Idempotency-Key": idempotencyKey,
+    console.log("💳 Llamando a Mercado Pago API (/v1/payments) con token prefijo:", mpAccessToken.substring(0, 15));
+    const mpResponse = await fetch("https://api.mercadopago.com/v1/payments", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${mpAccessToken}`,
+        "Content-Type": "application/json",
+        "X-Idempotency-Key": idempotencyKey,
+      },
+      body: JSON.stringify({
+        token,
+        transaction_amount: transactionAmount,
+        installments: Number(installments) || 1,
+        payment_method_id: paymentMethodId,
+        description: `Pedido #${order.order_number || orderId}`,
+        payer: {
+          email: finalPayerEmail,
         },
-        body: JSON.stringify({
-          token,
-          transaction_amount: transactionAmount,
-          installments: Number(installments) || 1,
-          payment_method_id: paymentMethodId,
-          description: `Pedido #${order.order_number || orderId}`,
-          payer: {
-            email: finalPayerEmail,
-          },
-          additional_info: {
-            items: order.products && Array.isArray(order.products) 
-              ? order.products.map((p: any) => ({
-                  id: String(p.product_id || p.id || "item"),
-                  title: p.name || "Producto",
-                  quantity: p.quantity || 1,
-                  unit_price: Number(p.price) || transactionAmount,
-                }))
-              : [{
-                  id: "item_1",
-                  title: "Compra en tienda",
-                  quantity: 1,
-                  unit_price: transactionAmount,
-                }],
-          },
-          external_reference: orderId,
-          metadata: {
-            order_id: orderId,
-          },
-        }),
+        additional_info: {
+          items: order.products && Array.isArray(order.products) 
+            ? order.products.map((p: any) => ({
+                id: String(p.product_id || p.id || "item"),
+                title: p.name || "Producto",
+                quantity: p.quantity || 1,
+                unit_price: Number(p.price) || transactionAmount,
+              }))
+            : [{
+                id: "item_1",
+                title: "Compra en tienda",
+                quantity: 1,
+                unit_price: transactionAmount,
+              }],
+        },
+        external_reference: orderId,
+        metadata: {
+          order_id: orderId,
+        },
+      }),
+    });
+
+    const mpPayment = await mpResponse.json();
+
+    if (!mpResponse.ok) {
+      console.error("❌ Error de Mercado Pago:", mpPayment);
+      return new Response(JSON.stringify({ 
+        error: mpPayment.message || mpPayment.cause?.[0]?.description || "Error al procesar el pago en Mercado Pago",
+        status: mpPayment.status || "rejected",
+        status_detail: mpPayment.status_detail
+      }), {
+        status: mpResponse.status,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
-
-      mpPayment = await mpResponse.json();
-
-      if (!mpResponse.ok) {
-        console.error("❌ Error de Mercado Pago:", mpPayment);
-        return new Response(JSON.stringify({ error: mpPayment.message || "Error al procesar el pago en Mercado Pago" }), {
-          status: mpResponse.status,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
     }
 
     // 3. Registrar el pago en la tabla de pagos

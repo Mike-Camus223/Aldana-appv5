@@ -88,7 +88,7 @@ export class PaymentComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit(): void {
     this.shippingData = this.shippingService.getShippingData();
     if (!this.shippingData) {
-      this.router.navigate(['/checkout/shipping']);
+      this.router.navigate(['/checkout/envio']);
       return;
     }
 
@@ -338,11 +338,11 @@ export class PaymentComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onChangePickupPoint() {
-    this.router.navigate(['/checkout/shipping']);
+    this.router.navigate(['/checkout/envio']);
   }
 
   onChangeBillingData() {
-    this.router.navigate(['/checkout/shipping']);
+    this.router.navigate(['/checkout/envio']);
   }
 
   closeNotesModal() {
