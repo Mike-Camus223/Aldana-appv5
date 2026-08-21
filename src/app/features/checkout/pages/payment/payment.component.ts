@@ -6,8 +6,12 @@ import {
   HostListener,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
+  ViewChild,
+  ElementRef,
+  Inject,
+  PLATFORM_ID,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CartService } from '../../../../core/services/cart.service';
 import { CartItem } from '../../../../shared/utils/models/cartItems-model';
@@ -26,6 +30,8 @@ import { ButtonPrimaryDirective } from '../../../../shared/utils/directives/butt
 import { ModalComponent } from '../../../../shared/components/generic/modal/modal.component';
 import { TextareaComponent } from '../../../../shared/components/generic/forms/textarea/textarea.component';
 import { LUCIDE_ICONS, LucideAngularModule, LucideIconProvider, ShoppingBag } from 'lucide-angular';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 @Component({
   selector: 'app-payment',
@@ -53,6 +59,12 @@ import { LUCIDE_ICONS, LucideAngularModule, LucideIconProvider, ShoppingBag } fr
     ],
 })
 export class PaymentComponent implements OnInit, AfterViewInit, OnDestroy {
+  @ViewChild('skeletonContainer') skeletonContainer?: ElementRef<HTMLElement>;
+  @ViewChild('skeletonContent') skeletonContent?: ElementRef<HTMLElement>;
+  @ViewChild('mainContentContainer') mainContentContainer?: ElementRef<HTMLElement>;
+  @ViewChild('mainLayoutContainer') mainLayoutContainer?: ElementRef<HTMLElement>;
+  @ViewChild('checkoutSidebar') checkoutSidebar?: ElementRef<HTMLElement>;
+
   shippingData: ShippingData | null = null;
   cartItems: CartItem[] = [];
   discountData: DiscountData | null = null;
@@ -70,6 +82,10 @@ export class PaymentComponent implements OnInit, AfterViewInit, OnDestroy {
 
   isProduction = environment.production;
 
+  private isBrowser: boolean;
+  private skeletonTimeline?: gsap.core.Timeline;
+  private matchMediaInstance?: gsap.MatchMedia;
+
   constructor(
     private cartService: CartService,
     private shippingService: ShippingService,
@@ -77,8 +93,11 @@ export class PaymentComponent implements OnInit, AfterViewInit, OnDestroy {
     private cdr: ChangeDetectorRef,
     private ordersService: OrdersService,
     private notificationService: NotificationService,
-    private mercadoPagoService: MercadoPagoService
-  ) {}
+    private mercadoPagoService: MercadoPagoService,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {
+    this.isBrowser = isPlatformBrowser(this.platformId);
+  }
 
 
 
@@ -92,27 +111,11 @@ export class PaymentComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    // Si los datos ya están disponibles, ocultar skeleton inmediatamente
-    const startTime = Date.now();
-    const hideSkeleton = () => {
-      const elapsed = Date.now() - startTime;
-      const remaining = Math.max(0, 300 - elapsed); // Mínimo 300ms para evitar parpadeo
-      setTimeout(() => {
-        this.showSkeleton = false;
-        this.isLoading = false;
-        this.cdr.detectChanges();
-      }, remaining);
-    };
-
     this.cartService.cartItems$.subscribe((items) => {
       this.cartItems = items.map((item) => ({
         ...item,
         variantMainImage: item.variantMainImage?.trim() || undefined,
       }));
-      // Ocultar skeleton cuando los datos estén listos
-      if (items.length > 0) {
-        hideSkeleton();
-      }
       this.cdr.detectChanges();
     });
 
@@ -120,15 +123,6 @@ export class PaymentComponent implements OnInit, AfterViewInit, OnDestroy {
       this.discountData = data;
       this.cdr.detectChanges();
     });
-
-    // Fallback: ocultar skeleton después de 1 segundo máximo
-    setTimeout(() => {
-      if (this.showSkeleton) {
-        this.showSkeleton = false;
-        this.isLoading = false;
-        this.cdr.detectChanges();
-      }
-    }, 1000);
   }
 
   toggleAccordion(value: string) {
@@ -301,10 +295,108 @@ export class PaymentComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  ngAfterViewInit(): void {}
+  ngAfterViewInit(): void {
+    if (!this.isBrowser) return;
+
+    // 1. Animar el test skeleton con un pulso suave (GSAP)
+    const skeletonItems = document.querySelectorAll('.skeleton-item');
+    if (skeletonItems.length > 0) {
+      this.skeletonTimeline = gsap.timeline({ repeat: -1 });
+      this.skeletonTimeline.to(skeletonItems, {
+        opacity: 0.45,
+        duration: 0.8,
+        yoyo: true,
+        repeat: -1,
+        ease: 'power1.inOut',
+        stagger: 0.04
+      });
+    }
+
+    // 2. Transición del skeleton: Esperar 1200ms, luego fade-out de skeleton y fade-in de main content
+    setTimeout(() => {
+      this.transitionSkeletonOut();
+    }, 1200);
+  }
+
+  private transitionSkeletonOut(): void {
+    if (!this.isBrowser) return;
+
+    if (this.skeletonContent?.nativeElement) {
+      // Detener animación de pulso
+      this.skeletonTimeline?.kill();
+
+      gsap.to(this.skeletonContent.nativeElement, {
+        opacity: 0,
+        y: -15,
+        duration: 0.45,
+        ease: 'power2.in',
+        onComplete: () => {
+          this.showSkeleton = false;
+          this.isLoading = false;
+          this.cdr.detectChanges(); // Renderizar mainContentContainer
+
+          if (this.mainContentContainer?.nativeElement) {
+            gsap.fromTo(
+              this.mainContentContainer.nativeElement,
+              { opacity: 0, y: 15 },
+              {
+                opacity: 1,
+                y: 0,
+                duration: 0.55,
+                ease: 'power2.out',
+                onComplete: () => {
+                  // Inicializar ScrollTrigger para el sticky de la sidebar una vez que el contenido sea visible
+                  this.initStickySidebar();
+                }
+              }
+            );
+          }
+        }
+      });
+    } else {
+      // Fallback si no está el skeleton container
+      this.showSkeleton = false;
+      this.isLoading = false;
+      this.cdr.detectChanges();
+      this.initStickySidebar();
+    }
+  }
+
+  private initStickySidebar(): void {
+    if (!this.isBrowser || !this.checkoutSidebar?.nativeElement || !this.mainLayoutContainer?.nativeElement) return;
+
+    // Clean up any existing matchMedia first
+    if (this.matchMediaInstance) {
+      this.matchMediaInstance.revert();
+      this.matchMediaInstance = undefined;
+    }
+
+    gsap.registerPlugin(ScrollTrigger);
+
+    this.matchMediaInstance = gsap.matchMedia();
+
+    // Pin details only on desktop views (min-width: 1024px)
+    this.matchMediaInstance.add("(min-width: 1024px)", () => {
+      ScrollTrigger.create({
+        trigger: this.checkoutSidebar!.nativeElement,
+        start: "top 20px", // 20px space from top
+        endTrigger: this.checkoutSidebar!.nativeElement.parentElement!,
+        end: "bottom bottom",
+        pin: true,
+        pinSpacing: false,
+        pinType: "transform",
+        invalidateOnRefresh: true
+      });
+    });
+
+    // Refresh layouts
+    setTimeout(() => ScrollTrigger.refresh(), 100);
+  }
 
   ngOnDestroy(): void {
     this.cleanupBrick();
+    this.matchMediaInstance?.revert();
+    this.skeletonTimeline?.kill();
   }
 
   get subtotal(): number {
@@ -400,13 +492,45 @@ export class PaymentComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Método para testing del skeleton loader
   simulateLoading(): void {
+    if (!this.isBrowser) {
+      this.showSkeleton = true;
+      this.isLoading = true;
+      setTimeout(() => {
+        this.showSkeleton = false;
+        this.isLoading = false;
+        this.cdr.detectChanges();
+      }, 300);
+      return;
+    }
+
     this.showSkeleton = true;
     this.isLoading = true;
-    
+
+    if (this.matchMediaInstance) {
+      this.matchMediaInstance.revert();
+      this.matchMediaInstance = undefined;
+    }
+
+    this.cdr.detectChanges();
+
+    // Re-start skeleton animation
+    const skeletonItems = document.querySelectorAll('.skeleton-item');
+    if (skeletonItems.length > 0) {
+      this.skeletonTimeline?.kill();
+      this.skeletonTimeline = gsap.timeline({ repeat: -1 });
+      this.skeletonTimeline.to(skeletonItems, {
+        opacity: 0.45,
+        duration: 0.8,
+        yoyo: true,
+        repeat: -1,
+        ease: 'power1.inOut',
+        stagger: 0.04
+      });
+    }
+
+    // Wait 1200ms and animate out
     setTimeout(() => {
-      this.showSkeleton = false;
-      this.isLoading = false;
-      this.cdr.detectChanges();
-    }, 300);
+      this.transitionSkeletonOut();
+    }, 1200);
   }
 }

@@ -117,9 +117,9 @@ export class ShippingComponent implements OnInit, OnDestroy, AfterViewInit {
   selectedAgency: Agency | null = null;
 
   private destroy$ = new Subject<void>();
-  private scrollTriggerInstance?: any;
   private isBrowser: boolean;
   private skeletonTimeline?: gsap.core.Timeline;
+  private matchMediaInstance?: gsap.MatchMedia;
 
   constructor(
     private fb: FormBuilder,
@@ -154,7 +154,7 @@ export class ShippingComponent implements OnInit, OnDestroy, AfterViewInit {
       this.recalculateDiscount(discountData);
     }
 
-    this.toggleInvoiceValidators(this.form.get('invoiceToCompany')?.value);
+    this.toggleInvoiceValidators(false);
 
     this.cartService.cartItems$
       .pipe(takeUntil(this.destroy$))
@@ -167,11 +167,6 @@ export class ShippingComponent implements OnInit, OnDestroy, AfterViewInit {
           }
         }
       });
-
-    this.form
-      .get('invoiceToCompany')
-      ?.valueChanges.pipe(takeUntil(this.destroy$))
-      .subscribe((isCompany) => this.toggleInvoiceValidators(isCompany));
 
     this.form
       .get('zipCode')
@@ -679,32 +674,28 @@ export class ShippingComponent implements OnInit, OnDestroy, AfterViewInit {
   private initStickySidebar(): void {
     if (!this.isBrowser || !this.checkoutSidebar?.nativeElement || !this.mainLayoutContainer?.nativeElement) return;
 
-    // Clean up any existing instance first
-    if (this.scrollTriggerInstance) {
-      this.scrollTriggerInstance.kill();
-      this.scrollTriggerInstance = undefined;
+    // Clean up any existing matchMedia first
+    if (this.matchMediaInstance) {
+      this.matchMediaInstance.revert();
+      this.matchMediaInstance = undefined;
     }
 
     gsap.registerPlugin(ScrollTrigger);
 
-    // Pin details only on desktop views (min-width: 1024px)
-    ScrollTrigger.matchMedia({
-      "(min-width: 1024px)": () => {
-        this.scrollTriggerInstance = ScrollTrigger.create({
-          trigger: this.checkoutSidebar!.nativeElement,
-          start: "top 20px", // 20px padding from viewport top
-          endTrigger: this.mainLayoutContainer!.nativeElement,
-          end: "bottom bottom",
-          pin: true,
-          pinSpacing: false,
-          invalidateOnRefresh: true
-        });
+    this.matchMediaInstance = gsap.matchMedia();
 
-        return () => {
-          this.scrollTriggerInstance?.kill();
-          this.scrollTriggerInstance = undefined;
-        };
-      }
+    // Pin details only on desktop views (min-width: 1024px)
+    this.matchMediaInstance.add("(min-width: 1024px)", () => {
+      ScrollTrigger.create({
+        trigger: this.checkoutSidebar!.nativeElement,
+        start: "top 20px", // 20px padding from viewport top
+        endTrigger: this.checkoutSidebar!.nativeElement.parentElement!,
+        end: "bottom bottom",
+        pin: true,
+        pinSpacing: false,
+        pinType: "transform",
+        invalidateOnRefresh: true
+      });
     });
 
     // Refresh layouts
@@ -714,9 +705,7 @@ export class ShippingComponent implements OnInit, OnDestroy, AfterViewInit {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
-    if (this.scrollTriggerInstance) {
-      this.scrollTriggerInstance.kill();
-    }
+    this.matchMediaInstance?.revert();
     this.skeletonTimeline?.kill();
   }
 
@@ -736,10 +725,10 @@ export class ShippingComponent implements OnInit, OnDestroy, AfterViewInit {
     this.showSkeleton = true;
     this.isLoading = true;
 
-    // Kill existing triggers
-    if (this.scrollTriggerInstance) {
-      this.scrollTriggerInstance.kill();
-      this.scrollTriggerInstance = undefined;
+    // Revert matchMedia context
+    if (this.matchMediaInstance) {
+      this.matchMediaInstance.revert();
+      this.matchMediaInstance = undefined;
     }
 
     this.cdr.detectChanges();

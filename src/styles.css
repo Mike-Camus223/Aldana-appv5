@@ -108,6 +108,10 @@
   font-family: 'Great Vibes', cursive;
 }
 
+html {
+  background-color: var(--color-aldy-white);
+}
+
 /* =========================
    CUSTOM SCROLLBAR (GLOBAL)
 ========================= */

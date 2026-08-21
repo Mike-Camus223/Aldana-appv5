@@ -94,7 +94,7 @@
   <div class="max-w-6xl mx-auto">
     <div #mainLayoutContainer
       class="w-full flex flex-col lg:flex-row justify-center gap-4 sm:gap-6 min-h-[calc(100vh-56px)] lg:min-h-[calc(100vh-64px)]">
-      <div class="w-full lg:w-1/2 flex justify-center">
+      <div class="w-full lg:w-1/2 flex justify-center" [class.lg:sticky]="!showForm" [class.lg:top-16]="!showForm" [class.lg:self-start]="!showForm">
         <div class="relative py-4 sm:py-5 w-full">
           <div class="space-y-4 sm:space-y-6">
             <div [formGroup]="form" class="space-y-4 sm:space-y-6">
@@ -308,14 +308,6 @@
                 class="text-xs sm:text-sm NewAldyTitle tracking-widest text-aldy-green-gray-bold font-light uppercase">
                 Datos de facturación
               </h2>
-              <label class="flex items-center space-x-2">
-                <input type="checkbox" AldyCheckboxV1 formControlName="invoiceToCompany"
-                  class="scale-90 sm:scale-100" />
-                <span
-                  class="text-[11px] sm:text-xs NewAldyFontType4 cursor-pointer relative top-[1px] tracking-wider text-aldy-green-gray">Necesito
-                  factura A</span>
-              </label>
-              @if (!form.get('invoiceToCompany')?.value) {
               <div>
                 <label
                   class="NewAldyFontType4 tracking-[0.2em] uppercase text-[10px] mb-2 text-aldy-green-gray block">DNI o
@@ -342,42 +334,6 @@
                 </div>
                 }
               </div>
-              }
-              @if (form.get('invoiceToCompany')?.value) {
-              <div class="grid grid-cols-2 gap-4">
-                <div>
-                  <label
-                    class="NewAldyFontType4 tracking-[0.2em] uppercase text-[10px] mb-2 text-aldy-green-gray block">CUIT</label>
-                  <app-input label="CUIT" formControlName="cuit" inputmode="numeric" [numericMax11]="true">
-                  </app-input>
-                  @if (form.get('cuit')?.touched && form.get('cuit')?.invalid) {
-                  <div class="text-red-400 text-xs NewAldyFontType4 tracking-wider mt-1">
-                    @if (form.get('cuit')?.errors?.['required']) {
-                    El CUIT es obligatorio.
-                    }
-                    @if (form.get('cuit')?.errors?.['pattern'] || form.get('cuit')?.errors?.['invalidCuit']) {
-                    El CUIT debe tener 11 dígitos válidos.
-                    }
-                  </div>
-                  }
-                </div>
-                <div>
-                  <label
-                    class="NewAldyFontType4 tracking-[0.2em] uppercase text-[10px] mb-2 text-aldy-green-gray block">Razón
-                    social</label>
-                  <app-input label="Razón social" formControlName="socialReason">
-                  </app-input>
-                  @if (
-                  form.get('socialReason')?.touched &&
-                  form.get('socialReason')?.invalid
-                  ) {
-                  <div class="text-red-400 text-xs NewAldyFontType4 tracking-wider mt-1">
-                    La razón social es obligatoria.
-                  </div>
-                  }
-                </div>
-              </div>
-              }
               <div class="grid grid-cols-2 gap-4">
                 <div>
                   <label
@@ -508,7 +464,7 @@
               <div>
                 <label
                   class="NewAldyFontType4 tracking-[0.2em] uppercase text-[10px] mb-2 text-aldy-green-gray block">Provincia</label>
-                <app-selects formControlName="province" [options]="provinces" optionLabel="name" label="Provincia"
+                <app-selects formControlName="province" [options]="provinces" optionLabel="name" optionValue="name" label="Provincia"
                   placeholder="Seleccionar provincia" id="provincia">
                 </app-selects>
                 @if (
@@ -523,7 +479,7 @@
                 <div>
                   <label
                     class="NewAldyFontType4 tracking-[0.2em] uppercase text-[10px] mb-2 text-aldy-green-gray block">Ciudad</label>
-                  <app-selects formControlName="city" [options]="ciudades" optionLabel="name" label="Ciudad"
+                  <app-selects formControlName="city" [options]="ciudades" optionLabel="name" optionValue="name" label="Ciudad"
                     placeholder="Seleccionar ciudad" id="ciudad">
                   </app-selects>
                   @if (form.get('city')?.invalid && form.get('city')?.touched) {

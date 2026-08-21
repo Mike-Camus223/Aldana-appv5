@@ -195,8 +195,20 @@ export class TriplesectionComponent implements AfterViewInit, OnDestroy {
     if (this.heroTagline?.nativeElement) {
       tl.fromTo(
         this.heroTagline.nativeElement,
-        { opacity: 0, y: 0, letterSpacing: '0.6em' },
-        { opacity: 1, y: 0, letterSpacing: '1.3em', duration: 1.4, ease: 'power3.out' },
+        {
+          opacity: 0,
+          y: 0,
+          x: 20,
+          letterSpacing: '0.6em'
+        },
+        {
+          opacity: 1,
+          y: 0,
+          x: 20,
+          letterSpacing: '1.4em',
+          duration: 1.4,
+          ease: 'power3.out'
+        },
         writeEnd + 0.15
       );
     }
