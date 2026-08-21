@@ -12,13 +12,12 @@ import { ProductUtils } from '../../../utils/dataEx/products-utils';
 import { CardproductComponent } from '../../generic/cardproduct/cardproduct.component';
 import { Funnel, LUCIDE_ICONS, LucideIconProvider, LucideAngularModule, ChevronDown, ChevronUp, Minus, Plus } from 'lucide-angular';
 import { trigger, transition, style, animate, state } from '@angular/animations';
-import { AcordiongenericComponent } from '../../generic/acordiongeneric/acordiongeneric.component';
 import { LoadingbarComponent } from '../../system/loadingbar/loadingbar.component';
-import { AldyCheckboxV1Directive } from '../../../utils/directives/aldy-checkbox-v1.directive';
 import { FavoritesService } from '../../../../core/services/favorites/favorites.service';
 import { AuthService } from '../../../../core/services/auth/auth.service';
 import { ProductsService } from '../../../../core/services/data-access/products/products.service';
 import { PaginatorComponent } from '../../generic/paginator/paginator.component';
+import { FilterOldComponent } from '../../system/filter-old/filter-old.component';
 
 
 @Component({
@@ -30,10 +29,9 @@ import { PaginatorComponent } from '../../generic/paginator/paginator.component'
     RouterModule,
     CardproductComponent,
     LucideAngularModule,
-    AcordiongenericComponent,
     LoadingbarComponent,
-    AldyCheckboxV1Directive,
-    PaginatorComponent
+    PaginatorComponent,
+    FilterOldComponent
   ],
   templateUrl: './store-template.component.html',
   styleUrls: ['./store-template.component.css'],
@@ -1284,6 +1282,12 @@ export class StoreTemplateComponent implements OnInit {
         this.clearCaches();
       });
     }
+  }
+
+  loadBridesProductsFromFilter(): void {
+    this.loadBridesProducts().then(() => {
+      this.clearCaches();
+    });
   }
 
   private async loadDynamicFilters(): Promise<void> {
