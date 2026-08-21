@@ -206,6 +206,135 @@ export class BridesProductsService {
     return this.helper.getData<any>('collection_brides', selectFields);
   }
 
+  async getProductsPaged(options: {
+    collectionId?: string | null;
+    page: number;
+    pageSize: number;
+  }) {
+    const selectFields = `
+      id,
+      name,
+      description,
+      details,
+      price,
+      category_id,
+      subcategory_id,
+      main_image,
+      media,
+      sizes,
+      slug,
+      avid,
+      color_id,
+      color_name,
+      color_hex,
+      categories:pbrides_categories (
+        id,
+        name
+      ),
+      subcategories:pbrides_subcategories (
+        id,
+        name
+      ),
+      product_collections:pbrides_product_collections (
+        collection_id,
+        collections:collection_brides (
+          id,
+          name,
+          slug
+        )
+      ),
+      product_variants:pbrides_product_variants (
+        id,
+        color_id,
+        color_name,
+        color_hex,
+        avid,
+        main_image,
+        media
+      ),
+      created_at
+    `;
+
+    let selectFieldsWithInner = selectFields;
+    if (options.collectionId) {
+      selectFieldsWithInner = selectFields.replace(
+        'product_collections:pbrides_product_collections (',
+        'product_collections:pbrides_product_collections!inner ('
+      );
+    }
+
+    let query = this.helper.client
+      .from('pbrides_products')
+      .select(selectFieldsWithInner, { count: 'exact' });
+
+    if (options.collectionId) {
+      query = query.eq('product_collections.collection_id', options.collectionId);
+    }
+
+    const from = (options.page - 1) * options.pageSize;
+    const to = from + options.pageSize - 1;
+
+    const { data, error, count } = await query
+      .order('created_at', { ascending: false })
+      .range(from, to);
+
+    return { data, error, count };
+  }
+
+  async getLatestProducts(limit: number = 32) {
+    const selectFields = `
+      id,
+      name,
+      description,
+      details,
+      price,
+      category_id,
+      subcategory_id,
+      main_image,
+      media,
+      sizes,
+      slug,
+      avid,
+      color_id,
+      color_name,
+      color_hex,
+      categories:pbrides_categories (
+        id,
+        name
+      ),
+      subcategories:pbrides_subcategories (
+        id,
+        name
+      ),
+      product_collections:pbrides_product_collections (
+        collection_id,
+        collections:collection_brides (
+          id,
+          name,
+          slug
+        )
+      ),
+      product_variants:pbrides_product_variants (
+        id,
+        color_id,
+        color_name,
+        color_hex,
+        avid,
+        main_image,
+        media
+      ),
+      created_at
+    `;
+
+    const { data, error } = await this.helper.client
+      .from('pbrides_products')
+      .select(selectFields)
+      .order('created_at', { ascending: false })
+      .limit(limit);
+
+    return { data, error };
+  }
+
   async getCategories() {
     return this.helper.getData<any[]>('pbrides_categories', 'id, name');
   }

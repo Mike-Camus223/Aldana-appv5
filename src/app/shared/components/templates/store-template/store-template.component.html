@@ -47,32 +47,15 @@
     <div #storeLayout class="flex flex-col lg:flex-row relative transition-all duration-500 ease-in-out"
       [ngClass]="{ 'gap-4': showFilters && !isMobileView, 'gap-0': !showFilters || isMobileView }">
 
-      <app-filter-old
+      <app-filter
         [(showFilters)]="showFilters"
         [isMobileView]="isMobileView"
-        [loading]="loading"
         [topCollections]="topCollections"
         [topBridesCollections]="topBridesCollections"
-        [isBridalView]="isBridalView"
-        [allowedSizes]="allowedSizes"
-        [allProducts]="allProducts"
-        [categories]="categories"
-        [pretAPorterCategories]="pretAPorterCategories"
-        [noviasCategories]="noviasCategories"
-        [(selectedCategories)]="selectedCategories"
-        [(selectedSubcategoriesMap)]="selectedSubcategoriesMap"
-        [(selectedSizes)]="selectedSizes"
-        [(priceMin)]="priceMin"
-        [(priceMax)]="priceMax"
+        [(activeCategory)]="activeCategory"
         [(selectedCollectionId)]="selectedCollectionId"
-        [(selectedBridesCollectionId)]="selectedBridesCollectionId"
-        [(activeCategoryScope)]="activeCategoryScope"
-        [(pretAPorterOpen)]="pretAPorterOpen"
-        [(noviasOpen)]="noviasOpen"
-        (applyFilters)="applyFiltersAction($event)"
-        (clearFiltersAction)="clearFilters()"
-        (loadBridesProductsAction)="loadBridesProductsFromFilter()"
-      ></app-filter-old>
+        (filterApplied)="applyFiltersAction(isMobileView)"
+      ></app-filter>
 
       <div #productsContainer class="transition-all duration-500 ease-in-out relative w-full h-auto w-auto sm:w-full">
         @if (loading) {
@@ -81,13 +64,13 @@
           <div class="spinner"></div>
         </div>
         }
-        @if (!loading && filteredProducts.length === 0) {
+        @if (!loading && filteredProducts.length === 0 && newDropCollections.length === 0) {
         <p
           class="text-center NewAldyFontType4 text-xs uppercase py-12 text-aldy-green-gray-bold flex justify-center items-center h-full">
           No hay productos para mostrar.
         </p>
         }
-        @if (!loading && filteredProducts.length > 0) {
+        @if (!loading && (pagedProducts.length > 0 || newDropCollections.length > 0)) {
         <div [@gridAnimation]="productColumns" class="grid gap-5 transition-all duration-500 ease-in-out" [ngClass]="[
             productColumns === 2
               ? 'grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-2 mx-0 xl:mx-60'
@@ -95,16 +78,29 @@
             productColumns === 3 ? 'grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 mx-0' : '',
             productColumns === 4 ? 'grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 mx-0' : ''
           ]">
+          
+          <!-- Tarjetas de colección en New Drop y Novias -->
+          @if ((activeCategory === 'new-drop' || activeCategory === 'novias') && currentPage === 1) {
+            @for (col of newDropCollections; track col.id) {
+              <app-newdropcollection
+                [collection]="col"
+                [isMobileView]="isMobileView"
+                (collectionSelected)="onCollectionCardSelected(col)">
+              </app-newdropcollection>
+            }
+          }
+
+          <!-- Listado de prendas individuales -->
           @for (product of pagedProducts; track trackByProductId($index, product)) {
-          <app-cardproduct [product]="product" [selectedColor]="selectedColors[product.id]"
-            [displayImage]="product.main_image" [mobileMode]="'ismobile'" [desktopMode]="'isdesktop'"
-            (colorSelected)="selectColor($event)">
-          </app-cardproduct>
+            <app-cardproduct [product]="product" [selectedColor]="selectedColors[product.id]"
+              [displayImage]="product.main_image" [mobileMode]="'ismobile'" [desktopMode]="'isdesktop'"
+              (colorSelected)="selectColor($event)">
+            </app-cardproduct>
           }
         </div>
         }
         <div>
-          @if (!loading && filteredProducts.length > 0) {
+          @if (!loading && totalProductsCount > itemsPerPage) {
           <app-paginator class="pt-4 w-full justify-center flex" [currentPage]="currentPage" [totalPages]="totalPages"
             (pageChange)="goToPage($event)">
           </app-paginator>

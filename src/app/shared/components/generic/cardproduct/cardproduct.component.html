@@ -2,6 +2,7 @@
 <div #cardRoot class="relative flex flex-col bg-aldy-white shadow-md overflow-hidden w-full mx-auto">
   <a [routerLink]="['/producto', product.slug]" [queryParams]="cardQueryParams" class="block relative">
     <div class="relative w-full aspect-[4/5] overflow-hidden bg-[#e4ddd6]">
+      @if (isNewProduct) {
       <div class="absolute top-2 xs:top-3 left-0 z-10">
         <span
           class="bg-aldy-medium-2 text-white tracking-widest font-light NewAldyFontType4 py-1 pl-2.5 pr-3.5 xs:pl-3 xs:pr-4"
@@ -9,6 +10,7 @@
           NUEVO
         </span>
       </div>
+      }
       @if (displayImage || product.main_image) {
       <img #mobileImage [ngSrc]="displayImage || product.main_image" [alt]="product.name" width="400" height="500"
         priority class="w-full h-full object-cover object-top" />
@@ -50,12 +52,14 @@
 } @else {
 <div #cardRoot
   class="relative overflow-hidden shadow-md group aspect-[3/4] sm:aspect-[3/4] md:aspect-[3/5] lg:aspect-[3/5] xl:aspect-[3/5] bg-[#e4ddd6]">
+  @if (isNewProduct) {
   <div class="absolute top-3 left-0 z-10">
     <span class="bg-aldy-medium-2 text-white text-[10px] tracking-widest font-light NewAldyFontType4 py-1 pl-3 pr-4"
       style="clip-path: polygon(0 0, 100% 0, 92% 100%, 0 100%)">
       NUEVO
     </span>
   </div>
+  }
   <button type="button" aria-label="Añadir a favoritos" (click)="toggleWishlist($event)"
     class="absolute top-3 right-3 z-10 w-9 h-9 rounded-full bg-aldy-white flex items-center justify-center  cursor-pointer">
     <lucide-icon name="heart" [size]="17" [strokeWidth]="2"

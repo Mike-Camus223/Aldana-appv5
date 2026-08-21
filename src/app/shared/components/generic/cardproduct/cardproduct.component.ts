@@ -97,6 +97,15 @@ export class CardproductComponent implements OnInit, AfterViewInit, OnDestroy, O
     return params;
   }
 
+  get isNewProduct(): boolean {
+    if (!this.product.created_at) return false;
+    const createdAt = new Date(this.product.created_at);
+    const now = new Date();
+    const diffTime = Math.abs(now.getTime() - createdAt.getTime());
+    const diffDays = diffTime / (1000 * 60 * 60 * 24);
+    return diffDays <= 7;
+  }
+
   constructor(
     private favoritesService: FavoritesService,
     private authService: AuthService,

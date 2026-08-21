@@ -1,0 +1,67 @@
+@if (!isMobileView) {
+<aside class="transition-all duration-300 ease-in-out overflow-hidden shrink-0"
+  [ngStyle]="{
+    width: showFilters ? '240px' : '0px',
+    opacity: showFilters ? '1' : '0',
+    marginRight: showFilters ? '2rem' : '0px',
+    pointerEvents: showFilters ? 'auto' : 'none'
+  }">
+  <div class="w-[240px] pr-3 self-start">
+    <ul class="space-y-4">
+      @for (opt of options; track opt.value) {
+        <li>
+          <button
+            (click)="selectCategory(opt.value)"
+            class="relative w-full text-left text-xs tracking-[0.2em] uppercase font-light py-2 pl-4 transition-colors duration-300 ease-in-out cursor-pointer hover:text-aldy-medium NewAldyFontType4"
+            [ngClass]="activeCategory === opt.value ? 'text-aldy-medium font-semibold' : 'text-aldy-green-gray-bold'">
+            <span #indicator
+                  class="absolute left-0 top-1/4 bottom-1/4 w-[2px] bg-aldy-medium origin-center opacity-0 scale-y-0"
+                  [attr.data-value]="opt.value"></span>
+            {{ opt.label }}
+          </button>
+        </li>
+      }
+    </ul>
+  </div>
+</aside>
+}
+
+@if (isMobileView) {
+<div bg-aldy-white class="fixed inset-0 z-50 flex h-screen overflow-hidden" [ngClass]="{
+       'opacity-100 pointer-events-auto': showFilters,
+       'opacity-0 pointer-events-none': !showFilters
+     }" [style.transition]="'opacity 300ms ease-in-out'">
+  <div class="absolute inset-0 bg-transparent backdrop-blur-xs transition-all duration-300 ease-in-out"
+    [ngClass]="showFilters ? 'pointer-events-auto' : 'pointer-events-none'" (click)="onOverlayClick($event)">
+  </div>
+  <div
+    class="relative w-80 max-w-[85vw] bg-aldy-white h-full max-h-screen shadow-2xl transform transition-transform duration-300 ease-in-out flex flex-col overflow-hidden"
+    [ngClass]="showFilters ? 'translate-x-0' : '-translate-x-full'" (click)="$event.stopPropagation()">
+    <div class="sticky top-0 bg-aldy-white border-b border-gray-200 p-4 shrink-0 z-10">
+      <div class="flex items-center justify-between">
+        <h3 class="text-lg font-semibold text-aldy-medium-2">Categorías</h3>
+        <button class="p-2 hover:bg-gray-100 rounded-full transition-colors cursor-pointer" (click)="toggleFilters()">
+          <lucide-icon name="Plus" class="h-5 w-5 text-gray-500 rotate-45"></lucide-icon>
+        </button>
+      </div>
+    </div>
+    <div class="p-4 flex-1 overflow-y-auto mobile-filter-scroll">
+      <ul class="space-y-4">
+        @for (opt of options; track opt.value) {
+          <li>
+            <button
+              (click)="selectCategory(opt.value)"
+              class="relative w-full text-left text-xs tracking-[0.2em] uppercase font-light py-2 pl-4 cursor-pointer transition-colors duration-300 hover:text-aldy-medium NewAldyFontType4"
+              [ngClass]="activeCategory === opt.value ? 'text-aldy-medium font-semibold' : 'text-aldy-green-gray-bold'">
+              <span #indicator
+                    class="absolute left-0 top-1/4 bottom-1/4 w-[2px] bg-aldy-medium origin-center opacity-0 scale-y-0"
+                    [attr.data-value]="opt.value"></span>
+              {{ opt.label }}
+            </button>
+          </li>
+        }
+      </ul>
+    </div>
+  </div>
+</div>
+}

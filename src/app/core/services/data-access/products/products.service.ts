@@ -272,6 +272,151 @@ export class ProductsService {
     return (data as any[]) ?? [];
   }
 
+  async getProductsPaged(options: {
+    categoryName?: string;
+    collectionId?: string | null;
+    page: number;
+    pageSize: number;
+  }) {
+    const selectProducts = `
+      id,
+      name,
+      description,
+      details,
+      price,
+      category_id,
+      subcategory_id,
+      main_image,
+      media,
+      sizes,
+      slug,
+      avid,
+      color_id,        
+      color_name,       
+      color_hex,        
+      categories:categories!products_category_id_fkey (
+        id,
+        name
+      ),
+      subcategories:subcategories!products_subcategory_id_fkey (
+        id,
+        name
+      ),
+      product_collections (
+        collection_id,
+        collections (
+          id,
+          name,
+          slug
+        )
+      ),
+      product_variants (
+        id,
+        color_id,
+        color_name,
+        color_hex,
+        avid,
+        main_image,
+        media
+      ),
+      created_at
+    `;
+
+    let selectFields = selectProducts;
+    if (options.collectionId) {
+      selectFields = selectFields.replace(
+        'product_collections (',
+        'product_collections!inner ('
+      );
+    }
+
+    if (options.categoryName) {
+      selectFields = selectFields.replace(
+        'categories:categories!products_category_id_fkey (',
+        'categories:categories!products_category_id_fkey!inner ('
+      );
+    }
+
+    let query = this.helper.client
+      .from('products')
+      .select(selectFields, { count: 'exact' });
+
+    if (options.collectionId) {
+      query = query.eq('product_collections.collection_id', options.collectionId);
+    }
+
+    if (options.categoryName) {
+      if (options.categoryName.toLowerCase() === 'otros') {
+        query = query.not('categories.name', 'in', '("Sastrero","Tops","Pantalones y Faldas","Buzos","Vestidos y Monos","Accesorios")');
+      } else {
+        query = query.ilike('categories.name', options.categoryName);
+      }
+    }
+
+    const from = (options.page - 1) * options.pageSize;
+    const to = from + options.pageSize - 1;
+
+    const { data, error, count } = await query
+      .order('created_at', { ascending: false })
+      .range(from, to);
+
+    return { data, error, count };
+  }
+
+  async getLatestProducts(limit: number = 32) {
+    const selectProducts = `
+      id,
+      name,
+      description,
+      details,
+      price,
+      category_id,
+      subcategory_id,
+      main_image,
+      media,
+      sizes,
+      slug,
+      avid,
+      color_id,        
+      color_name,       
+      color_hex,        
+      categories:categories!products_category_id_fkey (
+        id,
+        name
+      ),
+      subcategories:subcategories!products_subcategory_id_fkey (
+        id,
+        name
+      ),
+      product_collections (
+        collection_id,
+        collections (
+          id,
+          name,
+          slug
+        )
+      ),
+      product_variants (
+        id,
+        color_id,
+        color_name,
+        color_hex,
+        avid,
+        main_image,
+        media
+      ),
+      created_at
+    `;
+
+    const { data, error } = await this.helper.client
+      .from('products')
+      .select(selectProducts)
+      .order('created_at', { ascending: false })
+      .limit(limit);
+
+    return { data, error };
+  }
+
   async getCategories() {
     return this.helper.getData<any[]>('categories', 'id, name');
   }

@@ -61,5 +61,7 @@ export interface Product {
   wishlisted?: boolean;
   collections?: Collection[];
   isBridal?: boolean;
+  created_at?: string;
+  source_module?: string;
 }
 
