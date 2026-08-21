@@ -305,7 +305,15 @@ export class CardproductComponent implements OnInit, AfterViewInit, OnDestroy, O
 
     try {
       const result = await this.favoritesService.toggleFavorite(this.product.id);
-      this.notificationService.showSuccess(result.message, '');
+      if (result.success) {
+        this.notificationService.showSuccess(result.message, '');
+      } else {
+        this.product.wishlisted = previousState;
+        this.notificationService.showError(
+          'Error',
+          result.message || 'Ocurrió un error al actualizar favoritos'
+        );
+      }
 
     } catch (error) {
       this.product.wishlisted = previousState;

@@ -1,6 +1,6 @@
-import { Component, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, AfterViewInit, ViewChild, ElementRef, Inject, PLATFORM_ID, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import {
   trigger,
@@ -11,6 +11,8 @@ import {
 } from '@angular/animations';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 import { InputComponent } from '../../../../shared/components/generic/forms/input/input.component';
 import { SelectsComponent } from '../../../../shared/components/generic/forms/selects/selects.component';
@@ -80,7 +82,13 @@ import { CuponserviceService } from '../../../../core/services/data-access/cupon
     },
   ],
 })
-export class ShippingComponent implements OnInit, OnDestroy {
+export class ShippingComponent implements OnInit, OnDestroy, AfterViewInit {
+  @ViewChild('skeletonContainer') skeletonContainer?: ElementRef<HTMLElement>;
+  @ViewChild('skeletonContent') skeletonContent?: ElementRef<HTMLElement>;
+  @ViewChild('mainContentContainer') mainContentContainer?: ElementRef<HTMLElement>;
+  @ViewChild('mainLayoutContainer') mainLayoutContainer?: ElementRef<HTMLElement>;
+  @ViewChild('checkoutSidebar') checkoutSidebar?: ElementRef<HTMLElement>;
+
   form!: FormGroup;
   cartItems: CartItem[] = [];
   showForm = false;
@@ -109,6 +117,9 @@ export class ShippingComponent implements OnInit, OnDestroy {
   selectedAgency: Agency | null = null;
 
   private destroy$ = new Subject<void>();
+  private scrollTriggerInstance?: any;
+  private isBrowser: boolean;
+  private skeletonTimeline?: gsap.core.Timeline;
 
   constructor(
     private fb: FormBuilder,
@@ -119,16 +130,14 @@ export class ShippingComponent implements OnInit, OnDestroy {
     private router: Router,
     private cuponService: CuponserviceService,
     private authService: AuthService,
-    private miCorreoService: MiCorreoService
-  ) {}
+    private miCorreoService: MiCorreoService,
+    private cdr: ChangeDetectorRef,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {
+    this.isBrowser = isPlatformBrowser(this.platformId);
+  }
 
   ngOnInit(): void {
-    // Mostrar skeleton por 800ms para simular carga, luego ocultar directamente sin fade
-    setTimeout(() => {
-      this.showSkeleton = false;
-      this.isLoading = false;
-    }, 800);
-
     this.initForm();
 
     // Configurar el email del usuario autenticado
@@ -313,6 +322,9 @@ export class ShippingComponent implements OnInit, OnDestroy {
         this.loadAgencies(this.getProvinceLetterCode(provName));
 
         this.showForm = true;
+        if (this.isBrowser) {
+          setTimeout(() => ScrollTrigger.refresh(), 150);
+        }
       }).catch(err => {
         console.error('Error fetching rates:', err);
         this.notification.showWarn('Servicio limitado', 'Se utilizarán tarifas de envío estándar de contingencia.');
@@ -320,6 +332,9 @@ export class ShippingComponent implements OnInit, OnDestroy {
         this.homeShippingPrice = 3500;
         this.agencyShippingPrice = 2200;
         this.showForm = true;
+        if (this.isBrowser) {
+          setTimeout(() => ScrollTrigger.refresh(), 150);
+        }
       }).finally(() => {
         this.isCalculatingShipping = false;
       });
@@ -381,6 +396,9 @@ export class ShippingComponent implements OnInit, OnDestroy {
 
   changeZipCode(): void {
     this.showForm = false;
+    if (this.isBrowser) {
+      setTimeout(() => ScrollTrigger.refresh(), 150);
+    }
   }
 
   select(option: 'estandar' | 'expres' | 'retiro'): void {
@@ -512,10 +530,9 @@ export class ShippingComponent implements OnInit, OnDestroy {
 
         this.notification.showSuccess(
           'Cupón aplicado',
-          `Descuento de ${
-            this.discountType === 'percent'
-              ? result.discountAmount + '%'
-              : '$' + this.appliedDiscount.toFixed(2)
+          `Descuento de ${this.discountType === 'percent'
+            ? result.discountAmount + '%'
+            : '$' + this.appliedDiscount.toFixed(2)
           }`
         );
       }
@@ -592,19 +609,159 @@ export class ShippingComponent implements OnInit, OnDestroy {
     return map[color.toLowerCase().trim()] || color;
   }
 
+  ngAfterViewInit(): void {
+    if (!this.isBrowser) return;
+
+    // 1. Animar el test skeleton con un pulso suave (GSAP)
+    const skeletonItems = document.querySelectorAll('.skeleton-item');
+    if (skeletonItems.length > 0) {
+      this.skeletonTimeline = gsap.timeline({ repeat: -1 });
+      this.skeletonTimeline.to(skeletonItems, {
+        opacity: 0.45,
+        duration: 0.8,
+        yoyo: true,
+        repeat: -1,
+        ease: 'power1.inOut',
+        stagger: 0.04
+      });
+    }
+
+    // 2. Transición del skeleton: Esperar 1200ms, luego fade-out de skeleton y fade-in de main content
+    setTimeout(() => {
+      this.transitionSkeletonOut();
+    }, 1200);
+  }
+
+  private transitionSkeletonOut(): void {
+    if (!this.isBrowser) return;
+
+    if (this.skeletonContent?.nativeElement) {
+      // Detener animación de pulso
+      this.skeletonTimeline?.kill();
+
+      gsap.to(this.skeletonContent.nativeElement, {
+        opacity: 0,
+        y: -15,
+        duration: 0.45,
+        ease: 'power2.in',
+        onComplete: () => {
+          this.showSkeleton = false;
+          this.isLoading = false;
+          this.cdr.detectChanges(); // Renderizar mainContentContainer
+
+          if (this.mainContentContainer?.nativeElement) {
+            gsap.fromTo(
+              this.mainContentContainer.nativeElement,
+              { opacity: 0, y: 15 },
+              {
+                opacity: 1,
+                y: 0,
+                duration: 0.55,
+                ease: 'power2.out',
+                onComplete: () => {
+                  // Inicializar ScrollTrigger para el sticky de la sidebar una vez que el contenido sea visible
+                  this.initStickySidebar();
+                }
+              }
+            );
+          }
+        }
+      });
+    } else {
+      // Fallback si no está el skeleton container
+      this.showSkeleton = false;
+      this.isLoading = false;
+      this.cdr.detectChanges();
+      this.initStickySidebar();
+    }
+  }
+
+  private initStickySidebar(): void {
+    if (!this.isBrowser || !this.checkoutSidebar?.nativeElement || !this.mainLayoutContainer?.nativeElement) return;
+
+    // Clean up any existing instance first
+    if (this.scrollTriggerInstance) {
+      this.scrollTriggerInstance.kill();
+      this.scrollTriggerInstance = undefined;
+    }
+
+    gsap.registerPlugin(ScrollTrigger);
+
+    // Pin details only on desktop views (min-width: 1024px)
+    ScrollTrigger.matchMedia({
+      "(min-width: 1024px)": () => {
+        this.scrollTriggerInstance = ScrollTrigger.create({
+          trigger: this.checkoutSidebar!.nativeElement,
+          start: "top 20px", // 20px padding from viewport top
+          endTrigger: this.mainLayoutContainer!.nativeElement,
+          end: "bottom bottom",
+          pin: true,
+          pinSpacing: false,
+          invalidateOnRefresh: true
+        });
+
+        return () => {
+          this.scrollTriggerInstance?.kill();
+          this.scrollTriggerInstance = undefined;
+        };
+      }
+    });
+
+    // Refresh layouts
+    setTimeout(() => ScrollTrigger.refresh(), 100);
+  }
+
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+    if (this.scrollTriggerInstance) {
+      this.scrollTriggerInstance.kill();
+    }
+    this.skeletonTimeline?.kill();
   }
 
   // Método para testing del skeleton loader
   simulateLoading(): void {
+    if (!this.isBrowser) {
+      this.showSkeleton = true;
+      this.isLoading = true;
+      setTimeout(() => {
+        this.showSkeleton = false;
+        this.isLoading = false;
+      }, 800);
+      return;
+    }
+
+    // Reset status to visible/invisible
     this.showSkeleton = true;
     this.isLoading = true;
-    
+
+    // Kill existing triggers
+    if (this.scrollTriggerInstance) {
+      this.scrollTriggerInstance.kill();
+      this.scrollTriggerInstance = undefined;
+    }
+
+    this.cdr.detectChanges();
+
+    // Re-start skeleton animation
+    const skeletonItems = document.querySelectorAll('.skeleton-item');
+    if (skeletonItems.length > 0) {
+      this.skeletonTimeline?.kill();
+      this.skeletonTimeline = gsap.timeline({ repeat: -1 });
+      this.skeletonTimeline.to(skeletonItems, {
+        opacity: 0.45,
+        duration: 0.8,
+        yoyo: true,
+        repeat: -1,
+        ease: 'power1.inOut',
+        stagger: 0.04
+      });
+    }
+
+    // Wait 1200ms and animate out
     setTimeout(() => {
-      this.showSkeleton = false;
-      this.isLoading = false;
-    }, 800);
+      this.transitionSkeletonOut();
+    }, 1200);
   }
 }

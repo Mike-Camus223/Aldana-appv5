@@ -40,7 +40,7 @@ export class FavoritesService {
     }
 
     try {
-      const { data, error } = await this.supabase['supabase']
+      const { data, error } = await this.authService.getAuthenticatedClient()
         .from('user_favorites')
         .select(`
           *,
@@ -74,16 +74,16 @@ export class FavoritesService {
 
     try {
       // Check if already favorited
-      const { data: existing } = await this.supabase['supabase']
+      const { data: existing } = await this.authService.getAuthenticatedClient()
         .from('user_favorites')
         .select('id')
         .eq('user_id', user.id)
         .eq('product_id', productId)
-        .single();
+        .maybeSingle();
 
       if (existing) {
         // Remove from favorites
-        const { error } = await this.supabase['supabase']
+        const { error } = await this.authService.getAuthenticatedClient()
           .from('user_favorites')
           .delete()
           .eq('user_id', user.id)
@@ -94,7 +94,7 @@ export class FavoritesService {
         return { success: true, message: 'Producto eliminado de favoritos' };
       } else {
         // Add to favorites
-        const { error } = await this.supabase['supabase']
+        const { error } = await this.authService.getAuthenticatedClient()
           .from('user_favorites')
           .insert([{ user_id: user.id, product_id: productId }]);
         
@@ -116,12 +116,12 @@ export class FavoritesService {
     if (!user) return false;
 
     try {
-      const { data, error } = await this.supabase['supabase']
+      const { data, error } = await this.authService.getAuthenticatedClient()
         .from('user_favorites')
         .select('id')
         .eq('user_id', user.id)
         .eq('product_id', productId)
-        .single();
+        .maybeSingle();
 
       return !!data;
     } catch (error) {
@@ -136,7 +136,7 @@ export class FavoritesService {
     if (!productIds.length) return { success: true, message: 'Nada para eliminar' };
 
     try {
-      const { error } = await this.supabase['supabase']
+      const { error } = await this.authService.getAuthenticatedClient()
         .from('user_favorites')
         .delete()
         .eq('user_id', user.id)

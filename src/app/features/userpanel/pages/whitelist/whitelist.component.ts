@@ -303,13 +303,17 @@ export class WhitelistComponent implements OnInit, OnDestroy {
 
     this.isDeleting = true;
     try {
-      await this.favoritesService.toggleFavorite(productId);
-      this.selectedIds.delete(productId);
-      this.notificationService.showSuccess(
-        'Eliminado con éxito',
-        productName ? `"${productName}" eliminado de favoritos` : 'Producto eliminado de la lista de favoritos',
-        3000
-      );
+      const result = await this.favoritesService.toggleFavorite(productId);
+      if (result.success) {
+        this.selectedIds.delete(productId);
+        this.notificationService.showSuccess(
+          'Eliminado con éxito',
+          productName ? `"${productName}" eliminado de favoritos` : 'Producto eliminado de la lista de favoritos',
+          3000
+        );
+      } else {
+        this.notificationService.showError('Error', result.message || 'No se pudo eliminar el producto de favoritos', 3000);
+      }
     } catch (error) {
       console.error('Error removing favorite:', error);
       this.notificationService.showError('Error', 'No se pudo eliminar el producto de favoritos', 3000);
@@ -325,14 +329,18 @@ export class WhitelistComponent implements OnInit, OnDestroy {
     this.isDeleting = true;
     try {
       const idsArray = Array.from(this.selectedIds);
-      await this.favoritesService.removeMultipleFavorites(idsArray);
-      this.selectedIds.clear();
-      this.isSelectionMode = false;
-      this.notificationService.showSuccess(
-        'Elementos eliminados',
-        count === 1 ? 'Elemento eliminado de favoritos' : `${count} elementos eliminados de la lista de favoritos`,
-        3000
-      );
+      const result = await this.favoritesService.removeMultipleFavorites(idsArray);
+      if (result.success) {
+        this.selectedIds.clear();
+        this.isSelectionMode = false;
+        this.notificationService.showSuccess(
+          'Elementos eliminados',
+          count === 1 ? 'Elemento eliminado de favoritos' : `${count} elementos eliminados de la lista de favoritos`,
+          3000
+        );
+      } else {
+        this.notificationService.showError('Error', result.message || 'No se pudieron eliminar los productos seleccionados', 3000);
+      }
     } catch (error) {
       console.error('Error removing selected favorites:', error);
       this.notificationService.showError('Error', 'No se pudieron eliminar los productos seleccionados', 3000);

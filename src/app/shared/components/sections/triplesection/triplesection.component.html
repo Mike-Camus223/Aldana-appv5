@@ -81,7 +81,7 @@
 
           <p #heroTagline
             class="mt-2 sm:mt-0 text-white NewAldyTitle uppercase scale-y-110 tracking-[0.35em] text-[2.5vw] sm:text-[1.8vw] lg:text-[16px]"
-            style="opacity: 0;">Diseño atemporal, hecho para durar</p>
+            style="opacity: 0;">Diseño atemporal</p>
         </div>
       </div>
     </div>
@@ -102,9 +102,6 @@
             class="NewAldyTitle text-white uppercase tracking-[0.08em] text-[3vw] sm:text-[4vw] lg:text-5xl font-light drop-shadow-[0_4px_20px_rgba(0,0,0,0.35)]">
             Prêt-à-porter
           </h2>
-          <p class="mt-2 lg:mt-4 text-white uppercase tracking-[0.25em] text-[1.5vw] sm:text-[1.6vw] lg:text-[14px]">
-            Descubrí nuestra colección
-          </p>
           <div class="mt-1 h-px w-40 bg-[#F8F3ED]/30"></div>
           <a [routerLink]="['/tienda']" [queryParams]="{ categoria: 'camisas' }" #leftArrowBtn
             class="mt-4 lg:mt-8 w-10 h-10 group hover:bg-white duration-300 ease-in-out lg:w-14 lg:h-14 cursor-pointer rounded-full border border-white flex items-center justify-center">
@@ -151,17 +148,15 @@
             class="NewAldyTitle text-white uppercase tracking-[0.08em] text-[3vw] sm:text-[4vw] lg:text-5xl font-light drop-shadow-[0_4px_20px_rgba(0,0,0,0.35)]">
             Novias
           </h2>
-          <p class="mt-2 lg:mt-4 text-white uppercase tracking-[0.25em] text-[1.5vw] sm:text-[1.6vw] lg:text-[14px]">
-            Encontrá tu vestido
-          </p>
           <div class="mt-1 h-px w-40 bg-[#F8F3ED]/30"></div>
-          <a [routerLink]="['/tienda']" [queryParams]="{ categorias: 'vestidos', coleccion_novias: 'jardin-secreto' }" #rightArrowBtn
-        class="mt-4 lg:mt-8 w-10 h-10 group hover:bg-white duration-300 ease-in-out lg:w-14 lg:h-14 cursor-pointer rounded-full border border-white flex items-center justify-center">
+          <a [routerLink]="['/tienda']" [queryParams]="{ categorias: 'vestidos', coleccion_novias: 'jardin-secreto' }"
+            #rightArrowBtn
+            class="mt-4 lg:mt-8 w-10 h-10 group hover:bg-white duration-300 ease-in-out lg:w-14 lg:h-14 cursor-pointer rounded-full border border-white flex items-center justify-center">
 
-        <lucide-icon name="arrow-right" class="group-hover:text-aldy-medium duration-300 text-white" [size]="25"
-          [strokeWidth]="1.5">
-        </lucide-icon>
-      </a>
+            <lucide-icon name="arrow-right" class="group-hover:text-aldy-medium duration-300 text-white" [size]="25"
+              [strokeWidth]="1.5">
+            </lucide-icon>
+          </a>
         </div>
       </div>
     </div>
