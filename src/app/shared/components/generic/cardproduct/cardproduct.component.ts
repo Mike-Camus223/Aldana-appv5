@@ -127,10 +127,19 @@ export class CardproductComponent implements OnInit, AfterViewInit, OnDestroy, O
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['product'] || changes['selectedColor'] || changes['displayImage']) {
       this.setupProductData();
+      this.hasAnimated = false;
     }
-    if (changes['canAnimate'] && this.canAnimate && !this.hasAnimated) {
-      if (isPlatformBrowser(this.platformId)) {
-        this.playEntryAnimation();
+    if (changes['canAnimate']) {
+      if (this.canAnimate) {
+        if (isPlatformBrowser(this.platformId)) {
+          this.playEntryAnimation();
+        }
+      } else {
+        this.hasAnimated = false;
+        if (isPlatformBrowser(this.platformId) && this.cardRootRef?.nativeElement) {
+          gsap.killTweensOf(this.cardRootRef.nativeElement);
+          gsap.set(this.cardRootRef.nativeElement, { opacity: 0, y: 22 });
+        }
       }
     }
   }
@@ -163,10 +172,11 @@ export class CardproductComponent implements OnInit, AfterViewInit, OnDestroy, O
   ngAfterViewInit(): void {
     this.updateView();
     if (isPlatformBrowser(this.platformId)) {
-      if (this.canAnimate && !this.hasAnimated) {
+      if (this.canAnimate) {
         this.playEntryAnimation();
-      } else if (!this.canAnimate && this.cardRootRef?.nativeElement) {
-        gsap.set(this.cardRootRef.nativeElement, { opacity: 0, y: 30 });
+      } else if (this.cardRootRef?.nativeElement) {
+        gsap.killTweensOf(this.cardRootRef.nativeElement);
+        gsap.set(this.cardRootRef.nativeElement, { opacity: 0, y: 22 });
       }
     }
   }
@@ -185,27 +195,29 @@ export class CardproductComponent implements OnInit, AfterViewInit, OnDestroy, O
 
     gsap.killTweensOf(cardEl);
     gsap.fromTo(cardEl,
-      { opacity: 0, y: 30 },
+      { opacity: 0, y: 22 },
       {
         opacity: 1,
         y: 0,
         duration: 0.55,
-        ease: 'power2.out',
+        ease: 'power3.out',
         delay: delay,
-        clearProps: 'willChange'
+        clearProps: 'opacity,transform,willChange',
+        overwrite: 'auto'
       }
     );
 
     if (imgEl) {
       gsap.killTweensOf(imgEl);
       gsap.fromTo(imgEl,
-        { scale: 1.06 },
+        { scale: 1.04 },
         {
           scale: 1.0,
           duration: 0.75,
-          ease: 'power2.out',
+          ease: 'power3.out',
           delay: delay,
-          clearProps: 'willChange'
+          clearProps: 'transform,scale,willChange',
+          overwrite: 'auto'
         }
       );
     }
@@ -218,7 +230,7 @@ export class CardproductComponent implements OnInit, AfterViewInit, OnDestroy, O
       if (!parent) return 0;
       const children = Array.from(parent.children);
       const index = children.indexOf(host);
-      return Math.max(0, index) * 0.08;
+      return Math.max(0, index) * 0.045;
     } catch {
       return 0;
     }

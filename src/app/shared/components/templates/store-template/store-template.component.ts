@@ -167,6 +167,12 @@ export class StoreTemplateComponent implements OnInit {
     this.currentRequestId++;
     const requestId = this.currentRequestId;
 
+    if (isPlatformBrowser(this.platformId)) {
+      if (this.productsContainerRef?.nativeElement) gsap.killTweensOf(this.productsContainerRef.nativeElement);
+      if (this.spinnerContainerRef?.nativeElement) gsap.killTweensOf(this.spinnerContainerRef.nativeElement);
+      if (this.productsGridRef?.nativeElement) gsap.killTweensOf(this.productsGridRef.nativeElement);
+    }
+
     let prevHeight = 420;
     if (isPlatformBrowser(this.platformId) && this.productsContainerRef?.nativeElement) {
       prevHeight = Math.max(420, this.productsContainerRef.nativeElement.offsetHeight);
@@ -184,9 +190,10 @@ export class StoreTemplateComponent implements OnInit {
     if (isPlatformBrowser(this.platformId)) {
       setTimeout(() => {
         if (this.spinnerContainerRef?.nativeElement) {
+          gsap.killTweensOf(this.spinnerContainerRef.nativeElement);
           gsap.fromTo(this.spinnerContainerRef.nativeElement,
             { opacity: 0, y: -20 },
-            { opacity: 1, y: 0, duration: 0.35, ease: 'power2.out' }
+            { opacity: 1, y: 0, duration: 0.3, ease: 'power2.out', overwrite: 'auto' }
           );
         }
       }, 0);
@@ -301,8 +308,9 @@ export class StoreTemplateComponent implements OnInit {
           gsap.to(this.spinnerContainerRef!.nativeElement, {
             opacity: 0,
             y: 20,
-            duration: 0.25,
+            duration: 0.2,
             ease: 'power2.in',
+            overwrite: 'auto',
             onComplete: () => resolve()
           });
         });
@@ -332,18 +340,22 @@ export class StoreTemplateComponent implements OnInit {
       // Smooth layout height growth/shrink animation
       if (isPlatformBrowser(this.platformId) && this.productsContainerRef?.nativeElement) {
         const container = this.productsContainerRef.nativeElement;
+        gsap.killTweensOf(container);
         container.style.height = 'auto';
         const targetHeight = Math.max(420, container.offsetHeight);
         container.style.height = `${prevHeight}px`;
 
         gsap.to(container, {
           height: targetHeight,
-          duration: 0.45,
-          ease: 'power2.inOut',
+          duration: 0.4,
+          ease: 'power3.out',
+          overwrite: 'auto',
           onComplete: () => {
-            container.style.height = 'auto';
-            this.cardsReady = true;
-            this.cdr.detectChanges();
+            if (requestId === this.currentRequestId) {
+              container.style.height = 'auto';
+              this.cardsReady = true;
+              this.cdr.detectChanges();
+            }
           }
         });
       } else {
@@ -448,11 +460,88 @@ export class StoreTemplateComponent implements OnInit {
   }
 
   toggleFilters(): void {
+    if (!isPlatformBrowser(this.platformId) || this.isMobileView) {
+      this.showFilters = !this.showFilters;
+      return;
+    }
+
+    const container = this.productsContainerRef?.nativeElement;
+    const prevContainerHeight = container ? container.offsetHeight : 0;
+
     this.showFilters = !this.showFilters;
+    this.cdr.detectChanges();
+
+    if (container && prevContainerHeight) {
+      gsap.killTweensOf(container);
+      container.style.height = 'auto';
+      const targetHeight = container.offsetHeight;
+      if (targetHeight !== prevContainerHeight) {
+        container.style.height = `${prevContainerHeight}px`;
+        gsap.to(container, {
+          height: targetHeight,
+          duration: 0.45,
+          ease: 'power3.out',
+          overwrite: 'auto',
+          onComplete: () => {
+            container.style.height = 'auto';
+          }
+        });
+      }
+    }
   }
 
   setProductColumns(columns: number): void {
+    if (this.productColumns === columns) return;
+    if (!isPlatformBrowser(this.platformId)) {
+      this.productColumns = columns;
+      return;
+    }
+
+    const grid = this.productsGridRef?.nativeElement;
+    const container = this.productsContainerRef?.nativeElement;
+    const prevContainerHeight = container ? container.offsetHeight : 0;
+
+    // Change column layout instantly
     this.productColumns = columns;
+    this.cdr.detectChanges();
+
+    // Smooth container height transition for luxury responsiveness
+    if (container && prevContainerHeight) {
+      gsap.killTweensOf(container);
+      container.style.height = 'auto';
+      const targetHeight = container.offsetHeight;
+      if (targetHeight !== prevContainerHeight) {
+        container.style.height = `${prevContainerHeight}px`;
+        gsap.to(container, {
+          height: targetHeight,
+          duration: 0.4,
+          ease: 'power3.out',
+          overwrite: 'auto',
+          onComplete: () => {
+            container.style.height = 'auto';
+          }
+        });
+      }
+    }
+
+    // High-fashion soft editorial micro-reveal (no dark fade, no harsh flash)
+    if (grid) {
+      const cards = Array.from(grid.children) as HTMLElement[];
+      cards.forEach(c => gsap.killTweensOf(c));
+      gsap.fromTo(cards,
+        { scale: 0.985, y: 10, opacity: 0.9 },
+        {
+          scale: 1,
+          y: 0,
+          opacity: 1,
+          duration: 0.38,
+          ease: 'power2.out',
+          stagger: 0.015,
+          overwrite: 'auto',
+          clearProps: 'all'
+        }
+      );
+    }
   }
 
   private checkMobileView(): void {
