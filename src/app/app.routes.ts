@@ -23,13 +23,6 @@ export const routes: Routes = [
       ),
   },
   {
-    path: 'admin',
-    loadChildren: () =>
-      import('./shared/layouts/dashboard-layout/dashboard-layout.routes').then(
-        (r) => r.ADMIN_ROUTES
-      ),
-  },
-  {
     path: 'confirmar-registro',
     loadComponent: () =>
       import(

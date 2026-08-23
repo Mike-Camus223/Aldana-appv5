@@ -20,17 +20,9 @@ export class InvoiceService {
     return this.requestInvoiceDocument(orderId, 'customer', invoiceType, 'Generando documento oficial...');
   }
 
-  /**
-   * Abre la Hoja de Despacho y Picking para la Vendedora / Taller.
-   * @param orderId ID único de la orden en Supabase
-   */
-  async downloadAdminPackingSlip(orderId: string): Promise<void> {
-    return this.requestInvoiceDocument(orderId, 'admin', 'B', 'Generando hoja de despacho y control...');
-  }
-
   private async requestInvoiceDocument(
     orderId: string,
-    type: 'customer' | 'admin',
+    type: 'customer',
     invoiceType: 'B' | 'A',
     loadingMessage: string
   ): Promise<void> {

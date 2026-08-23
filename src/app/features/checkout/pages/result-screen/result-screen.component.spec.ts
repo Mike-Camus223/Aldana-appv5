@@ -48,7 +48,7 @@ describe('ResultScreenComponent', () => {
     };
 
     mockOrdersService = {
-      getAllOrdersAdmin: jasmine.createSpy('getAllOrdersAdmin').and.resolveTo({ success: true, orders: [] })
+      getUserOrders: jasmine.createSpy('getUserOrders').and.resolveTo({ success: true, orders: [] })
     };
 
     mockProgressService = {

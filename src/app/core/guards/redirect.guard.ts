@@ -60,12 +60,8 @@ export class RedirectGuard implements CanActivate {
     if (currentUser) {      
       this.logSecurityEvent('AUTHENTICATED_USER_REDIRECT', currentUser.email || 'unknown');
       
-      // Usuario autenticado, redirigir según el rol
-      if (this.authService.isAdmin()) {
-        return of(this.router.createUrlTree(['/admin/panel-de-control']));
-      } else {
-        return of(this.router.createUrlTree(['/panel/panel-control']));
-      }
+      // Usuario autenticado, redirigir al panel del usuario
+      return of(this.router.createUrlTree(['/panel/panel-control']));
     }
 
     // 4. Usuario NO autenticado → PERMITIR acceso (siempre para ecommerce)

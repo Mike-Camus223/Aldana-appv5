@@ -90,13 +90,6 @@ export class LoaderService {
       /^\/panel\/informacion-cuenta$/,
       /^\/panel\/favoritos$/,
 
-      // Admin Dashboard
-      /^\/admin$/,
-      /^\/admin\/panel-de-control$/,
-      /^\/admin\/storage$/,
-      /^\/admin\/creation$/,
-      /^\/admin\/users$/,
-
       // Shop & Products
       /^\/tienda$/,
       /^\/tienda\/categoria\/[^/]+$/,
@@ -160,10 +153,9 @@ export class LoaderService {
         const targetSegment = getFirstSegment(targetUrl);
 
         const isUserPanelInternal = currentUrl !== '' && currentSegment === 'panel' && targetSegment === 'panel';
-        const isAdminPanelInternal = currentUrl !== '' && currentSegment === 'admin' && targetSegment === 'admin';
         const isAuthInternal = currentUrl !== '' && currentSegment === 'cuenta' && targetSegment === 'cuenta';
 
-        const isInternalBypass = isUserPanelInternal || isAdminPanelInternal || isAuthInternal;
+        const isInternalBypass = isUserPanelInternal || isAuthInternal;
 
         // Check if this route should skip the generic loader
         if (!this.isFirstLoad && (isInternalBypass || this.shouldSkipGeneric(event.url))) {

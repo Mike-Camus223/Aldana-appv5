@@ -340,13 +340,8 @@ export class AuthService {
         this.clearLoginAttempts(email);
         this.logSecurityEvent('LOGIN_SUCCESS', email);
 
-        // Redirigir según el rol del usuario
-        const userRole = this.getUserRole();
-        if (userRole === 'admin') {
-          this.router.navigate(['/admin/panel-de-control']);
-        } else {
-          this.router.navigate(['/panel/panel-control']);
-        }
+        // Redirigir al panel del usuario
+        this.router.navigate(['/panel/panel-control']);
         return { success: true };
       }
 
@@ -609,20 +604,6 @@ export class AuthService {
     return `${maskedLocal}@${domain}`;
   }
 
-  /**
-   * Obtiene el rol del usuario actual
-   */
-  getUserRole(): string {
-    const user = this.getCurrentUser();
-    return user?.user_metadata?.['role'] || 'user';
-  }
-
-  /**
-   * Verifica si el usuario es admin
-   */
-  isAdmin(): boolean {
-    return this.getUserRole() === 'admin';
-  }
 
   /**
    * Obtiene el cliente de Supabase autenticado
@@ -1024,52 +1005,6 @@ export class AuthService {
       return { success: true };
     } catch (error: any) {
       return { success: false, error: error.message || 'Error al eliminar avatar' };
-    }
-  }
-
-  /**
-   * Actualiza el rol de un usuario (solo admins)
-   */
-  async updateUserRole(userId: string, newRole: 'user' | 'admin'): Promise<{ success: boolean; error?: string }> {
-    try {
-      const currentUser = this.getCurrentUser();
-      if (!currentUser) {
-        return { success: false, error: 'No hay usuario autenticado' };
-      }
-
-      if (!this.isAdmin()) {
-        this.logSecurityEvent('UNAUTHORIZED_ROLE_UPDATE_ATTEMPT', currentUser.email || 'unknown', {
-          targetUserId: userId,
-          attemptedRole: newRole
-        });
-        return { success: false, error: 'No tienes permisos para cambiar roles' };
-      }
-
-      const { error } = await this.supabase.auth.admin.updateUserById(userId, {
-        user_metadata: { role: newRole }
-      });
-
-      if (error) {
-        this.logSecurityEvent('ROLE_UPDATE_FAILED', currentUser.email || 'unknown', {
-          error: error.message,
-          targetUserId: userId,
-          newRole
-        });
-        return { success: false, error: error.message };
-      }
-
-      this.logSecurityEvent('ROLE_UPDATE_SUCCESS', currentUser.email || 'unknown', {
-        targetUserId: userId,
-        newRole
-      });
-      return { success: true };
-    } catch (error) {
-      this.logSecurityEvent('ROLE_UPDATE_ERROR', 'unknown', {
-        error: (error as Error).message,
-        targetUserId: userId,
-        newRole
-      });
-      return { success: false, error: 'Error al actualizar rol' };
     }
   }
 }
