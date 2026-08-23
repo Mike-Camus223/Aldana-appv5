@@ -12,16 +12,16 @@ export class InvoiceService {
   ) {}
 
   /**
-   * Descarga/Imprime la Factura o Comprobante para el Cliente (Consumidor Final o Factura A).
+   * Abre la Factura / Comprobante en una pestaña independiente para previsualizar, imprimir o Guardar como PDF.
    * @param orderId ID único de la orden en Supabase
    * @param invoiceType 'B' (por defecto) o 'A' (con IVA discriminado)
    */
   async downloadInvoice(orderId: string, invoiceType: 'B' | 'A' = 'B'): Promise<void> {
-    return this.requestInvoiceDocument(orderId, 'customer', invoiceType, 'Generando factura oficial...');
+    return this.requestInvoiceDocument(orderId, 'customer', invoiceType, 'Generando documento oficial...');
   }
 
   /**
-   * Descarga/Imprime la Hoja de Despacho, Picking y Control Administrativo para la Vendedora / Taller.
+   * Abre la Hoja de Despacho y Picking para la Vendedora / Taller.
    * @param orderId ID único de la orden en Supabase
    */
   async downloadAdminPackingSlip(orderId: string): Promise<void> {
@@ -39,27 +39,7 @@ export class InvoiceService {
       return;
     }
 
-    // Abrir la ventana inmediatamente para evitar que los navegadores bloqueen el popup
-    const popupWindow = window.open('', '_blank');
-    if (popupWindow) {
-      popupWindow.document.write(`
-        <!DOCTYPE html>
-        <html lang="es">
-        <head>
-          <title>Generando documento...</title>
-          <style>
-            body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; display: flex; align-items: center; justify-content: center; height: 80vh; color: #555; }
-            .loader { border: 3px solid #f3f3f3; border-top: 3px solid #556F52; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin-right: 12px; }
-            @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-          </style>
-        </head>
-        <body>
-          <div class="loader"></div>
-          <span>${loadingMessage}</span>
-        </body>
-        </html>
-      `);
-    }
+    this.notificationService.showInfo('Generando documento', loadingMessage);
 
     try {
       const supabase = this.authService.getAuthenticatedClient();
@@ -75,7 +55,6 @@ export class InvoiceService {
 
       if (error || !data?.html) {
         console.error('Error invoking generate-invoice edge function:', error);
-        if (popupWindow) popupWindow.close();
         this.notificationService.showError(
           'Error al emitir documento',
           error?.message || 'No se pudo generar el documento en el servidor.'
@@ -83,14 +62,44 @@ export class InvoiceService {
         return;
       }
 
-      if (popupWindow) {
-        popupWindow.document.open();
-        popupWindow.document.write(data.html);
-        popupWindow.document.close();
+      // Inyectar disparador de impresión/guardado en PDF automático de forma no bloqueante
+      let fullHtml = data.html;
+      const printScript = `
+        <script>
+          window.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+              window.print();
+            }, 300);
+          });
+        </script>
+      `;
+
+      if (fullHtml.includes('</body>')) {
+        fullHtml = fullHtml.replace('</body>', `${printScript}</body>`);
+      } else {
+        fullHtml += printScript;
       }
+
+      // Abrir en Blob URL con noopener para aislar completamente el hilo del navegador
+      const blob = new Blob([fullHtml], { type: 'text/html;charset=utf-8' });
+      const blobUrl = URL.createObjectURL(blob);
+
+      const openedWindow = window.open(blobUrl, '_blank', 'noopener,noreferrer');
+      if (!openedWindow) {
+        const a = document.createElement('a');
+        a.href = blobUrl;
+        a.download = `comprobante-${orderId.slice(0, 8)}.html`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      }
+
+      setTimeout(() => {
+        URL.revokeObjectURL(blobUrl);
+      }, 120000);
+
     } catch (err: any) {
       console.error('Error en InvoiceService:', err);
-      if (popupWindow) popupWindow.close();
       this.notificationService.showError('Error', 'Ocurrió un error inesperado al conectar con el servidor.');
     }
   }

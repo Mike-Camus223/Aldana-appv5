@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, OnDestroy } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import {
   ArrowDownToLine,
@@ -381,9 +381,20 @@ export class OrderStatusComponent implements OnInit, OnDestroy {
     return this.order.whatsapp_message.split('Agencia:')[1]?.trim() || null;
   }
 
-  downloadInvoice() {
+  @HostListener('window:focus')
+  onWindowFocus(): void {
+    this.cdr.markForCheck();
+    this.cdr.detectChanges();
+  }
+
+  async downloadInvoice(): Promise<void> {
     if (!this.order?.id) return;
-    this.invoiceService.downloadInvoice(this.order.id);
+    try {
+      await this.invoiceService.downloadInvoice(this.order.id);
+    } finally {
+      this.cdr.markForCheck();
+      this.cdr.detectChanges();
+    }
   }
 
   contactSupport() {
