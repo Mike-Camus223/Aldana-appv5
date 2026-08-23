@@ -15,12 +15,10 @@
 
           <nav class="flex flex-col px-4 gap-2">
             @for (item of navItems; track item.route) {
-            <a [routerLink]="item.route"
-              (click)="activeSection = item.route"
+            <a [routerLink]="item.route" (click)="activeSection = item.route"
               [class.bg-[#EAE8DF]]="activeSection === item.route"
               [class.text-aldy-green-gray-bold]="activeSection === item.route"
-              [class.font-normal]="activeSection === item.route"
-              [class.text-[#5F5C5A]]="activeSection !== item.route"
+              [class.font-normal]="activeSection === item.route" [class.text-[#5F5C5A]]="activeSection !== item.route"
               [class.font-light]="activeSection !== item.route"
               class="group flex items-center justify-start gap-3 px-4 py-3.5 text-[11px] tracking-[0.2em] uppercase NewAldyTitle hover:bg-[#EAE8DF] hover:text-aldy-green-gray transition-colors duration-200 cursor-pointer">
 
@@ -52,11 +50,6 @@
 
             </button>
           </div>
-
-          <div class="mt-auto pb-8 text-center">
-            <span class="text-[#c4b8a8] text-base tracking-widest select-none">˜ ˜ ˜</span>
-          </div>
-
         </aside>
 
         <div class="flex-1 flex flex-col min-h-screen">

@@ -105,9 +105,8 @@ export class CardproductComponent implements OnInit, AfterViewInit, OnDestroy, O
 
   get isBridalProduct(): boolean {
     return Boolean(
-      this.product?.isBridal || 
-      this.product?.source_module === 'bridal' || 
-      !this.product?.price
+      this.product?.isBridal === true || 
+      this.product?.source_module === 'bridal'
     );
   }
 

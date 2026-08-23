@@ -1,4 +1,4 @@
-import { AfterViewInit, Directive, ElementRef, Renderer2, OnDestroy, Inject, PLATFORM_ID } from '@angular/core';
+import { AfterViewInit, Directive, ElementRef, Renderer2, OnDestroy, Inject, PLATFORM_ID, Input } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Subject, takeUntil } from 'rxjs';
 import gsap from 'gsap';
@@ -13,6 +13,8 @@ export class WordRevealDirective implements AfterViewInit, OnDestroy {
   private originalContent: string = '';
   private animationSetup = false;
   private animationTween: gsap.core.Tween | null = null;
+
+  @Input() manualTrigger: boolean = false;
 
   constructor(
     private el: ElementRef, 
@@ -31,6 +33,10 @@ export class WordRevealDirective implements AfterViewInit, OnDestroy {
     
     this.originalContent = this.el.nativeElement.innerHTML || this.el.nativeElement.textContent || '';
     
+    if (this.manualTrigger) {
+      return;
+    }
+
     this.loaderService.currentLoader$
       .pipe(takeUntil(this.destroy$))
       .subscribe((currentLoader) => {
@@ -48,6 +54,10 @@ export class WordRevealDirective implements AfterViewInit, OnDestroy {
           this.resetAnimation();
         }
       });
+  }
+
+  public triggerAnimation(): void {
+    this.setupAnimation();
   }
 
   private resetAnimation(): void {

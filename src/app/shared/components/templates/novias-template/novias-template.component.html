@@ -1,48 +1,30 @@
 <div
   class="inline-flex justify-end sm:px-6 lg:px-12 xl:px-16 2xl:px-24 items-center py-2 border-b border-[#d9e2d8] w-full h-auto">
   <div class="h-auto justify-end gap-2 hidden lg:flex">
-    <button
-      type="button"
-      (click)="setProductColumns(2)"
-      [ngClass]="productColumns === 2 ? 'bg-aldy-medium-2' : ''"
-      class="group py-[7px] px-2 hover:bg-aldy-medium-2 transition-all duration-300 cursor-pointer border border-aldy-medium"
-      >
+    <button type="button" (click)="setProductColumns(2)" [ngClass]="productColumns === 2 ? 'bg-aldy-medium-2' : ''"
+      class="group py-[7px] px-2 hover:bg-aldy-medium-2 transition-all duration-300 cursor-pointer border border-aldy-medium">
       <div class="grid grid-cols-2 gap-[2px] grid-rows-2">
         @for (n of [1,2,3,4]; track n) {
-          <span
-            class="h-[12px] w-[12px]"
-            [ngClass]="productColumns === 2 ? 'bg-aldy-white' : 'bg-aldy-medium-2 group-hover:bg-aldy-white'"
-          ></span>
+        <span class="h-[12px] w-[12px]"
+          [ngClass]="productColumns === 2 ? 'bg-aldy-white' : 'bg-aldy-medium-2 group-hover:bg-aldy-white'"></span>
         }
       </div>
     </button>
-    <button
-      type="button"
-      (click)="setProductColumns(3)"
-      [ngClass]="productColumns === 3 ? 'bg-aldy-medium-2' : ''"
-      class="group py-[7px] px-2 hover:bg-aldy-medium-2 transition-all duration-300 cursor-pointer border border-aldy-medium"
-      >
+    <button type="button" (click)="setProductColumns(3)" [ngClass]="productColumns === 3 ? 'bg-aldy-medium-2' : ''"
+      class="group py-[7px] px-2 hover:bg-aldy-medium-2 transition-all duration-300 cursor-pointer border border-aldy-medium">
       <div class="grid grid-cols-3 gap-[2px] grid-rows-3">
         @for (n of [1,2,3,4,5,6,7,8,9]; track n) {
-          <span
-            class="h-[8px] w-[8px]"
-            [ngClass]="productColumns === 3 ? 'bg-aldy-white' : 'bg-aldy-medium-2 group-hover:bg-aldy-white'"
-          ></span>
+        <span class="h-[8px] w-[8px]"
+          [ngClass]="productColumns === 3 ? 'bg-aldy-white' : 'bg-aldy-medium-2 group-hover:bg-aldy-white'"></span>
         }
       </div>
     </button>
-    <button
-      type="button"
-      (click)="setProductColumns(4)"
-      [ngClass]="productColumns === 4 ? 'bg-aldy-medium-2' : ''"
-      class="group py-[7px] px-2 hover:bg-aldy-medium-2 transition-all duration-300 cursor-pointer border border-aldy-medium hidden xl:block"
-      >
+    <button type="button" (click)="setProductColumns(4)" [ngClass]="productColumns === 4 ? 'bg-aldy-medium-2' : ''"
+      class="group py-[7px] px-2 hover:bg-aldy-medium-2 transition-all duration-300 cursor-pointer border border-aldy-medium hidden xl:block">
       <div class="grid grid-cols-4 gap-[2px] grid-rows-4">
         @for (n of [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]; track n) {
-          <span
-            class="h-[5px] w-[5px]"
-            [ngClass]="productColumns === 4 ? 'bg-aldy-white' : 'bg-aldy-medium-2 group-hover:bg-aldy-white'"
-          ></span>
+        <span class="h-[5px] w-[5px]"
+          [ngClass]="productColumns === 4 ? 'bg-aldy-white' : 'bg-aldy-medium-2 group-hover:bg-aldy-white'"></span>
         }
       </div>
     </button>
@@ -54,97 +36,67 @@
 
       <div class="flex items-center gap-4 mb-4">
         <div class="h-px w-12 bg-aldy-green-gray opacity-50"></div>
-        <img
-          [draggable]="false"
-          src="../../../../../assets/svg/logos-03.svg"
-          alt="AV"
-          class="w-9 h-9 object-contain opacity-80"
-          />
-          <div class="h-px w-12 bg-aldy-green-gray opacity-50"></div>
-        </div>
-        <h1 appWordReveal
-          class="NewAldyTitle font-light text-aldy-green-gray uppercase tracking-[0.2em] text-2xl sm:text-4xl lg:text-5xl leading-none">
-          Colecciones Novias
-        </h1>
+        <img [draggable]="false" src="../../../../../assets/svg/logos-03.svg" alt="AV"
+          class="w-9 h-9 object-contain opacity-80" />
+        <div class="h-px w-12 bg-aldy-green-gray opacity-50"></div>
+      </div>
+      <h1 appWordReveal
+        class="NewAldyTitle font-light text-aldy-green-gray uppercase tracking-[0.2em] text-2xl sm:text-4xl lg:text-5xl leading-none">
+        Colecciones Novias
+      </h1>
 
-        <p appWordReveal
-          class="NewAldyFontType4 px-3 sm:px-0 text-[10px] sm:text-xs tracking-[0.28em] uppercase text-aldy-green-gray opacity-80 mt-2">
-          Diseños para momentos únicos. Recuerdos eternos.
-        </p>
-        <img
-          [draggable]="false"
-          src="../../../../../assets/images/sections/collection/leaf1.png"
-          alt=""
-          class="w-25 sm:w-30 h-auto mt-2"
-          />
-        </div>
-        @if (CollectionBrides.length === 0) {
-          <div
-            class="text-center NewAldyFontType4 tracking-wider text-sm text-aldy-green-gray py-16">
-            No hay colecciones disponibles en este momento.
-          </div>
-        }
-        @if (CollectionBrides.length > 0) {
-          <div
-            [@gridAnimation]="productColumns"
-            class="grid gap-6 transition-all duration-500 ease-in-out"
-      [ngClass]="{
+      <p appWordReveal
+        class="NewAldyFontType4 px-3 sm:px-0 text-[10px] sm:text-xs tracking-[0.28em] uppercase text-aldy-green-gray opacity-80 mt-2">
+        Diseños para momentos únicos. Recuerdos eternos.
+      </p>
+      <img [draggable]="false" src="../../../../../assets/images/sections/collection/leaf1.png" alt=""
+        class="w-25 sm:w-30 h-auto mt-2" />
+    </div>
+    @if (CollectionBrides.length === 0) {
+    <div class="text-center NewAldyFontType4 tracking-wider text-sm text-aldy-green-gray py-16">
+      No hay colecciones disponibles en este momento.
+    </div>
+    }
+    @if (CollectionBrides.length > 0) {
+    <div [@gridAnimation]="productColumns" class="grid gap-6 transition-all duration-500 ease-in-out" [ngClass]="{
         'grid-cols-1':         productColumns === 1,
         'grid-cols-2':         productColumns === 2,
         'grid-cols-3':         productColumns === 3,
         'grid-cols-4':         productColumns === 4
-      }"
-            >
-            @for (collectionB of CollectionBrides; track collectionB; let i = $index) {
-              <a
-                [routerLink]="['/novias-colecciones', collectionB.slug]"
-                class="flex flex-col w-full group cursor-pointer overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300"
-                [ngClass]="i % 2 === 0 ? 'bg-aldy-white' : 'bg-aldy-medium'"
-                >
-                <div class="relative w-full overflow-hidden bg-[#e4ddd6]">
-                  <div class="aspect-[2/4] overflow-hidden w-full relative">
-                    <img
-                      appCardInitAnimation="up"
-                      [src]="collectionB.cover_image_url"
-                      [alt]="collectionB.name"
-                      class="object-cover object-top w-full h-full transition-transform duration-700 ease-out group-hover:scale-[1.03]"
-                      />
-                    </div>
-                    <div class="absolute bottom-0 left-0 right-0 z-20" style="height: 25vh;">
-                      <div
-                        class="w-full h-full flex flex-col items-center justify-center pt-3 pb-5 px-3 text-center"
-                        [ngClass]="i % 2 === 0 ? 'bg-aldy-white' : 'bg-[#DEE2D4]'"
-                        style="border-radius: 80% 80% 0 0 / 40% 40% 0 0;"
-                        >
-                        <img
-                          [draggable]="false"
-                          src="../../../../../assets/images/sections/collection/leaf2.png"
-                          alt=""
-                          class="w-20 h-auto mb-2 mt-2"
-                          />
-                          <h3 appWordReveal
-                            class="NewAldyTitle font-light uppercase tracking-[0.18em] text-aldy-green-gray text-xl 2xl:text-2xl leading-tight">
-                            {{ collectionB.name }}
-                          </h3>
-                          <p appWordReveal
-                            class="NewAldyFontType4 text-xs tracking-[0.17em] uppercase text-aldy-green-gray mb-4">
-                            {{ collectionB.season }} - {{ collectionB.release_date | date: 'yyyy' }}
-                          </p>
-                          <div appFadeUpLetter
-                            class="w-10 h-10 rounded-full border border-aldy-green-gray/40 flex items-center justify-center">
-                            <img
-                              [draggable]="false"
-                              src="../../../../../assets/svg/logos-03.svg"
-                              alt="AV"
-                              class="w-[22px] h-[22px] object-contain"
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </a>
-                  }
-                </div>
-              }
+      }">
+      @for (collectionB of CollectionBrides; track collectionB; let i = $index) {
+      <a [routerLink]="['/novias-colecciones', collectionB.slug]"
+        class="flex flex-col w-full group cursor-pointer overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300"
+        [ngClass]="i % 2 === 0 ? 'bg-aldy-white' : 'bg-aldy-medium'">
+        <div class="relative w-full overflow-hidden bg-[#e4ddd6]">
+          <div class="aspect-[2/4] overflow-hidden w-full relative">
+            <img appCardInitAnimation="up" [src]="collectionB.cover_image_url" [alt]="collectionB.name"
+              class="object-cover object-top w-full h-full transition-transform duration-700 ease-out group-hover:scale-[1.03]" />
+          </div>
+          <div class="absolute bottom-0 left-0 right-0 z-20" style="height: 25vh;">
+            <div class="w-full h-full flex flex-col items-center justify-center pt-3 pb-5 px-3 text-center"
+              [ngClass]="i % 2 === 0 ? 'bg-aldy-white' : 'bg-[#DEE2D4]'"
+              style="border-radius: 80% 80% 0 0 / 40% 40% 0 0;">
+              <img [draggable]="false" src="../../../../../assets/images/sections/collection/leaf2.png" alt=""
+                class="w-20 h-auto mb-2 mt-2" />
+              <h3 appWordReveal
+                class="NewAldyTitle font-light uppercase tracking-[0.18em] text-aldy-green-gray text-xl 2xl:text-2xl leading-tight">
+                {{ collectionB.name }}
+              </h3>
+              <p appWordReveal class="NewAldyFontType4 text-xs tracking-[0.17em] uppercase text-aldy-green-gray mb-4">
+                {{ collectionB.season }} - {{ collectionB.release_date | date: 'yyyy' }}
+              </p>
+              <div appFadeUpLetter
+                class="w-10 h-10 rounded-full border border-aldy-green-gray/40 flex items-center justify-center">
+                <img [draggable]="false" src="../../../../../assets/svg/logos-03.svg" alt="AV"
+                  class="w-[22px] h-[22px] object-contain" />
+              </div>
             </div>
           </div>
+        </div>
+      </a>
+      }
+    </div>
+    }
+  </div>
+</div>

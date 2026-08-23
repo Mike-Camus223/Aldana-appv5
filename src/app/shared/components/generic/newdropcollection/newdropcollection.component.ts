@@ -1,13 +1,32 @@
-import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, AfterViewInit, OnDestroy, OnChanges, SimpleChanges, ElementRef, ViewChild, Inject } from '@angular/core';
+import {
+  Component,
+  Input,
+  Output,
+  EventEmitter,
+  ChangeDetectionStrategy,
+  AfterViewInit,
+  OnDestroy,
+  OnChanges,
+  SimpleChanges,
+  ElementRef,
+  ViewChild,
+  ViewChildren,
+  QueryList,
+  Inject
+} from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { PLATFORM_ID } from '@angular/core';
 import { gsap } from 'gsap';
+import { WordRevealDirective } from '../../../utils/directives/word-reveal.directive';
+import { FadeUpLetterDirective } from '../../../utils/directives/fadeupletter.directive';
 
 @Component({
   selector: 'app-newdropcollection',
   standalone: true,
   imports: [
-    CommonModule
+    CommonModule,
+    WordRevealDirective,
+    FadeUpLetterDirective
   ],
   templateUrl: './newdropcollection.component.html',
   styleUrls: ['./newdropcollection.component.css'],
@@ -17,17 +36,20 @@ export class NewdropcollectionComponent implements AfterViewInit, OnDestroy, OnC
   @Input() collection: any;
   @Input() isMobileView: boolean = false;
   @Input() canAnimate: boolean = true;
-  
+
   @Output() collectionSelected = new EventEmitter<any>();
 
   @ViewChild('cardRoot', { static: false }) cardRootRef!: ElementRef<HTMLElement>;
   @ViewChild('collectionImage', { static: false }) collectionImageRef!: ElementRef<HTMLImageElement>;
+  @ViewChildren(WordRevealDirective) wordReveals!: QueryList<WordRevealDirective>;
+  @ViewChildren(FadeUpLetterDirective) fadeUpLetters!: QueryList<FadeUpLetterDirective>;
+
   private hasAnimated: boolean = false;
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
     private hostRef: ElementRef<HTMLElement>
-  ) {}
+  ) { }
 
   ngAfterViewInit(): void {
     if (isPlatformBrowser(this.platformId)) {
@@ -72,15 +94,18 @@ export class NewdropcollectionComponent implements AfterViewInit, OnDestroy, OnC
 
     gsap.killTweensOf(cardEl);
     gsap.fromTo(cardEl,
-      { opacity: 0, y: 22 },
+      { opacity: 0, y: 22, willChange: 'opacity, transform' },
       {
         opacity: 1,
         y: 0,
         duration: 0.55,
         ease: 'power3.out',
         delay: delay,
-        clearProps: 'opacity,transform,willChange',
-        overwrite: 'auto'
+        clearProps: 'willChange',
+        overwrite: 'auto',
+        onComplete: () => {
+          this.triggerChildDirectives();
+        }
       }
     );
 
@@ -97,6 +122,15 @@ export class NewdropcollectionComponent implements AfterViewInit, OnDestroy, OnC
           overwrite: 'auto'
         }
       );
+    }
+  }
+
+  private triggerChildDirectives(): void {
+    if (this.wordReveals) {
+      this.wordReveals.forEach(directive => directive.triggerAnimation());
+    }
+    if (this.fadeUpLetters) {
+      this.fadeUpLetters.forEach(directive => directive.triggerAnimation());
     }
   }
 

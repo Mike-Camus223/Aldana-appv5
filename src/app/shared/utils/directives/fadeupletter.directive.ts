@@ -1,4 +1,4 @@
-import { AfterViewInit, Directive, ElementRef, Renderer2, OnDestroy, Inject, PLATFORM_ID } from '@angular/core';
+import { AfterViewInit, Directive, ElementRef, Renderer2, OnDestroy, Inject, PLATFORM_ID, Input } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Subject, takeUntil } from 'rxjs';
 import gsap from 'gsap';
@@ -13,6 +13,8 @@ export class FadeUpLetterDirective implements AfterViewInit, OnDestroy {
   private animationSetup = false;
   private originalDimensions = { width: 0, height: 0 };
   private dimensionsCalculated = false;
+
+  @Input() manualTrigger: boolean = false;
 
   constructor(
     private el: ElementRef, 
@@ -31,6 +33,10 @@ export class FadeUpLetterDirective implements AfterViewInit, OnDestroy {
     if (isPlatformBrowser(this.platformId)) {
       this.calculateAndReserveDimensions();
       
+      if (this.manualTrigger) {
+        return;
+      }
+
       this.loaderService.animationsEnabled$
         .pipe(takeUntil(this.destroy$))
         .subscribe((enabled: boolean) => {
@@ -43,6 +49,10 @@ export class FadeUpLetterDirective implements AfterViewInit, OnDestroy {
           }
         });
     }
+  }
+
+  public triggerAnimation(): void {
+    this.startAnimation();
   }
 
   private calculateAndReserveDimensions(): void {

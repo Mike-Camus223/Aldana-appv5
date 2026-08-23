@@ -1,49 +1,68 @@
 @if (isMobileView) {
-<div #cardRoot class="relative flex flex-col bg-aldy-white shadow-md overflow-hidden w-full mx-auto cursor-pointer" (click)="onClick()">
-  <div class="relative w-full aspect-[4/5] overflow-hidden bg-[#e4ddd6]">
-    <div class="absolute top-2 xs:top-3 left-0 z-10">
-      <span
-        class="bg-aldy-medium-2 text-white tracking-widest font-light NewAldyFontType4 py-1 pl-2.5 pr-3.5 xs:pl-3 xs:pr-4"
-        style="clip-path: polygon(0 0, 100% 0, 92% 100%, 0 100%); font-size: clamp(7px, 2.2vw, 9px);">
-        COLECCIÓN
-      </span>
+<div #cardRoot
+  class="flex flex-col w-full group cursor-pointer overflow-hidden shadow-md transition-shadow duration-300 relative aspect-[3/4] sm:aspect-[4/5] bg-[#e4ddd6]"
+  (click)="onClick()">
+  <div class="relative w-full h-full overflow-hidden bg-[#e4ddd6]">
+    <div class="w-full h-full overflow-hidden relative">
+      @if (collection.cover_image_url) {
+      <img #collectionImage [src]="collection.cover_image_url" [alt]="collection.name"
+        class="object-cover object-top w-full h-full transition-transform duration-700 ease-out" />
+      }
     </div>
-    @if (collection.cover_image_url) {
-      <img #collectionImage [src]="collection.cover_image_url" [alt]="collection.name" class="w-full h-full object-cover object-top" />
-    }
-  </div>
-  <div class="flex flex-col px-2.5 xs:px-3 py-2.5 text-center">
-    <p class="text-[10px] tracking-widest NewAldyFontType4 uppercase text-aldy-medium-2 font-medium mb-1">
-      {{ collection.season || 'Novedades' }}
-    </p>
-    <h3 class="font-light NewAldyTitle text-aldy-green-gray-bold m-0 tracking-wide leading-tight break-words uppercase"
-      style="font-size: clamp(12px, 3.6vw, 17px);">
-      {{ collection.name }}
-    </h3>
+    <div class="absolute bottom-0 left-0 right-0 z-20" style="height: 42%;">
+      <div class="w-full h-full flex flex-col items-center justify-center pt-2 pb-3 px-2 text-center bg-aldy-white"
+        style="border-radius: 80% 80% 0 0 / 40% 40% 0 0;">
+        <img [draggable]="false" src="assets/images/sections/collection/leaf2.png" alt=""
+          class="w-12 h-auto mb-1 mt-1" />
+        <h3 appWordReveal [manualTrigger]="true"
+          class="NewAldyTitle font-light uppercase tracking-[0.16em] text-aldy-green-gray text-xs sm:text-sm leading-tight line-clamp-1">
+          {{ collection.name }}
+        </h3>
+        <p appWordReveal [manualTrigger]="true" class="NewAldyFontType4 text-[8px] sm:text-[9px] tracking-[0.15em] uppercase text-aldy-green-gray mb-1.5">
+          {{ collection.season || 'Colección' }} {{ collection.release_date ? (' - ' + (collection.release_date | date:
+          'yyyy')) : '' }}
+        </p>
+        <div appFadeUpLetter [manualTrigger]="true" class="w-6 h-6 rounded-full border border-aldy-green-gray/40 flex items-center justify-center">
+          <img [draggable]="false" src="assets/svg/logos-03.svg" alt="AV" class="w-[12px] h-[12px] object-contain" />
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 } @else {
-<div #cardRoot class="relative overflow-hidden shadow-md group aspect-[3/4] sm:aspect-[3/4] md:aspect-[3/5] lg:aspect-[3/5] xl:aspect-[3/5] bg-[#e4ddd6] cursor-pointer w-full" (click)="onClick()">
-  <div class="absolute top-3 left-0 z-10">
-    <span class="bg-aldy-medium-2 text-white text-[10px] tracking-widest font-light NewAldyFontType4 py-1 pl-3 pr-4"
-      style="clip-path: polygon(0 0, 100% 0, 92% 100%, 0 100%)">
-      COLECCIÓN
-    </span>
-  </div>
-  <div class="absolute inset-0 z-0 block">
-    @if (collection.cover_image_url) {
+<div #cardRoot
+  class="flex flex-col w-full group cursor-pointer overflow-hidden shadow-md transition-shadow duration-300 relative aspect-[3/4] sm:aspect-[3/4] md:aspect-[3/5] lg:aspect-[3/5] xl:aspect-[3/5] bg-[#e4ddd6]"
+  (click)="onClick()">
+  <div class="relative w-full h-full overflow-hidden bg-[#e4ddd6]">
+    <div class="w-full h-full overflow-hidden relative">
+      @if (collection.cover_image_url) {
       <img #collectionImage [src]="collection.cover_image_url" [alt]="collection.name"
-        class="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105" />
-    }
-  </div>
-  <div class="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/60 to-transparent flex flex-col justify-end min-h-[30%] z-10 text-white">
-    <p class="text-[10px] tracking-widest NewAldyFontType4 uppercase text-white/80 font-medium mb-1">
-      {{ collection.season || 'Novedades' }}
-    </p>
-    <h3 class="text-xl font-light NewAldyTitle text-white m-0 uppercase">
-      {{ collection.name }}
-    </h3>
-    <p class="text-[11px] text-white/70 NewAldyFontType4 mt-1">Ver prendas de colección ➔</p>
+        class="object-cover object-top w-full h-full transition-transform duration-700 ease-out" />
+      }
+    </div>
+    <div class="absolute bottom-0 left-0 right-0 z-20" style="height: 20vh;">
+      <div class="w-full h-full flex flex-col items-center justify-center pt-2 pb-3 px-3 text-center bg-aldy-white"
+        style="border-radius: 80% 80% 0 0 / 40% 40% 0 0;">
+        <img [draggable]="false" src="assets/images/sections/collection/leaf2.png" alt=""
+          class="w-14 sm:w-16 h-auto mb-1 mt-1" />
+
+        <h3 appWordReveal [manualTrigger]="true"
+          class="NewAldyTitle font-light uppercase tracking-[0.18em] mb-1 text-aldy-green-gray text-xl 2xl:text-2xl leading-tight line-clamp-1">
+          {{ collection.name }}
+        </h3>
+
+        <p appWordReveal [manualTrigger]="true" class="NewAldyFontType4 text-xs tracking-[0.17em] uppercase text-aldy-green-gray mb-4">
+          {{ collection.season || 'Colección' }}
+          {{ collection.release_date ? (' - ' + (collection.release_date | date: 'yyyy')) : '' }}
+        </p>
+
+        <div appFadeUpLetter [manualTrigger]="true"
+          class="w-7 h-7 sm:w-8 sm:h-8 rounded-full border border-aldy-green-gray/40 flex items-center justify-center">
+          <img [draggable]="false" src="assets/svg/logos-03.svg" alt="AV"
+            class="w-[14px] h-[14px] sm:w-[16px] sm:h-[16px] object-contain" />
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 }

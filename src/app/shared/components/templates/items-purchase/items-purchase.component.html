@@ -59,14 +59,10 @@
 
         <!-- Botón de consulta WhatsApp para vestidos de Novias -->
         <div *ngIf="isBridalProduct" class="flex items-center mt-4">
-          <a
-            [href]="whatsappConsultUrl"
-            target="_blank"
-            rel="noopener noreferrer"
+          <a [href]="whatsappConsultUrl" target="_blank" rel="noopener noreferrer"
             class="flex-1 cursor-pointer flex items-center justify-center gap-3 bg-aldy-medium border border-aldy-medium text-white uppercase py-3 px-6 text-center transition-colors hover:bg-aldy-medium-2 hover:border-aldy-medium-2">
             <span class="tracking-wider NewAldyFontType4 text-sm md:text-sm font-light">Consultar en WhatsApp</span>
-            <lucide-icon [size]="20" [strokeWidth]="1.5" name="message-circle"
-              class="text-white relative -top-[0.7px]"></lucide-icon>
+            <i class="fa-brands fa-whatsapp text-xl text-white font-light"></i>
           </a>
         </div>
 
@@ -134,8 +130,8 @@
             </p>
           </div>
         </app-acordiongeneric>
-        <!-- ngIf="!product.isBridal" en caso de no necesitar esto en novias se usa este if -->
-        <div class="w-full overflow-hidden p-4">
+        <!-- Aviso de confección solo para novias -->
+        <div *ngIf="isBridalProduct" class="w-full overflow-hidden p-4">
           <div class="flex items-start gap-3">
             <lucide-icon class="text-aldy-green-gray-bold mt-1" [size]="24" [strokeWidth]="1.5"
               name="package"></lucide-icon>
