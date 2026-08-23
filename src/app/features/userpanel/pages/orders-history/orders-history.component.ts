@@ -65,6 +65,10 @@ export class OrdersHistoryComponent implements OnInit {
     this.loadUserOrders();
   }
 
+  navigateToStore(): void {
+    this.router.navigate(['/tienda']);
+  }
+
   async loadUserOrders(forceRefresh = false) {
     if (this.orders.length === 0) {
       this.loading = true;

@@ -47,55 +47,46 @@
     <div #storeLayout class="flex flex-col lg:flex-row relative transition-all duration-500 ease-in-out"
       [ngClass]="{ 'gap-4': showFilters && !isMobileView, 'gap-0': !showFilters || isMobileView }">
 
-      <app-filter
-        [(showFilters)]="showFilters"
-        [isMobileView]="isMobileView"
-        [topCollections]="topCollections"
-        [topBridesCollections]="topBridesCollections"
-        [(activeCategory)]="activeCategory"
-        [(selectedCollectionId)]="selectedCollectionId"
-        (filterApplied)="applyFiltersAction(isMobileView)"
-      ></app-filter>
+      <app-filter [(showFilters)]="showFilters" [isMobileView]="isMobileView" [topCollections]="topCollections"
+        [topBridesCollections]="topBridesCollections" [(activeCategory)]="activeCategory"
+        [(selectedCollectionId)]="selectedCollectionId" (filterApplied)="applyFiltersAction(isMobileView)"></app-filter>
 
-      <div #productsContainer class="transition-all duration-500 ease-in-out relative w-full h-auto w-auto sm:w-full">
+      <div #productsContainer class="relative w-full h-auto min-h-[420px] overflow-hidden">
         @if (loading) {
-        <div
-          class="absolute inset-0 flex items-center justify-center h-1/2 sm:h-full bg-aldy-white backdrop-blur-[1px] z-20">
+        <div #spinnerContainer class="flex items-center justify-center w-full min-h-[420px] py-24 bg-aldy-white z-20">
           <div class="spinner"></div>
         </div>
         }
         @if (!loading && filteredProducts.length === 0 && newDropCollections.length === 0) {
         <p
-          class="text-center NewAldyFontType4 text-xs uppercase py-12 text-aldy-green-gray-bold flex justify-center items-center h-full">
+          class="text-center NewAldyFontType4 text-xs uppercase py-24 text-aldy-green-gray-bold flex justify-center items-center h-full min-h-[300px]">
           No hay productos para mostrar.
         </p>
         }
         @if (!loading && (pagedProducts.length > 0 || newDropCollections.length > 0)) {
-        <div [@gridAnimation]="productColumns" class="grid gap-5 transition-all duration-500 ease-in-out" [ngClass]="[
+        <div #productsGrid class="grid gap-5" [ngClass]="[
             productColumns === 2
               ? 'grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-2 mx-0 xl:mx-60'
               : '',
             productColumns === 3 ? 'grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 mx-0' : '',
             productColumns === 4 ? 'grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 mx-0' : ''
           ]">
-          
+
           <!-- Tarjetas de colección en New Drop y Novias -->
           @if ((activeCategory === 'new-drop' || activeCategory === 'novias') && currentPage === 1) {
-            @for (col of newDropCollections; track col.id) {
-              <app-newdropcollection
-                [collection]="col"
-                [isMobileView]="isMobileView"
-                (collectionSelected)="onCollectionCardSelected(col)">
-              </app-newdropcollection>
-            }
+          @for (col of newDropCollections; track (col.id + '-' + activeCategory)) {
+          <app-newdropcollection [collection]="col" [isMobileView]="isMobileView" [canAnimate]="cardsReady"
+            (collectionSelected)="onCollectionCardSelected(col)">
+          </app-newdropcollection>
+          }
           }
 
           <!-- Listado de prendas individuales -->
-          @for (product of pagedProducts; track trackByProductId($index, product)) {
-            <app-cardproduct [product]="product" [selectedColor]="selectedColors[product.id]"
-              [displayImage]="product.main_image" [mobileMode]="'ismobile'" [desktopMode]="'isdesktop'"
-              (colorSelected)="selectColor($event)">
-            </app-cardproduct>
+          @for (product of pagedProducts; track (product.id + '-' + activeCategory)) {
+          <app-cardproduct [product]="product" [selectedColor]="selectedColors[product.id]"
+            [displayImage]="product.main_image" [mobileMode]="'ismobile'" [desktopMode]="'isdesktop'"
+            [canAnimate]="cardsReady" (colorSelected)="selectColor($event)">
+          </app-cardproduct>
           }
         </div>
         }

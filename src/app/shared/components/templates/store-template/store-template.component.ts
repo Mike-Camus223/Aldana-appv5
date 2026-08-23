@@ -1,7 +1,6 @@
-import { Component, OnInit, HostListener, Inject, ElementRef, ViewChild, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, HostListener, Inject, ElementRef, ViewChild, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, isPlatformBrowser, Location } from '@angular/common';
 import { PLATFORM_ID } from '@angular/core';
-import { combineLatest } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { BridesProductsService } from '../../../../core/services/data-access/brides-products/brides-products.service';
@@ -9,7 +8,6 @@ import { Product } from '../../../utils/models/Products-supabase.interface';
 import { ProductUtils } from '../../../utils/dataEx/products-utils';
 import { CardproductComponent } from '../../generic/cardproduct/cardproduct.component';
 import { Funnel, LUCIDE_ICONS, LucideIconProvider, LucideAngularModule, ChevronDown, ChevronUp, Minus, Plus } from 'lucide-angular';
-import { trigger, transition, style, animate } from '@angular/animations';
 import { LoadingbarComponent } from '../../system/loadingbar/loadingbar.component';
 import { FavoritesService } from '../../../../core/services/favorites/favorites.service';
 import { AuthService } from '../../../../core/services/auth/auth.service';
@@ -17,6 +15,7 @@ import { ProductsService } from '../../../../core/services/data-access/products/
 import { PaginatorComponent } from '../../generic/paginator/paginator.component';
 import { FilterComponent } from '../../system/filter/filter.component';
 import { NewdropcollectionComponent } from '../../generic/newdropcollection/newdropcollection.component';
+import { gsap } from 'gsap';
 
 @Component({
   selector: 'app-store-template',
@@ -34,14 +33,6 @@ import { NewdropcollectionComponent } from '../../generic/newdropcollection/newd
   ],
   templateUrl: './store-template.component.html',
   styleUrls: ['./store-template.component.css'],
-  animations: [
-    trigger('gridAnimation', [
-      transition('* => *', [
-        style({ transform: 'scale(0.98)', opacity: 0.8 }),
-        animate('400ms ease-out', style({ transform: 'scale(1)', opacity: 1 })),
-      ]),
-    ])
-  ],
   changeDetection: ChangeDetectionStrategy.Default,
   providers: [
     {
@@ -62,6 +53,7 @@ export class StoreTemplateComponent implements OnInit {
   newDropCollections: any[] = [];
 
   loading: boolean = true;
+  cardsReady: boolean = false;
   showFilters: boolean = false;
   productColumns: number = 4;
   itemsPerPage: number = 16;
@@ -79,6 +71,8 @@ export class StoreTemplateComponent implements OnInit {
   private currentFavorites: Set<string> = new Set();
   private currentRequestId: number = 0;
   @ViewChild('productsContainer') productsContainerRef?: ElementRef<HTMLDivElement>;
+  @ViewChild('spinnerContainer') spinnerContainerRef?: ElementRef<HTMLDivElement>;
+  @ViewChild('productsGrid') productsGridRef?: ElementRef<HTMLDivElement>;
 
   constructor(
     private productsService: ProductsService,
@@ -88,6 +82,7 @@ export class StoreTemplateComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private location: Location,
+    private cdr: ChangeDetectorRef,
     @Inject(PLATFORM_ID) private platformId: Object
   ) { }
 
@@ -122,69 +117,89 @@ export class StoreTemplateComponent implements OnInit {
   }
 
   private async initializeRoute(): Promise<void> {
-    combineLatest([this.route.paramMap, this.route.queryParamMap]).subscribe(async ([params, qp]) => {
-      this.loading = true;
+    const params = this.route.snapshot.paramMap;
+    const qp = this.route.snapshot.queryParamMap;
 
-      const categoriaParam = params.get('categoria');
-      const collectionParam = qp.get('coleccion');
-      const pageParam = qp.get('page');
+    const categoriaParam = params.get('categoria');
+    const collectionParam = qp.get('coleccion');
+    const pageParam = qp.get('page');
 
-      if (categoriaParam) {
-        this.activeCategory = categoriaParam.toLowerCase();
-      } else {
-        this.activeCategory = 'new-drop';
+    if (categoriaParam) {
+      this.activeCategory = categoriaParam.toLowerCase();
+    } else {
+      this.activeCategory = 'new-drop';
+    }
+
+    if (collectionParam) {
+      this.selectedCollectionId = collectionParam;
+    } else {
+      this.selectedCollectionId = null;
+    }
+
+    const qpPage = pageParam ? Number(pageParam) : 1;
+    this.currentPage = !Number.isNaN(qpPage) && qpPage > 0 ? qpPage : 1;
+
+    await this.applyFilters();
+  }
+
+  private async ensureCollectionsLoaded(): Promise<void> {
+    try {
+      if (this.allCollections.length === 0) {
+        const collectionsData = await this.productsService.getAllCollections();
+        this.allCollections = collectionsData || [];
+        this.topCollections = [...this.allCollections]
+          .sort((a, b) => new Date(b.release_date || b.created_at).getTime() - new Date(a.release_date || a.created_at).getTime())
+          .slice(0, 4);
       }
-
-      if (collectionParam) {
-        this.selectedCollectionId = collectionParam;
-      } else {
-        this.selectedCollectionId = null;
+      if (this.allBridesCollections.length === 0) {
+        const bridesCollectionsData = await this.bridesProductsService.getCollections();
+        this.allBridesCollections = bridesCollectionsData?.data || [];
+        this.topBridesCollections = [...this.allBridesCollections]
+          .sort((a, b) => new Date(b.release_date || b.created_at).getTime() - new Date(a.release_date || a.created_at).getTime())
+          .slice(0, 4);
       }
-
-      const qpPage = pageParam ? Number(pageParam) : 1;
-      this.currentPage = !Number.isNaN(qpPage) && qpPage > 0 ? qpPage : 1;
-
-      // Cargar colecciones normales y novias para cachear
-      try {
-        if (this.allCollections.length === 0) {
-          const collectionsData = await this.productsService.getAllCollections();
-          this.allCollections = collectionsData || [];
-          this.topCollections = [...this.allCollections]
-            .sort((a, b) => new Date(b.release_date || b.created_at).getTime() - new Date(a.release_date || a.created_at).getTime())
-            .slice(0, 4);
-
-          const bridesCollectionsData = await this.bridesProductsService.getCollections();
-          this.allBridesCollections = bridesCollectionsData?.data || [];
-          this.topBridesCollections = [...this.allBridesCollections]
-            .sort((a, b) => new Date(b.release_date || b.created_at).getTime() - new Date(a.release_date || a.created_at).getTime())
-            .slice(0, 4);
-        }
-      } catch (err) {
-        console.error('Error loading collections cache:', err);
-      }
-
-      await this.applyFilters();
-    });
+    } catch (err) {
+      console.error('Error loading collections cache:', err);
+    }
   }
 
   public async applyFilters(): Promise<void> {
     this.currentRequestId++;
     const requestId = this.currentRequestId;
 
-    this.lockProductsContainer();
+    let prevHeight = 420;
+    if (isPlatformBrowser(this.platformId) && this.productsContainerRef?.nativeElement) {
+      prevHeight = Math.max(420, this.productsContainerRef.nativeElement.offsetHeight);
+      this.productsContainerRef.nativeElement.style.height = `${prevHeight}px`;
+    }
+
+    this.cardsReady = false;
     this.loading = true;
     this.filteredProducts = [];
     this.pagedProducts = [];
     this.newDropCollections = [];
+    this.cdr.detectChanges();
 
-    // Pequeño delay asíncrono para suavizar las transiciones visuales e impedir parpadeos si se hace click rápido
-    await new Promise(resolve => setTimeout(resolve, 350));
-
-    if (requestId !== this.currentRequestId) {
-      return;
+    // Fadeup spinner entrance
+    if (isPlatformBrowser(this.platformId)) {
+      setTimeout(() => {
+        if (this.spinnerContainerRef?.nativeElement) {
+          gsap.fromTo(this.spinnerContainerRef.nativeElement,
+            { opacity: 0, y: -20 },
+            { opacity: 1, y: 0, duration: 0.35, ease: 'power2.out' }
+          );
+        }
+      }, 0);
     }
 
     try {
+      await Promise.all([
+        this.ensureCollectionsLoaded(),
+        new Promise(resolve => setTimeout(resolve, 350))
+      ]);
+
+      if (requestId !== this.currentRequestId) return;
+
       let tempFilteredProducts: Product[] = [];
       let tempPagedProducts: Product[] = [];
       let tempNewDropCollections: any[] = [];
@@ -192,30 +207,17 @@ export class StoreTemplateComponent implements OnInit {
 
       if (this.activeCategory === 'new-drop') {
         if (this.currentPage === 1) {
-          tempNewDropCollections = [...this.topCollections, ...this.topBridesCollections]
+          tempNewDropCollections = [...this.topCollections]
             .sort((a, b) => new Date(b.release_date || b.created_at).getTime() - new Date(a.release_date || a.created_at).getTime())
             .slice(0, 4);
         }
 
-        const [normalRes, bridalRes] = await Promise.all([
-          this.productsService.getLatestProducts(32),
-          this.bridesProductsService.getLatestProducts(32)
-        ]);
-
+        const normalRes = await this.productsService.getLatestProducts(32);
         if (requestId !== this.currentRequestId) return;
 
         const normalProducts = ProductUtils.mapProducts(normalRes.data || [], false);
-        const bridalProducts = ProductUtils.mapProducts(bridalRes.data || [], true).map(p => ({
-          ...p,
-          source_module: 'bridal'
-        }));
-
-        const merged = [...normalProducts, ...bridalProducts]
-          .sort((a, b) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime())
-          .slice(0, 32);
-
-        tempFilteredProducts = merged;
-        tempTotalCount = merged.length;
+        tempFilteredProducts = normalProducts;
+        tempTotalCount = normalProducts.length;
 
         const start = (this.currentPage - 1) * this.itemsPerPage;
         const end = start + this.itemsPerPage;
@@ -240,7 +242,8 @@ export class StoreTemplateComponent implements OnInit {
 
           tempFilteredProducts = ProductUtils.mapProducts(res.data || [], true).map(p => ({
             ...p,
-            source_module: 'bridal'
+            source_module: 'bridal',
+            isBridal: true
           }));
           tempPagedProducts = [...tempFilteredProducts];
           tempTotalCount = res.count || 0;
@@ -248,16 +251,36 @@ export class StoreTemplateComponent implements OnInit {
 
       } else {
         let categoryDbName: string | undefined;
-        if (this.activeCategory === 'sastrero') categoryDbName = 'Sastrero';
-        else if (this.activeCategory === 'accesorios') categoryDbName = 'Accesorios';
-        else if (this.activeCategory === 'pantalones-y-faldas') categoryDbName = 'Pantalones y Faldas';
-        else if (this.activeCategory === 'tops') categoryDbName = 'Tops';
-        else if (this.activeCategory === 'buzos') categoryDbName = 'Buzos';
-        else if (this.activeCategory === 'vestidos-y-monos') categoryDbName = 'Vestidos y Monos';
-        else if (this.activeCategory === 'otros') categoryDbName = 'Otros';
+        let categoryId: number | undefined;
+
+        if (this.activeCategory === 'sastreria' || this.activeCategory === 'sastrero') {
+          categoryDbName = 'Sastrería';
+          categoryId = 5;
+        } else if (this.activeCategory === 'camperas' || this.activeCategory === 'campera') {
+          categoryDbName = 'Camperas';
+          categoryId = 16;
+        } else if (this.activeCategory === 'accesorios') {
+          categoryDbName = 'Accesorios';
+          categoryId = 9;
+        } else if (this.activeCategory === 'pantalones-y-faldas') {
+          categoryDbName = 'Pantalones y Faldas';
+          categoryId = 4;
+        } else if (this.activeCategory === 'tops') {
+          categoryDbName = 'Tops';
+          categoryId = 2;
+        } else if (this.activeCategory === 'buzos') {
+          categoryDbName = 'Buzos';
+          categoryId = 8;
+        } else if (this.activeCategory === 'vestidos-y-monos') {
+          categoryDbName = 'Vestidos y Monos';
+          categoryId = 6;
+        } else if (this.activeCategory === 'otros') {
+          categoryDbName = 'Otros';
+        }
 
         const res = await this.productsService.getProductsPaged({
           categoryName: categoryDbName,
+          categoryId: categoryId,
           collectionId: this.selectedCollectionId,
           page: this.currentPage,
           pageSize: this.itemsPerPage
@@ -270,14 +293,28 @@ export class StoreTemplateComponent implements OnInit {
         tempTotalCount = res.count || 0;
       }
 
-      if (requestId !== this.currentRequestId) {
-        return;
+      if (requestId !== this.currentRequestId) return;
+
+      // Fadedown spinner exit
+      if (isPlatformBrowser(this.platformId) && this.spinnerContainerRef?.nativeElement) {
+        await new Promise<void>(resolve => {
+          gsap.to(this.spinnerContainerRef!.nativeElement, {
+            opacity: 0,
+            y: 20,
+            duration: 0.25,
+            ease: 'power2.in',
+            onComplete: () => resolve()
+          });
+        });
       }
+
+      if (requestId !== this.currentRequestId) return;
 
       this.filteredProducts = tempFilteredProducts;
       this.pagedProducts = tempPagedProducts;
       this.newDropCollections = tempNewDropCollections;
       this.totalProductsCount = tempTotalCount;
+      this.loading = false;
 
       this.pagedProducts.forEach(p => {
         if (!this.selectedColors[p.id]) {
@@ -290,14 +327,37 @@ export class StoreTemplateComponent implements OnInit {
       }
 
       this.updatePagination();
+      this.cdr.detectChanges();
+
+      // Smooth layout height growth/shrink animation
+      if (isPlatformBrowser(this.platformId) && this.productsContainerRef?.nativeElement) {
+        const container = this.productsContainerRef.nativeElement;
+        container.style.height = 'auto';
+        const targetHeight = Math.max(420, container.offsetHeight);
+        container.style.height = `${prevHeight}px`;
+
+        gsap.to(container, {
+          height: targetHeight,
+          duration: 0.45,
+          ease: 'power2.inOut',
+          onComplete: () => {
+            container.style.height = 'auto';
+            this.cardsReady = true;
+            this.cdr.detectChanges();
+          }
+        });
+      } else {
+        this.cardsReady = true;
+      }
 
     } catch (err) {
       console.error('Error applying filters:', err);
-    } finally {
-      if (requestId === this.currentRequestId) {
-        this.loading = false;
-        this.unlockProductsContainer();
+      this.loading = false;
+      this.cardsReady = true;
+      if (isPlatformBrowser(this.platformId) && this.productsContainerRef?.nativeElement) {
+        this.productsContainerRef.nativeElement.style.height = 'auto';
       }
+      this.cdr.detectChanges();
     }
   }
 
@@ -318,7 +378,7 @@ export class StoreTemplateComponent implements OnInit {
     const url = this.buildUrlString();
     const [base, query] = url.split('?');
     this.location.replaceState(base, query ?? '');
-    this.applyFilters();
+    void this.applyFilters();
   }
 
   private buildUrlString(): string {
@@ -349,19 +409,18 @@ export class StoreTemplateComponent implements OnInit {
   }
 
   applyFiltersAction(isMobile: boolean = false): void {
-    this.currentPage = 1; // reset a la primera página al interactuar
-    this.applyFilters().then(() => {
-      const url = this.buildUrlString();
-      const [base, query] = url.split('?');
-      this.location.replaceState(base, query ?? '');
-      if (isMobile) {
-        this.showFilters = false;
-      }
-    });
+    this.currentPage = 1;
+    if (isMobile) {
+      this.showFilters = false;
+    }
+    const url = this.buildUrlString();
+    const [base, query] = url.split('?');
+    this.location.replaceState(base, query ?? '');
+    void this.applyFilters();
   }
 
   onCollectionCardSelected(col: any): void {
-    const isBridalCol = this.topBridesCollections.some(c => c.id === col.id);
+    const isBridalCol = this.topBridesCollections.some(c => c.id === col.id) || this.allBridesCollections.some(c => c.id === col.id);
     this.activeCategory = isBridalCol ? 'novias' : 'vestidos-y-monos';
     this.selectedCollectionId = col.id;
     this.currentPage = 1;
@@ -377,12 +436,11 @@ export class StoreTemplateComponent implements OnInit {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    void this.applyFilters().then(() => {
-      const url = this.buildUrlString();
-      const [base, query] = url.split('?');
-      this.location.replaceState(base, query ?? '');
-      this.showFilters = false;
-    });
+    this.showFilters = false;
+    const url = this.buildUrlString();
+    const [base, query] = url.split('?');
+    this.location.replaceState(base, query ?? '');
+    void this.applyFilters();
   }
 
   selectColor(event: { productId: string; color: string }): void {
@@ -397,26 +455,9 @@ export class StoreTemplateComponent implements OnInit {
     this.productColumns = columns;
   }
 
-  trackByProductId(index: number, product: Product): string {
-    return product.id;
-  }
-
   private checkMobileView(): void {
     if (isPlatformBrowser(this.platformId)) {
       this.isMobileView = window.innerWidth < 1024;
     }
-  }
-
-  private lockProductsContainer(): void {
-    if (!isPlatformBrowser(this.platformId) || !this.productsContainerRef) return;
-    const height = this.productsContainerRef.nativeElement.getBoundingClientRect().height;
-    if (height > 100) {
-      this.productsContainerRef.nativeElement.style.minHeight = `${height}px`;
-    }
-  }
-
-  private unlockProductsContainer(): void {
-    if (!isPlatformBrowser(this.platformId) || !this.productsContainerRef) return;
-    this.productsContainerRef.nativeElement.style.minHeight = '';
   }
 }

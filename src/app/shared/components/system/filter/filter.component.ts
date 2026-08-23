@@ -42,7 +42,8 @@ export class FilterComponent implements AfterViewInit, OnChanges {
   options = [
     { label: 'New Drop', value: 'new-drop' },
     { label: 'Novias', value: 'novias' },
-    { label: 'Sastrero', value: 'sastrero' },
+    { label: 'Sastrería', value: 'sastreria' },
+    { label: 'Camperas', value: 'camperas' },
     { label: 'Accesorios', value: 'accesorios' },
     { label: 'Pantalones y Faldas', value: 'pantalones-y-faldas' },
     { label: 'Tops', value: 'tops' },

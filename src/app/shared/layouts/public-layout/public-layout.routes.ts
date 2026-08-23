@@ -84,6 +84,11 @@ export const PUBLIC_ROUTES: Routes = [
         loadComponent: () =>
           import('../../../features/landing/pages/about/about.component').then(c => c.AboutComponent),
       },
+      {
+        path: 'a-medida',
+        loadComponent: () =>
+          import('../../../features/landing/pages/tailored/tailored.component').then(c => c.TailoredComponent),
+      },
       // {
       //   path: 'checkout',
       //   loadChildren: () =>

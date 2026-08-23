@@ -107,7 +107,7 @@
             Prêt-à-porter
           </h2>
           <div class="mt-1 h-px w-40 bg-[#F8F3ED]/30"></div>
-          <a [routerLink]="['/tienda']" [queryParams]="{ categoria: 'camisas' }" #leftArrowBtn
+          <a [routerLink]="['/tienda']" #leftArrowBtn
             class="mt-4 lg:mt-8 w-10 h-10 group hover:bg-white duration-300 ease-in-out lg:w-14 lg:h-14 cursor-pointer rounded-full border border-white flex items-center justify-center">
 
             <lucide-icon name="arrow-right" class="group-hover:text-aldy-medium duration-300 text-white" [size]="25"
@@ -118,8 +118,7 @@
       </div>
     </div>
     <!-- ========================= PRET À PORTER MOBILE ========================== -->
-    <a class="block sm:hidden relative overflow-hidden col-span-1 aspect-[9/16]" [routerLink]="['/tienda']"
-      [queryParams]="{ categoria: 'camisas' }">
+    <a class="block sm:hidden relative overflow-hidden col-span-1 aspect-[9/16]" [routerLink]="['/tienda']">
       <img src="https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/sections/present/pret.jpg"
         alt="" class="absolute inset-0 w-full h-full object-cover object-top contrast-[0.80] saturate-[1.7]"
         style="filter: brightness(0.82);" />
@@ -153,7 +152,7 @@
             Novias
           </h2>
           <div class="mt-1 h-px w-40 bg-[#F8F3ED]/30"></div>
-          <a [routerLink]="['/tienda']" [queryParams]="{ categorias: 'vestidos', coleccion_novias: 'jardin-secreto' }"
+          <a [routerLink]="['/novias-colecciones']"
             #rightArrowBtn
             class="mt-4 lg:mt-8 w-10 h-10 group hover:bg-white duration-300 ease-in-out lg:w-14 lg:h-14 cursor-pointer rounded-full border border-white flex items-center justify-center">
 
@@ -165,8 +164,7 @@
       </div>
     </div>
     <!-- ========================= NOVIAS MOBILE ========================== -->
-    <a class="block sm:hidden relative overflow-hidden col-span-1 aspect-[9/16]" [routerLink]="['/tienda']"
-      [queryParams]="{ categorias: 'vestidos', coleccion_novias: 'jardin-secreto' }">
+    <a class="block sm:hidden relative overflow-hidden col-span-1 aspect-[9/16]" [routerLink]="['/novias-colecciones']">
       <img
         src="https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/sections/present/novias.jpg"
         alt="" class="absolute inset-0 w-full h-full object-cover object-top contrast-[0.80] saturate-[1.7]"

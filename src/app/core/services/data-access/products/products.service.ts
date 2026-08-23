@@ -274,6 +274,7 @@ export class ProductsService {
 
   async getProductsPaged(options: {
     categoryName?: string;
+    categoryId?: number | string | null;
     collectionId?: string | null;
     page: number;
     pageSize: number;
@@ -330,7 +331,7 @@ export class ProductsService {
       );
     }
 
-    if (options.categoryName) {
+    if (options.categoryName && !options.categoryId) {
       selectFields = selectFields.replace(
         'categories:categories!products_category_id_fkey (',
         'categories:categories!products_category_id_fkey!inner ('
@@ -345,9 +346,11 @@ export class ProductsService {
       query = query.eq('product_collections.collection_id', options.collectionId);
     }
 
-    if (options.categoryName) {
+    if (options.categoryId !== undefined && options.categoryId !== null) {
+      query = query.eq('category_id', options.categoryId);
+    } else if (options.categoryName) {
       if (options.categoryName.toLowerCase() === 'otros') {
-        query = query.not('categories.name', 'in', '("Sastrero","Tops","Pantalones y Faldas","Buzos","Vestidos y Monos","Accesorios")');
+        query = query.not('categories.name', 'in', '("Sastrería","Sastrero","Camperas","Tops","Pantalones y Faldas","Buzos","Vestidos y Monos","Accesorios")');
       } else {
         query = query.ilike('categories.name', options.categoryName);
       }

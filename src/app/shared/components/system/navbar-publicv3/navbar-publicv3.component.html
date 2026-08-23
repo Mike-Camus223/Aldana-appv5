@@ -21,6 +21,8 @@
         <div class="flex items-center gap-1 cursor-pointer">
           <a appLinkHoverUnderline [dynamicColor]="underlineDynamicColor"
             (mouseenter)="onInteractiveEnter()"
+            [routerLink]="['/tienda']"
+            (click)="closeDropdown()"
             [ngClass]="linkTextClass"
             class="transition-colors text-xs lg:text-xs xl:text-sm font-light NewAldyTitle tracking-[0.15em] pb-[1px]">
             TIENDA
@@ -261,12 +263,16 @@
         </a>
         <!-- DROPDOWN TIENDA MOBILE -->
         <div>
-          <button (click)="toggleMobileDropdown()"
-            class="w-full flex items-center justify-between text-aldy-green-gray hover:text-aldy-green-gray-bold tracking-[0.15em] uppercase font-light NewAldyTitle text-xs transition-colors duration-200 py-3">
-            <span>Tienda</span>
-            <lucide-icon name="chevron-down" class="w-5 h-5 transition-transform duration-200 text-aldy-green-gray"
-              [ngClass]="{ 'rotate-180': mobileDropdownOpen }"></lucide-icon>
-          </button>
+          <div class="w-full flex items-center justify-between py-3">
+            <a routerLink="/tienda" (click)="onMenuLinkClick()"
+              class="text-aldy-green-gray hover:text-aldy-green-gray-bold tracking-[0.15em] uppercase font-light NewAldyTitle text-xs transition-colors duration-200">
+              Tienda
+            </a>
+            <button (click)="toggleMobileDropdown()" class="p-1 text-aldy-green-gray hover:text-aldy-green-gray-bold cursor-pointer">
+              <lucide-icon name="chevron-down" class="w-5 h-5 transition-transform duration-200 text-aldy-green-gray"
+                [ngClass]="{ 'rotate-180': mobileDropdownOpen }"></lucide-icon>
+            </button>
+          </div>
           @if (mobileDropdownOpen) {
             <div @expandDropdown
               class="pl-4 mt-2 space-y-3 border-l-2 border-aldy-medium hover:border-aldy-medium-2">

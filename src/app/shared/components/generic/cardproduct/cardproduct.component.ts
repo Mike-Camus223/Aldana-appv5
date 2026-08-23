@@ -32,9 +32,7 @@ import { PanimationcardDirective } from '../../../utils/directives/panimationcar
 import { FavoritesService } from '../../../../core/services/favorites/favorites.service';
 import { AuthService } from '../../../../core/services/auth/auth.service';
 import { NotificationService } from '../../../../core/services/notification.service';
-import { LoaderService } from '../../../../core/services/utils/loader.service';
 import { gsap } from 'gsap';
-import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-cardproduct',
@@ -50,7 +48,7 @@ import { Subscription } from 'rxjs';
   templateUrl: './cardproduct.component.html',
   styleUrls: ['./cardproduct.component.css'],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.Default,
   providers: [
     {
       provide: LUCIDE_ICONS,
@@ -68,6 +66,8 @@ export class CardproductComponent implements OnInit, AfterViewInit, OnDestroy, O
   @Input() displayImage: string = '';
   @Input() mobileMode: 'ismobile' | 'isdesktop' = 'ismobile';
   @Input() desktopMode: 'ismobile' | 'isdesktop' = 'isdesktop';
+  @Input() canAnimate: boolean = true;
+
   @Output() colorSelected = new EventEmitter<{ productId: string; color: string }>();
   @Output() wishlistToggled = new EventEmitter<string>();
   @ViewChild('productImage', { static: false }) productImageRef!: ElementRef<HTMLImageElement>;
@@ -78,10 +78,7 @@ export class CardproductComponent implements OnInit, AfterViewInit, OnDestroy, O
   isMobileView: boolean = false;
   currentImage!: string;
   hoverImage: string | null = null;
-  private readonly fadeupDuration = 0.55;
-  private readonly zoomDuration = 0.75;
-  private readonly staggerBase = 0.08;
-  private loaderSubscription?: Subscription;
+  private hasAnimated: boolean = false;
 
   // Flag to toggle color-specific variant images on cards
   enableColorImageChange = false;
@@ -106,33 +103,53 @@ export class CardproductComponent implements OnInit, AfterViewInit, OnDestroy, O
     return diffDays <= 7;
   }
 
+  get isBridalProduct(): boolean {
+    return Boolean(
+      this.product?.isBridal || 
+      this.product?.source_module === 'bridal' || 
+      !this.product?.price
+    );
+  }
+
   constructor(
     private favoritesService: FavoritesService,
     private authService: AuthService,
     @Inject(PLATFORM_ID) private platformId: Object,
     private notificationService: NotificationService,
     private router: Router,
-    private hostRef: ElementRef<HTMLElement>,
-    private loaderService: LoaderService
+    private hostRef: ElementRef<HTMLElement>
   ) {}
 
   ngOnInit(): void {
+    this.setupProductData();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['product'] || changes['selectedColor'] || changes['displayImage']) {
+      this.setupProductData();
+    }
+    if (changes['canAnimate'] && this.canAnimate && !this.hasAnimated) {
+      if (isPlatformBrowser(this.platformId)) {
+        this.playEntryAnimation();
+      }
+    }
+  }
+
+  private setupProductData(): void {
     this.updateView();
-    
-    // If no selected color is provided, select the first available color or base color
+    if (!this.product) return;
+
     if (!this.selectedColor && this.product.variants && this.product.variants.length > 0) {
-      // Try to find a base color first
       const baseVariant = this.product.variants.find(v => v.isBase);
       if (baseVariant) {
         this.selectedColor = baseVariant.color_name;
       } else {
-        // If no base color, select the first variant
         this.selectedColor = this.product.variants[0].color_name;
       }
     }
     
     if (this.selectedColor && this.enableColorImageChange) {
-      const selectedVariant = this.product.variants.find(
+      const selectedVariant = this.product.variants?.find(
         (v) => v.color_name === this.selectedColor
       );
       this.currentImage = selectedVariant?.main_image || this.displayImage || this.product.main_image;
@@ -143,17 +160,15 @@ export class CardproductComponent implements OnInit, AfterViewInit, OnDestroy, O
     this.setHoverImage();
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['product'] && !changes['product'].firstChange) {
-      if (isPlatformBrowser(this.platformId)) {
-        this.waitForLoaderThenAnimate();
+  ngAfterViewInit(): void {
+    this.updateView();
+    if (isPlatformBrowser(this.platformId)) {
+      if (this.canAnimate && !this.hasAnimated) {
+        this.playEntryAnimation();
+      } else if (!this.canAnimate && this.cardRootRef?.nativeElement) {
+        gsap.set(this.cardRootRef.nativeElement, { opacity: 0, y: 30 });
       }
     }
-  }
-
-  ngAfterViewInit(): void {
-    if (!isPlatformBrowser(this.platformId) || !this.cardRootRef) return;
-    this.waitForLoaderThenAnimate();
   }
 
   @HostListener('window:resize')
@@ -161,86 +176,56 @@ export class CardproductComponent implements OnInit, AfterViewInit, OnDestroy, O
     this.updateView();
   }
 
-  private waitForLoaderThenAnimate(): void {
-    if (!isPlatformBrowser(this.platformId)) return;
-    
-    // Set initial invisible state immediately to avoid layout flicker
-    this.setInitialState();
-
-    // Subscribe to loader animations state
-    this.loaderSubscription = this.loaderService.animationsEnabled$.subscribe(async (enabled: boolean) => {
-      if (enabled) {
-        // Wait for image content to be ready before playing animation
-        await this.waitForImageToLoad();
-        
-        this.playEntryAnimation();
-        // Unsubscribe immediately so it only runs once per mount
-        this.loaderSubscription?.unsubscribe();
-        this.loaderSubscription = undefined;
-      }
-    });
-  }
-
-  private async waitForImageToLoad(): Promise<void> {
-    if (!isPlatformBrowser(this.platformId)) return;
-    
-    // Wait a brief frame for the img DOM binding if not immediate
-    let imgEl = this.getImageEl();
-    if (!imgEl) {
-      await new Promise(resolve => requestAnimationFrame(resolve));
-      imgEl = this.getImageEl();
-    }
-    
-    if (imgEl instanceof HTMLImageElement) {
-      await new Promise<void>((resolve) => {
-        if (imgEl.complete && imgEl.naturalWidth > 0) {
-          resolve();
-        } else {
-          imgEl.addEventListener('load', () => resolve(), { once: true });
-          imgEl.addEventListener('error', () => resolve(), { once: true });
-          // Safety timeout of 1.5 seconds to handle slow networks
-          setTimeout(() => resolve(), 1500);
-        }
-      });
-    }
-  }
-
-  private setInitialState(): void {
-    if (!isPlatformBrowser(this.platformId) || !this.cardRootRef) return;
-    gsap.killTweensOf(this.cardRootRef.nativeElement);
-    gsap.set(this.cardRootRef.nativeElement, { opacity: 0, y: 30, willChange: 'opacity, transform' });
-    const imgEl = this.getImageEl();
-    if (imgEl) {
-      gsap.killTweensOf(imgEl);
-      gsap.set(imgEl, { scale: 1.06, willChange: 'transform' });
-    }
-  }
-
   private playEntryAnimation(): void {
     if (!isPlatformBrowser(this.platformId) || !this.cardRootRef) return;
-    gsap.killTweensOf(this.cardRootRef.nativeElement);
-    gsap.set(this.cardRootRef.nativeElement, { opacity: 0, y: 30, willChange: 'opacity, transform' });
+    this.hasAnimated = true;
+    const cardEl = this.cardRootRef.nativeElement;
     const imgEl = this.getImageEl();
+    const delay = this.computeStaggerDelay();
+
+    gsap.killTweensOf(cardEl);
+    gsap.fromTo(cardEl,
+      { opacity: 0, y: 30 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.55,
+        ease: 'power2.out',
+        delay: delay,
+        clearProps: 'willChange'
+      }
+    );
+
     if (imgEl) {
       gsap.killTweensOf(imgEl);
-      gsap.set(imgEl, { scale: 1.06, willChange: 'transform' });
+      gsap.fromTo(imgEl,
+        { scale: 1.06 },
+        {
+          scale: 1.0,
+          duration: 0.75,
+          ease: 'power2.out',
+          delay: delay,
+          clearProps: 'willChange'
+        }
+      );
     }
-    const delay = this.computeStaggerDelay();
-    const tl = gsap.timeline({ defaults: { ease: 'power2.out' }, delay });
-    tl.to(this.cardRootRef.nativeElement, {
-      opacity: 1,
-      y: 0,
-      duration: this.fadeupDuration,
-      onComplete: () => {
-        (this.cardRootRef.nativeElement as HTMLElement).style.willChange = 'auto';
-      }
-    }, 0);
-    if (imgEl) {
-      tl.to(imgEl, {
-        scale: 1.0,
-        duration: this.zoomDuration
-      }, 0);
+  }
+
+  private computeStaggerDelay(): number {
+    try {
+      const host = this.hostRef.nativeElement;
+      const parent = host.parentElement;
+      if (!parent) return 0;
+      const children = Array.from(parent.children);
+      const index = children.indexOf(host);
+      return Math.max(0, index) * 0.08;
+    } catch {
+      return 0;
     }
+  }
+
+  private getImageEl(): HTMLElement | null {
+    return this.productImageRef?.nativeElement || this.mobileImageRef?.nativeElement || null;
   }
 
   private updateView(): void {
@@ -254,7 +239,7 @@ export class CardproductComponent implements OnInit, AfterViewInit, OnDestroy, O
 
   private setHoverImage(): void {
     if (this.selectedColor && this.enableColorImageChange) {
-      const variant = this.product.variants.find(
+      const variant = this.product.variants?.find(
         (v) => v.color_name === this.selectedColor
       );
 
@@ -287,7 +272,7 @@ export class CardproductComponent implements OnInit, AfterViewInit, OnDestroy, O
   onMouseLeave(): void {
     if (!this.isMobileView) {
       if (this.selectedColor && this.enableColorImageChange) {
-        const selectedVariant = this.product.variants.find(
+        const selectedVariant = this.product.variants?.find(
           (v) => v.color_name === this.selectedColor
         );
         this.currentImage = selectedVariant?.main_image || this.displayImage || this.product.main_image;
@@ -339,7 +324,7 @@ export class CardproductComponent implements OnInit, AfterViewInit, OnDestroy, O
     this.colorSelected.emit({ productId: this.product.id, color });
     
     if (this.enableColorImageChange) {
-      const selectedVariant = this.product.variants.find(
+      const selectedVariant = this.product.variants?.find(
         (v) => v.color_name === color
       );
       if (selectedVariant?.main_image) {
@@ -357,7 +342,7 @@ export class CardproductComponent implements OnInit, AfterViewInit, OnDestroy, O
     }
   }
 
-   selectSize(size: string) {
+  selectSize(size: string) {
     this.selectedSize = size;
     const queryParams: any = { talla: size };
     if (this.selectedColor) {
@@ -371,32 +356,8 @@ export class CardproductComponent implements OnInit, AfterViewInit, OnDestroy, O
     const img = new Image();
     img.src = src;
   }
-  
-  private getImageEl(): HTMLElement | null {
-    const el = this.productImageRef?.nativeElement || this.mobileImageRef?.nativeElement || null;
-    return el;
-  }
-  
-  private computeStaggerDelay(): number {
-    try {
-      const parent = this.hostRef.nativeElement.parentElement;
-      if (!parent) return 0;
-      const children = Array.from(parent.children);
-      const index = children.indexOf(this.hostRef.nativeElement);
-      const style = window.getComputedStyle(parent);
-      const colsDef = style.gridTemplateColumns || '';
-      const cols = colsDef.split(' ').filter(s => s && s !== 'none').length || 1;
-      const colIndex = cols > 0 ? (index % cols) : index;
-      return colIndex * this.staggerBase;
-    } catch {
-      return 0;
-    }
-  }
 
   ngOnDestroy(): void {
-    if (this.loaderSubscription) {
-      this.loaderSubscription.unsubscribe();
-    }
     if (this.cardRootRef?.nativeElement) {
       gsap.killTweensOf(this.cardRootRef.nativeElement);
     }

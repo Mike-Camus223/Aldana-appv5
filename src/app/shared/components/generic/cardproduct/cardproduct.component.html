@@ -31,10 +31,12 @@
       {{ product.name }}
     </h3>
     <div class="flex items-center justify-between gap-2 mt-1">
+      @if (!isBridalProduct) {
       <p class="font-medium NewAldyFontType4 text-aldy-green-gray-bold tracking-wide"
         style="font-size: clamp(11px, 3.2vw, 14px);">
         {{ product.price | currency:'ARS':'symbol-narrow':'1.2-2':'es-AR' }}
       </p>
+      }
       <div class="shrink-0 flex flex-wrap items-center justify-end gap-1.5 max-w-[45%]">
         @for (color of product.variants; track color) {
         <button (click)="selectColor(color.color_name)" [ngStyle]="{ backgroundColor: color.color_hex }"
@@ -83,9 +85,11 @@
         <h3 class="text-xl font-light NewAldyTitle text-aldy-green-gray-bold m-0">
           {{ product.name }}
         </h3>
+        @if (!isBridalProduct) {
         <span class="text-base font-medium NewAldyFontType4 text-aldy-green-gray-bold whitespace-nowrap ml-3">
           {{ product.price | currency:'ARS':'symbol-narrow':'1.2-2':'es-AR' }}
         </span>
+        }
       </div>
       <div class="flex items-center justify-center mb-4 gap-4 w-full">
         <span class="flex-1 h-px bg-aldy-medium opacity-60"></span>

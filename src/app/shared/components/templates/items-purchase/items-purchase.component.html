@@ -8,7 +8,7 @@
       <div class="relative max-w-full md:max-w-[550px] ml-0 md:ml-13 space-y-5">
         <h1 class="text-xl md:text-2xl md:text-3xl uppercase NewAldyTitle text-aldy-green-gray-bold ">{{ product.name }}
         </h1>
-        <p class="text-sm md:text-sm font-light NewAldyFontType4 text-aldy-green-gray mt-1">
+        <p *ngIf="!isBridalProduct" class="text-sm md:text-sm font-light NewAldyFontType4 text-aldy-green-gray mt-1">
           {{ product.price | currency: 'ARS':'symbol-narrow':'1.2-2':'es-AR' }}
         </p>
 
@@ -35,7 +35,8 @@
           </ng-container>
         </div>
 
-        <div class="flex items-center cursor-pointer mt-4">
+        <!-- Botón para productos regulares -->
+        <div *ngIf="!isBridalProduct" class="flex items-center cursor-pointer mt-4">
           <div class="relative">
             <select [(ngModel)]="quantitySelected" (ngModelChange)="onQuantityChange($event)"
               class="appearance-none border border-aldy-medium py-3 pl-3 pr-8 text-sm focus:outline-none">
@@ -48,12 +49,25 @@
           </div>
 
           <button
-            class="flex-1 cursor-pointer flex items-center justify-center gap-3 bg-aldy-medium border border-aldy-medium text-white uppercase  py-3 px-4 text-center transition-colors hover:bg-aldy-medium-2 hover:border-aldy-medium-2"
+            class="flex-1 cursor-pointer flex items-center justify-center gap-3 bg-aldy-medium border border-aldy-medium text-white uppercase py-3 px-4 text-center transition-colors hover:bg-aldy-medium-2 hover:border-aldy-medium-2"
             (click)="addToCartItems()">
             <span class="tracking-wider NewAldyFontType4 text-sm md:text-sm font-light">Añadir al carrito</span>
             <lucide-icon [size]="20" [strokeWidth]="1.5" name="shopping-bag"
               class="text-white relative -top-[0.7px]"></lucide-icon>
           </button>
+        </div>
+
+        <!-- Botón de consulta WhatsApp para vestidos de Novias -->
+        <div *ngIf="isBridalProduct" class="flex items-center mt-4">
+          <a
+            [href]="whatsappConsultUrl"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="flex-1 cursor-pointer flex items-center justify-center gap-3 bg-aldy-medium border border-aldy-medium text-white uppercase py-3 px-6 text-center transition-colors hover:bg-aldy-medium-2 hover:border-aldy-medium-2">
+            <span class="tracking-wider NewAldyFontType4 text-sm md:text-sm font-light">Consultar en WhatsApp</span>
+            <lucide-icon [size]="20" [strokeWidth]="1.5" name="message-circle"
+              class="text-white relative -top-[0.7px]"></lucide-icon>
+          </a>
         </div>
 
         <app-acordiongeneric [title]="'Descripción'" [value]="'descripcion'" [initialOpen]="true">

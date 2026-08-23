@@ -1,18 +1,17 @@
 import { Component, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { CommonModule, Location } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { FancyCarouselComponent } from '../../sections/fancy-carousel/fancy-carousel.component';
 import { ProductCarouselComponent } from '../../sections/product-carousel/product-carousel.component';
 import { Product, ProductVariant } from '../../../utils/models/Products-supabase.interface';
 import { CartItem } from '../../../utils/models/cartItems-model';
-import { SupabaseService } from '../../../../core/services/data-access/supabase.service';
 import { BridesProductsService } from '../../../../core/services/data-access/brides-products/brides-products.service';
 import { CartService } from '../../../../core/services/cart.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { FormsModule } from '@angular/forms';
 import { ProductUtils } from '../../../utils/dataEx/products-utils';
 import { AcordiongenericComponent } from '../../generic/acordiongeneric/acordiongeneric.component';
-import { LUCIDE_ICONS, LucideAngularModule, LucideIconProvider, Package, ShoppingBag } from 'lucide-angular';
+import { LUCIDE_ICONS, LucideAngularModule, LucideIconProvider, Package, ShoppingBag, MessageCircle } from 'lucide-angular';
 import { Subscription } from 'rxjs';
 import { ProductsService } from '../../../../core/services/data-access/products/products.service';
 import { LoaderService } from '../../../../core/services/utils/loader.service';
@@ -36,7 +35,7 @@ import { LoaderService } from '../../../../core/services/utils/loader.service';
     {
       provide: LUCIDE_ICONS,
       multi: true,
-      useValue: new LucideIconProvider({ShoppingBag,Package})
+      useValue: new LucideIconProvider({ ShoppingBag, Package, MessageCircle })
     }
   ]
 })
@@ -46,6 +45,20 @@ export class ItemsPurchaseComponent implements OnInit, OnDestroy {
   selectedSize: string | null = null;
   carouselImages: { src: string; thumb: string }[] = [];
   quantitySelected: number = 1;
+
+  get isBridalProduct(): boolean {
+    return Boolean(
+      this.product?.isBridal || 
+      this.product?.source_module === 'bridal' || 
+      !this.product?.price
+    );
+  }
+
+  get whatsappConsultUrl(): string {
+    const phone = '112233';
+    const text = encodeURIComponent(`Hola, me gustaría consultar por el vestido ${this.product?.name || ''}`);
+    return `https://wa.me/${phone}?text=${text}`;
+  }
 
   // Flag to toggle color-specific variant images in carousel
   enableColorImageChange = false;
@@ -313,7 +326,6 @@ export class ItemsPurchaseComponent implements OnInit, OnDestroy {
 
     this.router.navigate(['/checkout/carrito']);
   }
-
 
   selectSize(size: string, silent: boolean = false) {
     this.selectedSize = size;

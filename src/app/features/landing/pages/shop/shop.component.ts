@@ -6,7 +6,8 @@ import { StoreTemplateComponent } from '../../../../shared/components/templates/
 
 @Component({
   selector: 'app-shop',
-  imports: [BreadcrumbComponent,RouterModule,StoreTemplateComponent],
+  standalone: true,
+  imports: [BreadcrumbComponent, RouterModule, StoreTemplateComponent],
   templateUrl: './shop.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './shop.component.css'
@@ -14,8 +15,8 @@ import { StoreTemplateComponent } from '../../../../shared/components/templates/
 export class ShopComponent {
 
   breadcrumbItemsShop: AppMenuItem[] = [
-    {label: 'INICIO', route: '/'},
-    {label: 'TIENDA', route: '/store'}
+    { label: 'INICIO', route: '/' },
+    { label: 'TIENDA', route: '/tienda' }
   ];
 
 }

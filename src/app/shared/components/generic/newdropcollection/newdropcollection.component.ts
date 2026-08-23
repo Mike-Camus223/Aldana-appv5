@@ -1,5 +1,7 @@
-import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, AfterViewInit, OnDestroy, OnChanges, SimpleChanges, ElementRef, ViewChild, Inject } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { PLATFORM_ID } from '@angular/core';
+import { gsap } from 'gsap';
 
 @Component({
   selector: 'app-newdropcollection',
@@ -11,13 +13,98 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./newdropcollection.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class NewdropcollectionComponent {
+export class NewdropcollectionComponent implements AfterViewInit, OnDestroy, OnChanges {
   @Input() collection: any;
   @Input() isMobileView: boolean = false;
+  @Input() canAnimate: boolean = true;
   
   @Output() collectionSelected = new EventEmitter<any>();
 
+  @ViewChild('cardRoot', { static: false }) cardRootRef!: ElementRef<HTMLElement>;
+  @ViewChild('collectionImage', { static: false }) collectionImageRef!: ElementRef<HTMLImageElement>;
+  private hasAnimated: boolean = false;
+
+  constructor(
+    @Inject(PLATFORM_ID) private platformId: Object,
+    private hostRef: ElementRef<HTMLElement>
+  ) {}
+
+  ngAfterViewInit(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      if (this.canAnimate && !this.hasAnimated) {
+        this.playEntryAnimation();
+      } else if (!this.canAnimate && this.cardRootRef?.nativeElement) {
+        gsap.set(this.cardRootRef.nativeElement, { opacity: 0, y: 30 });
+      }
+    }
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['canAnimate'] && this.canAnimate && !this.hasAnimated) {
+      if (isPlatformBrowser(this.platformId)) {
+        this.playEntryAnimation();
+      }
+    }
+  }
+
   onClick(): void {
     this.collectionSelected.emit(this.collection);
+  }
+
+  private playEntryAnimation(): void {
+    if (!isPlatformBrowser(this.platformId) || !this.cardRootRef) return;
+    this.hasAnimated = true;
+    const cardEl = this.cardRootRef.nativeElement;
+    const imgEl = this.collectionImageRef?.nativeElement;
+    const delay = this.computeStaggerDelay();
+
+    gsap.killTweensOf(cardEl);
+    gsap.fromTo(cardEl,
+      { opacity: 0, y: 30 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.55,
+        ease: 'power2.out',
+        delay: delay,
+        clearProps: 'willChange'
+      }
+    );
+
+    if (imgEl) {
+      gsap.killTweensOf(imgEl);
+      gsap.fromTo(imgEl,
+        { scale: 1.06 },
+        {
+          scale: 1.0,
+          duration: 0.75,
+          ease: 'power2.out',
+          delay: delay,
+          clearProps: 'willChange'
+        }
+      );
+    }
+  }
+
+  private computeStaggerDelay(): number {
+    try {
+      const host = this.hostRef.nativeElement;
+      const parent = host.parentElement;
+      if (!parent) return 0;
+      const children = Array.from(parent.children);
+      const index = children.indexOf(host);
+      return Math.max(0, index) * 0.08;
+    } catch {
+      return 0;
+    }
+  }
+
+  ngOnDestroy(): void {
+    if (this.cardRootRef?.nativeElement) {
+      gsap.killTweensOf(this.cardRootRef.nativeElement);
+    }
+    if (this.collectionImageRef?.nativeElement) {
+      gsap.killTweensOf(this.collectionImageRef.nativeElement);
+    }
   }
 }
