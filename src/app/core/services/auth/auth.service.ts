@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { ConfirmationGuard } from '../../guards/confirmation.guard';
 import { isPlatformBrowser } from '@angular/common';
 import { createSupabaseClient } from '../supabase/supabase-ssr.config';
+import { NotificationService } from '../notification.service';
 
 interface LoginAttempt {
   email: string;
@@ -25,6 +26,7 @@ export class AuthService {
   private sessionTimeoutSubscription?: Subscription;
   private platformId = inject(PLATFORM_ID);
   private isBrowser = isPlatformBrowser(this.platformId);
+  private notificationService = inject(NotificationService);
 
   // Security configurations
   private readonly MAX_LOGIN_ATTEMPTS = 5;
@@ -354,58 +356,22 @@ export class AuthService {
   }
 
   /**
-   * Registra un nuevo usuario con rol por defecto
+   * Registra un nuevo usuario con rol por defecto (Bloqueado en versión DEMO)
    */
   async signUp(email: string, password: string): Promise<{ success: boolean; error?: string }> {
-    try {
-      if (!this.isValidEmail(email)) {
-        return { success: false, error: 'Email inválido' };
-      }
-
-      if (!this.isValidPassword(password)) {
-        return { success: false, error: 'La contraseña debe tener al menos 8 caracteres' };
-      }
-      const { data, error } = await this.supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: { role: 'user' },
-          emailRedirectTo: `${window.location.origin}/registro-exitoso`
-        }
-      });
-
-      if (error) {
-        this.logSecurityEvent('SIGNUP_FAILED', email, { error: error.message });
-        return { success: false, error: error.message };
-      }
-
-      if (data.user) {
-        this.logSecurityEvent('SIGNUP_SUCCESS', email);
-
-        ConfirmationGuard.setConfirmationState('confirmar-registro');
-
-        // Log de depuración
-        console.log('AuthService - Confirmation state set for confirmar-registro');
-        console.log('AuthService - Navigating to /confirmar-registro');
-
-        await this.router.navigate(['/confirmar-registro'], { replaceUrl: true });
-
-        return { success: true };
-      }
-
-      // Caso raro: no hay error pero tampoco hay user
-      return { success: false, error: 'Error desconocido al registrar usuario' };
-
-    } catch (error) {
-      this.logSecurityEvent('SIGNUP_ERROR', email, { error: (error as Error).message });
-      return { success: false, error: 'Error de conexión' };
-    }
+    this.notificationService.showWarn('Demo limitada', 'No puedes acceder a esta sección.');
+    return { success: false, error: 'Demo limitada: el registro no está disponible en la versión de prueba.' };
   }
 
   // authrapidobyproviders //
   async signInWithOAuth(provider: 'google' | 'facebook' | 'apple') {
+    if (provider !== 'google') {
+      this.notificationService.showWarn('Demo limitada', 'No puedes acceder a esta sección.');
+      return;
+    }
+
     await this.supabase.auth.signInWithOAuth({
-      provider,
+      provider: 'google',
       options: {
         redirectTo: `${window.location.origin}/panel/panel-control`
       }

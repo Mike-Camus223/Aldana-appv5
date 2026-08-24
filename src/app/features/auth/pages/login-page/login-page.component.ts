@@ -3,6 +3,7 @@ import { Component, inject, OnDestroy, OnInit, ChangeDetectionStrategy } from '@
 import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth/auth.service';
+import { NotificationService } from '../../../../core/services/notification.service';
 import { InputComponent } from '../../../../shared/components/generic/forms/input/input.component';
 import { InputpasswordComponent } from '../../../../shared/components/generic/forms/inputpassword/inputpassword.component';
 import { Subscription } from 'rxjs';
@@ -20,18 +21,18 @@ interface ForgotPasswordForm {
 @Component({
   selector: 'app-login-page',
   standalone: true,
-  imports: [RouterModule, ReactiveFormsModule, CommonModule, InputComponent, InputpasswordComponent,LucideAngularModule],
+  imports: [RouterModule, ReactiveFormsModule, CommonModule, InputComponent, InputpasswordComponent, LucideAngularModule],
   templateUrl: './login-page.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   providers: [
-        {
-          provide: LUCIDE_ICONS,
-          multi: true,
-          useValue: new LucideIconProvider({
-            Mail
-          })
-        }
-      ]
+    {
+      provide: LUCIDE_ICONS,
+      multi: true,
+      useValue: new LucideIconProvider({
+        Mail
+      })
+    }
+  ]
 })
 export class LoginPageComponent implements OnInit, OnDestroy {
   isSubmitting = false;
@@ -41,15 +42,15 @@ export class LoginPageComponent implements OnInit, OnDestroy {
   private _fb = inject(FormBuilder);
   private _Router = inject(Router);
   private _authService = inject(AuthService);
+  private _notificationService = inject(NotificationService);
   private _subs: Subscription = new Subscription();
-
 
   formLogin = this._fb.group<LoginForm>({
     email: this._fb.control(null, [Validators.required, Validators.email]),
     password: this._fb.control(null, [
-  Validators.required,
-  Validators.minLength(6)
-]),
+      Validators.required,
+      Validators.minLength(6)
+    ]),
   });
 
   formForgotPassword = this._fb.group<ForgotPasswordForm>({
@@ -81,18 +82,17 @@ export class LoginPageComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-  const sub = this.formLogin.valueChanges.subscribe(() => {
-    if (this.authError) {
-      this.authError = null;
-    }
-  });
-  this._subs.add(sub);
-}
+    const sub = this.formLogin.valueChanges.subscribe(() => {
+      if (this.authError) {
+        this.authError = null;
+      }
+    });
+    this._subs.add(sub);
+  }
 
-ngOnDestroy(): void {
-  this._subs.unsubscribe();
-}
-
+  ngOnDestroy(): void {
+    this._subs.unsubscribe();
+  }
 
   // SOCIAL LOGIN
   async onGoogleLogin(): Promise<void> {
@@ -100,14 +100,21 @@ ngOnDestroy(): void {
   }
 
   async onFacebookLogin(): Promise<void> {
-    await this.handleOAuth('facebook');
+    // Bloqueado en versión DEMO
+    this._notificationService.showWarn('Demo limitada', 'No puedes acceder a esta sección.');
   }
 
   async onAppleLogin(): Promise<void> {
-    await this.handleOAuth('apple');
+    // Bloqueado en versión DEMO
+    this._notificationService.showWarn('Demo limitada', 'No puedes acceder a esta sección.');
   }
 
   private async handleOAuth(provider: 'google' | 'facebook' | 'apple') {
+    if (provider !== 'google') {
+      this._notificationService.showWarn('Demo limitada', 'No puedes acceder a esta sección.');
+      return;
+    }
+
     try {
       await this._authService.signInWithOAuth(provider);
     } catch {
@@ -118,7 +125,7 @@ ngOnDestroy(): void {
   // FORGOT PASSWORD SUBMIT
   async onForgotPasswordSubmit(): Promise<void> {
     if (this.formForgotPassword.invalid) {
-      this.formForgotPassword.markAllAsTouched(); // <<--- fuerza required
+      this.formForgotPassword.markAllAsTouched();
       return;
     }
 

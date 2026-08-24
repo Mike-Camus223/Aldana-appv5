@@ -1,6 +1,5 @@
 import { Routes } from '@angular/router';
-import { RedirectGuard } from './core/guards/redirect.guard';
-import { ConfirmationGuard } from './core/guards/confirmation.guard';
+import { demoBlockGuard, demoBlockChildGuard } from './core/guards/demo-block.guard';
 
 export const routes: Routes = [
   {
@@ -17,6 +16,8 @@ export const routes: Routes = [
   },
   {
     path: 'checkout',
+    canActivate: [demoBlockGuard],
+    canActivateChild: [demoBlockChildGuard],
     loadChildren: () =>
       import('./features/checkout/checkout.routes').then(
         (m) => m.checkoutRoutes
@@ -24,19 +25,19 @@ export const routes: Routes = [
   },
   {
     path: 'confirmar-registro',
+    canActivate: [demoBlockGuard],
     loadComponent: () =>
       import(
         './features/auth/pages/register-confirm/register-confirm.component'
       ).then((c) => c.RegisterConfirmComponent),
-    canActivate: [RedirectGuard, ConfirmationGuard],
   },
   {
     path: 'registro-exitoso',
+    canActivate: [demoBlockGuard],
     loadComponent: () =>
       import(
         './features/auth/pages/register-success/register-success.component'
       ).then((c) => c.RegisterSuccessComponent),
-    canActivate: [RedirectGuard, ConfirmationGuard],
   },
   {
     path: '',

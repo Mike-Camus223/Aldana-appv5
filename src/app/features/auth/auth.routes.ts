@@ -1,9 +1,8 @@
 import { Routes } from "@angular/router";
-import { ConfirmationGuard } from "../../core/guards/confirmation.guard";
 import { RedirectGuard } from "../../core/guards/redirect.guard";
+import { demoBlockGuard } from "../../core/guards/demo-block.guard";
 
 export const AUTH_ROUTES: Routes = [
-
   {
     path: '',
     loadComponent: () => import('./authPanel.component').then(m => m.AuthPanelComponent),
@@ -20,8 +19,8 @@ export const AUTH_ROUTES: Routes = [
       },
       {
         path: 'registro',
+        canActivate: [demoBlockGuard],
         loadComponent: () => import('./pages/register-page/register-page.component').then(c => c.RegisterPageComponent),
-        canActivate: [RedirectGuard]
       },
       {
         path: '**',
