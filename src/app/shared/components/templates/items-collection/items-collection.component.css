@@ -1,5 +1,5 @@
-/* Solo usando Tailwind - no custom CSS needed */
+/* Estilos del contenedor de imágenes del hero */
 .hero-image-reveal {
-  opacity: 0;
-  will-change: transform, opacity, clip-path;
+  position: relative;
+  width: 100%;
 }

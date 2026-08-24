@@ -64,6 +64,14 @@ export class NoviasTemplateComponent implements OnInit, AfterViewInit, OnDestroy
       const result = await this.CollectionService.getCollectionBrides();
       this.CollectionBrides = result ?? [];
       this.cdr.detectChanges();
+      if (isPlatformBrowser(this.platformId)) {
+        setTimeout(() => {
+          if (typeof ScrollTrigger !== 'undefined') {
+            ScrollTrigger.refresh();
+          }
+          this.cdr.detectChanges();
+        }, 100);
+      }
     } catch (error) {
       console.error('Error al obtener colecciones:', error);
     }

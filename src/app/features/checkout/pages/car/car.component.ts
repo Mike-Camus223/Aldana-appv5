@@ -164,6 +164,10 @@ export class CarComponent implements OnInit {
     this.router.navigate(['/']);
   }
 
+  navigateToStore() {
+    this.router.navigate(['/']);
+  }
+
   goToShipping() {
     if (this.cartItems.length > 0) {
       this.progress.completeStep('carrito');

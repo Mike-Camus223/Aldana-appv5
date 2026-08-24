@@ -1,4 +1,5 @@
 import { Directive, ElementRef, AfterViewInit, Renderer2, OnDestroy, Input, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { Subject, takeUntil } from 'rxjs';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -11,28 +12,45 @@ if (typeof window !== 'undefined') {
 export type RevealDirection = 'up' | 'down' | 'left' | 'right';
 
 @Directive({
-  selector: '[appCardInitAnimation]'
+  selector: '[appCardInitAnimation]',
+  standalone: true
 })
 export class CardInitAnimationDirective implements AfterViewInit, OnDestroy {
 
   @Input('appCardInitAnimation') direction: RevealDirection = 'up';
+  @Input() wave: boolean = false;
+  @Input() animationDelay: number = 0;
+  @Input() gray: boolean = false;
 
   private animation: gsap.core.Timeline | null = null;
   private scrollTrigger: ScrollTrigger | null = null;
   private destroy$ = new Subject<void>();
   private stylesInitialized = false;
-  @Input() wave: boolean = false;
-  @Input() animationDelay: number = 0;
-  @Input() gray: boolean = false;
+  private hasAnimated = false;
+  private isBrowser: boolean;
 
-  constructor(private el: ElementRef, private renderer: Renderer2, private loaderService: LoaderService) { }
+  constructor(
+    private el: ElementRef,
+    private renderer: Renderer2,
+    private loaderService: LoaderService,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {
+    this.isBrowser = isPlatformBrowser(this.platformId);
+  }
 
   ngAfterViewInit(): void {
     const element = this.el.nativeElement;
     if (!element) return;
+
+    if (!this.isBrowser) {
+      this.renderer.removeStyle(element, 'clip-path');
+      this.renderer.setStyle(element, 'opacity', '1');
+      return;
+    }
+
     this.setupInitialStyles(element);
 
-    // Reset al iniciar cualquier loader
+    // Reset styles on any loader start
     this.loaderService.currentLoader$
       .pipe(takeUntil(this.destroy$))
       .subscribe((loader) => {
@@ -41,30 +59,23 @@ export class CardInitAnimationDirective implements AfterViewInit, OnDestroy {
         }
       });
 
-    // Re-configurar cuando las animaciones estén habilitadas (post-loader)
+    // ONLY configure and trigger animations when loader has completely finished
     this.loaderService.animationsEnabled$
       .pipe(takeUntil(this.destroy$))
       .subscribe((enabled) => {
-        if (enabled) {
-          // Pequeño delay para asegurar layout estable
+        if (enabled && !this.hasAnimated) {
           setTimeout(() => {
             this.setupScrollTrigger(element);
-          }, 50);
+          }, 80);
         }
       });
   }
 
   private setupInitialStyles(element: HTMLElement): void {
-    if (this.stylesInitialized) return;
-    this.renderer.setStyle(element, 'transform', 'scale(1.5)');
-    //     this.renderer.setStyle(
-    //   element,
-    //   'filter',
-    //   this.gray ? 'blur(4px) grayscale(100%)' : 'blur(4px)'
-    // );
-
+    if (this.stylesInitialized || this.hasAnimated) return;
+    this.renderer.setStyle(element, 'transform', 'scale(1.1)');
     this.renderer.setStyle(element, 'opacity', '0.7');
-    this.renderer.setStyle(element, 'will-change', 'transform, filter, opacity, clip-path');
+    this.renderer.setStyle(element, 'will-change', 'transform, opacity, clip-path');
 
     if (this.direction === 'up') {
       this.renderer.setStyle(element, 'clip-path', 'inset(100% 0 0 0)');
@@ -79,28 +90,37 @@ export class CardInitAnimationDirective implements AfterViewInit, OnDestroy {
   }
 
   private setupScrollTrigger(element: HTMLElement): void {
+    if (this.hasAnimated || !this.isBrowser) return;
+
     if (this.scrollTrigger) {
       this.scrollTrigger.kill();
       this.scrollTrigger = null;
     }
 
+    // If element is already in viewport when loader finishes, animate entrance
+    const rect = element.getBoundingClientRect();
+    if (rect.top < window.innerHeight * 0.85 && rect.bottom > 0) {
+      this.startAnimation(element);
+      return;
+    }
+
+    // For elements further down the page: animate progressively on scroll
     if (this.wave) {
       this.renderer.setAttribute(element, 'data-wave', 'true');
 
-      // Permitir que el layout se asiente antes de medir coordenadas
       setTimeout(() => {
+        if (this.hasAnimated) return;
         const siblings = Array.from(document.querySelectorAll('[data-wave="true"]'))
           .filter(el => {
-            const rect = el.getBoundingClientRect();
+            const r = el.getBoundingClientRect();
             const thisRect = element.getBoundingClientRect();
-            // Pertenecen a la misma fila si están a menos de 150px de diferencia vertical
-            return Math.abs(rect.top - thisRect.top) < 150;
+            return Math.abs(r.top - thisRect.top) < 150;
           }) as HTMLElement[];
 
         siblings.sort((a, b) => a.getBoundingClientRect().left - b.getBoundingClientRect().left);
         const index = siblings.indexOf(element);
         if (index !== -1) {
-          this.animationDelay = index * 0.2; // Stagger de 200ms
+          this.animationDelay = index * 0.15;
         }
 
         this.createScrollTrigger(element);
@@ -111,23 +131,43 @@ export class CardInitAnimationDirective implements AfterViewInit, OnDestroy {
   }
 
   private createScrollTrigger(element: HTMLElement): void {
+    if (this.hasAnimated || !this.isBrowser) return;
+
     this.scrollTrigger = ScrollTrigger.create({
       trigger: element,
-      start: "top 85%",
+      start: "top 88%",
       once: true,
       markers: false,
       onEnter: () => {
         this.startAnimation(element);
       }
     });
+
+    if (typeof ScrollTrigger !== 'undefined') {
+      ScrollTrigger.refresh();
+    }
   }
 
   private startAnimation(element: HTMLElement): void {
+    if (this.hasAnimated) return;
+    this.hasAnimated = true;
+
+    if (this.scrollTrigger) {
+      this.scrollTrigger.kill();
+      this.scrollTrigger = null;
+    }
+
     if (this.animation) {
       this.animation.kill();
       this.animation = null;
     }
-    this.animation = gsap.timeline();
+
+    this.animation = gsap.timeline({
+      onComplete: () => {
+        this.cleanupStyles(element);
+      }
+    });
+
     if (this.direction === 'up') {
       this.animateUp(element);
     } else if (this.direction === 'down') {
@@ -141,6 +181,7 @@ export class CardInitAnimationDirective implements AfterViewInit, OnDestroy {
 
   private resetAnimation(): void {
     const element: HTMLElement = this.el.nativeElement;
+    this.hasAnimated = false;
     if (this.animation) {
       this.animation.kill();
       this.animation = null;
@@ -156,84 +197,72 @@ export class CardInitAnimationDirective implements AfterViewInit, OnDestroy {
   private animateUp(element: HTMLElement): void {
     this.animation!.to(element, {
       clipPath: 'inset(0% 0 0 0)',
-      duration: 2.5,
+      duration: 1.3,
       ease: 'power2.out',
       delay: this.animationDelay,
     }, 0);
     this.animation!.to(element, {
       scale: 1,
-      // filter: this.gray ? 'blur(0px) grayscale(100%)' : 'blur(0px)',
-
       opacity: 1,
-      duration: 2.6,
+      duration: 1.4,
       ease: 'power2.out',
       delay: this.animationDelay,
-      onComplete: () => {
-        this.cleanupStyles(element);
-      }
     }, 0);
   }
 
   private animateDown(element: HTMLElement): void {
     this.animation!.to(element, {
       clipPath: 'inset(0% 0 0% 0)',
-      duration: 2.5,
-      ease: 'power2.out'
+      duration: 1.3,
+      ease: 'power2.out',
+      delay: this.animationDelay,
     }, 0);
     this.animation!.to(element, {
-      scale: 1.2,
-      // filter: this.gray ? 'blur(0px) grayscale(100%)' : 'blur(0px)',
-
+      scale: 1,
       opacity: 1,
-      duration: 2.6,
+      duration: 1.4,
       ease: 'power2.out',
-      onComplete: () => {
-        this.cleanupStyles(element);
-      }
+      delay: this.animationDelay,
     }, 0);
   }
 
   private animateLeft(element: HTMLElement): void {
     this.animation!.to(element, {
       clipPath: 'inset(0% 0% 0 0)',
-      duration: 2.5,
-      ease: 'power2.out'
+      duration: 1.3,
+      ease: 'power2.out',
+      delay: this.animationDelay,
     }, 0);
     this.animation!.to(element, {
       scale: 1,
-      // filter: this.gray ? 'blur(0px) grayscale(100%)' : 'blur(0px)',
-
       opacity: 1,
-      duration: 2.6,
+      duration: 1.4,
       ease: 'power2.out',
-      onComplete: () => {
-        this.cleanupStyles(element);
-      }
+      delay: this.animationDelay,
     }, 0);
   }
 
   private animateRight(element: HTMLElement): void {
     this.animation!.to(element, {
       clipPath: 'inset(0% 0 0% 0%)',
-      duration: 2.5,
-      ease: 'power2.out'
+      duration: 1.3,
+      ease: 'power2.out',
+      delay: this.animationDelay,
     }, 0);
     this.animation!.to(element, {
       scale: 1,
-      // filter: this.gray ? 'blur(0px) grayscale(100%)' : 'blur(0px)',
-
       opacity: 1,
-      duration: 2.6,
+      duration: 1.4,
       ease: 'power2.out',
-      onComplete: () => {
-        this.cleanupStyles(element);
-      }
+      delay: this.animationDelay,
     }, 0);
   }
 
   private cleanupStyles(element: HTMLElement): void {
     this.renderer.removeStyle(element, 'will-change');
     this.renderer.removeStyle(element, 'clip-path');
+    this.renderer.setStyle(element, 'opacity', '1');
+    this.renderer.setStyle(element, 'transform', 'none');
   }
 
   ngOnDestroy(): void {

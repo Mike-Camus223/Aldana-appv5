@@ -6,6 +6,7 @@ import { AppMenuItem } from '../../../../shared/utils/models/app-menu-item.model
 
 @Component({
   selector: 'app-novias',
+  standalone: true,
   imports: [NoviasTemplateComponent, BreadcrumbComponent, RouterModule],
   templateUrl: './novias.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
@@ -16,6 +17,4 @@ export class NoviasComponent {
     { label: 'INICIO', route: '/' },
     { label: 'NOVIAS COLECCIONES', route: '/novias-colecciones' }
   ];
-
-
 }

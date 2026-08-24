@@ -166,17 +166,26 @@
             [class.fade-up-slow]="animateEmpty"
             class="empty-wrapper py-20 flex-grow"
             >
-            <p
-              class="tracking-wider NewAldyFontType4 text-sm font-bold text-aldy-green-gray"
-              >
-              Tu carrito está vacío
-            </p>
-            <button
-              (click)="goToReturn()"
-              class="cursor-pointer tracking-wider NewAldyFontType4 text-sm font-light flex items-center justify-center gap-3 bg-aldy-medium border border-aldy-medium text-white uppercase py-3 px-6 transition-colors hover:bg-aldy-medium-2"
-              >
-              Seguir comprando
-            </button>
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-10 px-10 py-7 border border-[#EAE5DF] bg-aldy-white rounded-xl">
+              <div class="flex-shrink-0 w-48 h-48 sm:w-60 sm:h-60 rounded-full flex items-center justify-center overflow-hidden">
+                <img src="../../../../../assets/images/sections/misc/circle_mannequin.png" alt="Maniquí AV"
+                  class="w-full h-full object-cover scale-125" />
+              </div>
+              <div class="flex flex-col items-center sm:items-start text-center sm:text-left">
+                <h3 class="NewAldyTitle text-xl font-light text-aldy-green-gray-bold tracking-wider">
+                  Aún no tienes pedidos
+                </h3>
+                <p class="mt-2 text-xs text-aldy-green-gray-bold NewAldyFontType4 tracking-wider font-light leading-relaxed">
+                  Cuando realices tu primera compra,<br>
+                  tus pedidos aparecerán aquí.
+                </p>
+                <button
+                  (click)="navigateToStore()"
+                  class="mt-4 px-5 py-2 bg-aldy-medium text-white text-xs NewAldyFontType4 tracking-[0.10em] uppercase hover:bg-aldy-medium-2 transition-colors duration-300 cursor-pointer">
+                  Ir a la tienda
+                </button>
+              </div>
+            </div>
           </div>
         }
       }

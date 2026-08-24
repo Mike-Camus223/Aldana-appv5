@@ -1,5 +1,6 @@
 import {
   Component,
+  OnInit,
   AfterViewInit,
   Inject,
   PLATFORM_ID,
@@ -16,6 +17,7 @@ import { CollectionService } from '../../../../core/services/data-access/collect
 import { WordRevealDirective } from '../../../utils/directives/word-reveal.directive';
 import { CardInitAnimationDirective } from '../../../utils/directives/card-init-animation.directive';
 import { FadeUpLetterDirective } from "../../../utils/directives/fadeupletter.directive";
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 @Component({
   selector: 'app-generic-gallery-templ',
@@ -44,7 +46,7 @@ import { FadeUpLetterDirective } from "../../../utils/directives/fadeupletter.di
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./generic-gallery-templ.component.css']
 })
-export class GenericGalleryTemplComponent implements AfterViewInit, OnDestroy {
+export class GenericGalleryTemplComponent implements OnInit, AfterViewInit, OnDestroy {
   collections: Collection[] = [];
   productColumns: number = 4;
   private userChoice: number | null = null;
@@ -60,14 +62,25 @@ export class GenericGalleryTemplComponent implements AfterViewInit, OnDestroy {
     private cdr: ChangeDetectorRef
   ) { }
 
-  async ngAfterViewInit() {
+  async ngOnInit() {
     try {
       const result = await this.CollectionService.getAllCollections();
       this.collections = result ?? [];
+      this.cdr.detectChanges();
+      if (isPlatformBrowser(this.platformId)) {
+        setTimeout(() => {
+          if (typeof ScrollTrigger !== 'undefined') {
+            ScrollTrigger.refresh();
+          }
+          this.cdr.detectChanges();
+        }, 100);
+      }
     } catch (error) {
       console.error('Error al obtener colecciones:', error);
     }
+  }
 
+  async ngAfterViewInit() {
     if (isPlatformBrowser(this.platformId)) {
       this.applyColumnsForWidth(window.innerWidth);
     }
@@ -144,6 +157,7 @@ export class GenericGalleryTemplComponent implements AfterViewInit, OnDestroy {
         this.userChoice = cols;
         this.userChoiceBreakpoint = currentBreakpoint;
         this.productColumns = cols;
+        this.cdr.detectChanges();
       }
     }
   }

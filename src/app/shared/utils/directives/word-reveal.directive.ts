@@ -2,7 +2,12 @@ import { AfterViewInit, Directive, ElementRef, Renderer2, OnDestroy, Inject, PLA
 import { isPlatformBrowser } from '@angular/common';
 import { Subject, takeUntil } from 'rxjs';
 import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { LoaderService } from '../../../core/services/utils/loader.service';
+
+if (typeof window !== 'undefined') {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 @Directive({
   selector: '[appWordReveal]',
@@ -13,6 +18,7 @@ export class WordRevealDirective implements AfterViewInit, OnDestroy {
   private originalContent: string = '';
   private animationSetup = false;
   private animationTween: gsap.core.Tween | null = null;
+  private isBrowser: boolean;
 
   @Input() manualTrigger: boolean = false;
 
@@ -22,11 +28,14 @@ export class WordRevealDirective implements AfterViewInit, OnDestroy {
     private loaderService: LoaderService,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {
-    this.renderer.setStyle(this.el.nativeElement, 'opacity', '0');
+    this.isBrowser = isPlatformBrowser(this.platformId);
+    if (this.isBrowser) {
+      this.renderer.setStyle(this.el.nativeElement, 'opacity', '0');
+    }
   }
 
   ngAfterViewInit(): void {
-    if (!isPlatformBrowser(this.platformId)) {
+    if (!this.isBrowser) {
       this.renderer.setStyle(this.el.nativeElement, 'opacity', '1');
       return;
     }
@@ -37,21 +46,23 @@ export class WordRevealDirective implements AfterViewInit, OnDestroy {
       return;
     }
 
+    // Reset on loader
     this.loaderService.currentLoader$
       .pipe(takeUntil(this.destroy$))
       .subscribe((currentLoader) => {
-        if (currentLoader === null) {
-          this.loaderService.animationsEnabled$
-            .pipe(takeUntil(this.destroy$))
-            .subscribe((enabled: boolean) => {
-              if (enabled && !this.animationSetup) {
-                setTimeout(() => {
-                  this.setupAnimation();
-                }, 50);
-              }
-            });
-        } else {
+        if (currentLoader !== null) {
           this.resetAnimation();
+        }
+      });
+
+    // ONLY setup animation when loader has completed
+    this.loaderService.animationsEnabled$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((enabled) => {
+        if (enabled && !this.animationSetup) {
+          setTimeout(() => {
+            this.setupAnimation();
+          }, 80);
         }
       });
   }
@@ -70,13 +81,8 @@ export class WordRevealDirective implements AfterViewInit, OnDestroy {
   }
 
   private setupAnimation(): void {
-    if (this.animationSetup) return;
+    if (this.animationSetup || !this.isBrowser) return;
     this.animationSetup = true;
-
-    if (!isPlatformBrowser(this.platformId)) {
-      this.renderer.setStyle(this.el.nativeElement, 'opacity', '1');
-      return;
-    }
 
     requestAnimationFrame(() => {
       try {
@@ -100,26 +106,44 @@ export class WordRevealDirective implements AfterViewInit, OnDestroy {
     const allWordSpans = element.querySelectorAll('.word-reveal-animated');
 
     if (allWordSpans.length > 0) {
-      this.animationTween = gsap.to(allWordSpans, {
-        y: 0,
-        ease: 'cubic-bezier(0.77, 0, 0.175, 1)',
-        duration: 0.7,
-        stagger: 0.05,
-        delay: 0.05,
-        scrollTrigger: {
-          trigger: element,
-          start: 'top 90%',
-          toggleActions: 'play none none none',
-          onEnter: () => {
-            this.renderer.setStyle(element, 'opacity', '1');
+      this.renderer.setStyle(element, 'opacity', '1');
+
+      const rect = element.getBoundingClientRect();
+      const inView = rect.top < window.innerHeight * 0.88 && rect.bottom > 0;
+
+      if (inView) {
+        this.animationTween = gsap.to(allWordSpans, {
+          y: 0,
+          ease: 'cubic-bezier(0.77, 0, 0.175, 1)',
+          duration: 0.7,
+          stagger: 0.05,
+          delay: 0.05,
+          onComplete: () => {
+            allWordSpans.forEach((span: any) => {
+              span.style.willChange = 'auto';
+            });
+          }
+        });
+      } else {
+        this.animationTween = gsap.to(allWordSpans, {
+          y: 0,
+          ease: 'cubic-bezier(0.77, 0, 0.175, 1)',
+          duration: 0.7,
+          stagger: 0.05,
+          delay: 0.05,
+          scrollTrigger: {
+            trigger: element,
+            start: 'top 88%',
+            once: true,
+            toggleActions: 'play none none none',
           },
-        },
-        onComplete: () => {
-          allWordSpans.forEach((span: any) => {
-            span.style.willChange = 'auto';
-          });
-        }
-      });
+          onComplete: () => {
+            allWordSpans.forEach((span: any) => {
+              span.style.willChange = 'auto';
+            });
+          }
+        });
+      }
     } else {
       this.renderer.setStyle(element, 'opacity', '1');
     }
@@ -146,7 +170,6 @@ export class WordRevealDirective implements AfterViewInit, OnDestroy {
   private processNode(node: Node, parent: HTMLElement): void {
     const segments: Array<{type: 'text' | 'element', content: string | HTMLElement}> = [];
     
-    // Recolectar todos los segmentos (texto y elementos)
     node.childNodes.forEach((child: Node) => {
       if (child.nodeType === Node.TEXT_NODE) {
         const text = child.textContent || '';
@@ -156,37 +179,31 @@ export class WordRevealDirective implements AfterViewInit, OnDestroy {
       }
     });
 
-    // Procesar segmentos agrupándolos en palabras
     let currentWord: Array<{type: 'text' | 'element', content: string | HTMLElement}> = [];
     
-    segments.forEach((segment, index) => {
+    segments.forEach((segment) => {
       if (segment.type === 'text') {
         const text = segment.content as string;
         const parts = text.split(/(\s+)/);
         
         parts.forEach((part) => {
           if (part.trim()) {
-            // Es parte de una palabra
             currentWord.push({type: 'text', content: part});
           } else if (part) {
-            // Es un espacio - finalizar palabra actual si existe
             if (currentWord.length > 0) {
               this.createWordFromSegments(currentWord, parent);
               currentWord = [];
             }
-            // Agregar el espacio
             const spaceSpan = this.renderer.createElement('span');
             spaceSpan.textContent = part;
             this.renderer.appendChild(parent, spaceSpan);
           }
         });
       } else {
-        // Es un elemento - agregarlo a la palabra actual
         currentWord.push(segment);
       }
     });
     
-    // Procesar última palabra si existe
     if (currentWord.length > 0) {
       this.createWordFromSegments(currentWord, parent);
     }
@@ -207,7 +224,6 @@ export class WordRevealDirective implements AfterViewInit, OnDestroy {
     this.renderer.setStyle(wordSpan, 'willChange', 'transform');
     this.renderer.addClass(wordSpan, 'word-reveal-animated');
 
-    // Agregar todos los segmentos dentro del mismo span animado
     segments.forEach(segment => {
       if (segment.type === 'text') {
         const textNode = this.renderer.createText(segment.content as string);
@@ -216,14 +232,11 @@ export class WordRevealDirective implements AfterViewInit, OnDestroy {
         const element = segment.content as HTMLElement;
         const clonedElement = this.renderer.createElement(element.tagName.toLowerCase());
         
-        // Copiar todos los atributos
         Array.from(element.attributes).forEach(attr => {
           this.renderer.setAttribute(clonedElement, attr.name, attr.value);
         });
         
-        // Copiar el contenido
         clonedElement.innerHTML = element.innerHTML;
-        
         this.renderer.appendChild(wordSpan, clonedElement);
       }
     });

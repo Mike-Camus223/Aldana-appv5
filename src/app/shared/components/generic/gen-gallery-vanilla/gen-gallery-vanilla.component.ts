@@ -1,19 +1,20 @@
-import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
-
+import { Component, Input, ChangeDetectionStrategy, OnChanges, SimpleChanges, ChangeDetectorRef, Inject, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { MediaItem } from '../../../utils/models/objectsGallery.model';
 import { GenLightboxVanillaComponent } from '../gen-lightbox-vanilla/gen-lightbox-vanilla.component';
 import { CardInitAnimationDirective } from '../../../utils/directives/card-init-animation.directive';
 import { WordRevealDirective } from '../../../utils/directives/word-reveal.directive';
-
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 @Component({
   selector: 'app-gen-gallery-vanilla',
   standalone: true,
-  imports: [GenLightboxVanillaComponent, CardInitAnimationDirective, WordRevealDirective],
-  changeDetection: ChangeDetectionStrategy.Eager,
+  imports: [CommonModule, GenLightboxVanillaComponent, CardInitAnimationDirective, WordRevealDirective],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './gen-gallery-vanilla.component.html',
+  styleUrls: ['./gen-gallery-vanilla.component.css']
 })
-export class GenGalleryVanillaComponent {
+export class GenGalleryVanillaComponent implements OnChanges {
 
   @Input() rows: { label: string; items: MediaItem[] }[] = [];
 
@@ -21,13 +22,34 @@ export class GenGalleryVanillaComponent {
   lightboxIndex = 0;
   lightboxItems: MediaItem[] = [];
 
+  constructor(
+    private cdr: ChangeDetectorRef,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {}
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['rows']) {
+      this.cdr.markForCheck();
+      if (isPlatformBrowser(this.platformId)) {
+        setTimeout(() => {
+          if (typeof ScrollTrigger !== 'undefined') {
+            ScrollTrigger.refresh();
+          }
+          this.cdr.detectChanges();
+        }, 60);
+      }
+    }
+  }
+
   openLightbox(items: MediaItem[], index: number) {
     this.lightboxItems = items;
     this.lightboxIndex = index;
     this.lightboxOpen = true;
+    this.cdr.markForCheck();
   }
 
   closeLightbox() {
     this.lightboxOpen = false;
+    this.cdr.markForCheck();
   }
 }
