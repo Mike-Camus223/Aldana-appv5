@@ -95,6 +95,8 @@ export class ItemsCollectionComponent implements OnInit, AfterViewInit, OnDestro
   private destroy$ = new Subject<void>();
   private triggers: ScrollTrigger[] = [];
   private isBrowser: boolean;
+  private animationsEnabled = false;
+  private isScrollInitialized = false;
 
   @HostListener('window:resize')
   onResize() {
@@ -133,6 +135,17 @@ export class ItemsCollectionComponent implements OnInit, AfterViewInit, OnDestro
     this.isBrowser = isPlatformBrowser(this.platformId);
   }
 
+  private checkAndInitScroll(): void {
+    if (!this.isBrowser) return;
+    if (this.animationsEnabled && this.product && !this.isScrollInitialized) {
+      this.isScrollInitialized = true;
+      setTimeout(() => {
+        this.initScroll();
+        this.cdr.detectChanges();
+      }, 80);
+    }
+  }
+
   ngOnInit(): void {
     this.updateVisibleProducts();
 
@@ -140,12 +153,8 @@ export class ItemsCollectionComponent implements OnInit, AfterViewInit, OnDestro
     this.loaderService.animationsEnabled$
       .pipe(takeUntil(this.destroy$))
       .subscribe((enabled) => {
-        if (enabled && this.product && this.isBrowser) {
-          setTimeout(() => {
-            this.initScroll();
-            this.cdr.detectChanges();
-          }, 80);
-        }
+        this.animationsEnabled = enabled;
+        this.checkAndInitScroll();
       });
 
     // Carga de producto en cambio de ruta
@@ -153,6 +162,7 @@ export class ItemsCollectionComponent implements OnInit, AfterViewInit, OnDestro
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => {
         this.loaderService.holdLoader();
+        this.isScrollInitialized = false;
         this.loadProductData();
       });
   }
@@ -349,6 +359,7 @@ export class ItemsCollectionComponent implements OnInit, AfterViewInit, OnDestro
       setTimeout(() => {
         this.loaderService.releaseLoader();
         this.cdr.detectChanges();
+        this.checkAndInitScroll();
       }, 50);
     });
   }

@@ -39,16 +39,14 @@ gsap.registerPlugin(DrawSVGPlugin);
 })
 export class TriplesectionComponent implements AfterViewInit, OnDestroy {
 
-  // ── Imágenes de los paneles inferiores ───────────────────────────────────────
-  @ViewChild('leftImage') leftImage!: ElementRef<HTMLImageElement>;
-  @ViewChild('rightImage') rightImage!: ElementRef<HTMLImageElement>;
-
   // ── Contenido de texto de los paneles inferiores ─────────────────────────────
   @ViewChild('leftContent') leftContent!: ElementRef<HTMLElement>;
+  @ViewChild('centerContent') centerContent!: ElementRef<HTMLElement>;
   @ViewChild('rightContent') rightContent!: ElementRef<HTMLElement>;
 
   // ── Botones (sólo para buscar el panel padre si fuera necesario) ─────────────
   @ViewChild('leftArrowBtn') leftArrowBtn!: ElementRef;
+  @ViewChild('centerArrowBtn') centerArrowBtn!: ElementRef;
   @ViewChild('rightArrowBtn') rightArrowBtn!: ElementRef;
 
   // ── Logo y tagline ───────────────────────────────────────────────────────────
@@ -119,6 +117,7 @@ export class TriplesectionComponent implements AfterViewInit, OnDestroy {
         entries.forEach(entry => {
           const video = entry.target as HTMLVideoElement;
           if (entry.isIntersecting) {
+            video.muted = true;
             video.paused && video.play().catch(() => { });
           } else {
             !video.paused && video.pause();
@@ -214,17 +213,6 @@ export class TriplesectionComponent implements AfterViewInit, OnDestroy {
     }
   }
   private animateBottomPanels(): void {
-    const imageProps = {
-      scale: 1,
-      filter: 'brightness(0.82) contrast(0.80) saturate(1.7)',
-      duration: 1.5,
-      ease: 'expo.out',
-      delay: 0.06
-    };
-
-    if (this.leftImage?.nativeElement) gsap.to(this.leftImage.nativeElement, imageProps);
-    if (this.rightImage?.nativeElement) gsap.to(this.rightImage.nativeElement, imageProps);
-
     const contentProps = {
       opacity: 1,
       y: 0,
@@ -234,10 +222,11 @@ export class TriplesectionComponent implements AfterViewInit, OnDestroy {
     };
 
     if (this.leftContent?.nativeElement) gsap.to(this.leftContent.nativeElement, contentProps);
+    if (this.centerContent?.nativeElement) gsap.to(this.centerContent.nativeElement, contentProps);
     if (this.rightContent?.nativeElement) gsap.to(this.rightContent.nativeElement, contentProps);
 
     // Divisores: scale-in desde el centro
-    const dividers = document.querySelectorAll('.h-px.w-40');
+    const dividers = document.querySelectorAll('.h-px.w-full');
     gsap.set(dividers, { scaleX: 0, transformOrigin: 'center' });
     gsap.to(dividers, {
       scaleX: 1,

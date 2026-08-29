@@ -18,7 +18,7 @@ export type RevealDirection = 'up' | 'down' | 'left' | 'right';
 export class CardInitAnimationDirective implements AfterViewInit, OnDestroy {
 
   @Input('appCardInitAnimation') direction: RevealDirection = 'up';
-  @Input() wave: boolean = false;
+  @Input() waveinit: boolean = true;
   @Input() animationDelay: number = 0;
   @Input() gray: boolean = false;
 
@@ -97,19 +97,13 @@ export class CardInitAnimationDirective implements AfterViewInit, OnDestroy {
       this.scrollTrigger = null;
     }
 
-    // If element is already in viewport when loader finishes, animate entrance
-    const rect = element.getBoundingClientRect();
-    if (rect.top < window.innerHeight * 0.85 && rect.bottom > 0) {
-      this.startAnimation(element);
-      return;
-    }
-
-    // For elements further down the page: animate progressively on scroll
-    if (this.wave) {
+    if (this.waveinit) {
       this.renderer.setAttribute(element, 'data-wave', 'true');
 
       setTimeout(() => {
         if (this.hasAnimated) return;
+        
+        // Find siblings on the same horizontal row (top within 150px)
         const siblings = Array.from(document.querySelectorAll('[data-wave="true"]'))
           .filter(el => {
             const r = el.getBoundingClientRect();
@@ -123,10 +117,22 @@ export class CardInitAnimationDirective implements AfterViewInit, OnDestroy {
           this.animationDelay = index * 0.15;
         }
 
-        this.createScrollTrigger(element);
+        // Now check if it's already in viewport or should scroll trigger
+        const rect = element.getBoundingClientRect();
+        if (rect.top < window.innerHeight * 0.85 && rect.bottom > 0) {
+          this.startAnimation(element);
+        } else {
+          this.createScrollTrigger(element);
+        }
       }, 60);
     } else {
-      this.createScrollTrigger(element);
+      // No wave: check immediately
+      const rect = element.getBoundingClientRect();
+      if (rect.top < window.innerHeight * 0.85 && rect.bottom > 0) {
+        this.startAnimation(element);
+      } else {
+        this.createScrollTrigger(element);
+      }
     }
   }
 
@@ -259,6 +265,7 @@ export class CardInitAnimationDirective implements AfterViewInit, OnDestroy {
   }
 
   private cleanupStyles(element: HTMLElement): void {
+    this.renderer.removeAttribute(element, 'data-wave');
     this.renderer.removeStyle(element, 'will-change');
     this.renderer.removeStyle(element, 'clip-path');
     this.renderer.setStyle(element, 'opacity', '1');

@@ -2,4 +2,8 @@
 .hero-image-reveal {
   position: relative;
   width: 100%;
+  opacity: 0;
+  transform: translateY(35px);
+  clip-path: inset(100% 0 0 0);
+  will-change: transform, opacity, clip-path;
 }

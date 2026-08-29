@@ -1,48 +1,23 @@
 <section class="w-full overflow-hidden bg-black">
-  <div class="grid w-full
-    grid-cols-2 auto-rows-auto
-    lg:grid-cols-6 lg:h-screen lg:grid-rows-[71vh_29vh]">
-    <!-- ========================= TOP SECTION: VIDEOS + LOGO OVERLAY ========================== -->
-    <div class="relative col-span-2 lg:col-span-6 lg:row-span-1">
-      <!-- Videos Container -->
-      <div class="grid w-full h-full grid-cols-2 lg:grid-cols-6">
-        <div class="relative overflow-hidden
-          hidden
-          sm:block sm:col-span-1 sm:aspect-[2/4]
-          lg:col-span-2 lg:aspect-auto lg:h-full">
-          <video #video2 autoplay loop muted playsinline preload="auto"
-            class="absolute inset-0 w-full h-full block object-cover object-[50%_25%]" style="pointer-events: none;">
-            <source
-              src="https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/sections/present/brides3.mp4"
-              type="video/mp4">
-          </video>
-        </div>
-        <div class="relative overflow-hidden
-        col-span-2 aspect-[3/7]
-        sm:col-span-1 sm:aspect-[2/4]
-        lg:col-span-2 lg:aspect-auto lg:h-full">
-          <video #video1 autoplay loop muted playsinline preload="auto"
-            class="absolute inset-0 w-full h-full block object-cover object-[50%_25%]" style="pointer-events: none;">
-            <source
-              src="https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/sections/present/brides1.mp4"
-              type="video/mp4">
-          </video>
-        </div>
-        <!-- Video 3: solo desktop -->
-        <div class="relative overflow-hidden hidden lg:block lg:col-span-2 lg:aspect-auto lg:h-full">
-          <video #video3 autoplay loop muted playsinline preload="auto"
-            class="absolute inset-0 w-full h-full block object-cover object-[50%_20%]" style="pointer-events: none;">
-            <source
-              src="https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/sections/present/brides2.mp4"
-              type="video/mp4">
-          </video>
-        </div>
+  <div class="grid w-full grid-cols-2 lg:grid-cols-3 h-auto lg:h-screen">
+
+    <!-- ========================= NOVIAS (CENTER) ========================== -->
+    <div class="relative overflow-hidden col-span-2 lg:col-span-1 h-screen lg:h-full lg:order-2">
+      <!-- Video background -->
+      <video #video1 autoplay loop [muted]="true" playsinline preload="auto"
+        class="absolute inset-0 w-full h-full block object-cover object-[50%_25%] brightness-80 saturate-130"
+        style="pointer-events: none;">
+        <source
+          src="https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/sections/present/brides1.mp4"
+          type="video/mp4">
+      </video>
+      <div class="absolute inset-0 bg-black/20 pointer-events-none"></div>
+      <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/15 pointer-events-none">
       </div>
-      <!-- Logo Overlay -->
+
+      <!-- Logo overlay (drawn with GSAP) -->
       <div class="absolute inset-0 z-10 flex items-center justify-center pointer-events-none">
-        <div class="absolute inset-0 bg-black/15 pointer-events-none"></div>
-        <div class="absolute inset-0 bg-gradient-to-r from-[#181614]/15 to-[#AEC2A9]/10 pointer-events-none"></div>
-        <div class="relative z-10 w-full flex flex-col items-center justify-center text-center px-6">
+        <div class="relative w-full flex flex-col items-center justify-center text-center px-6">
           <svg #logoSvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 710.41 308.57"
             class="w-[65vw] sm:w-[55vw] lg:w-[500px]" style="opacity: 0;">
             <defs></defs>
@@ -66,120 +41,114 @@
             <path class="cls-1"
               d="M701.35,261.73h-19a8.41,8.41,0,0,0,2.1-9.25l-13.28-33.59a31,31,0,0,1-17.82,5.16c-9.89-.25-14.15,4-14.75,4.64l-5.2,13.15,0,0s0,.09-.05.14a10.29,10.29,0,0,0-.15,6.71,14.34,14.34,0,0,0,7.21,8.35c.6.31.32,1.64-.64,3.21-.14.21-.29.4-.42.61h0l0,0-.52.7-.15.19-.51.67h0l0,0c-.16.19-.31.39-.47.57-1.22,1.33-2.78,1.72-3.46.85A20.76,20.76,0,0,1,629.56,249a29.71,29.71,0,0,1,2-7.92h0L661,166.58,696,255a13,13,0,0,0,3.31,4.82ZM670.4,217l-13.6-34.4L640,225.1h0a24.63,24.63,0,0,1,13.39-3A29.1,29.1,0,0,0,670.4,217Z" />
             <path class="cls-2"
-              d="M109.52,104.76c-.73-.73-.88-1.31-.44-1.75a6,6,0,0,1,3.5-3.28,26.51,26.51,0,0,1,6.56-2,91.16,91.16,0,0,1,9.74-2.3q5.35-1,11.7-2.08,13.14-2,29.32-3.39t33.26-2.73a22.66,22.66,0,0,0,3.28-.22,29.3,29.3,0,0,0,3.28-.66Q217.81,80,226.57,72.6t17.28-14.55q8.53-7.11,16.3-13.35t13.46-10.39q6.12-4.59,13.34-9.41t13.89-8.42a60.8,60.8,0,0,1,12-5.14q5.36-1.53,8,.22a4,4,0,0,1,1.86,3.72A13.8,13.8,0,0,1,320.86,21a52.12,52.12,0,0,1-4.7,7.11q-3,3.83-6.24,7.87c-2.18,2.7-4.45,5.33-6.78,7.88s-4.45,4.92-6.34,7.11Q292.2,56.85,285,64.61T270.54,80.69a91.15,91.15,0,0,0,9.3-1.2q4.05-.76,7.33-1.42l6.56-1.31,2-.66a3.79,3.79,0,0,1,1.1-.22.69.69,0,0,1,.65-.76,1.18,1.18,0,0,1,1.1.32c.43,1,.43,1.75,0,2.19a5.35,5.35,0,0,1-1.65,1.1c-.65.29-1.42.65-2.29,1.09l-6.57.87A62.14,62.14,0,0,1,279,82.44q-5.13.66-11,1.32-5,5.68-9.3,11.27c-2.85,3.71-5.33,7.22-7.44,10.5a49.4,49.4,0,0,0-4.7,8.86,11,11,0,0,0-.88,6.56,6.15,6.15,0,0,0,5,4.92,24.45,24.45,0,0,0,10.07-.11,86,86,0,0,0,12.8-3.5q6.88-2.4,13.56-5.36t12.14-5.79c3.65-1.9,4.05-1.57,6.1-2.74a1.28,1.28,0,1,1,1.31,2.19c-2.19,1.46-2.85,1.39-6.86,3.5s-8.42,4.19-13.24,6.24-9.73,3.9-14.76,5.57a65.91,65.91,0,0,1-13.9,3.18,25,25,0,0,1-10.72-.88c-2.92-1-4.59-3.28-5-6.78a13.44,13.44,0,0,1,1.09-6.78,59.17,59.17,0,0,1,4.49-8.86,115.56,115.56,0,0,1,7.11-10.4q4.16-5.46,9.19-11.15-11.16,1.3-24.83,2.4T211,89l-7,5.69q-10.72,8.52-21.66,16.84t-21.55,15.54q-10.62,7.21-20.67,12.69a119.08,119.08,0,0,1-18.93,8.42,49.34,49.34,0,0,1-16.3,2.84A21.26,21.26,0,0,1,92,146.77a3.54,3.54,0,0,0-.22-1.1c-.14-.43-.07-.65.22-.65a2.16,2.16,0,0,1,1.1-.88.89.89,0,0,1,1.09.44q7,5.47,18.49,3.06t25.71-10.17A297,297,0,0,0,169,117.89q16.4-11.82,33.25-25.38c.44-.44.91-.88,1.42-1.31a10.43,10.43,0,0,1,2.08-1.32h-2.19Q186.54,91.64,170.34,93T141,96q-6.56,1.3-11.81,2.3c-3.5.65-6.57,1.35-9.19,2.07-1.61.44-2.85.81-3.72,1.1a12.34,12.34,0,0,0-2.41,1.09c-1.46.44-2.18.88-2.18,1.32Q111.26,104.76,109.52,104.76Zm210-91c-.88-1-2.84-1.06-5.91-.11a58.42,58.42,0,0,0-10.83,4.92q-6.22,3.5-13.45,8.31t-14,9.63q-5.7,4.16-12.91,10T247.24,58.93q-8,6.68-16.3,13.67T215,86l50.76-4.82h.87q9.19-10.71,19.26-21.77T303.91,39a186.81,186.81,0,0,0,12.58-16.08Q321.08,16.16,319.55,13.75Z" />
+              d="M109.52,104.76c-.73-.73-.88-1.31-.44-1.75a6,6,0,0,1,3.5-3.28,26.51,26.51,0,0,1,6.56-2,91.16,91.16,0,0,1,9.74-2.3q5.35-1,11.7-2.08,13.14-2,29.32-3.39t33.26-2.73a22.66,22.66,0,0,0,3.28-.22,29.3,29.3,0,0,0,3.28-.66Q217.81,80,226.57,72.6t17.28-14.55q8.53-7.11,16.3-13.35t13.46-10.39q6.12-4.59,13.34-9.41t13.89-8.42a60.8,60.8,0,0,1,12-5.14q5.36-1.53,8,.22a4,4,0,0,1,1.86,3.72A13.8,13.8,0,0,1,320.86,21a52.12,52.12,0,0,1-4.7,7.11q-3,3.83-6.24,7.87c-2.18,2.7-4.45,5.33-6.78,7.88s-4.45,4.92-6.34,7.11Q292.2,56.85,285,64.61T270.54,80.69a91.15,91.15,0,0,0,9.3-1.2q4.05-.76,7.33-1.42l6.56-1.31,2-.66a3.79,3.79,0,0,1,1.1-.22.69.69,0,0,1,.65-.76,1.18,1.18,0,0,1,1.1.32c.43,1,.43,1.75,0,2.19a5.35,5.35,0,0,1-1.65,1.1c-.65.29-1.42.65-2.29,1.09l-6.57.87A62.14,62.14,0,0,1,279,82.44q-5.13.66-11,1.32-5,5.68-9.3,11.27c-2.85,3.71-5.33,7.22-7.44,10.5a49.4,49.4,0,0,0-4.7,8.86,11,11,0,0,0-.88,6.56,6.15,6.15,0,0,0,5,4.92,24.45,24.45,0,0,0,10.07-.11,86,86,0,0,0,12.8-3.5q6.88-2.4,13.56-5.36t12.14-5.79c3.65-1.9,4.05-1.57,6.1-2.74a1.28,1.28,0,1,1,1.31,2.19c-2.19,1.46-2.85,1.39-6.86,3.5s-8.42,4.19-13.24,6.24-9.73,3.9-14.76,5.57a65.91,65.91,0,0,1-13.9,3.18,25,25,0,0,1-10.72-.88c-2.92-1-4.59-3.28-5-6.78a13.44,13.44,0,0,1,1.09-6.78,5.17,5.17,0,0,1,4.49-8.86,115.56,115.56,0,0,1,7.11-10.4q4.16-5.46,9.19-11.15-11.16,1.3-24.83,2.4T211,89l-7,5.69q-10.72,8.52-21.66,16.84t-21.55,15.54q-10.62,7.21-20.67,12.69a119.08,119.08,0,0,1-18.93,8.42,49.34,49.34,0,0,1-16.3,2.84A21.26,21.26,0,0,1,92,146.77a3.54,3.54,0,0,0-.22-1.1c-.14-.43-.07-.65.22-.65a2.16,2.16,0,0,1,1.1-.88.89.89,0,0,1,1.09.44q7,5.47,18.49,3.06t25.71-10.17A297,297,0,0,0,169,117.89q16.4-11.82,33.25-25.38c.44-.44.91-.88,1.42-1.31a10.43,10.43,0,0,1,2.08-1.32h-2.19Q186.54,91.64,170.34,93T141,96q-6.56,1.3-11.81,2.3c-3.5.65-6.57,1.35-9.19,2.07-1.61.44-2.85.81-3.72,1.1a12.34,12.34,0,0,0-2.41,1.09c-1.46.44-2.18.88-2.18,1.32Q111.26,104.76,109.52,104.76Zm210-91c-.88-1-2.84-1.06-5.91-.11a58.42,58.42,0,0,0-10.83,4.92q-6.22,3.5-13.45,8.31t-14,9.63q-5.7,4.16-12.91,10T247.24,58.93q-8,6.68-16.3,13.67T215,86l50.76-4.82h.87q9.19-10.71,19.26-21.77T303.91,39a186.81,186.81,0,0,0,12.58-16.08Q321.08,16.16,319.55,13.75Z" />
             <path class="cls-2"
               d="M309.81,121.14a8.87,8.87,0,0,1-3.94-2,5.25,5.25,0,0,1-1.8-4.19,9.21,9.21,0,0,1,.6-3.1c.4-1.11.84-2.31,1.32-3.59l.68-1.14.27-.29c.76-1.34.35-.59.89-1.59l1.5-1.28,1.44-2.39a163.53,163.53,0,0,1,13.5-15.41q8.48-8.73,17.8-16.73a218.63,218.63,0,0,1,18.52-14.34q9.2-6.33,15.66-8.48h1.43c1.59,0,2.39.64,2.39,1.91q-.48,2.63-4.06,6.69a114.11,114.11,0,0,1-9.8,9.56q-3.1,2.63-9.32,7.65t-13.5,10.75q-7.31,5.73-14.82,11.23t-13,9.08l-4.3,2.39-.47,1a31.32,31.32,0,0,0-2.39,4.18,9.22,9.22,0,0,0-1,3.94c0,1.92,1.11,3.11,3.35,3.59a26.6,26.6,0,0,0,8.48.12,76.8,76.8,0,0,0,11.23-2.27q6.09-1.67,11.83-3.71a107.59,107.59,0,0,0,10.28-4.18,41.43,41.43,0,0,0,6.45-3.58c.95-.8,1.75-.8,2.39,0s.48,1.59-.48,2.39a44,44,0,0,1-9.44,5.37A117.63,117.63,0,0,1,337.17,118a99.72,99.72,0,0,1-15.29,3.47Q314.35,122.57,309.81,121.14Zm54-58.79a69.73,69.73,0,0,0,5.85-5.14c1.52-1.51,2.91-3,4.19-4.42l1.43-1.43,1-1.44-1.44.48a96.66,96.66,0,0,0-17,10.16q-8.59,6.33-16.49,13.26T327,87.44q-6.47,6.69-10.52,11.23l3.35-2.39q4.29-2.86,10.75-7.76l13-9.92q6.56-5,12.06-9.56C359.36,66,362.06,63.78,363.82,62.35Z" />
             <path class="cls-2"
               d="M352.94,123.53a3.57,3.57,0,0,1-2.15-2.75,8.13,8.13,0,0,1,.48-3.82,15,15,0,0,1,2.15-3.95,31,31,0,0,1,2.87-3.34,36.29,36.29,0,0,1,6.93-6.57c2.71-2,5.17-3,7.41-3a11.27,11.27,0,0,1,3.1.48,6.49,6.49,0,0,1,2.87,1.67,53.08,53.08,0,0,1,6.21-13.62,97.17,97.17,0,0,1,9.92-13.5,44.31,44.31,0,0,1,10.76-9.21q5.37-3.11,9.2-.71,2.15,2.63.36,6.93a40.81,40.81,0,0,1-5.5,9.08A116,116,0,0,1,399,91q-4.9,5-8.73,9.08-2.62,2.63-5.49,5.14t-6.45,5.85v.48a3.78,3.78,0,0,0,.47,2.39c.64,1.28,1.91,2,3.83,2.27a19.3,19.3,0,0,0,7.05-.72,47.79,47.79,0,0,0,9.2-3.58,74.75,74.75,0,0,0,10-6.1c1.12-.47,1.92-.47,2.39,0,.64,1.12.48,1.91-.47,2.39a79.92,79.92,0,0,1-10.4,6.57,47.94,47.94,0,0,1-10.87,4.31,18.33,18.33,0,0,1-9.2.24c-2.63-.72-4.27-2.67-4.9-5.86q-2.16,1.44-5.14,3.58c-2,1.44-4,2.75-6.1,4a33.31,33.31,0,0,1-6,2.75,5.47,5.47,0,0,1-4.78-.24Zm22.47-17.21v-.48h-.48c-.32,0-.48-.31-.48-1-.48-1-1.75-1.44-3.82-1.44-1.44-.31-3.31.36-5.62,2a32.79,32.79,0,0,0-6.33,6.1q-6,6.69-4.3,9.08l.47.48c.48.32,1.6.08,3.35-.72s3.66-1.79,5.74-3,4.1-2.51,6.09-3.94,3.62-2.71,4.9-3.82Zm34.41-38.71q-3.1-1-8.25,3.34a66.1,66.1,0,0,0-10,10.76,105,105,0,0,0-8.73,13.5c-2.54,4.7-4.06,8.64-4.53,11.83,1.75-1.44,3.9-3.38,6.45-5.86s5.17-5.13,7.88-8,5.34-5.74,7.89-8.61,4.7-5.49,6.45-7.88a27.68,27.68,0,0,0,3.59-6.1C411.17,68.92,410.93,67.93,409.82,67.61Z" />
             <path class="cls-2"
-              d="M403.25,122.09A4.35,4.35,0,0,1,401.1,117a14.48,14.48,0,0,1,3.58-6.69,28.77,28.77,0,0,1,7.17-5.74,17,17,0,0,1,8.6-2.51,10.94,10.94,0,0,1,5.14,1.19,6.71,6.71,0,0,1,3,2.63q.48.72-.36,1.32a1.26,1.26,0,0,1-1.55.12,21.65,21.65,0,0,1-2.27-1.56,6.83,6.83,0,0,0-3.95-.83,12.7,12.7,0,0,0-6.21,1.91,28.06,28.06,0,0,0-5.86,4.42A17.88,17.88,0,0,0,404.8,116c-.72,1.52-.6,2.59.36,3.23q2.14.48,5.73-1.08a74.33,74.33,0,0,0,7.53-3.82q3.94-2.28,7.65-4.9c2.47-1.75,4.58-3.27,6.33-4.54q2.39-1.92,3.23-.48a1.67,1.67,0,0,1-.36,2.39,10.54,10.54,0,0,0-4.18,5.38q-1.08,3.22.6,3.94t5.49-.84a86,86,0,0,0,7.89-3.7c2.7-1.43,5.26-2.87,7.65-4.3s3.9-2.39,4.53-2.87a1.56,1.56,0,0,1,2.28.72c.55,1,.43,1.67-.36,2.15q-1.68,1-5.26,3.22t-7.77,4.42a62.63,62.63,0,0,1-8.36,3.59c-2.79,1-5.06,1.19-6.81.72a4.17,4.17,0,0,1-3.23-3.11,6,6,0,0,1,.6-4.54c-1.76,1.28-3.82,2.67-6.22,4.18a53.68,53.68,0,0,1-7.4,3.94,48.48,48.48,0,0,1-6.93,2.51C405.72,122.77,404.2,122.73,403.25,122.09Z" />
+              d="M403.25,122.09A4.35,4.35,0,0,1,401.1,117a14.48,14.48,0,0,1,3.58-6.69,28.77,28.77,0,0,1,7.17-5.74,17,17,0,0,1,8.6-2.51,10.94,10.94,0,0,1,5.14,1.19,6.71,6.71,0,0,1,3,2.63q.48.72-.36,1.32a1.26,1.26,0,0,1-1.55.12,21.65,21.65,0,0,1-2.27-1.56,6.83,6.83,0,0,0-3.95-.83,12.7,12.7,0,0,0-6.21,1.91,2.81,2.81,0,0,0-5.86,4.42A17.88,17.88,0,0,0,404.8,116c-.72,1.52-.6,2.59.36,3.23q2.14.48,5.73-1.08a74.33,74.33,0,0,0,7.53-3.82q3.94-2.28,7.65-4.9c2.47-1.75,4.58-3.27,6.33-4.54q2.39-1.92,3.23-.48a1.67,1.67,0,0,1-.36,2.39,10.54,10.54,0,0,0-4.18,5.38q-1.08,3.22.6,3.94t5.49-.84a86,86,0,0,0,7.89-3.7c2.7-1.43,5.26-2.87,7.65-4.3s3.9-2.39,4.53-2.87a1.56,1.56,0,0,1,2.28.72c.55,1,.43,1.67-.36,2.15q-1.68,1-5.26,3.22t-7.77,4.42a62.63,62.63,0,0,1-8.36,3.59c-2.79,1-5.06,1.19-6.81.72a4.17,4.17,0,0,1-3.23-3.11,6,6,0,0,1,.6-4.54c-1.76,1.28-3.82,2.67-6.22,4.18a53.68,53.68,0,0,1-7.4,3.94,48.48,48.48,0,0,1-6.93,2.51C405.72,122.77,404.2,122.73,403.25,122.09Z" />
             <path class="cls-2"
-              d="M455.13,115.6a17.27,17.27,0,0,1,3.1-3.35,14.31,14.31,0,0,0,3.7-4.18,17.52,17.52,0,0,0,1.56-3.94,42.25,42.25,0,0,1-4.56,2.86q-2.22,1.2-4.32,2.39a1.51,1.51,0,0,1-2.23-.71c-.56-1-.28-1.68.83-2.15.93-.48,2-1.08,3.26-1.8s2.36-1.39,3.37-2,1.86-1.23,2.58-1.79,1.07-1.08,1.07-1.55v-.48a1.83,1.83,0,0,1,1.43-1.32c.64-.07,1.12.36,1.44,1.32a11.57,11.57,0,0,1,.47,4.42,16.67,16.67,0,0,1-.95,3.7q7.17-4,12.43-6.69t8.6-.48A2.36,2.36,0,0,1,488.1,102a5.06,5.06,0,0,1-.71,2.63q-1,2.88-1.92,5.26a18.89,18.89,0,0,0-1.19,4.06,2.48,2.48,0,0,0,.6,2.39c.55.48,1.71.56,3.46.24a72,72,0,0,0,14.1-4.9A102.19,102.19,0,0,0,518,103.17c1.11-.64,1.91-.48,2.39.48s.31,1.59-.48,1.91a102.09,102.09,0,0,1-16,9.2,68.14,68.14,0,0,1-16,5.14c-3.18.48-5.22.08-6.09-1.2a6.67,6.67,0,0,1-.95-4.78,21.29,21.29,0,0,1,1.79-6.09,34.22,34.22,0,0,0,1.91-5.14c-.32-1-1.43-1.11-3.35-.48a41.71,41.71,0,0,0-6.57,3q-3.71,2-7.29,4.42c-2.39,1.6-4.22,2.87-5.49,3.83-.8,1-1.64,1.87-2.51,2.74a16.14,16.14,0,0,1-2,1.8,2.52,2.52,0,0,1-2.15,0C454.49,117.67,454.49,116.87,455.13,115.6Z" />
+              d="M455.13,115.6a17.27,17.27,0,0,1,3.1-3.35,14.31,14.31,0,0,0,3.7-4.18,17.52,17.52,0,0,0,1.56-3.94,42.25,42.25,0,0,1-4.56,2.86q-2.22,1.2-4.32,2.39a1.51,1.51,0,0,1-2.23-.71c-.56-1-.28-1.68.83-2.15.93-.48,2-1.08,3.26-1.8s2.36-1.39,3.37-2,1.86-1.23,2.58-1.79,1.07-1.08,1.07-1.55v-.48a1.83,1.83,0,0,1,1.43-1.32c.64-.07,1.12.36,1.44,1.32a11.57,1.57,0,0,1,.47,4.42,16.67,16.67,0,0,1-.95,3.7q7.17-4,12.43-6.69t8.6-.48A2.36,2.36,0,0,1,488.1,102a5.06,5.06,0,0,1-.71,2.63q-1,2.88-1.92,5.26a18.89,18.89,0,0,0-1.19,4.06,2.48,2.48,0,0,0,.6,2.39c.55.48,1.71.56,3.46.24a72,72,0,0,0,14.1-4.9A102.19,102.19,0,0,0,518,103.17c1.11-.64,1.91-.48,2.39.48s.31,1.59-.48,1.91a102.09,102.09,0,0,1-16,9.2,68.14,68.14,0,0,1-16,5.14c-3.18.48-5.22.08-6.09-1.2a6.67,6.67,0,0,1-.95-4.78,21.29,21.29,0,0,1,1.79-6.09,34.22,34.22,0,0,0,1.91-5.14c-.32-1-1.43-1.11-3.35-.48a41.71,41.71,0,0,0-6.57,3q-3.71,2-7.29,4.42c-2.39,1.6-4.22,2.87-5.49,3.83-.8,1-1.64,1.87-2.51,2.74a16.14,16.14,0,0,1-2,1.8,2.52,2.52,0,0,1-2.15,0C454.49,117.67,454.49,116.87,455.13,115.6Z" />
             <path class="cls-2"
               d="M513.08,120.85a4.35,4.35,0,0,1-2.15-5.13,14.48,14.48,0,0,1,3.58-6.69,28.77,28.77,0,0,1,7.17-5.74,17,17,0,0,1,8.6-2.51A7.15,7.15,0,0,1,534.7,102,7.67,7.67,0,0,1,537,104.6c.32.48.2.92-.35,1.32a1.28,1.28,0,0,1-1.56.12,3.58,3.58,0,0,1-1.55-1.55c-.24-.56-1.32-.84-3.23-.84a12.7,12.7,0,0,0-6.21,1.91,28.06,28.06,0,0,0-5.86,4.42,17.88,17.88,0,0,0-3.58,4.78c-.72,1.52-.6,2.59.36,3.23q2.14.48,5.49-1.08a69.59,69.59,0,0,0,7-3.82q3.71-2.28,7.17-4.9t6.1-4.54c1-.8,1.79-.8,2.51,0s.83,1.43.36,1.91a4,4,0,0,0-1.44,2.75,9.13,9.13,0,0,0,.36,3.82,8.66,8.66,0,0,0,2.27,3.71A8.14,8.14,0,0,0,549.4,118a14.84,14.84,0,0,0,6.57-.6,43.07,43.07,0,0,0,7.29-2.87,28.2,28.2,0,0,0,6.46-4.42,15.81,15.81,0,0,0,4.06-5.5c.31-.95,1-1.07,1.91-.35s.95,1.79,0,3.22a28.52,28.52,0,0,1-4.06,4.66,34.44,34.44,0,0,1-6,4.54,34.81,34.81,0,0,1-7.41,3.35,19.51,19.51,0,0,1-8.36.83,11.06,11.06,0,0,1-7.17-3.58q-2.87-3.1-3.35-8.84a41,41,0,0,1-6.45,5.14,71.23,71.23,0,0,1-7.76,4.42,45.39,45.39,0,0,1-7.29,2.86Q514.5,121.81,513.08,120.85Z" />
           </svg>
 
-          <div class="w-full flex justify-center">
+          <div class="w-full flex justify-center mt-2">
             <p #heroTagline
               class="mt-2 sm:mt-0 text-white NewAldyTitle uppercase scale-y-110 tracking-[0.35em] text-[2.5vw] sm:text-[1.8vw] lg:text-[16px] text-center whitespace-nowrap"
               style="opacity: 0;">
-              Diseño atemporal
+              Dise<span class="NewAldyFontTypeAccent relative">ñ</span>o atemporal
             </p>
           </div>
         </div>
       </div>
+
+      <!-- Overlay bottom content -->
+      <div class="absolute inset-0 z-10 flex items-end justify-center text-center px-6 pb-12 sm:pb-16 lg:pb-20">
+        <div #centerContent class="flex flex-col items-center" style="opacity: 0; transform: translateY(32px);">
+          <h2
+            class="NewAldyTitle text-white uppercase tracking-[0.08em] text-[3vw] sm:text-[2vw] xl:text-2xl font-light drop-shadow-[0_4px_20px_rgba(0,0,0,0.35)]">
+            Novias
+          </h2>
+          <div class="mt-1 h-px w-full bg-[#F8F3ED]/30"></div>
+          <a [routerLink]="['/novias-colecciones']" #centerArrowBtn
+            class="mt-4 lg:mt-6 w-6 h-6 md:w-9 md:h-9 lg:w-14 lg:h-14 group hover:bg-white duration-300 ease-in-out cursor-pointer rounded-full border border-white flex items-center justify-center">
+            <lucide-icon name="arrow-right"
+              class="group-hover:text-aldy-medium duration-300 text-white w-3 h-3 md:w-4 md:h-4 lg:w-6 lg:h-6"
+              [strokeWidth]="1.5">
+            </lucide-icon>
+          </a>
+        </div>
+      </div>
     </div>
-    <!-- ========================= PRET À PORTER DESKTOP ========================== -->
-    <div class="hidden sm:block relative overflow-hidden
-      col-span-1 aspect-[9/16]
-      sm:aspect-[4/4]
-      lg:col-span-3 lg:aspect-auto lg:h-full">
-      <img #leftImage
-        src="https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/sections/present/pret.jpg"
-        alt="" class="absolute inset-0 w-full h-full object-cover object-top contrast-[0.80] saturate-[1.7]"
-        style="transform: scale(1.3); filter: brightness(0.5);" />
-      <div class="absolute inset-0 bg-black/3"></div>
-      <div class="absolute inset-0 bg-[#AEC2A9]/3"></div>
-      <div class="absolute inset-0 z-10 flex items-center justify-center text-center px-6">
+
+    <!-- ========================= PRET-A-PORTER (LEFT) ========================== -->
+    <div class="relative overflow-hidden col-span-1 lg:col-span-1 h-[60vh] sm:h-[70vh] lg:h-full lg:order-1">
+      <!-- Video background -->
+      <video #video2 autoplay loop [muted]="true" playsinline preload="auto"
+        class="absolute inset-0 w-full h-full block object-cover object-[50%_25%] brightness-80 saturate-130"
+        style="pointer-events: none;">
+        <source
+          src="https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/multimedia/banners/portada/pret-a-porter.mp4"
+          type="video/mp4">
+      </video>
+      <div class="absolute inset-0 bg-black/20 pointer-events-none"></div>
+      <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/15 pointer-events-none">
+      </div>
+
+      <!-- Overlay bottom content -->
+      <div class="absolute inset-0 z-10 flex items-end justify-center text-center px-6 pb-12 sm:pb-16 lg:pb-20">
         <div #leftContent class="flex flex-col items-center" style="opacity: 0; transform: translateY(32px);">
           <h2
-            class="NewAldyTitle text-white uppercase tracking-[0.08em] text-[3vw] sm:text-[4vw] lg:text-5xl font-light drop-shadow-[0_4px_20px_rgba(0,0,0,0.35)]">
-            PR<span class="NewAldyFontTypeAccent relative -top-[1px]">Ê</span>T<span class="NewAldyFontTypeAccent relative -top-[1px]">-À-</span>PORTER
+            class="NewAldyTitle text-white uppercase tracking-[0.08em] text-[3vw] sm:text-[2vw] xl:text-2xl font-light drop-shadow-[0_4px_20px_rgba(0,0,0,0.35)]">
+            PR<span class="NewAldyFontTypeAccent relative -top-[1px]">Ê</span>T<span 4
+              class="NewAldyFontTypeAccent relative -top-[1px]">-À-</span>PORTER
           </h2>
-          <div class="mt-1 h-px w-40 bg-[#F8F3ED]/30"></div>
+          <div class="mt-1 h-px w-full bg-[#F8F3ED]/30"></div>
           <a [routerLink]="['/tienda']" #leftArrowBtn
-            class="mt-4 lg:mt-8 w-10 h-10 group hover:bg-white duration-300 ease-in-out lg:w-14 lg:h-14 cursor-pointer rounded-full border border-white flex items-center justify-center">
-
-            <lucide-icon name="arrow-right" class="group-hover:text-aldy-medium duration-300 text-white" [size]="25"
+            class="mt-4 lg:mt-6 w-6 h-6 md:w-9 md:h-9 lg:w-14 lg:h-14 group hover:bg-white duration-300 ease-in-out cursor-pointer rounded-full border border-white flex items-center justify-center">
+            <lucide-icon name="arrow-right"
+              class="group-hover:text-aldy-medium duration-300 text-white w-3 h-3 md:w-4 md:h-4 lg:w-6 lg:h-6"
               [strokeWidth]="1.5">
             </lucide-icon>
           </a>
         </div>
       </div>
     </div>
-    <!-- ========================= PRET À PORTER MOBILE ========================== -->
-    <a class="block sm:hidden relative overflow-hidden col-span-1 aspect-[9/16]" [routerLink]="['/tienda']">
-      <img src="https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/sections/present/pret.jpg"
-        alt="" class="absolute inset-0 w-full h-full object-cover object-top contrast-[0.80] saturate-[1.7]"
-        style="filter: brightness(0.82);" />
-      <div class="absolute inset-0 bg-black/3"></div>
-      <div class="absolute inset-0 bg-[#AEC2A9]/3"></div>
-      <div class="absolute inset-0 z-10 flex items-center justify-center text-center px-6">
-        <div class="flex flex-col items-center">
-          <h2
-            class="NewAldyTitle text-white uppercase tracking-[0.08em] text-[4vw] font-light drop-shadow-[0_4px_20px_rgba(0,0,0,0.35)]">
-            PR<span class="NewAldyFontTypeAccent relative -top-[1px]">Ê</span>T<span class="NewAldyFontTypeAccent relative -top-[1px]">-À-</span>PORTER
-            <div class="h-px w-[100%] bg-[#F8F3ED]/30"></div>
-          </h2>
-        </div>
+
+    <!-- ========================= A MEDIDA (RIGHT) ========================== -->
+    <div class="relative overflow-hidden col-span-1 lg:col-span-1 h-[60vh] sm:h-[70vh] lg:h-full lg:order-3">
+      <!-- Video background -->
+      <video #video3 autoplay loop [muted]="true" playsinline preload="auto"
+        class="absolute inset-0 w-full h-full block object-cover object-center brightness-80 saturate-130"
+        style="pointer-events: none;">
+        <source
+          src="https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/multimedia/banners/portada/a-medida2.mp4"
+          type="video/mp4">
+      </video>
+      <div class="absolute inset-0 bg-black/20 pointer-events-none"></div>
+      <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/15 pointer-events-none">
       </div>
-    </a>
-    <!-- ========================= NOVIAS DESKTOP ========================== -->
-    <div class="hidden sm:block relative overflow-hidden
-      col-span-1 aspect-[9/16]
-      sm:aspect-[4/4]
-      lg:col-span-3 lg:aspect-auto lg:h-full">
-      <img #rightImage
-        src="https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/sections/present/novias.jpg"
-        alt="" class="absolute inset-0 w-full h-full object-cover object-top contrast-[0.80] saturate-[1.7]"
-        style="transform: scale(1.3); filter: brightness(0.5);" />
-      <div class="absolute inset-0 bg-black/3"></div>
-      <div class="absolute inset-0 bg-[#AEC2A9]/3"></div>
-      <div class="absolute inset-0 z-10 flex items-center justify-center text-center px-6">
+
+      <!-- Overlay bottom content -->
+      <div class="absolute inset-0 z-10 flex items-end justify-center text-center px-6 pb-12 sm:pb-16 lg:pb-20">
         <div #rightContent class="flex flex-col items-center" style="opacity: 0; transform: translateY(32px);">
           <h2
-            class="NewAldyTitle text-white uppercase tracking-[0.08em] text-[3vw] sm:text-[4vw] lg:text-5xl font-light drop-shadow-[0_4px_20px_rgba(0,0,0,0.35)]">
-            Novias
+            class="NewAldyTitle text-white uppercase tracking-[0.08em] text-[3vw] sm:text-[2vw] xl:text-2xl font-light drop-shadow-[0_4px_20px_rgba(0,0,0,0.35)]">
+            A medida
           </h2>
-          <div class="mt-1 h-px w-40 bg-[#F8F3ED]/30"></div>
-          <a [routerLink]="['/novias-colecciones']"
-            #rightArrowBtn
-            class="mt-4 lg:mt-8 w-10 h-10 group hover:bg-white duration-300 ease-in-out lg:w-14 lg:h-14 cursor-pointer rounded-full border border-white flex items-center justify-center">
-
-            <lucide-icon name="arrow-right" class="group-hover:text-aldy-medium duration-300 text-white" [size]="25"
+          <div class="mt-1 h-px w-full bg-[#F8F3ED]/30"></div>
+          <a [routerLink]="['/a-medida']" #rightArrowBtn
+            class="mt-4 lg:mt-6 w-6 h-6 md:w-9 md:h-9 lg:w-14 lg:h-14 group hover:bg-white duration-300 ease-in-out cursor-pointer rounded-full border border-white flex items-center justify-center">
+            <lucide-icon name="arrow-right"
+              class="group-hover:text-aldy-medium duration-300 text-white w-3 h-3 md:w-4 md:h-4 lg:w-6 lg:h-6"
               [strokeWidth]="1.5">
             </lucide-icon>
           </a>
         </div>
       </div>
     </div>
-    <!-- ========================= NOVIAS MOBILE ========================== -->
-    <a class="block sm:hidden relative overflow-hidden col-span-1 aspect-[9/16]" [routerLink]="['/novias-colecciones']">
-      <img
-        src="https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/sections/present/novias.jpg"
-        alt="" class="absolute inset-0 w-full h-full object-cover object-top contrast-[0.80] saturate-[1.7]"
-        style="filter: brightness(0.82);" />
-      <div class="absolute inset-0 bg-black/3"></div>
-      <div class="absolute inset-0 bg-[#AEC2A9]/3"></div>
-      <div class="absolute inset-0 z-10 flex items-center justify-center text-center px-6">
-        <div class="flex flex-col items-center">
-          <h2
-            class="NewAldyTitle text-white uppercase tracking-[0.08em] text-[4vw] font-light drop-shadow-[0_4px_20px_rgba(0,0,0,0.35)]">
-            Novias
-            <div class="h-px w-[100%] bg-[#F8F3ED]/30"></div>
-          </h2>
-        </div>
-      </div>
-    </a>
+
   </div>
 </section>
