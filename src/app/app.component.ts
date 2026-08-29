@@ -6,6 +6,7 @@ import { Subscription } from 'rxjs';
 import { LoadingScreenGenericComponent } from "./shared/components/system/loading-screen-generic/loading-screen-generic.component";
 import { LoadingScreenComponent } from './shared/components/system/loading-screen/loading-screen.component';
 import { ToastNotificationComponent } from './shared/components/system/toast-notification/toast-notification.component';
+import { CustomCursorComponent } from './shared/components/system/custom-cursor/custom-cursor.component';
 import { LoaderService } from './core/services/utils/loader.service';
 import { SmoothScrollService } from './core/services/utils/smooth-scroll.service';
 
@@ -16,7 +17,8 @@ import { SmoothScrollService } from './core/services/utils/smooth-scroll.service
     RouterOutlet,
     ToastNotificationComponent,
     LoadingScreenGenericComponent,
-    LoadingScreenComponent
+    LoadingScreenComponent,
+    CustomCursorComponent
   ],
   templateUrl: './app.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
