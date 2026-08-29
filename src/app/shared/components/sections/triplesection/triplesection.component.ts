@@ -213,9 +213,7 @@ export class TriplesectionComponent implements AfterViewInit, OnDestroy {
       );
     }
   }
-  // ─── PANELES INFERIORES ───────────────────────────────────────────────────────
   private animateBottomPanels(): void {
-    // Zoom-out + encendido de brillo en las imágenes
     const imageProps = {
       scale: 1,
       filter: 'brightness(0.82) contrast(0.80) saturate(1.7)',
@@ -227,7 +225,6 @@ export class TriplesectionComponent implements AfterViewInit, OnDestroy {
     if (this.leftImage?.nativeElement) gsap.to(this.leftImage.nativeElement, imageProps);
     if (this.rightImage?.nativeElement) gsap.to(this.rightImage.nativeElement, imageProps);
 
-    // Contenido de texto: fade-in desde abajo
     const contentProps = {
       opacity: 1,
       y: 0,

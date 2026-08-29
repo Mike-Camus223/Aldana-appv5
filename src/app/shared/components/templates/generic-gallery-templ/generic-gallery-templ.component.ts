@@ -163,6 +163,6 @@ export class GenericGalleryTemplComponent implements OnInit, AfterViewInit, OnDe
   }
 
   goToCollection(slug: string) {
-    this.router.navigate(['/colecciones', slug]);
+    this.router.navigate(['/pret-a-porter', slug]);
   }
 }

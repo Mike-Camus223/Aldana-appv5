@@ -99,10 +99,10 @@ export class LoaderService {
       /^\/producto\/[^/]+$/,
 
       // Collections
-      /^\/colecciones$/,
-      /^\/colecciones\/[^/]+$/,
-      /^\/colecciones\/[^/]+\/[^/]+$/,
-      /^\/colecciones\/[^/]+\/[^/]+\/[^/]+$/,
+      /^\/pret-a-porter$/,
+      /^\/pret-a-porter\/[^/]+$/,
+      /^\/pret-a-porter\/[^/]+\/[^/]+$/,
+      /^\/pret-a-porter\/[^/]+\/[^/]+\/[^/]+$/,
       
       // Brides Collections
       /^\/novias-colecciones$/,

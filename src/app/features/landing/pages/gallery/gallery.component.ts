@@ -17,7 +17,7 @@ export class GalleryComponent {
 
   breadcrumbItems: AppMenuItem[] = [
     { label: 'INICIO', route: '/' },
-    { label: 'COLECCIONES', route: '/colecciones' }
+    { label: 'PRÊT-À-PORTER', route: '/pret-a-porter' }
   ];
 
 

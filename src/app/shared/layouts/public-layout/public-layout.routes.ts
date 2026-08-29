@@ -11,22 +11,22 @@ export const PUBLIC_ROUTES: Routes = [
           import('../../../features/landing/pages/home/home.component').then(c => c.HomeComponent),
       },
       {
-        path: 'colecciones',
+        path: 'pret-a-porter',
         loadComponent: () =>
           import('../../../features/landing/pages/gallery/gallery.component').then(c => c.GalleryComponent),
       },
       {
-        path: 'colecciones/:slug',
+        path: 'pret-a-porter/:slug',
         loadComponent: () =>
           import('../../../shared/components/templates/generic-collection/generic-collection.component').then(c => c.GenericCollectionComponent),
       },
       {
-        path: 'colecciones/:collectionSlug/:itemSlug/:mediaSlug',
+        path: 'pret-a-porter/:collectionSlug/:itemSlug/:mediaSlug',
         loadComponent: () =>
           import('../../../shared/components/templates/items-collection/items-collection.component').then(c => c.ItemsCollectionComponent),
       },
       {
-        path: 'colecciones/:collectionSlug/:itemSlug',
+        path: 'pret-a-porter/:collectionSlug/:itemSlug',
         loadComponent: () =>
           import('../../../shared/components/templates/items-collection/items-collection.component').then(c => c.ItemsCollectionComponent),
       },

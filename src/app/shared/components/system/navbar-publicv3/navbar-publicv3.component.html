@@ -8,13 +8,6 @@
 
     <!-- IZQUIERDA: LINKS -->
     <div class="flex items-center space-x-5 lg:space-x-5 xl:space-x-10 uppercase">
-      @for (link of leftLinks; track link) {
-      <a appLinkHoverUnderline [routerLink]="link.link" (mouseenter)="onInteractiveEnter()" [ngClass]="linkTextClass"
-        class="transition-colors font-light NewAldyTitle text-xs lg:text-xs xl:text-sm tracking-[0.15em] border-transparent pb-[1px]">
-        {{ link.label }}
-      </a>
-      }
-
       <!-- DROPDOWN TIENDA -->
       <div class="relative" (mouseenter)="onDropdownMouseEnter()" (mouseleave)="onDropdownMouseLeave()">
         <div class="flex items-center gap-1 cursor-pointer">
@@ -30,7 +23,7 @@
         <!-- DROPDOWN CONTENT -->
         @if (dropdownOpen) {
         <div #dropdownRef @dropdownAnimation
-          class="absolute left-0 -translate-x-0 top-full mt-2 w-[900px] bg-aldy-white shadow-2xl z-50 border border-gray-100">
+          class="absolute left-0 -translate-x-0 top-full  w-[900px] bg-aldy-white shadow-2xl z-50 border border-gray-100">
           <div class="flex">
             <!-- CATEGORÍAS A LA IZQUIERDA -->
             <div class="w-1/3 bg-aldy-white p-8">
@@ -110,9 +103,22 @@
         }
       </div>
 
-      <a routerLink="/journal" appLinkHoverUnderline (mouseenter)="onInteractiveEnter()" [ngClass]="linkTextClass"
+      <!-- NOVIAS -->
+      <a appLinkHoverUnderline routerLink="/novias-colecciones" (mouseenter)="onInteractiveEnter()" [ngClass]="linkTextClass"
         class="transition-colors font-light NewAldyTitle text-xs lg:text-xs xl:text-sm tracking-[0.15em] border-transparent pb-[1px]">
-        Diario
+        NOVIAS
+      </a>
+
+      <!-- PRÊT-À-PORTER -->
+      <a appLinkHoverUnderline routerLink="/pret-a-porter" (mouseenter)="onInteractiveEnter()" [ngClass]="linkTextClass"
+        class="transition-colors font-light NewAldyTitle text-xs lg:text-xs xl:text-sm tracking-[0.15em] border-transparent pb-[1px]">
+        PR<span class="NewAldyFontTypeAccent relative -top-[1px]">Ê</span>T<span class="NewAldyFontTypeAccent relative -top-[1px]">-À-</span>PORTER
+      </a>
+
+      <!-- A MEDIDA -->
+      <a appLinkHoverUnderline routerLink="/a-medida" (mouseenter)="onInteractiveEnter()" [ngClass]="linkTextClass"
+        class="transition-colors font-light NewAldyTitle text-xs lg:text-xs xl:text-sm tracking-[0.15em] border-transparent pb-[1px]">
+        A MEDIDA
       </a>
     </div>
 
@@ -131,12 +137,23 @@
     <!-- DERECHA: LINKS & ICONOS -->
     <div class="flex items-center space-x-5 lg:space-x-5 xl:space-x-10">
       <div class="flex items-center space-x-5 lg:space-x-5 xl:space-x-10 uppercase">
-        @for (link of rightLinks; track link) {
-        <a appLinkHoverUnderline [routerLink]="link.link" (mouseenter)="onInteractiveEnter()" [ngClass]="linkTextClass"
+        <!-- DIARIO -->
+        <a appLinkHoverUnderline routerLink="/journal" (mouseenter)="onInteractiveEnter()" [ngClass]="linkTextClass"
           class="transition-colors font-light NewAldyTitle text-xs lg:text-xs xl:text-sm tracking-[0.15em] border-transparent pb-[1px]">
-          {{ link.label }}
+          DIARIO
         </a>
-        }
+
+        <!-- CONTACTO -->
+        <a appLinkHoverUnderline routerLink="/contacto" (mouseenter)="onInteractiveEnter()" [ngClass]="linkTextClass"
+          class="transition-colors font-light NewAldyTitle text-xs lg:text-xs xl:text-sm tracking-[0.15em] border-transparent pb-[1px]">
+          CONTACTO
+        </a>
+
+        <!-- ACERCA DE MÍ -->
+        <a appLinkHoverUnderline routerLink="/acerca-de-mi" (mouseenter)="onInteractiveEnter()" [ngClass]="linkTextClass"
+          class="transition-colors font-light NewAldyTitle text-xs lg:text-xs xl:text-sm tracking-[0.15em] border-transparent pb-[1px]">
+          ACERCA DE MÍ
+        </a>
       </div>
 
       <!-- ÍCONOS -->
@@ -246,15 +263,6 @@
       <h2 class="text-lg text-aldy-green-gray font-light NewAldyTitle tracking-[0.15em]">MENÚ</h2>
     </div>
     <div class="space-y-1">
-      <a routerLink="/novias-colecciones" (click)="onMenuLinkClick()"
-        class="block text-aldy-green-gray hover:text-aldy-green-gray-bold tracking-[0.15em] uppercase font-light NewAldyTitle text-xs transition-colors duration-200 py-3.5 border-b border-gray-100">
-        Novias
-      </a>
-      <a routerLink="/colecciones" (click)="onMenuLinkClick()"
-        class="block text-aldy-green-gray hover:text-aldy-green-gray-bold tracking-[0.15em] uppercase font-light NewAldyTitle text-xs transition-colors duration-200 py-3.5 border-b border-gray-100">
-        Colecciones
-      </a>
-
       <!-- DROPDOWN TIENDA MOBILE: AL APRETAR ABRE EL ACORDEÓN -->
       <div class="border-b border-gray-100">
         <button type="button" (click)="toggleMobileDropdown()"
@@ -279,19 +287,34 @@
         }
       </div>
 
+      <a routerLink="/novias-colecciones" (click)="onMenuLinkClick()"
+        class="block text-aldy-green-gray hover:text-aldy-green-gray-bold tracking-[0.15em] uppercase font-light NewAldyTitle text-xs transition-colors duration-200 py-3.5 border-b border-gray-100">
+        Novias
+      </a>
+
+      <a routerLink="/pret-a-porter" (click)="onMenuLinkClick()"
+        class="block text-aldy-green-gray hover:text-aldy-green-gray-bold tracking-[0.15em] uppercase font-light NewAldyTitle text-xs transition-colors duration-200 py-3.5 border-b border-gray-100">
+        PR<span class="NewAldyFontTypeAccent relative -top-[1px]">Ê</span>T<span class="NewAldyFontTypeAccent relative -top-[1px]">-À-</span>PORTER
+      </a>
+
+      <a routerLink="/a-medida" (click)="onMenuLinkClick()"
+        class="block text-aldy-green-gray hover:text-aldy-green-gray-bold tracking-[0.15em] uppercase font-light NewAldyTitle text-xs transition-colors duration-200 py-3.5 border-b border-gray-100">
+        A medida
+      </a>
+
       <a routerLink="/journal" (click)="onMenuLinkClick()"
         class="block text-aldy-green-gray hover:text-aldy-green-gray-bold tracking-[0.15em] uppercase font-light NewAldyTitle text-xs transition-colors duration-200 py-3.5 border-b border-gray-100">
         Diario
       </a>
 
-      <a routerLink="/acerca-de-mi" (click)="onMenuLinkClick()"
+      <a routerLink="/contacto" (click)="onMenuLinkClick()"
         class="block text-aldy-green-gray hover:text-aldy-green-gray-bold tracking-[0.15em] uppercase font-light NewAldyTitle text-xs transition-colors duration-200 py-3.5 border-b border-gray-100">
-        Acerca de mí
+        Contacto
       </a>
 
-      <a routerLink="/contacto" (click)="onMenuLinkClick()"
+      <a routerLink="/acerca-de-mi" (click)="onMenuLinkClick()"
         class="block text-aldy-green-gray hover:text-aldy-green-gray-bold tracking-[0.15em] uppercase font-light NewAldyTitle text-xs transition-colors duration-200 py-3.5">
-        Contacto
+        Acerca de mí
       </a>
     </div>
   </div>

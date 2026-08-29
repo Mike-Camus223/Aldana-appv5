@@ -281,7 +281,7 @@ export class ItemsCollectionComponent implements OnInit, AfterViewInit, OnDestro
             .filter((p: any) => p && p.slug !== this.productSlug);
         }
       } else {
-        this.backRoute = ['/colecciones'];
+        this.backRoute = ['/pret-a-porter'];
         const collection: any = await this.collections.getCollectionBySlug(this.collectionSlug);
         if (collection) {
           this.sectionLabel = collection.name;
@@ -328,9 +328,9 @@ export class ItemsCollectionComponent implements OnInit, AfterViewInit, OnDestro
     } else {
       this.breadcrumbItems = [
         { label: 'INICIO', route: '/' },
-        { label: 'COLECCIONES', route: '/colecciones' },
-        { label: this.collectionSlug.toUpperCase(), route: `/colecciones/${this.collectionSlug}` },
-        { label: this.product.name.toUpperCase(), route: `/colecciones/${this.collectionSlug}/${this.product.slug}` }
+        { label: 'PRÊT-À-PORTER', route: '/pret-a-porter' },
+        { label: this.collectionSlug.toUpperCase(), route: `/pret-a-porter/${this.collectionSlug}` },
+        { label: this.product.name.toUpperCase(), route: `/pret-a-porter/${this.collectionSlug}/${this.product.slug}` }
       ];
     }
 

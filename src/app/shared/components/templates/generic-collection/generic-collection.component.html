@@ -88,7 +88,7 @@
                 <div class="flex items-center gap-2 shrink-0">
                   <h1
                     class="NewAldyTitle text-xl sm:text-2xl md:text-[1.6rem] font-light tracking-[0.1em] text-aldy-green-gray-bold uppercase leading-none">
-                    COLECCIONES
+                    PR<span class="NewAldyFontTypeAccent relative -top-[1px]">Ê</span>T<span class="NewAldyFontTypeAccent relative -top-[1px]">-À-</span>PORTER
                   </h1>
 
                   <span class="NewAldyTitle text-xl sm:text-2xl md:text-[1.6rem] font-light text-aldy-green-gray leading-none">
@@ -117,7 +117,7 @@
               <div class="flex md:hidden flex-col gap-4">
                 <div class="flex items-center gap-2 flex-wrap">
                   <h1 class="NewAldyTitle text-xl font-light tracking-[0.1em] text-aldy-green-gray-bold uppercase leading-none">
-                    COLECCIONES
+                    PR<span class="NewAldyFontTypeAccent relative -top-[1px]">Ê</span>T<span class="NewAldyFontTypeAccent relative -top-[1px]">-À-</span>PORTER
                   </h1>
 
                   <span class="NewAldyTitle text-xl font-light text-aldy-green-gray leading-none">
@@ -149,7 +149,7 @@
                 <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-4 gap-y-8 sm:gap-x-5 lg:gap-x-6">
                   @for (it of items; track trackById($index, it)) {
                     <a class="group block w-full bg-[#e4ddd6] cursor-pointer"
-                      [routerLink]="['/colecciones', collectionSlug, it.slug]">
+                      [routerLink]="['/pret-a-porter', collectionSlug, it.slug]">
                       <div class="aspect-[3/5] overflow-hidden bg-[#f0ece8]">
                         @if (it.thumbUrl) {
                           <img [src]="it.thumbUrl" [alt]="it.title || 'Item'"

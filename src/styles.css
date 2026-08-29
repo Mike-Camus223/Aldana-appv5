@@ -112,9 +112,6 @@ html {
   background-color: var(--color-aldy-white);
 }
 
-/* =========================
-   CUSTOM SCROLLBAR (GLOBAL)
-========================= */
 
 * {
   scrollbar-width: thin;

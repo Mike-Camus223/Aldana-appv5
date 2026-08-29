@@ -54,8 +54,8 @@ export class GenericCollectionComponent implements OnInit {
 
     this.breadcrumbItems = [
       { label: 'INICIO', route: '/' },
-      { label: 'COLECCIONES', route: '/colecciones' },
-      { label: collection.name.toUpperCase(), route: `/colecciones/${slug}` }
+      { label: 'PRÊT-À-PORTER', route: '/pret-a-porter' },
+      { label: collection.name.toUpperCase(), route: `/pret-a-porter/${slug}` }
     ];
 
     this.collectionTitle = collection.name;

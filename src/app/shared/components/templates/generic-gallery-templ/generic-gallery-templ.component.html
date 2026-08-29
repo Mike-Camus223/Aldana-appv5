@@ -41,7 +41,7 @@
       </div>
       <h1 appWordReveal
         class="NewAldyTitle font-light text-aldy-green-gray uppercase tracking-[0.2em] text-2xl sm:text-4xl lg:text-5xl leading-none">
-        Colecciones
+        PR<span class="NewAldyFontTypeAccent relative -top-[1px]">Ê</span>T<span class="NewAldyFontTypeAccent relative -top-[1px]">-À-</span>PORTER
       </h1>
       <p appWordReveal
         class="NewAldyFontType4 px-3 sm:px-0 text-[10px] sm:text-xs tracking-[0.28em] uppercase text-aldy-green-gray opacity-80 mt-2">
@@ -63,7 +63,7 @@
         'grid-cols-4':         productColumns === 4
       }">
       @for (collection of collections; track collection; let i = $index) {
-      <a [routerLink]="['/colecciones', collection.slug]"
+      <a [routerLink]="['/pret-a-porter', collection.slug]"
         class="flex flex-col w-full group cursor-pointer overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300"
         [ngClass]="i % 2 === 0 ? 'bg-aldy-white' : 'bg-aldy-medium'">
         <div class="relative w-full overflow-hidden bg-[#e4ddd6]">

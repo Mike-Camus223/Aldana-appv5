@@ -41,10 +41,6 @@ import {
   LucideIconProvider
 } from 'lucide-angular';
 
-interface RouterlinkNavbar {
-  label: string;
-  link: string;
-}
 
 @Component({
   selector: 'app-navbar-publicv3',
@@ -135,13 +131,6 @@ export class NavbarPublicv3Component implements OnInit, OnDestroy {
     { label: 'Tops', slug: 'tops' },
     { label: 'Buzos', slug: 'buzos' },
     { label: 'Vestidos y Monos', slug: 'vestidos-y-monos' }
-  ];
-
-  navLinks: RouterlinkNavbar[] = [
-    { label: 'NOVIAS', link: '/novias-colecciones' },
-    { label: 'COLECCIONES', link: '/colecciones' },
-    { label: 'CONTACTO', link: '/contacto' },
-    { label: 'ACERCA DE MÍ', link: '/acerca-de-mi' }
   ];
 
   @ViewChild('dropdownRef') dropdownRef!: ElementRef;
@@ -461,11 +450,4 @@ export class NavbarPublicv3Component implements OnInit, OnDestroy {
     }
   }
 
-  get leftLinks(): RouterlinkNavbar[] {
-    return this.navLinks.slice(0, 2);
-  }
-
-  get rightLinks(): RouterlinkNavbar[] {
-    return this.navLinks.slice(2);
-  }
 }
