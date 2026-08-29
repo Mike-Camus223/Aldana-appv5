@@ -105,11 +105,11 @@
                     class="NewAldyTitle text-center uppercase mb-5 text-aldy-green-gray tracking-[0.24em] text-xs xl:text-sm">
                   Tienda</h3>
                   <ul class="space-y-2.5">
-                    @for (item of tiendaItems; track item) {
+                    @for (item of tiendaItems; track item.slug) {
                       <li>
-                        <a [routerLink]="['/tienda']" [queryParams]="{ categoria: normalizeCategory(item) }"
+                        <a [routerLink]="['/tienda/categoria', item.slug]"
                           class="NewAldyFontType4 text-sm text-aldy-green-gray hover:text-[#AEC2A9] transition-colors duration-150">
-                          {{ item }}
+                          {{ item.label }}
                         </a>
                       </li>
                     }
@@ -259,11 +259,11 @@
                                     <h3 class="NewAldyTitle uppercase mb-4 text-aldy-green-gray tracking-[0.24em] text-xs md:text-sm">Tienda
                                     </h3>
                                     <ul class="space-y-2">
-                                      @for (item of tiendaItems; track item) {
+                                      @for (item of tiendaItems; track item.slug) {
                                         <li>
-                                          <a [routerLink]="['/tienda']" [queryParams]="{ categoria: normalizeCategory(item) }"
+                                          <a [routerLink]="['/tienda/categoria', item.slug]"
                                             class="NewAldyFontType4 text-xs md:text-sm text-aldy-green-gray hover:text-[#AEC2A9] transition-colors duration-150">
-                                            {{ item }}
+                                            {{ item.label }}
                                           </a>
                                         </li>
                                       }
@@ -391,11 +391,12 @@
                                             <app-acordiongeneric title="TIENDA" value="tienda" [selected]="mobileOpen" (toggled)="onMobileToggle($event)"
                                               classTitle="NewAldyTitle tracking-[0.24em] text-sm text-aldy-green-gray">
                                               <ul class="px-3 pb-5 space-y-3">
-                                                @for (item of tiendaItems; track item) {
+                                                @for (item of tiendaItems; track item.slug) {
                                                   <li>
-                                                    <a [routerLink]="['/tienda']" [queryParams]="{ categoria: normalizeCategory(item) }"
-                                                      class="NewAldyFontType4 text-sm text-aldy-green-gray hover:text-[#AEC2A9] transition-colors duration-150 block">{{
-                                                    item }}</a>
+                                                    <a [routerLink]="['/tienda/categoria', item.slug]"
+                                                      class="NewAldyFontType4 text-sm text-aldy-green-gray hover:text-[#AEC2A9] transition-colors duration-150 block">
+                                                      {{ item.label }}
+                                                    </a>
                                                   </li>
                                                 }
                                               </ul>

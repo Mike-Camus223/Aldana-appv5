@@ -38,13 +38,13 @@
                 categorias
               </h3>
               <ul class="space-y-4">
-                @for (item of tiendaItems; track item) {
+                @for (item of tiendaItems; track item.slug) {
                 <li>
                   <div class="flex gap-3 items-center">
                     <div class="h-2 w-2 bg-aldy-light rounded-full"></div>
-                    <a [routerLink]="['/tienda/categoria/general', normalizeCategory(item)]" (click)="closeDropdown()"
+                    <a [routerLink]="['/tienda/categoria', item.slug]" (click)="closeDropdown()"
                       class="block transition-all font-light NewAldyFontType4 text-sm duration-200 text-aldy-medium-2 hover:text-aldy-medium-2 hover:translate-x-1">
-                      {{ item }}
+                      {{ item.label }}
                     </a>
                   </div>
                 </li>
@@ -54,48 +54,50 @@
 
             <div class="w-2/3 p-8">
               <div class="grid grid-cols-3 gap-6">
-                <!-- Vestidos -->
-                <a [routerLink]="['/tienda/categoria/general','vestidos']" class="group block">
+                <!-- Vestidos y Monos -->
+                <a [routerLink]="['/tienda/categoria', 'vestidos-y-monos']" (click)="closeDropdown()"
+                  class="group block">
                   <div class="relative overflow-hidden mb-3 aspect-[3/4]">
                     <img
                       src="https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/products/vestidos/vestido_gladiolo/1752718247389.jpg"
-                      alt="Vestidos"
+                      alt="Vestidos y Monos"
                       class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
                   </div>
                   <h4 class="font-light NewAldyFontType4 text-aldy-medium-2 text-sm tracking-wider mb-1">
-                    VESTIDOS
+                    VESTIDOS Y MONOS
                   </h4>
                   <p class="text-xs text-aldy-bold leading-relaxed">
                     Elegantes diseños para ocasiones especiales
                   </p>
                 </a>
 
-                <!-- Abrigos -->
-                <a [routerLink]="['/tienda/categoria/general','abrigos']" class="group block">
+                <!-- Sastrería -->
+                <a [routerLink]="['/tienda/categoria', 'sastreria']" (click)="closeDropdown()" class="group block">
                   <div class="relative overflow-hidden mb-3 aspect-[3/4]">
                     <img
                       src="https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/products/abrigos/buzos/buzo%20cactus/1752807793069.jpg"
-                      alt="Abrigos"
+                      alt="Sastrería"
                       class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
                   </div>
                   <h4 class="font-light NewAldyFontType4 text-aldy-medium-2 text-sm tracking-wider mb-1">
-                    ABRIGOS
+                    SASTRERÍA
                   </h4>
                   <p class="text-xs text-aldy-bold leading-relaxed">
-                    Comodidad y estilo para looks urbanos
+                    Estructura, distinción y estilo atemporal
                   </p>
                 </a>
 
-                <!-- Pantalones -->
-                <a [routerLink]="['/tienda/categoria/general','pantalones']" class="group block">
+                <!-- Pantalones y Faldas -->
+                <a [routerLink]="['/tienda/categoria', 'pantalones-y-faldas']" (click)="closeDropdown()"
+                  class="group block">
                   <div class="relative overflow-hidden mb-3 aspect-[3/4]">
                     <img
                       src="https://cddrmboopihkiuyomxle.supabase.co/storage/v1/object/public/aldana-app/products/pantalones/pantalon_cala/pantalon_cala1.webp"
-                      alt="Pantalones"
+                      alt="Pantalones y Faldas"
                       class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
                   </div>
                   <h4 class="font-light NewAldyFontType4 text-aldy-medium-2 text-sm tracking-wider mb-1">
-                    PANTALONES
+                    PANTALONES Y FALDAS
                   </h4>
                   <p class="text-xs text-aldy-bold leading-relaxed">
                     Corte perfecto y versatilidad diaria
@@ -116,7 +118,7 @@
 
     <!-- LOGO CENTRO -->
     <div class="flex justify-center items-center">
-      <a href="/" class="flex justify-center items-center relative w-[4.5rem] h-[4.5rem]">
+      <a routerLink="/" class="flex justify-center items-center relative w-[4.5rem] h-[4.5rem]">
         <img src="../../../../../assets/svg/logo_whiteAV.svg" alt="Aldana Vilcabana"
           class="absolute inset-0 w-full h-full object-contain transition-opacity duration-300"
           [class.opacity-0]="!isWhiteLogo" [class.opacity-100]="isWhiteLogo">
@@ -196,7 +198,7 @@
 
     <!-- LOGO CENTRO MOBILE-->
     <div class="flex items-center justify-center">
-      <a href="/" class="flex justify-center items-center relative w-[3rem] h-[3rem] sm:w-[3.5rem] sm:h-[3.5rem]">
+      <a routerLink="/" class="flex justify-center items-center relative w-[3rem] h-[3rem] sm:w-[3.5rem] sm:h-[3.5rem]">
         <!-- Logo blanco -->
         <img src="../../../../../assets/svg/logo_whiteAV.svg" alt="Aldana Vilcabana"
           class="absolute inset-0 w-full h-full object-contain transition-opacity duration-300"
@@ -237,50 +239,58 @@
 <!-- ========================================== -->
 @if (menuOpen) {
 <div @sidebarSlide
-  class="fixed top-[64px] right-0 bottom-0 h-[calc(100vh-64px)] w-screen max-w-screen bg-aldy-white shadow-2xl z-22 overflow-y-auto lg:hidden">
-  <div class="p-6 space-y-6 h-full">
-    <div class="flex justify-between items-center pb-4 border-b border-gray-200">
-      <h2 class="text-xl text-aldy-green-gray font-light NewAldyTitle tracking-[0.15em]">MENÚ</h2>
+  class="fixed top-[64px] right-0 bottom-0 w-full bg-aldy-white shadow-2xl z-50 overflow-y-auto overscroll-contain lg:hidden"
+  style="-webkit-overflow-scrolling: touch; height: calc(100dvh - 64px); max-height: calc(100dvh - 64px);">
+  <div class="p-6 pb-28 space-y-4 min-h-full">
+    <div class="flex justify-between items-center pb-3 border-b border-gray-200">
+      <h2 class="text-lg text-aldy-green-gray font-light NewAldyTitle tracking-[0.15em]">MENÚ</h2>
     </div>
-    <div class="space-y-4">
-      <a routerLink="/acerca-de-mi" (click)="onMenuLinkClick()"
-        class="block text-aldy-green-gray hover:text-aldy-green-gray-bold tracking-[0.15em] uppercase font-light NewAldyTitle text-xs transition-colors duration-200 py-3">
-        Acerca de mí
-      </a>
+    <div class="space-y-1">
       <a routerLink="/novias-colecciones" (click)="onMenuLinkClick()"
-        class="block text-aldy-green-gray hover:text-aldy-green-gray-bold tracking-[0.15em] uppercase font-light NewAldyTitle text-xs transition-colors duration-200 py-3">
+        class="block text-aldy-green-gray hover:text-aldy-green-gray-bold tracking-[0.15em] uppercase font-light NewAldyTitle text-xs transition-colors duration-200 py-3.5 border-b border-gray-100">
         Novias
       </a>
-      <!-- DROPDOWN TIENDA MOBILE -->
-      <div>
-        <div class="w-full flex items-center justify-between py-3">
-          <a routerLink="/tienda" (click)="onMenuLinkClick()"
-            class="text-aldy-green-gray hover:text-aldy-green-gray-bold tracking-[0.15em] uppercase font-light NewAldyTitle text-xs transition-colors duration-200">
+      <a routerLink="/colecciones" (click)="onMenuLinkClick()"
+        class="block text-aldy-green-gray hover:text-aldy-green-gray-bold tracking-[0.15em] uppercase font-light NewAldyTitle text-xs transition-colors duration-200 py-3.5 border-b border-gray-100">
+        Colecciones
+      </a>
+
+      <!-- DROPDOWN TIENDA MOBILE: AL APRETAR ABRE EL ACORDEÓN -->
+      <div class="border-b border-gray-100">
+        <button type="button" (click)="toggleMobileDropdown()"
+          class="w-full flex items-center justify-between py-3.5 text-left cursor-pointer group">
+          <span
+            class="text-aldy-green-gray group-hover:text-aldy-green-gray-bold tracking-[0.15em] uppercase font-light NewAldyTitle text-xs transition-colors duration-200">
             Tienda
-          </a>
-          <button (click)="toggleMobileDropdown()"
-            class="p-1 text-aldy-green-gray hover:text-aldy-green-gray-bold cursor-pointer">
-            <lucide-icon name="chevron-down" class="w-5 h-5 transition-transform duration-200 text-aldy-green-gray"
-              [ngClass]="{ 'rotate-180': mobileDropdownOpen }"></lucide-icon>
-          </button>
-        </div>
+          </span>
+          <lucide-icon name="chevron-down" class="w-4 h-4 transition-transform duration-200 text-aldy-green-gray"
+            [ngClass]="{ 'rotate-180': mobileDropdownOpen }"></lucide-icon>
+        </button>
+
         @if (mobileDropdownOpen) {
-        <div @expandDropdown class="pl-4 mt-2 space-y-3 border-l-2 border-aldy-medium hover:border-aldy-medium-2">
-          @for (item of tiendaItems; track item) {
-          <a [routerLink]="['/tienda/categoria/general', normalizeCategory(item)]" (click)="onMenuLinkClick()"
-            class="block text-md text-aldy-green-gray tracking-widest hover:text-aldy-green-gray-bold font-light NewAldyFontType4 text-xs transition-colors duration-200 py-2">
-            {{ item }}
+        <div @expandDropdown class="pl-4 pb-3 space-y-2 border-l-2 border-aldy-medium my-1">
+          @for (item of tiendaItems; track item.slug) {
+          <a [routerLink]="['/tienda/categoria', item.slug]" (click)="onMenuLinkClick()"
+            class="block text-aldy-green-gray tracking-widest hover:text-aldy-medium font-light NewAldyFontType4 text-xs transition-colors duration-200 py-1.5">
+            {{ item.label }}
           </a>
           }
         </div>
         }
       </div>
-      <a routerLink="/colecciones" (click)="onMenuLinkClick()"
-        class="block text-aldy-green-gray hover:text-aldy-green-gray-bold tracking-[0.15em] uppercase font-light NewAldyTitle text-xs transition-colors duration-200 py-3">
-        Colecciones
+
+      <a routerLink="/journal" (click)="onMenuLinkClick()"
+        class="block text-aldy-green-gray hover:text-aldy-green-gray-bold tracking-[0.15em] uppercase font-light NewAldyTitle text-xs transition-colors duration-200 py-3.5 border-b border-gray-100">
+        Diario
       </a>
+
+      <a routerLink="/acerca-de-mi" (click)="onMenuLinkClick()"
+        class="block text-aldy-green-gray hover:text-aldy-green-gray-bold tracking-[0.15em] uppercase font-light NewAldyTitle text-xs transition-colors duration-200 py-3.5 border-b border-gray-100">
+        Acerca de mí
+      </a>
+
       <a routerLink="/contacto" (click)="onMenuLinkClick()"
-        class="block text-aldy-green-gray hover:text-aldy-green-gray-bold tracking-[0.15em] uppercase font-light NewAldyTitle text-xs transition-colors duration-200 py-3">
+        class="block text-aldy-green-gray hover:text-aldy-green-gray-bold tracking-[0.15em] uppercase font-light NewAldyTitle text-xs transition-colors duration-200 py-3.5">
         Contacto
       </a>
     </div>

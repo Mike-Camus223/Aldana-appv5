@@ -125,14 +125,16 @@ export class NavbarPublicv3Component implements OnInit, OnDestroy {
   isAuthenticated = false;
   private authSubscription: Subscription = new Subscription();
 
-  tiendaItems = [
-    'Camisas',
-    'Blusas',
-    'Faldas',
-    'Pantalón',
-    'Abrigos',
-    'Vestidos',
-    'Remeras'
+  tiendaItems: { label: string; slug: string }[] = [
+    { label: 'New Drop', slug: 'new-drop' },
+    { label: 'Novias', slug: 'novias' },
+    { label: 'Sastrería', slug: 'sastreria' },
+    { label: 'Camperas', slug: 'camperas' },
+    { label: 'Accesorios', slug: 'accesorios' },
+    { label: 'Pantalones y Faldas', slug: 'pantalones-y-faldas' },
+    { label: 'Tops', slug: 'tops' },
+    { label: 'Buzos', slug: 'buzos' },
+    { label: 'Vestidos y Monos', slug: 'vestidos-y-monos' }
   ];
 
   navLinks: RouterlinkNavbar[] = [
@@ -221,7 +223,7 @@ export class NavbarPublicv3Component implements OnInit, OnDestroy {
   }
 
   private handleScrollUpdate(currentScroll: number) {
-    if (this.dropdownOpen) {
+    if (this.menuOpen || this.dropdownOpen) {
       this.lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
       this.MoverScroll = currentScroll > 10;
       this.cdr.detectChanges();
@@ -299,18 +301,23 @@ export class NavbarPublicv3Component implements OnInit, OnDestroy {
     document.body.style.overflow = '';
   }
 
-  normalizeCategory(item: string): string {
+  normalizeCategory(item: string | { label: string; slug: string }): string {
+    if (typeof item !== 'string') {
+      return item?.slug || '';
+    }
     return item
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '')
       .toLowerCase()
+      .trim()
       .replace(/\s+/g, '-');
   }
 
-  goToCategory(item: string): void {
+  goToCategory(item: string | { label: string; slug: string }): void {
     this.closeDropdown();
     this.onMenuLinkClick();
-    this.router.navigate(['/tienda/categoria/general', this.normalizeCategory(item)]);
+    const slug = typeof item === 'object' ? item.slug : this.normalizeCategory(item);
+    this.router.navigate(['/tienda/categoria', slug]);
   }
 
   onDropdownMouseEnter(): void {

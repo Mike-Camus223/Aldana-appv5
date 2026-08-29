@@ -27,13 +27,16 @@ export class Footerv2Component {
 
   readonly currentYear = new Date().getFullYear();
 
-  readonly tiendaItems = [
-    'Camisas',
-    'Blusas',
-    'Faldas',
-    'Pantalón',
-    'Abrigos',
-    'Vestidos'
+  readonly tiendaItems: { label: string; slug: string }[] = [
+    { label: 'New Drop', slug: 'new-drop' },
+    { label: 'Novias', slug: 'novias' },
+    { label: 'Sastrería', slug: 'sastreria' },
+    { label: 'Camperas', slug: 'camperas' },
+    { label: 'Accesorios', slug: 'accesorios' },
+    { label: 'Pantalones y Faldas', slug: 'pantalones-y-faldas' },
+    { label: 'Tops', slug: 'tops' },
+    { label: 'Buzos', slug: 'buzos' },
+    { label: 'Vestidos y Monos', slug: 'vestidos-y-monos' }
   ];
 
   mobileOpen: string | null = null;
@@ -42,11 +45,15 @@ export class Footerv2Component {
     this.mobileOpen = this.mobileOpen === value ? null : value;
   }
 
-  normalizeCategory(item: string): string {
+  normalizeCategory(item: string | { label: string; slug: string }): string {
+    if (typeof item !== 'string') {
+      return item?.slug || '';
+    }
     return item
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '')
       .toLowerCase()
+      .trim()
       .replace(/\s+/g, '-');
   }
 

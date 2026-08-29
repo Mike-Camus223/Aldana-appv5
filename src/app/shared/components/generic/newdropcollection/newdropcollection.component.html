@@ -1,31 +1,28 @@
 @if (isMobileView) {
 <div #cardRoot
-  class="flex flex-col w-full group cursor-pointer overflow-hidden shadow-md transition-shadow duration-300 relative aspect-[3/4] sm:aspect-[4/5] bg-[#e4ddd6]"
+  class="relative flex flex-col bg-aldy-white shadow-md hover:shadow-md overflow-hidden w-full mx-auto group cursor-pointer"
   (click)="onClick()">
-  <div class="relative w-full h-full overflow-hidden bg-[#e4ddd6]">
-    <div class="w-full h-full overflow-hidden relative">
-      @if (collection.cover_image_url) {
-      <img #collectionImage [src]="collection.cover_image_url" [alt]="collection.name"
-        class="object-cover object-top w-full h-full transition-transform duration-700 ease-out" />
-      }
+  <div class="relative w-full aspect-[4/5] overflow-hidden bg-[#e4ddd6]">
+    @if (collection.cover_image_url) {
+    <img #collectionImage [src]="collection.cover_image_url" [alt]="collection.name"
+      class="object-cover object-top w-full h-full transition-transform duration-700 ease-out" />
+    }
+    <div class="absolute top-2 right-2 xs:top-3 xs:right-3 z-10 w-7 h-7 xs:w-8 xs:h-8 rounded-full bg-aldy-white flex items-center justify-center shadow-xs">
+      <img [draggable]="false" src="assets/svg/logos-03.svg" alt="AV" class="w-[12px] h-[12px] object-contain" />
     </div>
-    <div class="absolute bottom-0 left-0 right-0 z-20" style="height: 42%;">
-      <div class="w-full h-full flex flex-col items-center justify-center pt-2 pb-3 px-2 text-center bg-aldy-white"
-        style="border-radius: 80% 80% 0 0 / 40% 40% 0 0;">
-        <img [draggable]="false" src="assets/images/sections/collection/leaf2.png" alt=""
-          class="w-12 h-auto mb-1 mt-1" />
-        <h3 appWordReveal [manualTrigger]="true"
-          class="NewAldyTitle font-light uppercase tracking-[0.16em] text-aldy-green-gray text-xs sm:text-sm leading-tight line-clamp-1">
-          {{ collection.name }}
-        </h3>
-        <p appWordReveal [manualTrigger]="true" class="NewAldyFontType4 text-[8px] sm:text-[9px] tracking-[0.15em] uppercase text-aldy-green-gray mb-1.5">
-          {{ collection.season || 'Colección' }} {{ collection.release_date ? (' - ' + (collection.release_date | date:
-          'yyyy')) : '' }}
-        </p>
-        <div appFadeUpLetter [manualTrigger]="true" class="w-6 h-6 rounded-full border border-aldy-green-gray/40 flex items-center justify-center">
-          <img [draggable]="false" src="assets/svg/logos-03.svg" alt="AV" class="w-[12px] h-[12px] object-contain" />
-        </div>
-      </div>
+  </div>
+  <div class="flex flex-col px-2.5 xs:px-3 py-2.5">
+    <h3 appWordReveal [manualTrigger]="true"
+      class="font-light NewAldyTitle text-aldy-green-gray-bold m-0 tracking-wide leading-tight break-words uppercase line-clamp-1"
+      style="font-size: clamp(12px, 3.6vw, 17px);">
+      {{ collection.name }}
+    </h3>
+    <div class="flex items-center justify-between gap-2 mt-1">
+      <p appWordReveal [manualTrigger]="true"
+        class="font-medium NewAldyFontType4 text-aldy-green-gray tracking-wider uppercase m-0"
+        style="font-size: clamp(10px, 3vw, 12px);">
+        {{ collection.season || 'Colección' }} {{ collection.release_date ? (' - ' + (collection.release_date | date: 'yyyy')) : '' }}
+      </p>
     </div>
   </div>
 </div>

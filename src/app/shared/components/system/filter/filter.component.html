@@ -27,31 +27,43 @@
 }
 
 @if (isMobileView) {
-<div bg-aldy-white class="fixed inset-0 z-50 flex h-screen overflow-hidden" [ngClass]="{
-       'opacity-100 pointer-events-auto': showFilters,
-       'opacity-0 pointer-events-none': !showFilters
-     }" [style.transition]="'opacity 300ms ease-in-out'">
-  <div class="absolute inset-0 bg-transparent backdrop-blur-xs transition-all duration-300 ease-in-out"
-    [ngClass]="showFilters ? 'pointer-events-auto' : 'pointer-events-none'" (click)="onOverlayClick($event)">
+<!-- Mobile Slide-in Sidebar -->
+<div class="fixed inset-0 z-50 flex pointer-events-none transition-all duration-300"
+  [ngClass]="{
+    'opacity-100': showFilters,
+    'opacity-0 pointer-events-none': !showFilters
+  }">
+  <!-- Backdrop overlay con blur-md para difuminar los productos de fondo -->
+  <div class="fixed inset-0 bg-black/30 backdrop-blur-md transition-opacity duration-300"
+    [ngClass]="showFilters ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'"
+    (click)="toggleFilters()">
   </div>
-  <div
-    class="relative w-80 max-w-[85vw] bg-aldy-white h-full max-h-screen shadow-2xl transform transition-transform duration-300 ease-in-out flex flex-col overflow-hidden"
-    [ngClass]="showFilters ? 'translate-x-0' : '-translate-x-full'" (click)="$event.stopPropagation()">
-    <div class="sticky top-0 bg-aldy-white border-b border-gray-200 p-4 shrink-0 z-10">
-      <div class="flex items-center justify-between">
-        <h3 class="text-lg font-semibold text-aldy-medium-2">Categorías</h3>
-        <button class="p-2 hover:bg-gray-100 rounded-full transition-colors cursor-pointer" (click)="toggleFilters()">
-          <lucide-icon name="Plus" class="h-5 w-5 text-gray-500 rotate-45"></lucide-icon>
-        </button>
-      </div>
+
+  <!-- Sidebar con fondo sólido bg-aldy-white ajustado al tamaño de las opciones -->
+  <div class="relative w-64 max-w-[75vw] bg-aldy-white border-r border-[#d9e2d8] shadow-2xl h-full flex flex-col transition-transform duration-300 ease-out z-10"
+    [ngClass]="showFilters ? 'translate-x-0 pointer-events-auto' : '-translate-x-full pointer-events-none'"
+    (click)="$event.stopPropagation()">
+    
+    <!-- Encabezado del Sidebar -->
+    <div class="p-5 border-b border-[#d9e2d8] flex items-center justify-between">
+      <span class="text-xs tracking-[0.25em] uppercase font-medium text-aldy-green-gray-bold NewAldyFontType4">
+        Categorías
+      </span>
+      <button type="button" (click)="toggleFilters()"
+        class="p-2 -mr-2 text-aldy-green-gray-bold hover:text-aldy-medium transition-colors cursor-pointer"
+        aria-label="Cerrar filtros">
+        <lucide-icon name="Plus" class="h-4 w-4 rotate-45"></lucide-icon>
+      </button>
     </div>
-    <div class="p-4 flex-1 overflow-y-auto mobile-filter-scroll">
+
+    <!-- Lista de Categorías ajustada al ancho del sidebar -->
+    <div class="p-5 flex-1 overflow-y-auto">
       <ul class="space-y-4">
         @for (opt of options; track opt.value) {
           <li>
             <button
               (click)="selectCategory(opt.value)"
-              class="relative w-full text-left text-xs tracking-[0.2em] uppercase font-light py-2 pl-4 cursor-pointer transition-colors duration-300 hover:text-aldy-medium NewAldyFontType4"
+              class="relative w-full text-left text-xs tracking-[0.2em] uppercase font-light py-2 pl-4 transition-colors duration-300 ease-in-out cursor-pointer hover:text-aldy-medium NewAldyFontType4"
               [ngClass]="activeCategory === opt.value ? 'text-aldy-medium font-semibold' : 'text-aldy-green-gray-bold'">
               <span #indicator
                     class="absolute left-0 top-1/4 bottom-1/4 w-[2px] bg-aldy-medium origin-center opacity-0 scale-y-0"
@@ -65,3 +77,6 @@
   </div>
 </div>
 }
+
+
+

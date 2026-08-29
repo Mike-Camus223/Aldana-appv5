@@ -58,10 +58,24 @@
         </div>
         }
         @if (!loading && filteredProducts.length === 0 && newDropCollections.length === 0) {
-        <p
-          class="text-center NewAldyFontType4 text-xs uppercase py-24 text-aldy-green-gray-bold flex justify-center items-center h-full min-h-[300px]">
-          No hay productos para mostrar.
-        </p>
+        <div
+          class="flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-10 px-6 sm:px-10 py-10 bg-aldy-white my-8 max-w-2xl mx-auto text-center sm:text-left">
+          <div
+            class="flex-shrink-0 w-32 h-32 sm:w-44 sm:h-44 rounded-full flex items-center justify-center overflow-hidden border border-[#EAE5DF]/70 bg-[#F5F2EE]">
+            <img src="assets/images/sections/misc/circle_mannequin.png" alt="Maniquí AV"
+              class="w-full h-full object-cover scale-115" />
+          </div>
+          <div class="flex flex-col items-center sm:items-start">
+            <h3 class="NewAldyTitle text-lg sm:text-xl font-light text-aldy-green-gray-bold tracking-wider">
+              No hay productos disponibles
+            </h3>
+            <p
+              class="mt-2 text-xs text-aldy-green-gray-bold NewAldyFontType4 tracking-wider font-light leading-relaxed max-w-sm">
+              Actualmente no encontramos prendas en esta categoría o colección.<br class="hidden sm:inline">
+              Prueba seleccionando otra categoría en el menú de filtros.
+            </p>
+          </div>
+        </div>
         }
         @if (!loading && (pagedProducts.length > 0 || newDropCollections.length > 0)) {
         <div #productsGrid class="grid gap-5" [ngClass]="[

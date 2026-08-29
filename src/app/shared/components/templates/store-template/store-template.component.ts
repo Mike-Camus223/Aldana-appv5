@@ -1,8 +1,9 @@
-import { Component, OnInit, HostListener, Inject, ElementRef, ViewChild, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener, Inject, ElementRef, ViewChild, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, isPlatformBrowser, Location } from '@angular/common';
 import { PLATFORM_ID } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
+import { Subscription, combineLatest } from 'rxjs';
 import { BridesProductsService } from '../../../../core/services/data-access/brides-products/brides-products.service';
 import { Product } from '../../../utils/models/Products-supabase.interface';
 import { ProductUtils } from '../../../utils/dataEx/products-utils';
@@ -42,7 +43,7 @@ import { gsap } from 'gsap';
     }
   ],
 })
-export class StoreTemplateComponent implements OnInit {
+export class StoreTemplateComponent implements OnInit, OnDestroy {
   filteredProducts: Product[] = [];
   pagedProducts: Product[] = [];
   selectedColors: Record<string, string> = {};
@@ -70,6 +71,9 @@ export class StoreTemplateComponent implements OnInit {
   isMobileView: boolean = false;
   private currentFavorites: Set<string> = new Set();
   private currentRequestId: number = 0;
+  private routeSubscription = new Subscription();
+  private hasInitialized = false;
+
   @ViewChild('productsContainer') productsContainerRef?: ElementRef<HTMLDivElement>;
   @ViewChild('spinnerContainer') spinnerContainerRef?: ElementRef<HTMLDivElement>;
   @ViewChild('productsGrid') productsGridRef?: ElementRef<HTMLDivElement>;
@@ -88,14 +92,60 @@ export class StoreTemplateComponent implements OnInit {
 
   ngOnInit(): void {
     this.checkMobileView();
-    this.initializeRoute();
 
-    this.favoritesService.favorites$.subscribe(favorites => {
-      if (this.authService.isAuthenticated()) {
-        this.currentFavorites = new Set(favorites.map(f => f.product_id));
-        this.updateWishlistStatus(this.currentFavorites);
-      }
-    });
+    this.routeSubscription.add(
+      combineLatest([this.route.paramMap, this.route.queryParamMap]).subscribe(([params, qp]) => {
+        const categoriaParam = params.get('categoria');
+        const collectionParam = qp.get('coleccion');
+        const pageParam = qp.get('page');
+
+        const resolvedCategory = this.resolveCategorySlug(categoriaParam);
+        const resolvedCollection = collectionParam || null;
+        const qpPage = pageParam ? Number(pageParam) : 1;
+        const resolvedPage = !Number.isNaN(qpPage) && qpPage > 0 ? qpPage : 1;
+
+        if (
+          !this.hasInitialized ||
+          resolvedCategory !== this.activeCategory ||
+          resolvedCollection !== this.selectedCollectionId ||
+          resolvedPage !== this.currentPage
+        ) {
+          this.hasInitialized = true;
+          this.activeCategory = resolvedCategory;
+          this.selectedCollectionId = resolvedCollection;
+          this.currentPage = resolvedPage;
+          void this.applyFilters();
+        }
+      })
+    );
+
+    this.routeSubscription.add(
+      this.favoritesService.favorites$.subscribe(favorites => {
+        if (this.authService.isAuthenticated()) {
+          this.currentFavorites = new Set(favorites.map(f => f.product_id));
+          this.updateWishlistStatus(this.currentFavorites);
+        }
+      })
+    );
+  }
+
+  ngOnDestroy(): void {
+    this.routeSubscription.unsubscribe();
+  }
+
+  private resolveCategorySlug(param: string | null): string {
+    if (!param) return 'new-drop';
+    const lower = param.toLowerCase().trim();
+    if (lower === 'vestidos' || lower === 'monos' || lower === 'vestidos-y-monos') return 'vestidos-y-monos';
+    if (lower === 'abrigos' || lower === 'campera' || lower === 'camperas') return 'camperas';
+    if (lower === 'pantalones' || lower === 'pantalon' || lower === 'faldas' || lower === 'pantalones-y-faldas') return 'pantalones-y-faldas';
+    if (lower === 'remeras' || lower === 'camisas' || lower === 'blusas' || lower === 'tops') return 'tops';
+    if (lower === 'sastrero' || lower === 'sastreria') return 'sastreria';
+    if (lower === 'buzo' || lower === 'buzos') return 'buzos';
+    if (lower === 'accesorio' || lower === 'accesorios') return 'accesorios';
+    if (lower === 'novia' || lower === 'novias') return 'novias';
+    if (lower === 'newdrop' || lower === 'new-drop' || lower === 'todos' || lower === 'general') return 'new-drop';
+    return lower;
   }
 
   private updateWishlistStatus(favoriteIds: Set<string>): void {
@@ -116,44 +166,18 @@ export class StoreTemplateComponent implements OnInit {
     }
   }
 
-  private async initializeRoute(): Promise<void> {
-    const params = this.route.snapshot.paramMap;
-    const qp = this.route.snapshot.queryParamMap;
-
-    const categoriaParam = params.get('categoria');
-    const collectionParam = qp.get('coleccion');
-    const pageParam = qp.get('page');
-
-    if (categoriaParam) {
-      this.activeCategory = categoriaParam.toLowerCase();
-    } else {
-      this.activeCategory = 'new-drop';
-    }
-
-    if (collectionParam) {
-      this.selectedCollectionId = collectionParam;
-    } else {
-      this.selectedCollectionId = null;
-    }
-
-    const qpPage = pageParam ? Number(pageParam) : 1;
-    this.currentPage = !Number.isNaN(qpPage) && qpPage > 0 ? qpPage : 1;
-
-    await this.applyFilters();
-  }
-
   private async ensureCollectionsLoaded(): Promise<void> {
     try {
       if (this.allCollections.length === 0) {
-        const collectionsData = await this.productsService.getAllCollections();
+        const collectionsData = await this.productsService.getAllCollections('pret-a-porter');
         this.allCollections = collectionsData || [];
         this.topCollections = [...this.allCollections]
           .sort((a, b) => new Date(b.release_date || b.created_at).getTime() - new Date(a.release_date || a.created_at).getTime())
           .slice(0, 4);
       }
       if (this.allBridesCollections.length === 0) {
-        const bridesCollectionsData = await this.bridesProductsService.getCollections();
-        this.allBridesCollections = bridesCollectionsData?.data || [];
+        const bridesCollectionsData = await this.productsService.getAllCollections('bridal');
+        this.allBridesCollections = bridesCollectionsData || [];
         this.topBridesCollections = [...this.allBridesCollections]
           .sort((a, b) => new Date(b.release_date || b.created_at).getTime() - new Date(a.release_date || a.created_at).getTime())
           .slice(0, 4);
@@ -219,7 +243,7 @@ export class StoreTemplateComponent implements OnInit {
             .slice(0, 4);
         }
 
-        const normalRes = await this.productsService.getLatestProducts(32);
+        const normalRes = await this.productsService.getLatestProducts(32, 'pret-a-porter');
         if (requestId !== this.currentRequestId) return;
 
         const normalProducts = ProductUtils.mapProducts(normalRes.data || [], false);
@@ -239,8 +263,9 @@ export class StoreTemplateComponent implements OnInit {
           tempTotalCount = 0;
         } else {
           tempNewDropCollections = [];
-          const res = await this.bridesProductsService.getProductsPaged({
+          const res = await this.productsService.getProductsPaged({
             collectionId: this.selectedCollectionId,
+            department: 'bridal',
             page: this.currentPage,
             pageSize: this.itemsPerPage
           });
@@ -288,7 +313,7 @@ export class StoreTemplateComponent implements OnInit {
         const res = await this.productsService.getProductsPaged({
           categoryName: categoryDbName,
           categoryId: categoryId,
-          collectionId: this.selectedCollectionId,
+          department: 'pret-a-porter',
           page: this.currentPage,
           pageSize: this.itemsPerPage
         });
@@ -422,9 +447,6 @@ export class StoreTemplateComponent implements OnInit {
 
   applyFiltersAction(isMobile: boolean = false): void {
     this.currentPage = 1;
-    if (isMobile) {
-      this.showFilters = false;
-    }
     const url = this.buildUrlString();
     const [base, query] = url.split('?');
     this.location.replaceState(base, query ?? '');

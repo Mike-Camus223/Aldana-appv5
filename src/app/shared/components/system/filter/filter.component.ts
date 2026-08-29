@@ -63,6 +63,9 @@ export class FilterComponent implements AfterViewInit, OnChanges {
 
   selectCategory(value: string): void {
     if (this.activeCategory === value && value !== 'novias') {
+      if (this.isMobileView) {
+        this.toggleFilters();
+      }
       return;
     }
     this.activeCategory = value;

@@ -197,42 +197,23 @@ export class SearchPageComponent implements OnInit, OnDestroy {
     // Store the search term that will be used for displaying results
     this.displayedSearchTerm = this.searchTerm;
 
-    const delayMin = new Promise<void>(resolve => setTimeout(resolve, 1000));
+    const delayMin = new Promise<void>(resolve => setTimeout(resolve, 350));
 
-    // Fetch from both normal and bridal modules
-    const [normalRes, bridalRes] = await Promise.all([
-      this.productsService.getProducts(),
-      this.bridesProductsService.getProducts(),
+    // Server-side search on unified products
+    const [searchRes] = await Promise.all([
+      this.productsService.searchProducts(this.searchTerm, 50),
       delayMin
     ]);
 
-    if (normalRes.error) {
-      console.error('Error al obtener productos normales', normalRes.error);
-    }
-    if ((bridalRes as any)?.error) {
-      console.error('Error al obtener productos de novias', (bridalRes as any).error);
+    if (searchRes.error) {
+      console.error('Error al buscar productos', searchRes.error);
     }
 
-    const normalData = normalRes.data || [];
-    const bridalData = (bridalRes as any)?.data || [];
+    const searchData = searchRes.data || [];
+    const mappedProducts = ProductUtils.mapProducts(searchData, false);
 
-    const mappedNormal = ProductUtils.mapProducts(Array.isArray(normalData) ? normalData : [normalData], false);
-    const mappedBridal = ProductUtils.mapProducts(Array.isArray(bridalData) ? bridalData : [bridalData], true).map(p => ({
-      ...p,
-      source_module: 'bridal'
-    }));
-
-    const allProducts = [...mappedNormal, ...mappedBridal];
-
-    const search = this.searchTerm.toLowerCase();
-    const rawProducts = allProducts.filter(p =>
-      p.name?.toLowerCase().includes(search) ||
-      p.category?.name?.toLowerCase().includes(search) ||
-      p.subcategory?.name?.toLowerCase().includes(search)
-    );
-
-    this.originalProducts = rawProducts;
-    this.products = [...rawProducts];
+    this.originalProducts = mappedProducts;
+    this.products = [...mappedProducts];
 
     // Reset pagination when new search results are loaded
     this.currentPage = 1;

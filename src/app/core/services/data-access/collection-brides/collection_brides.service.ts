@@ -5,7 +5,6 @@ import { getDataHelperService } from "../getDataHelper.service";
 export class CollectionBridesService {
     private dataHelper = inject(getDataHelperService)
 
-
     async getCollectionBrides() {
         const selectFieldsCollectionBrides = `
             id,
@@ -17,16 +16,18 @@ export class CollectionBridesService {
             created_at,
             banner,
             description,
-            slug
-            `;
+            slug,
+            department
+        `;
 
-        const result = await this.dataHelper.getData<any[]>(
-            'collection_brides',
-            selectFieldsCollectionBrides
-        );
+        const { data, error } = await this.dataHelper.client
+            .from('collections')
+            .select(selectFieldsCollectionBrides)
+            .eq('department', 'bridal')
+            .order('release_date', { ascending: false });
 
-        if (result.error) throw result.error;
-        return result.data;
+        if (error) throw error;
+        return data as any[];
     }
 
     async getCollectionBridesBySlug(slug: string) {
@@ -40,55 +41,58 @@ export class CollectionBridesService {
             created_at,
             banner,
             description,
-            slug
+            slug,
+            department
         `;
 
-        const result = await this.dataHelper.getData<any>(
-            'collection_brides',
-            selectFieldsCollectionBrides,
-            'slug',
-            slug,
-            true
-        );
+        const { data, error } = await this.dataHelper.client
+            .from('collections')
+            .select(selectFieldsCollectionBrides)
+            .eq('slug', slug)
+            .maybeSingle();
 
-        if (result.error) throw result.error;
-        return result.data;
+        if (error) throw error;
+        return data;
     }
 
     async getCollectionBridesItemsByCollectionId(collectionId: string) {
-    const { data, error } = await this.dataHelper.client
-        .from('pbrides_product_collections')
-        .select(`
-            id,
-            product_id,
-            collection_id,
-            display_order,
-            pbrides_products (
-                id,
-                name,
-                slug,
-                description,
-                details,
-                main_image,
-                media,
-                price
-            )
-        `)
-        .eq('collection_id', collectionId)
-        .order('display_order', { ascending: true });
-
-    if (error) throw error;
-    return data as any[];
-}
-
-    async getCollectionBridesItemDetail(collectionId: string, productSlug: string) {
         const { data, error } = await this.dataHelper.client
-            .from('pbrides_product_collections')
+            .from('product_collections')
             .select(`
                 id,
                 product_id,
                 collection_id,
-                pbrides_products!inner (
+                display_order,
+                products (
+                    id,
+                    name,
+                    slug,
+                    description,
+                    details,
+                    main_image,
+                    media,
+                    price
+                )
+            `)
+            .eq('collection_id', collectionId)
+            .order('display_order', { ascending: true });
+
+        if (error) throw error;
+        // Map to keep backward-compatible shape for components expecting .pbrides_products
+        return (data || []).map((item: any) => ({
+            ...item,
+            pbrides_products: item.products || item.pbrides_products
+        })) as any[];
+    }
+
+    async getCollectionBridesItemDetail(collectionId: string, productSlug: string) {
+        const { data, error } = await this.dataHelper.client
+            .from('product_collections')
+            .select(`
+                id,
+                product_id,
+                collection_id,
+                products!inner (
                     id,
                     name,
                     slug,
@@ -97,7 +101,7 @@ export class CollectionBridesService {
                     main_image,
                     media,
                     price,
-                    pbrides_product_variants (
+                    product_variants (
                         id,
                         color_name,
                         color_hex,
@@ -108,10 +112,19 @@ export class CollectionBridesService {
                 )
             `)
             .eq('collection_id', collectionId)
-            .eq('pbrides_products.slug', productSlug)
+            .eq('products.slug', productSlug)
             .maybeSingle();
 
         if (error) throw error;
-        return data as any | null;
+        if (!data) return null;
+
+        const prod = (data as any).products;
+        return {
+            ...data,
+            pbrides_products: {
+                ...prod,
+                pbrides_product_variants: prod?.product_variants || []
+            }
+        } as any;
     }
-}
+}

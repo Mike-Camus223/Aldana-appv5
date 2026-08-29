@@ -9,7 +9,7 @@ export class CollectionService {
   
   constructor() { }
 
-  async getAllCollections() {
+  async getAllCollections(department: string = 'pret-a-porter') {
     const selectFields = `
       id,
       uuid,
@@ -20,16 +20,22 @@ export class CollectionService {
       created_at,
       banner,
       description,
-      slug
+      slug,
+      department
     `;
 
-    const result = await this.dataHelper.getData<any[]>(
-      'collections',
-      selectFields
-    );
+    let query = this.dataHelper.client
+      .from('collections')
+      .select(selectFields);
 
-    if (result.error) throw result.error;
-    return result.data;
+    if (department) {
+      query = query.eq('department', department);
+    }
+
+    const { data, error } = await query.order('release_date', { ascending: false });
+
+    if (error) throw error;
+    return data as any[];
   }
 
   async getCollectionBySlug(slug: string) {
