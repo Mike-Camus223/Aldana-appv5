@@ -9,9 +9,9 @@ svg .svg-elem-1 {
   stroke-dasharray: 846.4325561523438px;
   fill: transparent;
   -webkit-transition: stroke-dashoffset 1s cubic-bezier(0.47, 0, 0.745, 0.715) 0s,
-                        fill 0.7s cubic-bezier(0.47, 0, 0.745, 0.715) 0.8s;
-          transition: stroke-dashoffset 1s cubic-bezier(0.47, 0, 0.745, 0.715) 0s,
-                fill 0.7s cubic-bezier(0.47, 0, 0.745, 0.715) 0.8s;
+    fill 0.7s cubic-bezier(0.47, 0, 0.745, 0.715) 0.8s;
+  transition: stroke-dashoffset 1s cubic-bezier(0.47, 0, 0.745, 0.715) 0s,
+    fill 0.7s cubic-bezier(0.47, 0, 0.745, 0.715) 0.8s;
 }
 
 svg.active .svg-elem-1 {
@@ -24,9 +24,9 @@ svg .svg-elem-2 {
   stroke-dasharray: 814.9065551757812px;
   fill: transparent;
   -webkit-transition: stroke-dashoffset 1s cubic-bezier(0.47, 0, 0.745, 0.715) 0.12s,
-                        fill 0.7s cubic-bezier(0.47, 0, 0.745, 0.715) 0.9s;
-          transition: stroke-dashoffset 1s cubic-bezier(0.47, 0, 0.745, 0.715) 0.12s,
-                fill 0.7s cubic-bezier(0.47, 0, 0.745, 0.715) 0.9s;
+    fill 0.7s cubic-bezier(0.47, 0, 0.745, 0.715) 0.9s;
+  transition: stroke-dashoffset 1s cubic-bezier(0.47, 0, 0.745, 0.715) 0.12s,
+    fill 0.7s cubic-bezier(0.47, 0, 0.745, 0.715) 0.9s;
 }
 
 svg.active .svg-elem-2 {
@@ -38,9 +38,9 @@ svg .svg-elem-3 {
   stroke-dashoffset: 653.2938232421875px;
   stroke-dasharray: 653.2938232421875px;
   -webkit-transition: stroke-dashoffset 1s cubic-bezier(0.47, 0, 0.745, 0.715) 0.24s,
-                        fill 0.7s cubic-bezier(0.47, 0, 0.745, 0.715) 1s;
-          transition: stroke-dashoffset 1s cubic-bezier(0.47, 0, 0.745, 0.715) 0.24s,
-                fill 0.7s cubic-bezier(0.47, 0, 0.745, 0.715) 1s;
+    fill 0.7s cubic-bezier(0.47, 0, 0.745, 0.715) 1s;
+  transition: stroke-dashoffset 1s cubic-bezier(0.47, 0, 0.745, 0.715) 0.24s,
+    fill 0.7s cubic-bezier(0.47, 0, 0.745, 0.715) 1s;
 }
 
 svg.active .svg-elem-3 {
@@ -52,9 +52,9 @@ svg .svg-elem-4 {
   stroke-dasharray: 57.02141571044922px;
   fill: transparent;
   -webkit-transition: stroke-dashoffset 1s cubic-bezier(0.47, 0, 0.745, 0.715) 0.36s,
-                        fill 0.7s cubic-bezier(0.47, 0, 0.745, 0.715) 1.1s;
-          transition: stroke-dashoffset 1s cubic-bezier(0.47, 0, 0.745, 0.715) 0.36s,
-                fill 0.7s cubic-bezier(0.47, 0, 0.745, 0.715) 1.1s;
+    fill 0.7s cubic-bezier(0.47, 0, 0.745, 0.715) 1.1s;
+  transition: stroke-dashoffset 1s cubic-bezier(0.47, 0, 0.745, 0.715) 0.36s,
+    fill 0.7s cubic-bezier(0.47, 0, 0.745, 0.715) 1.1s;
 }
 
 svg.active .svg-elem-4 {
@@ -67,9 +67,9 @@ svg .svg-elem-5 {
   stroke-dasharray: 54.85029983520508px;
   fill: transparent;
   -webkit-transition: stroke-dashoffset 1s cubic-bezier(0.47, 0, 0.745, 0.715) 0.48s,
-                        fill 0.7s cubic-bezier(0.47, 0, 0.745, 0.715) 1.2000000000000002s;
-          transition: stroke-dashoffset 1s cubic-bezier(0.47, 0, 0.745, 0.715) 0.48s,
-                fill 0.7s cubic-bezier(0.47, 0, 0.745, 0.715) 1.2000000000000002s;
+    fill 0.7s cubic-bezier(0.47, 0, 0.745, 0.715) 1.2000000000000002s;
+  transition: stroke-dashoffset 1s cubic-bezier(0.47, 0, 0.745, 0.715) 0.48s,
+    fill 0.7s cubic-bezier(0.47, 0, 0.745, 0.715) 1.2000000000000002s;
 }
 
 svg.active .svg-elem-5 {
@@ -140,9 +140,9 @@ svg.active .svg-elem-5 {
 
 .aldy-logo-1 {
   -webkit-animation: animate-svg-stroke-1 1s cubic-bezier(0.6, 0.04, 0.98, 0.335) 0s both,
-                       animate-svg-fill-1 0.7s cubic-bezier(0.645, 0.045, 0.355, 1) 0.8s both;
-          animation: animate-svg-stroke-1 1s cubic-bezier(0.6, 0.04, 0.98, 0.335) 0s both,
-               animate-svg-fill-1 0.7s cubic-bezier(0.645, 0.045, 0.355, 1) 0.8s both;
+    animate-svg-fill-1 0.7s cubic-bezier(0.645, 0.045, 0.355, 1) 0.8s both;
+  animation: animate-svg-stroke-1 1s cubic-bezier(0.6, 0.04, 0.98, 0.335) 0s both,
+    animate-svg-fill-1 0.7s cubic-bezier(0.645, 0.045, 0.355, 1) 0.8s both;
 }
 
 @-webkit-keyframes animate-svg-stroke-2 {
@@ -191,9 +191,9 @@ svg.active .svg-elem-5 {
 
 .aldy-logo-2 {
   -webkit-animation: animate-svg-stroke-2 1s cubic-bezier(0.6, 0.04, 0.98, 0.335) 0.12s both,
-                       animate-svg-fill-2 0.7s cubic-bezier(0.645, 0.045, 0.355, 1) 0.9s both;
-          animation: animate-svg-stroke-2 1s cubic-bezier(0.6, 0.04, 0.98, 0.335) 0.12s both,
-               animate-svg-fill-2 0.7s cubic-bezier(0.645, 0.045, 0.355, 1) 0.9s both;
+    animate-svg-fill-2 0.7s cubic-bezier(0.645, 0.045, 0.355, 1) 0.9s both;
+  animation: animate-svg-stroke-2 1s cubic-bezier(0.6, 0.04, 0.98, 0.335) 0.12s both,
+    animate-svg-fill-2 0.7s cubic-bezier(0.645, 0.045, 0.355, 1) 0.9s both;
 }
 
 @-webkit-keyframes animate-svg-stroke-3 {
@@ -242,9 +242,9 @@ svg.active .svg-elem-5 {
 
 .aldy-logo-3 {
   -webkit-animation: animate-svg-stroke-3 1s cubic-bezier(0.6, 0.04, 0.98, 0.335) 0.24s both,
-                       animate-svg-fill-3 0.7s cubic-bezier(0.645, 0.045, 0.355, 1) 1s both;
-          animation: animate-svg-stroke-3 1s cubic-bezier(0.6, 0.04, 0.98, 0.335) 0.24s both,
-               animate-svg-fill-3 0.7s cubic-bezier(0.645, 0.045, 0.355, 1) 1s both;
+    animate-svg-fill-3 0.7s cubic-bezier(0.645, 0.045, 0.355, 1) 1s both;
+  animation: animate-svg-stroke-3 1s cubic-bezier(0.6, 0.04, 0.98, 0.335) 0.24s both,
+    animate-svg-fill-3 0.7s cubic-bezier(0.645, 0.045, 0.355, 1) 1s both;
 }
 
 @-webkit-keyframes animate-svg-stroke-4 {
@@ -293,9 +293,9 @@ svg.active .svg-elem-5 {
 
 .aldy-logo-4 {
   -webkit-animation: animate-svg-stroke-4 1s cubic-bezier(0.6, 0.04, 0.98, 0.335) 0.36s both,
-                       animate-svg-fill-4 0.7s cubic-bezier(0.645, 0.045, 0.355, 1) 1.1s both;
-          animation: animate-svg-stroke-4 1s cubic-bezier(0.6, 0.04, 0.98, 0.335) 0.36s both,
-               animate-svg-fill-4 0.7s cubic-bezier(0.645, 0.045, 0.355, 1) 1.1s both;
+    animate-svg-fill-4 0.7s cubic-bezier(0.645, 0.045, 0.355, 1) 1.1s both;
+  animation: animate-svg-stroke-4 1s cubic-bezier(0.6, 0.04, 0.98, 0.335) 0.36s both,
+    animate-svg-fill-4 0.7s cubic-bezier(0.645, 0.045, 0.355, 1) 1.1s both;
 }
 
 @-webkit-keyframes animate-svg-stroke-5 {
@@ -344,9 +344,9 @@ svg.active .svg-elem-5 {
 
 .aldy-logo-5 {
   -webkit-animation: animate-svg-stroke-5 1s cubic-bezier(0.6, 0.04, 0.98, 0.335) 0.48s both,
-                       animate-svg-fill-5 0.7s cubic-bezier(0.645, 0.045, 0.355, 1) 1.2000000000000002s both;
-          animation: animate-svg-stroke-5 1s cubic-bezier(0.6, 0.04, 0.98, 0.335) 0.48s both,
-               animate-svg-fill-5 0.7s cubic-bezier(0.645, 0.045, 0.355, 1) 1.2000000000000002s both;
+    animate-svg-fill-5 0.7s cubic-bezier(0.645, 0.045, 0.355, 1) 1.2000000000000002s both;
+  animation: animate-svg-stroke-5 1s cubic-bezier(0.6, 0.04, 0.98, 0.335) 0.48s both,
+    animate-svg-fill-5 0.7s cubic-bezier(0.645, 0.045, 0.355, 1) 1.2000000000000002s both;
 }
 
 @-webkit-keyframes animate-svg-stroke-6 {
@@ -395,7 +395,164 @@ svg.active .svg-elem-5 {
 
 .aldy-logo-6 {
   -webkit-animation: animate-svg-stroke-6 1s cubic-bezier(0.6, 0.04, 0.98, 0.335) 0.6s both,
-                       animate-svg-fill-6 0.7s cubic-bezier(0.645, 0.045, 0.355, 1) 1.3s both;
-          animation: animate-svg-stroke-6 1s cubic-bezier(0.6, 0.04, 0.98, 0.335) 0.6s both,
-               animate-svg-fill-6 0.7s cubic-bezier(0.645, 0.045, 0.355, 1) 1.3s both;
+    animate-svg-fill-6 0.7s cubic-bezier(0.645, 0.045, 0.355, 1) 1.3s both;
+  animation: animate-svg-stroke-6 1s cubic-bezier(0.6, 0.04, 0.98, 0.335) 0.6s both,
+    animate-svg-fill-6 0.7s cubic-bezier(0.645, 0.045, 0.355, 1) 1.3s both;
+}
+
+/* =========================================================================
+   NUEVO — Rediseño de la secuencia (fotos centradas, wheel picker, fases)
+   No modifica ninguna regla de arriba: los SVG conservan su animación tal cual.
+   ========================================================================= */
+
+/* ══════════════════════════════════════════════════════════════
+   Nuevos estilos — no modifican nada de los keyframes de arriba
+   ══════════════════════════════════════════════════════════════ */
+
+/* Fotos centradas — arrancan con scale(0), GSAP las anima */
+.photo-card {
+  width: 100vw;
+  height: 100vh;
+  transform-origin: 50% 50%;
+  will-change: transform, opacity;
+  pointer-events: none;
+}
+
+.photo-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ── Wheel Picker — contador 00 → 99 ──────────────────────── */
+.wheel-picker-block {
+  display: flex;
+  gap: 1px;
+  align-items: center;
+  font-variant-numeric: tabular-nums;
+  color: #b5c9b0;
+  will-change: opacity;
+}
+
+.digit-col {
+  position: relative;
+  height: calc(var(--dh, 52px) * 3);
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    #000 28%,
+    #000 72%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    #000 28%,
+    #000 72%,
+    transparent 100%
+  );
+}
+
+.digit-track {
+  display: flex;
+  flex-direction: column;
+  /* transform gestionado por setProperty('--idx') + JS setStyle */
+  transform: translateY(calc((1 - var(--idx, 0)) * var(--dh, 52px)));
+  will-change: transform;
+}
+
+.digit-item {
+  --dh: clamp(36px, 7vw, 64px);
+  height: var(--dh, 52px);
+  line-height: var(--dh, 52px);
+  font-size: calc(var(--dh, 52px) * 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+/* Variable --dh uniforme al nivel del contenedor */
+.wheel-picker-block {
+  --dh: clamp(36px, 7vw, 64px);
+}
+
+.digit-col {
+  height: calc(var(--dh) * 3);
+  width: calc(var(--dh) * 0.65);
+}
+
+.digit-track {
+  transform: translateY(calc((1 - var(--idx, 0)) * var(--dh)));
+}
+
+@media (max-width: 480px) {
+  .wheel-picker-block {
+    --dh: clamp(28px, 8vw, 44px);
+  }
+}
+
+.photo-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Posición del grupo logo + nombre: izquierda al inicio, centro al reaparecer */
+.pos-left {
+  transform: translateX(clamp(-160px, -18vw, -60px));
+}
+
+.pos-center {
+  transform: translateX(0);
+}
+
+/* Wheel picker: contador odómetro 0 -> 100 */
+.wheel-picker {
+  --digit-h: clamp(26px, 6vw, 44px);
+  display: flex;
+  gap: 2px;
+  font-family: var(--font-newalditittle, 'NewAldyTittle', sans-serif);
+  font-variant-numeric: tabular-nums;
+  color: #2a2a2a;
+}
+
+.digit-col {
+  position: relative;
+  height: calc(var(--digit-h) * 3);
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 30%, #000 70%, transparent);
+  mask-image: linear-gradient(to bottom, transparent, #000 30%, #000 70%, transparent);
+}
+
+.digit-track {
+  display: flex;
+  flex-direction: column;
+  transform: translateY(calc((1 - var(--idx, 0)) * var(--digit-h)));
+  transition: transform 0.12s cubic-bezier(0.25, 0.8, 0.25, 1);
+  will-change: transform;
+}
+
+.digit-item {
+  height: var(--digit-h);
+  line-height: var(--digit-h);
+  font-size: calc(var(--digit-h) * 0.62);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Responsive: en mobile el grupo se apila y no se desplaza a la izquierda */
+@media (max-width: 640px) {
+
+  .pos-left,
+  .pos-center {
+    transform: none;
+  }
+
+  .wheel-picker {
+    --digit-h: clamp(22px, 8vw, 34px);
+  }
 }
