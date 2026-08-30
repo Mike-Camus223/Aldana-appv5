@@ -8,13 +8,13 @@ gsap.registerPlugin(DrawSVGPlugin);
 
 @Component({
   standalone: true,
-  selector: 'app-loading-screen',
+  selector: 'app-loading-screen-v2',
   imports: [NgOptimizedImage],
-  templateUrl: './loading-screen.component.html',
+  templateUrl: './loading-screen-v2.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrls: ['./loading-screen.component.css']
+  styleUrls: ['./loading-screen-v2.component.css']
 })
-export class LoadingScreenComponent implements AfterViewInit, OnDestroy {
+export class LoadingScreenV2Component implements AfterViewInit, OnDestroy {
 
   @ViewChild('screen') screen!: ElementRef;
   @ViewChild('circleGroup') circleGroup!: ElementRef;

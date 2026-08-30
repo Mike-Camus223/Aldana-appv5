@@ -4,7 +4,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { filter } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 import { LoadingScreenGenericComponent } from "./shared/components/system/loading-screen-generic/loading-screen-generic.component";
-import { LoadingScreenComponent } from './shared/components/system/loading-screen/loading-screen.component';
+import { LoadingScreenV2Component } from './shared/components/system/loading-screen-v2/loading-screen-v2.component';
 import { ToastNotificationComponent } from './shared/components/system/toast-notification/toast-notification.component';
 import { CustomCursorComponent } from './shared/components/system/custom-cursor/custom-cursor.component';
 import { LoaderService } from './core/services/utils/loader.service';
@@ -17,7 +17,7 @@ import { SmoothScrollService } from './core/services/utils/smooth-scroll.service
     RouterOutlet,
     ToastNotificationComponent,
     LoadingScreenGenericComponent,
-    LoadingScreenComponent,
+    LoadingScreenV2Component,
     CustomCursorComponent
   ],
   templateUrl: './app.component.html',
