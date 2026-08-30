@@ -16,16 +16,7 @@ import {
 } from '@angular/core';
 import { GenLightboxVanillaComponent } from '../../generic/gen-lightbox-vanilla/gen-lightbox-vanilla.component';
 import { MediaItem } from '../../../utils/models/objectsGallery.model';
-import {
-  ChevronLeft,
-  ChevronRight,
-  Play,
-  Pause,
-  Maximize,
-  LUCIDE_ICONS,
-  LucideAngularModule,
-  LucideIconProvider,
-} from 'lucide-angular';
+import { LucideAngularModule } from 'lucide-angular';
 
 @Component({
   selector: 'app-fancy-carousel',
@@ -34,15 +25,7 @@ import {
   templateUrl: './fancy-carousel.component.html',
   styleUrls: ['./fancy-carousel.component.css'],
   encapsulation: ViewEncapsulation.None,
-  changeDetection: ChangeDetectionStrategy.Eager,
-  providers: [
-    {
-      provide: LUCIDE_ICONS,
-      multi: true,
-      useValue: new LucideIconProvider({ ChevronLeft, ChevronRight, Play, Pause, Maximize }),
-    },
-  ],
-})
+  changeDetection: ChangeDetectionStrategy.Eager})
 export class FancyCarouselComponent implements AfterViewInit, OnChanges, OnDestroy {
   @Input() images: { src: string; thumb: string; type?: 'image' | 'video'; poster?: string }[] = [];
   @ViewChild('thumbContainer') thumbContainer!: ElementRef<HTMLElement>;
@@ -158,8 +141,7 @@ export class FancyCarouselComponent implements AfterViewInit, OnChanges, OnDestr
     this.lightboxItems = this.images.map(img => ({
       url: img.src,
       type: img.type || (this.isVideo(img.src) ? 'video' : 'image'),
-      poster: img.poster || img.thumb,
-    }));
+      poster: img.poster || img.thumb}));
   }
 
   isVideo(url: string): boolean {

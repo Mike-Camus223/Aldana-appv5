@@ -1,7 +1,7 @@
 import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { LucideAngularModule, LUCIDE_ICONS, LucideIconProvider, Funnel, ChevronDown, ChevronUp, Minus, Plus } from 'lucide-angular';
+import { LucideAngularModule } from 'lucide-angular';
 import { AcordiongenericComponent } from '../../generic/acordiongeneric/acordiongeneric.component';
 import { AldyCheckboxV1Directive } from '../../../utils/directives/aldy-checkbox-v1.directive';
 import { Product } from '../../../utils/models/Products-supabase.interface';
@@ -19,15 +19,7 @@ import { ProductUtils } from '../../../utils/dataEx/products-utils';
   ],
   templateUrl: './filter-old.component.html',
   styleUrls: ['./filter-old.component.css'],
-  changeDetection: ChangeDetectionStrategy.Eager,
-  providers: [
-    {
-      provide: LUCIDE_ICONS,
-      multi: true,
-      useValue: new LucideIconProvider({ Funnel, ChevronDown, ChevronUp, Minus, Plus })
-    }
-  ]
-})
+  changeDetection: ChangeDetectionStrategy.Eager})
 export class FilterOldComponent implements OnChanges {
   @Input() isMobileView: boolean = false;
   @Input() showFilters: boolean = false;

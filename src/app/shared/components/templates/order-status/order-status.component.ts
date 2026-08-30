@@ -1,31 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import {
-  ArrowDownToLine,
-  Book,
-  BookCheck,
-  Check,
-  CheckCircle2,
-  Headset,
-  House,
-  LUCIDE_ICONS,
-  LucideAngularModule,
-  LucideIconProvider,
-  NotepadText,
-  Package,
-  Truck,
-  AlertCircle,
-  Clock,
-  RotateCcw,
-  MessageCircle,
-  CreditCard,
-  ShieldAlert,
-  ChevronLeft,
-  MapPin,
-  Mail,
-  Phone
-} from 'lucide-angular';
+import { LucideAngularModule } from 'lucide-angular';
 import { OrdersService } from '../../../../core/services/orders/orders.service';
 import { InvoiceService } from '../../../../core/services/invoice/invoice.service';
 import { OrderModel, OrderProduct } from '../../../../shared/utils/models/order.interface';
@@ -83,38 +59,8 @@ export interface Order {
 @Component({
   selector: 'app-order-status',
   standalone: true,
-  imports: [CommonModule, RouterModule, LucideAngularModule],
-  providers: [
-    {
-      provide: LUCIDE_ICONS,
-      multi: true,
-      useValue: new LucideIconProvider({
-        Check,
-        CheckCircle2,
-        NotepadText,
-        BookCheck,
-        Book,
-        Package,
-        Truck,
-        House,
-        Headset,
-        ArrowDownToLine,
-        AlertCircle,
-        Clock,
-        RotateCcw,
-        MessageCircle,
-        CreditCard,
-        ShieldAlert,
-        ChevronLeft,
-        MapPin,
-        Mail,
-        Phone
-      })
-    }
-  ],
-  templateUrl: './order-status.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
-})
+  imports: [CommonModule, RouterModule, LucideAngularModule], templateUrl: './order-status.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush})
 export class OrderStatusComponent implements OnInit, OnDestroy {
   order: Order | null = null;
   paymentRecord: any = null;
@@ -214,8 +160,7 @@ export class OrderStatusComponent implements OnInit, OnDestroy {
           event: 'UPDATE',
           schema: 'public',
           table: 'orders',
-          filter: `id=eq.${orderId}`,
-        },
+          filter: `id=eq.${orderId}`},
         (payload: any) => {
           this.order = payload.new;
           this.updateSteps();

@@ -9,13 +9,7 @@ import {
 import { RouterModule } from '@angular/router';
 import { Product } from '../../../utils/models/Products-supabase.interface';
 import { CardproductComponent } from '../../generic/cardproduct/cardproduct.component';
-import {
-  ChevronLeft,
-  ChevronRight,
-  LUCIDE_ICONS,
-  LucideAngularModule,
-  LucideIconProvider,
-} from 'lucide-angular';
+import { LucideAngularModule } from 'lucide-angular';
 
 @Component({
   selector: 'app-product-carousel',
@@ -26,18 +20,7 @@ import {
     LucideAngularModule
 ],
   templateUrl: './product-carousel.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  providers: [
-    {
-      provide: LUCIDE_ICONS,
-      multi: true,
-      useValue: new LucideIconProvider({
-        ChevronLeft,
-        ChevronRight,
-      })
-    }
-  ]
-})
+  changeDetection: ChangeDetectionStrategy.Eager})
 export class ProductCarouselComponent implements OnInit {
   @Input() products: Product[] = [];
   @Input() carouselTitle = '';

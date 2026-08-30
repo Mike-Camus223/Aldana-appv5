@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { LUCIDE_ICONS, LucideAngularModule, LucideIconProvider, Send } from 'lucide-angular';
+import { LucideAngularModule } from 'lucide-angular';
 import { CardInitAnimationDirective } from '../../../utils/directives/card-init-animation.directive';
 import { WordRevealDirective } from '../../../utils/directives/word-reveal.directive';
 import { FadeUpLetterDirective } from '../../../utils/directives/fadeupletter.directive';
@@ -8,15 +8,7 @@ import { FadeUpLetterDirective } from '../../../utils/directives/fadeupletter.di
 @Component({
   selector: 'app-newsletter',
   imports: [CommonModule, LucideAngularModule, WordRevealDirective, FadeUpLetterDirective, CardInitAnimationDirective],
-  templateUrl: './newsletter.component.html',
-  providers: [
-    {
-      provide: LUCIDE_ICONS,
-      multi: true,
-      useValue: new LucideIconProvider({ Send })
-    }
-  ],
-  styleUrl: './newsletter.component.css'
+  templateUrl: './newsletter.component.html', styleUrl: './newsletter.component.css'
 })
 export class NewsletterComponent {
 

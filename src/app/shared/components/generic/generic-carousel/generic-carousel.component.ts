@@ -14,19 +14,11 @@ import {
   ChangeDetectorRef,
   NgZone,
   signal,
-  computed,
-} from '@angular/core';
+  computed} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Subject, takeUntil } from 'rxjs';
 import { CarouselItemDirective } from '../../../utils/directives/carousel-slide.directive';
-import {
-  ChevronLeft,
-  ChevronRight,
-  LUCIDE_ICONS,
-  LucideAngularModule,
-  LucideIconProvider,
-  Sparkle,
-} from 'lucide-angular';
+import { LucideAngularModule } from 'lucide-angular';
 import { LoaderService } from '../../../../core/services/utils/loader.service';
 
 export interface CarouselConfig {
@@ -54,20 +46,7 @@ export interface CarouselConfig {
   standalone: true,
   imports: [CommonModule, LucideAngularModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './generic-carousel.component.html',
-  providers: [
-    {
-      provide: LUCIDE_ICONS,
-      multi: true,
-      useValue: new LucideIconProvider({
-        Sparkle,
-        ChevronLeft,
-        ChevronRight,
-      })
-    }
-  ],
-  styles: [':host { display: block; }'],
-})
+  templateUrl: './generic-carousel.component.html', styles: [':host { display: block; }']})
 export class AppGenericCarouselComponent
   implements AfterContentInit, AfterViewInit, OnDestroy {
 
@@ -235,11 +214,9 @@ export class AppGenericCarouselComponent
               duration: 1.1,
               ease: 'power3.out',
               stagger: 0.1,
-              clearProps: 'y,opacity',
-            });
+              clearProps: 'y,opacity'});
           });
-        },
-      });
+        }});
     } catch {
       this.initFallbackIntersectionAnimation(allCards);
     }
@@ -274,8 +251,7 @@ export class AppGenericCarouselComponent
         duration: 1.1,
         ease: 'power3.out',
         stagger: 0.1,
-        clearProps: 'y,opacity',
-      });
+        clearProps: 'y,opacity'});
     };
 
     if (typeof IntersectionObserver === 'undefined') {
@@ -379,8 +355,7 @@ export class AppGenericCarouselComponent
         onComplete: () => {
           this.isTransitioning = false;
           this.checkInfiniteLoop(index);
-        },
-      });
+        }});
     } else {
       if (this.gsap) {
         this.gsap.killTweensOf(this.track.nativeElement);

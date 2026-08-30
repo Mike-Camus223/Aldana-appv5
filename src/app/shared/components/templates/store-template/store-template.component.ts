@@ -8,7 +8,7 @@ import { BridesProductsService } from '../../../../core/services/data-access/bri
 import { Product } from '../../../utils/models/Products-supabase.interface';
 import { ProductUtils } from '../../../utils/dataEx/products-utils';
 import { CardproductComponent } from '../../generic/cardproduct/cardproduct.component';
-import { Funnel, LUCIDE_ICONS, LucideIconProvider, LucideAngularModule, ChevronDown, ChevronUp, Minus, Plus } from 'lucide-angular';
+import { LucideAngularModule } from 'lucide-angular';
 import { LoadingbarComponent } from '../../system/loadingbar/loadingbar.component';
 import { FavoritesService } from '../../../../core/services/favorites/favorites.service';
 import { AuthService } from '../../../../core/services/auth/auth.service';
@@ -34,15 +34,7 @@ import { gsap } from 'gsap';
   ],
   templateUrl: './store-template.component.html',
   styleUrls: ['./store-template.component.css'],
-  changeDetection: ChangeDetectionStrategy.Default,
-  providers: [
-    {
-      provide: LUCIDE_ICONS,
-      multi: true,
-      useValue: new LucideIconProvider({ Funnel, ChevronDown, ChevronUp, Minus, Plus })
-    }
-  ],
-})
+  changeDetection: ChangeDetectionStrategy.Default})
 export class StoreTemplateComponent implements OnInit, OnDestroy {
   filteredProducts: Product[] = [];
   pagedProducts: Product[] = [];

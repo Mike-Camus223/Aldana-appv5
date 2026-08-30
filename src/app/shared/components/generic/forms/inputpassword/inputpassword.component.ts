@@ -1,26 +1,14 @@
 import { Component, Input, Optional, Self, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, ControlValueAccessor, NgControl } from '@angular/forms';
-import { Eye, EyeClosed, Lock, LUCIDE_ICONS, LucideAngularModule, LucideIconProvider } from 'lucide-angular';
+import { LucideAngularModule } from 'lucide-angular';
 
 @Component({
   selector: 'app-inputpassword',
   standalone: true,
   imports: [CommonModule, FormsModule, ReactiveFormsModule,LucideAngularModule],
   templateUrl: './inputpassword.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  providers: [
-      {
-        provide: LUCIDE_ICONS,
-        multi: true,
-        useValue: new LucideIconProvider({
-          Lock,
-          Eye,
-          EyeClosed
-        })
-      }
-    ]
-})
+  changeDetection: ChangeDetectionStrategy.Eager})
 export class InputpasswordComponent implements ControlValueAccessor {
   @Input() label = 'Contraseña';
   @Input() id = 'password';

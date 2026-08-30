@@ -7,13 +7,7 @@ import {
   ChangeDetectionStrategy
 } from '@angular/core';
 
-import {
-  ArrowLeft,
-  ArrowRight,
-  LUCIDE_ICONS,
-  LucideAngularModule,
-  LucideIconProvider
-} from 'lucide-angular';
+import { LucideAngularModule } from 'lucide-angular';
 
 import gsap from 'gsap';
 import { DrawSVGPlugin } from 'gsap/DrawSVGPlugin';
@@ -28,15 +22,7 @@ gsap.registerPlugin(DrawSVGPlugin);
   imports: [LucideAngularModule, RouterModule],
   templateUrl: './triplesection.component.html',
   styleUrl: './triplesection.component.css',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  providers: [
-    {
-      provide: LUCIDE_ICONS,
-      multi: true,
-      useValue: new LucideIconProvider({ ArrowLeft, ArrowRight })
-    }
-  ]
-})
+  changeDetection: ChangeDetectionStrategy.Eager})
 export class TriplesectionComponent implements AfterViewInit, OnDestroy {
 
   // ── Contenido de texto de los paneles inferiores ─────────────────────────────

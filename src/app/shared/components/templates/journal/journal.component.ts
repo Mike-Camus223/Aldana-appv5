@@ -11,8 +11,7 @@ import {
   ActivatedRoute,
   ParamMap,
   Router,
-  RouterModule,
-} from '@angular/router';
+  RouterModule} from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 
 import { WordRevealDirective } from '../../../utils/directives/word-reveal.directive';
@@ -22,15 +21,9 @@ import { CardInitAnimationDirective } from '../../../utils/directives/card-init-
 import { JournalService } from '../../../../core/services/data-access/journal/journal.service';
 import {
   JournalCategory,
-  JournalPostListRow,
-} from '../../../../core/services/data-access/journal/journal.models';
+  JournalPostListRow} from '../../../../core/services/data-access/journal/journal.models';
 
-import {
-  ChevronDown,
-  LUCIDE_ICONS,
-  LucideAngularModule,
-  LucideIconProvider,
-} from 'lucide-angular';
+import { LucideAngularModule } from 'lucide-angular';
 
 type SortOrder = 'desc' | 'asc';
 
@@ -52,21 +45,10 @@ type QueryPatch = Record<string, string | number | null>;
     WordRevealDirective,
     LinkHoverUnderlineDirective,
     CardInitAnimationDirective,
-    LucideAngularModule,
-  ],
+    LucideAngularModule],
   templateUrl: './journal.component.html',
   styleUrl: './journal.component.css',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  providers: [
-    {
-      provide: LUCIDE_ICONS,
-      multi: true,
-      useValue: new LucideIconProvider({
-        ChevronDown,
-      }),
-    },
-  ],
-})
+  changeDetection: ChangeDetectionStrategy.Eager})
 export class JournalComponent implements OnInit, OnDestroy {
   private readonly journalService = inject(JournalService);
   private readonly route = inject(ActivatedRoute);
@@ -87,8 +69,7 @@ export class JournalComponent implements OnInit, OnDestroy {
     9: 'Septiembre',
     10: 'Octubre',
     11: 'Noviembre',
-    12: 'Diciembre',
-  };
+    12: 'Diciembre'};
 
   categories: JournalCategory[] = [];
   posts: OptimizedJournalPost[] = [];
@@ -130,8 +111,7 @@ export class JournalComponent implements OnInit, OnDestroy {
     try {
       const [categories, years] = await Promise.all([
         this.journalService.getCategories(),
-        this.journalService.getPublishedYears(),
-      ]);
+        this.journalService.getPublishedYears()]);
 
       this.categories = categories;
       this.yearOptions = years;
@@ -205,8 +185,7 @@ export class JournalComponent implements OnInit, OnDestroy {
           month: effectiveMonth,
           order: this.sortOrder,
           page: this.currentPage,
-          pageSize: this.pageSize,
-        });
+          pageSize: this.pageSize});
 
       this.posts = rows.map((post) =>
         this.optimizePost(post)
@@ -262,8 +241,7 @@ export class JournalComponent implements OnInit, OnDestroy {
       ...post,
       cachedHref: JournalService.buildPostPath(post),
       formattedDate: this.formatPublished(post),
-      cachedCover: post.cover_image || '',
-    };
+      cachedCover: post.cover_image || ''};
   }
 
   private resolveCategoryId(): string | undefined {
@@ -281,8 +259,7 @@ export class JournalComponent implements OnInit, OnDestroy {
 
     this.patchQuery({
       pagina:
-        this.totalPages > 1 ? this.totalPages : null,
-    });
+        this.totalPages > 1 ? this.totalPages : null});
   }
 
   private rebuildPagesArray(): void {
@@ -299,8 +276,7 @@ export class JournalComponent implements OnInit, OnDestroy {
       relativeTo: this.route,
       queryParams: partial,
       queryParamsHandling: 'merge',
-      replaceUrl: true,
-    });
+      replaceUrl: true});
   }
 
   private patchQuery(
@@ -312,23 +288,20 @@ export class JournalComponent implements OnInit, OnDestroy {
   selectCategory(slug: string | null): void {
     this.navigateQuery({
       categoria: slug,
-      pagina: null,
-    });
+      pagina: null});
   }
 
   onYearChange(value: string): void {
     this.navigateQuery({
       anio: this.parseNumberParam(value),
       mes: null,
-      pagina: null,
-    });
+      pagina: null});
   }
 
   onMonthChange(value: string): void {
     this.navigateQuery({
       mes: this.parseNumberParam(value),
-      pagina: null,
-    });
+      pagina: null});
   }
 
   onSortChange(value: string): void {
@@ -337,8 +310,7 @@ export class JournalComponent implements OnInit, OnDestroy {
 
     this.navigateQuery({
       orden: order === 'desc' ? null : order,
-      pagina: null,
-    });
+      pagina: null});
   }
 
   isCategoryActive(
@@ -351,8 +323,7 @@ export class JournalComponent implements OnInit, OnDestroy {
     if (page < 1 || page > this.totalPages) return;
 
     this.navigateQuery({
-      pagina: page > 1 ? page : null,
-    });
+      pagina: page > 1 ? page : null});
   }
 
   prevPage(): void {
@@ -383,8 +354,7 @@ export class JournalComponent implements OnInit, OnDestroy {
       ).toLocaleDateString('es-AR', {
         day: '2-digit',
         month: '2-digit',
-        year: 'numeric',
-      });
+        year: 'numeric'});
     }
 
     if (

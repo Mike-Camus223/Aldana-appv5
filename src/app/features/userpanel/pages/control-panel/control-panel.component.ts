@@ -4,7 +4,7 @@ import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth/auth.service';
 import { NewsletterService } from '../../../../core/services/newsletter/newsletter.service';
 import { NotificationService } from '../../../../core/services/notification.service';
-import { Heart, LUCIDE_ICONS, LucideAngularModule, LucideIconProvider, Mail, MessageCircle, Send, ShoppingBag, User, UserRound, Check } from 'lucide-angular';
+import { LucideAngularModule } from 'lucide-angular';
 
 @Component({
   selector: 'app-control-panel',
@@ -12,24 +12,7 @@ import { Heart, LUCIDE_ICONS, LucideAngularModule, LucideIconProvider, Mail, Mes
   imports: [CommonModule, RouterModule, LucideAngularModule],
   templateUrl: './control-panel.component.html',
   styleUrls: ['./control-panel.component.css'],
-  changeDetection: ChangeDetectionStrategy.Eager,
-  providers: [
-    {
-      provide: LUCIDE_ICONS,
-      multi: true,
-      useValue: new LucideIconProvider({
-        Send,
-        User,
-        Heart,
-        ShoppingBag,
-        MessageCircle,
-        UserRound,
-        Mail,
-        Check
-      })
-    }
-  ]
-})
+  changeDetection: ChangeDetectionStrategy.Eager})
 export class ControlPanelComponent implements OnInit {
 
   private authService = inject(AuthService);

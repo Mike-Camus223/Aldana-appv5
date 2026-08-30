@@ -6,30 +6,13 @@ import { SelectsComponent } from '../../../../shared/components/generic/forms/se
 import { PaginatorComponent } from '../../../../shared/components/generic/paginator/paginator.component';
 import { OrdersService } from '../../../../core/services/orders/orders.service';
 import { OrderSummary } from '../../../../shared/utils/models/order.interface';
-import {
-  ChevronRight,
-  Package,
-  LUCIDE_ICONS,
-  LucideAngularModule,
-  LucideIconProvider
-} from 'lucide-angular';
+import { LucideAngularModule } from 'lucide-angular';
 
 @Component({
   selector: 'app-orders-history',
   standalone: true,
   imports: [CommonModule, FormsModule, LucideAngularModule, SelectsComponent, PaginatorComponent],
-  templateUrl: './orders-history.component.html',
-  providers: [
-    {
-      provide: LUCIDE_ICONS,
-      multi: true,
-      useValue: new LucideIconProvider({
-        ChevronRight,
-        Package
-      })
-    }
-  ],
-  styleUrls: ['./orders-history.component.css']
+  templateUrl: './orders-history.component.html', styleUrls: ['./orders-history.component.css']
 })
 export class OrdersHistoryComponent implements OnInit {
   sortOptions = [

@@ -22,16 +22,7 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { MediaItem } from '../../../utils/models/objectsGallery.model';
 import gsap from 'gsap';
 
-import {
-  ChevronLeft,
-  ChevronRight,
-  LUCIDE_ICONS,
-  LucideAngularModule,
-  LucideIconProvider,
-  Pause,
-  Play,
-  X
-} from 'lucide-angular';
+import { LucideAngularModule } from 'lucide-angular';
 
 @Component({
   selector: 'app-gen-lightbox-vanilla',
@@ -39,21 +30,7 @@ import {
   imports: [CommonModule, LucideAngularModule],
   templateUrl: './gen-lightbox-vanilla.component.html',
   styleUrls: ['./gen-lightbox-vanilla.component.css'],
-  changeDetection: ChangeDetectionStrategy.Eager,
-  providers: [
-    {
-      provide: LUCIDE_ICONS,
-      multi: true,
-      useValue: new LucideIconProvider({
-        ChevronLeft,
-        ChevronRight,
-        X,
-        Pause,
-        Play,
-      })
-    }
-  ]
-})
+  changeDetection: ChangeDetectionStrategy.Eager})
 export class GenLightboxVanillaComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
 
   @Input() isOpen = false;

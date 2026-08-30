@@ -28,41 +28,14 @@ import { filter } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import {
-  Search,
-  User,
-  Heart,
-  ShoppingBag,
-  Menu,
-  X,
-  ChevronDown,
-  LUCIDE_ICONS,
-  LucideAngularModule,
-  LucideIconProvider
-} from 'lucide-angular';
+import { LucideAngularModule } from 'lucide-angular';
 
 
 @Component({
   selector: 'app-navbar-publicv3',
   imports: [CommonModule, RouterModule, LinkHoverUnderlineDirective, LucideAngularModule],
   templateUrl: './navbar-publicv3.component.html',
-  styleUrl: './navbar-publicv3.component.css',
-  providers: [
-    {
-      provide: LUCIDE_ICONS,
-      multi: true,
-      useValue: new LucideIconProvider({
-        Search,
-        User,
-        Heart,
-        ShoppingBag,
-        Menu,
-        X,
-        ChevronDown
-      })
-    }
-  ],
-  changeDetection: ChangeDetectionStrategy.Eager,
+  styleUrl: './navbar-publicv3.component.css', changeDetection: ChangeDetectionStrategy.Eager,
   animations: [
     trigger('dropdownAnimation', [
       transition(':enter', [

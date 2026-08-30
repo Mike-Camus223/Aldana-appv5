@@ -8,7 +8,7 @@ import { AuthService } from '../../../../core/services/auth/auth.service';
 import { Router } from '@angular/router';
 import { InputComponent } from '../../../../shared/components/generic/forms/input/input.component';
 import { InputpasswordComponent } from '../../../../shared/components/generic/forms/inputpassword/inputpassword.component';
-import { ChevronDown, LUCIDE_ICONS, LucideAngularModule, LucideIconProvider, Mail } from 'lucide-angular';
+import { LucideAngularModule } from 'lucide-angular';
 
 interface SignUpForm {
   email: FormControl<string | null>;
@@ -29,15 +29,7 @@ interface SignUpForm {
   imports: [RouterModule, ReactiveFormsModule, CommonModule, InputComponent, InputpasswordComponent, LucideAngularModule],
   templateUrl: './register-page.component.html',
   styleUrl: './register-page.component.css',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  providers: [
-    {
-      provide: LUCIDE_ICONS,
-      multi: true,
-      useValue: new LucideIconProvider({ ChevronDown, Mail })
-    }
-  ]
-})
+  changeDetection: ChangeDetectionStrategy.Eager})
 export class RegisterPageComponent {
   private _fb = inject(FormBuilder);
   private _authService = inject(AuthService);
@@ -81,8 +73,7 @@ export class RegisterPageComponent {
         Validators.pattern(/^(19|20)\d{2}$/)
       ]),
       newsletter: this._fb.control(false),
-      termsAccepted: this._fb.control(false, [Validators.requiredTrue]),
-    },
+      termsAccepted: this._fb.control(false, [Validators.requiredTrue])},
     {
       validators: [PasswordMatch('password', 'repeatPassword')]
     }

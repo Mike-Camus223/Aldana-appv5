@@ -20,13 +20,7 @@ import { PLATFORM_ID } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { Product, ProductVariant, MediaItemJSONB } from '../../../utils/models/Products-supabase.interface';
 import { ProductUtils } from '../../../utils/dataEx/products-utils';
-import {
-  Heart,
-  HeartPlus,
-  LUCIDE_ICONS,
-  LucideAngularModule,
-  LucideIconProvider
-} from 'lucide-angular';
+import { LucideAngularModule } from 'lucide-angular';
 import { MoveupFadeDirective } from '../../../utils/directives/moveup-fade.directive';
 import { PanimationcardDirective } from '../../../utils/directives/panimationcard.directive';
 import { FavoritesService } from '../../../../core/services/favorites/favorites.service';
@@ -48,18 +42,7 @@ import { gsap } from 'gsap';
   templateUrl: './cardproduct.component.html',
   styleUrls: ['./cardproduct.component.css'],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  changeDetection: ChangeDetectionStrategy.Default,
-  providers: [
-    {
-      provide: LUCIDE_ICONS,
-      multi: true,
-      useValue: new LucideIconProvider({
-        Heart,
-        HeartPlus
-      })
-    }
-  ]
-})
+  changeDetection: ChangeDetectionStrategy.Default})
 export class CardproductComponent implements OnInit, AfterViewInit, OnDestroy, OnChanges {
   @Input() product!: Product;
   @Input() selectedColor: string = '';

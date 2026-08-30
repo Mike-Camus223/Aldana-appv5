@@ -4,24 +4,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { InputComponent } from '../../../../shared/components/generic/forms/input/input.component';
 import { SelectsComponent } from '../../../../shared/components/generic/forms/selects/selects.component';
 import { ModalComponent } from '../../../../shared/components/generic/modal/modal.component';
-import {
-  Calendar,
-  ChevronRight,
-  Lock,
-  LUCIDE_ICONS,
-  LucideAngularModule,
-  LucideIconProvider,
-  Mail,
-  MapPin,
-  Pencil,
-  Camera,
-  Upload,
-  Trash2,
-  Image as ImageIcon,
-  Check,
-  X,
-  AlertCircle
-} from 'lucide-angular';
+import { LucideAngularModule } from 'lucide-angular';
 import { AuthService } from '../../../../core/services/auth/auth.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { User } from '@supabase/supabase-js';
@@ -37,29 +20,7 @@ import { Subscription } from 'rxjs';
     SelectsComponent,
     ModalComponent,
     LucideAngularModule
-  ],
-  providers: [
-    {
-      provide: LUCIDE_ICONS,
-      multi: true,
-      useValue: new LucideIconProvider({
-        Pencil,
-        Mail,
-        Calendar,
-        Lock,
-        MapPin,
-        ChevronRight,
-        Camera,
-        Upload,
-        Trash2,
-        Image: ImageIcon,
-        Check,
-        X,
-        AlertCircle
-      })
-    }
-  ],
-  templateUrl: './account-info.component.html',
+  ], templateUrl: './account-info.component.html',
   styleUrls: ['./account-info.component.css']
 })
 export class AccountInfoComponent implements OnInit, OnDestroy {

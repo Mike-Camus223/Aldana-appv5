@@ -13,7 +13,7 @@ import {
 } from '@angular/core';
 import { isPlatformBrowser, CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
-import { LucideAngularModule, ChevronLeft, ChevronRight, LUCIDE_ICONS, LucideIconProvider } from 'lucide-angular';
+import { LucideAngularModule } from 'lucide-angular';
 import { Subject, takeUntil } from 'rxjs';
 
 import gsap from 'gsap';
@@ -61,15 +61,7 @@ type BridesProduct = {
   ],
   templateUrl: './items-collection.component.html',
   styleUrls: ['./items-collection.component.css'],
-  changeDetection: ChangeDetectionStrategy.Eager,
-  providers: [
-    {
-      provide: LUCIDE_ICONS,
-      multi: true,
-      useValue: new LucideIconProvider({ ChevronLeft, ChevronRight })
-    }
-  ]
-})
+  changeDetection: ChangeDetectionStrategy.Eager})
 export class ItemsCollectionComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChild('stickyText') stickyText!: ElementRef;
@@ -398,8 +390,7 @@ export class ItemsCollectionComponent implements OnInit, AfterViewInit, OnDestro
           end: () => `+=${Math.max(0, images.offsetHeight - text.offsetHeight)}`,
           pin: text,
           pinSpacing: false,
-          invalidateOnRefresh: true,
-        });
+          invalidateOnRefresh: true});
 
         this.triggers.push(pinTrigger);
       },

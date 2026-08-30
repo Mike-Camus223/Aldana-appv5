@@ -1,6 +1,6 @@
 import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, ElementRef, ViewChildren, QueryList, AfterViewInit, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { LucideAngularModule, LUCIDE_ICONS, LucideIconProvider, Funnel, Plus } from 'lucide-angular';
+import { LucideAngularModule } from 'lucide-angular';
 import { gsap } from 'gsap';
 
 @Component({
@@ -12,15 +12,7 @@ import { gsap } from 'gsap';
   ],
   templateUrl: './filter.component.html',
   styleUrls: ['./filter.component.css'],
-  changeDetection: ChangeDetectionStrategy.Default,
-  providers: [
-    {
-      provide: LUCIDE_ICONS,
-      multi: true,
-      useValue: new LucideIconProvider({ Funnel, Plus })
-    }
-  ]
-})
+  changeDetection: ChangeDetectionStrategy.Default})
 export class FilterComponent implements AfterViewInit, OnChanges {
   @Input() isMobileView: boolean = false;
   @Input() showFilters: boolean = false;
@@ -48,8 +40,7 @@ export class FilterComponent implements AfterViewInit, OnChanges {
     { label: 'Pantalones y Faldas', value: 'pantalones-y-faldas' },
     { label: 'Tops', value: 'tops' },
     { label: 'Buzos', value: 'buzos' },
-    { label: 'Vestidos y Monos', value: 'vestidos-y-monos' },
-  ];
+    { label: 'Vestidos y Monos', value: 'vestidos-y-monos' }];
 
   ngAfterViewInit(): void {
     this.animateIndicators();

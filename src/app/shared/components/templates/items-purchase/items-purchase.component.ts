@@ -11,7 +11,7 @@ import { NotificationService } from '../../../../core/services/notification.serv
 import { FormsModule } from '@angular/forms';
 import { ProductUtils } from '../../../utils/dataEx/products-utils';
 import { AcordiongenericComponent } from '../../generic/acordiongeneric/acordiongeneric.component';
-import { LUCIDE_ICONS, LucideAngularModule, LucideIconProvider, Package, ShoppingBag, MessageCircle } from 'lucide-angular';
+import { LucideAngularModule } from 'lucide-angular';
 import { Subscription } from 'rxjs';
 import { ProductsService } from '../../../../core/services/data-access/products/products.service';
 import { LoaderService } from '../../../../core/services/utils/loader.service';
@@ -30,15 +30,7 @@ import { LoaderService } from '../../../../core/services/utils/loader.service';
     LucideAngularModule,
     ProductCarouselComponent
   ],
-  changeDetection: ChangeDetectionStrategy.Eager,
-  providers: [
-    {
-      provide: LUCIDE_ICONS,
-      multi: true,
-      useValue: new LucideIconProvider({ ShoppingBag, Package, MessageCircle })
-    }
-  ]
-})
+  changeDetection: ChangeDetectionStrategy.Eager})
 export class ItemsPurchaseComponent implements OnInit, OnDestroy {
   product: Product | null = null;
   selectedVariant: ProductVariant | null = null;
@@ -47,15 +39,21 @@ export class ItemsPurchaseComponent implements OnInit, OnDestroy {
   quantitySelected: number = 1;
 
   get isBridalProduct(): boolean {
+    if (!this.product) return false;
+    const catName = this.product.category?.name?.toLowerCase() || '';
     return Boolean(
-      this.product?.isBridal === true || 
-      this.product?.source_module === 'bridal'
+      this.product.isBridal === true || 
+      this.product.source_module === 'bridal' ||
+      catName.includes('novia') ||
+      catName.includes('bridal') ||
+      catName.includes('bride') ||
+      catName.includes('velo')
     );
   }
 
   get whatsappConsultUrl(): string {
-    const phone = '112233';
-    const text = encodeURIComponent(`Hola, me gustaría consultar por el vestido ${this.product?.name || ''}`);
+    const phone = '5491164082659';
+    const text = encodeURIComponent(`Hola, quisiera consultar por el vestido ${this.product?.name || ''}`);
     return `https://wa.me/${phone}?text=${text}`;
   }
 

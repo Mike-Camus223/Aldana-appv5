@@ -6,20 +6,7 @@ import { CheckoutStepperProgressService } from '../../../../core/services/checko
 import { NotificationService } from '../../../../core/services/notification.service';
 import { AuthService } from '../../../../core/services/auth/auth.service';
 import { getPaymentRejectionInfo, PaymentRejectionInfo } from '../../../../shared/utils/helpers/payment-status-helper';
-import {
-  ShoppingBag,
-  CheckCircle2,
-  AlertCircle,
-  Clock,
-  RotateCcw,
-  Package,
-  MessageCircle,
-  LUCIDE_ICONS,
-  LucideAngularModule,
-  LucideIconProvider,
-  ArrowRight,
-  ShieldAlert
-} from 'lucide-angular';
+import { LucideAngularModule } from 'lucide-angular';
 
 @Component({
   selector: 'app-result-screen',
@@ -27,25 +14,7 @@ import {
   imports: [CommonModule, RouterModule, LucideAngularModule],
   templateUrl: './result-screen.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  styleUrls: ['./result-screen.component.css'],
-  providers: [
-    {
-      provide: LUCIDE_ICONS,
-      multi: true,
-      useValue: new LucideIconProvider({
-        ShoppingBag,
-        CheckCircle2,
-        AlertCircle,
-        Clock,
-        RotateCcw,
-        Package,
-        MessageCircle,
-        ArrowRight,
-        ShieldAlert
-      })
-    }
-  ]
-})
+  styleUrls: ['./result-screen.component.css']})
 export class ResultScreenComponent implements OnInit {
   status: 'approved' | 'rejected' | 'pending' | null = null;
   statusDetail: string | null = null;

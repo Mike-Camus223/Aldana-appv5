@@ -1,13 +1,7 @@
 import { Component, OnInit, HostListener, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import {
-  LucideAngularModule,
-  ChevronLeft,
-  ChevronRight,
-  LUCIDE_ICONS,
-  LucideIconProvider,
-} from 'lucide-angular';
+import { LucideAngularModule } from 'lucide-angular';
 
 import { JournalService } from '../../../../core/services/data-access/journal/journal.service';
 import { CollectionService } from '../../../../core/services/data-access/collection/collection.service';
@@ -15,8 +9,7 @@ import { CollectionBridesService } from '../../../../core/services/data-access/c
 
 import {
   JournalPostBlock,
-  JournalPostDetail,
-} from '../../../../core/services/data-access/journal/journal.models';
+  JournalPostDetail} from '../../../../core/services/data-access/journal/journal.models';
 
 import { LinkHoverUnderlineDirective } from '../../../utils/directives/link-hover-underline.directive';
 import { CardInitAnimationDirective } from '../../../utils/directives/card-init-animation.directive';
@@ -43,19 +36,9 @@ export interface SectionGroup {
     CardInitAnimationDirective,
     WordRevealDirective,
     FadeUpLetterDirective,
-    LucideAngularModule,
-  ],
-  providers: [
-    {
-      provide: LUCIDE_ICONS,
-      multi: true,
-      useValue: new LucideIconProvider({ ChevronLeft, ChevronRight }),
-    },
-  ],
-  templateUrl: './journal-post.component.html',
+    LucideAngularModule], templateUrl: './journal-post.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrl: './journal-post.component.css',
-})
+  styleUrl: './journal-post.component.css'})
 export class JournalPostComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private journalService = inject(JournalService);
@@ -193,8 +176,7 @@ export class JournalPostComponent implements OnInit {
   formatDate(p: JournalPostDetail): string {
     if (p.published_at) {
       return new Date(p.published_at).toLocaleDateString('es-AR', {
-        day: '2-digit', month: '2-digit', year: 'numeric',
-      });
+        day: '2-digit', month: '2-digit', year: 'numeric'});
     }
     if (p.year != null && p.month != null) {
       return `01.${String(p.month).padStart(2, '0')}.${p.year}`;

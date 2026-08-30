@@ -16,7 +16,7 @@ import { User } from '@supabase/supabase-js';
 import { filter } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 import { AppMenuItem } from '../../shared/utils/models/app-menu-item.model';
-import { Heart, House, LogOut, LUCIDE_ICONS, LucideAngularModule, LucideIconProvider, Package, UserRound } from 'lucide-angular';
+import { LucideAngularModule } from 'lucide-angular';
 import { LoaderService } from '../../core/services/utils/loader.service';
 import { NavbarPublicv3Component } from '../../shared/components/system/navbar-publicv3/navbar-publicv3.component';
 import { SmoothScrollService } from '../../core/services/utils/smooth-scroll.service';
@@ -31,21 +31,7 @@ gsap.registerPlugin(ScrollTrigger);
   selector: 'app-user-panel',
   standalone: true,
   imports: [CommonModule, RouterModule, LucideAngularModule, NavbarPublicv3Component],
-  templateUrl: './user-panel.component.html',
-  providers: [
-    {
-      provide: LUCIDE_ICONS,
-      multi: true,
-      useValue: new LucideIconProvider({
-        UserRound,
-        Package,
-        LogOut,
-        Heart,
-        House
-      })
-    }
-  ],
-  styleUrls: ['./user-panel.component.css']
+  templateUrl: './user-panel.component.html', styleUrls: ['./user-panel.component.css']
 })
 export class UserPanelComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('panelContainer') panelContainer!: ElementRef<HTMLDivElement>;
@@ -82,8 +68,7 @@ export class UserPanelComponent implements OnInit, AfterViewInit, OnDestroy {
       title: 'Favoritos',
       icon: 'heart',
       route: 'favoritos'
-    },
-  ];
+    }];
 
   private authService = inject(AuthService);
   private router = inject(Router);

@@ -4,7 +4,7 @@ import { Product, ProductVariant, MediaItemJSONB } from '../models/Products-supa
 export class ProductUtils {
   static mapProducts(data: any[], isBridalOverride?: boolean): Product[] {
     return data.map(p => {
-      const isBridal = isBridalOverride ?? (!!p.pbrides_product_variants || !!p.pbrides_product_collections || !!p.pbrides_categories || false);
+      const isBridal = (p.department === 'bridal') || (isBridalOverride ?? (!!p.pbrides_product_variants || !!p.pbrides_product_collections || !!p.pbrides_categories || false));
       const hasValidBaseColor = p.color_name && p.color_name.trim() !== '' && p.color_hex && p.color_hex !== '#000000';
       const variants: ProductVariant[] = [];
 

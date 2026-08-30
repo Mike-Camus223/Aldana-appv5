@@ -7,8 +7,7 @@ import {
   state,
   style,
   animate,
-  transition,
-} from '@angular/animations';
+  transition} from '@angular/animations';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { gsap } from 'gsap';
@@ -27,20 +26,14 @@ import { argPhoneValidator } from '../../../../shared/utils/validators/argPhone.
 import { CheckoutStepperProgressService } from '../../../../core/services/checkout-stepper-progress.service';
 import {
   ShippingData,
-  ShippingService,
-} from '../../../../core/services/shipping.service';
+  ShippingService} from '../../../../core/services/shipping.service';
 import { Router, RouterModule } from '@angular/router';
 import { onlyCuitValidator } from '../../../../shared/utils/validators/onlyCuit.validator';
 import { SupabaseService } from '../../../../core/services/data-access/supabase.service';
 import { MiCorreoService, ShippingRate, Agency } from '../../../../core/services/micorreo.service';
 import { DiscountData } from '../../../../core/services/shipping.service';
 import { AuthService } from '../../../../core/services/auth/auth.service';
-import {
-  ShoppingBag,
-  LUCIDE_ICONS,
-  LucideAngularModule,
-  LucideIconProvider,
-} from 'lucide-angular';
+import { LucideAngularModule } from 'lucide-angular';
 import { CuponserviceService } from '../../../../core/services/data-access/cupon/cuponservice.service';
 
 @Component({
@@ -64,24 +57,10 @@ import { CuponserviceService } from '../../../../core/services/data-access/cupon
       state('*', style({ height: '*', opacity: 1, overflow: 'hidden' })),
       transition(':enter', [
         style({ height: '0', opacity: 0, overflow: 'hidden' }),
-        animate('300ms ease-out'),
-      ]),
+        animate('300ms ease-out')]),
       transition(':leave', [
-        animate('300ms ease-in', style({ height: '0', opacity: 0 })),
-      ]),
-    ]),
-  ],
-  changeDetection: ChangeDetectionStrategy.Eager,
-  providers: [
-    {
-      provide: LUCIDE_ICONS,
-      multi: true,
-      useValue: new LucideIconProvider({
-        ShoppingBag,
-      }),
-    },
-  ],
-})
+        animate('300ms ease-in', style({ height: '0', opacity: 0 }))])])],
+  changeDetection: ChangeDetectionStrategy.Eager})
 export class ShippingComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('skeletonContainer') skeletonContainer?: ElementRef<HTMLElement>;
   @ViewChild('skeletonContent') skeletonContent?: ElementRef<HTMLElement>;
@@ -105,8 +84,7 @@ export class ShippingComponent implements OnInit, OnDestroy, AfterViewInit {
   readonly ciudades = [
     { id: 1, name: 'Buenos Aires' },
     { id: 2, name: 'Córdoba' },
-    { id: 3, name: 'Rosario' },
-  ];
+    { id: 3, name: 'Rosario' }];
 
   isCalculatingShipping = false;
   homeShippingPrice = 3500;
@@ -147,8 +125,7 @@ export class ShippingComponent implements OnInit, OnDestroy, AfterViewInit {
     if (discountData) {
       this.form.patchValue({
         discountCode: discountData.code,
-        hasCupon: true,
-      });
+        hasCupon: true});
       this.discountCodeApplied = discountData.code;
       this.discountType = discountData.discountType;
       this.recalculateDiscount(discountData);
@@ -204,16 +181,14 @@ export class ShippingComponent implements OnInit, OnDestroy, AfterViewInit {
     this.form = this.fb.group({
       email: [
         { value: '', disabled: false }, // Habilitado para permitir ingresar correos de prueba de Mercado Pago
-        [Validators.required, Validators.email],
-      ],
+        [Validators.required, Validators.email]],
       receiveOffers: [formDefaults.receiveOffers || false],
       zipCode: [formDefaults.zipCode || '', [Validators.required, cpaArg]],
       name: [formDefaults.name || '', Validators.required],
       surname: [formDefaults.surname || '', Validators.required],
       phone: [
         formDefaults.phone || '',
-        [Validators.required, argPhoneValidator],
-      ],
+        [Validators.required, argPhoneValidator]],
       street: [formDefaults.street || '', Validators.required],
       streetNumber: [formDefaults.streetNumber || '', Validators.required],
       apartment: [formDefaults.apartment || ''],
@@ -230,8 +205,7 @@ export class ShippingComponent implements OnInit, OnDestroy, AfterViewInit {
       zipCodeDisplay: [{ value: formDefaults.zipCode || '', disabled: true }],
       otherPersonName: [formDefaults.otherPersonName || ''],
       otherPersonSurname: [formDefaults.otherPersonSurname || ''],
-      agencyCode: [formDefaults.agencyCode || ''],
-    });
+      agencyCode: [formDefaults.agencyCode || '']});
   }
 
   private setupUserEmail(): void {
@@ -450,8 +424,7 @@ export class ShippingComponent implements OnInit, OnDestroy, AfterViewInit {
         shippingCost: this.shippingCost,
         deliveryType: this.selected === 'estandar' ? 'D' : 'S',
         agencyCode: this.selected === 'retiro' ? formValue.agencyCode : undefined,
-        agencyName: this.selected === 'retiro' && this.selectedAgency ? this.selectedAgency.name : undefined,
-      };
+        agencyName: this.selected === 'retiro' && this.selectedAgency ? this.selectedAgency.name : undefined};
 
       const dataToSave = { ...formValue };
       delete dataToSave.discountCode;
@@ -516,8 +489,7 @@ export class ShippingComponent implements OnInit, OnDestroy, AfterViewInit {
         const discountData: DiscountData = {
           code,
           discountAmount: result.discountAmount || 0,
-          discountType: result.discountType || 'fixed',
-        };
+          discountType: result.discountType || 'fixed'};
 
         this.shippingService.setDiscountData(discountData);
 
@@ -599,8 +571,7 @@ export class ShippingComponent implements OnInit, OnDestroy, AfterViewInit {
       'beige': '#f5f5dc',
       'celeste': '#38bdf8',
       'lila': '#c084fc',
-      'violeta': '#7c3aed',
-    };
+      'violeta': '#7c3aed'};
     return map[color.toLowerCase().trim()] || color;
   }
 

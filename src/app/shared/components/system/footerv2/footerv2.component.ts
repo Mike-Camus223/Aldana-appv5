@@ -1,7 +1,7 @@
 import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { AcordiongenericComponent } from '../../generic/acordiongeneric/acordiongeneric.component';
-import { LUCIDE_ICONS, LucideAngularModule, LucideIconProvider, Heart, Send } from 'lucide-angular';
+import { LucideAngularModule } from 'lucide-angular';
 import { NewsletterService } from '../../../../core/services/newsletter/newsletter.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 
@@ -11,15 +11,7 @@ import { NotificationService } from '../../../../core/services/notification.serv
   imports: [RouterModule, AcordiongenericComponent, LucideAngularModule],
   templateUrl: './footerv2.component.html',
   styleUrl: './footerv2.component.css',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  providers: [
-    {
-      provide: LUCIDE_ICONS,
-      multi: true,
-      useValue: new LucideIconProvider({ Heart, Send })
-    }
-  ]
-})
+  changeDetection: ChangeDetectionStrategy.Eager})
 export class Footerv2Component {
 
   private newsletterService = inject(NewsletterService);

@@ -19,38 +19,13 @@ import { NotificationService } from '../../../../core/services/notification.serv
 import { SelectsComponent } from '../../../../shared/components/generic/forms/selects/selects.component';
 import { PaginatorComponent } from '../../../../shared/components/generic/paginator/paginator.component';
 import gsap from 'gsap';
-import {
-  Check,
-  ChevronDown,
-  LayoutGrid,
-  List,
-  LUCIDE_ICONS,
-  LucideAngularModule,
-  LucideIconProvider,
-  ShoppingBag,
-  Trash2
-} from 'lucide-angular';
+import { LucideAngularModule } from 'lucide-angular';
 
 @Component({
   selector: 'app-whitelist',
   standalone: true,
   imports: [CommonModule, FormsModule, LucideAngularModule, SelectsComponent, PaginatorComponent],
-  templateUrl: './whitelist.component.html',
-  providers: [
-    {
-      provide: LUCIDE_ICONS,
-      multi: true,
-      useValue: new LucideIconProvider({
-        LayoutGrid,
-        List,
-        ShoppingBag,
-        Trash2,
-        Check,
-        ChevronDown
-      })
-    }
-  ],
-  changeDetection: ChangeDetectionStrategy.Eager,
+  templateUrl: './whitelist.component.html', changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./whitelist.component.css']
 })
 export class WhitelistComponent implements OnInit, OnDestroy {

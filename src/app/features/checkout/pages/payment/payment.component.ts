@@ -9,8 +9,7 @@ import {
   ViewChild,
   ElementRef,
   Inject,
-  PLATFORM_ID,
-} from '@angular/core';
+  PLATFORM_ID} from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CartService } from '../../../../core/services/cart.service';
@@ -18,8 +17,7 @@ import { CartItem } from '../../../../shared/utils/models/cartItems-model';
 import {
   ShippingService,
   ShippingData,
-  DiscountData,
-} from '../../../../core/services/shipping.service';
+  DiscountData} from '../../../../core/services/shipping.service';
 import { Router } from '@angular/router';
 import { OrdersService } from '../../../../core/services/orders/orders.service';
 import { AcordiongenericComponent } from '../../../../shared/components/generic/acordiongeneric/acordiongeneric.component';
@@ -29,7 +27,7 @@ import { NotificationService } from '../../../../core/services/notification.serv
 import { ButtonPrimaryDirective } from '../../../../shared/utils/directives/button-primary.directive';
 import { ModalComponent } from '../../../../shared/components/generic/modal/modal.component';
 import { TextareaComponent } from '../../../../shared/components/generic/forms/textarea/textarea.component';
-import { LUCIDE_ICONS, LucideAngularModule, LucideIconProvider, ShoppingBag } from 'lucide-angular';
+import { LucideAngularModule } from 'lucide-angular';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -43,21 +41,10 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
     ButtonPrimaryDirective,
     ModalComponent,
     TextareaComponent,
-    LucideAngularModule,
-  ],
+    LucideAngularModule],
   templateUrl: './payment.component.html',
   styleUrls: ['./payment.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [
-      {
-        provide: LUCIDE_ICONS,
-        multi: true,
-        useValue: new LucideIconProvider({
-          ShoppingBag,
-        }),
-      },
-    ],
-})
+  changeDetection: ChangeDetectionStrategy.OnPush})
 export class PaymentComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('skeletonContainer') skeletonContainer?: ElementRef<HTMLElement>;
   @ViewChild('skeletonContent') skeletonContent?: ElementRef<HTMLElement>;
@@ -114,8 +101,7 @@ export class PaymentComponent implements OnInit, AfterViewInit, OnDestroy {
     this.cartService.cartItems$.subscribe((items) => {
       this.cartItems = items.map((item) => ({
         ...item,
-        variantMainImage: item.variantMainImage?.trim() || undefined,
-      }));
+        variantMainImage: item.variantMainImage?.trim() || undefined}));
       this.cdr.detectChanges();
     });
 
@@ -149,16 +135,11 @@ export class PaymentComponent implements OnInit, AfterViewInit, OnDestroy {
         initialization: {
           amount: this.total,
           payer: {
-            email: this.shippingData?.email || '',
-          },
-        },
+            email: this.shippingData?.email || ''}},
         customization: {
           visual: {
             style: {
-              theme: 'default',
-            },
-          },
-        },
+              theme: 'default'}}},
         callbacks: {
           onReady: () => {
             this.isBrickLoading = false;
@@ -172,9 +153,7 @@ export class PaymentComponent implements OnInit, AfterViewInit, OnDestroy {
             this.isBrickLoading = false;
             this.notificationService.showError('Error de carga', 'No se pudo cargar el formulario de tarjeta.');
             this.cdr.detectChanges();
-          },
-        },
-      };
+          }}};
 
       this.cardPaymentBrickController = await bricksBuilder.create(
         'cardPayment',
@@ -485,8 +464,7 @@ export class PaymentComponent implements OnInit, AfterViewInit, OnDestroy {
       'beige': '#f5f5dc',
       'celeste': '#38bdf8',
       'lila': '#c084fc',
-      'violeta': '#7c3aed',
-    };
+      'violeta': '#7c3aed'};
     return map[color.toLowerCase().trim()] || color;
   }
 

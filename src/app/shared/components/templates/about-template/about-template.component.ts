@@ -11,7 +11,7 @@ import { isPlatformBrowser } from '@angular/common';
 import gsap from 'gsap';
 import ScrollTrigger from 'gsap/ScrollTrigger';
 import { ReelsSectionComponent } from "../../sections/reels-section/reels-section.component";
-import { Award, Leaf, LUCIDE_ICONS, LucideAngularModule, LucideIconProvider, Star, UsersRound } from 'lucide-angular';
+import { LucideAngularModule } from 'lucide-angular';
 import { CardInitAnimationDirective } from '../../../utils/directives/card-init-animation.directive';
 import { FadeUpLetterDirective } from '../../../utils/directives/fadeupletter.directive';
 import { WordRevealDirective } from '../../../utils/directives/word-reveal.directive';
@@ -24,22 +24,8 @@ if (typeof window !== 'undefined') {
   selector: 'app-about-template',
   standalone: true,
   imports: [CardInitAnimationDirective, LucideAngularModule, ReelsSectionComponent, WordRevealDirective, FadeUpLetterDirective],
-  templateUrl: './about-template.component.html',
-  providers: [
-    {
-      provide: LUCIDE_ICONS,
-      multi: true,
-      useValue: new LucideIconProvider({
-        Award,
-        Leaf,
-        Star,
-        UsersRound
-      })
-    }
-  ],
-  changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrls: ['./about-template.component.css'],
-})
+  templateUrl: './about-template.component.html', changeDetection: ChangeDetectionStrategy.Eager,
+  styleUrls: ['./about-template.component.css']})
 export class AboutTemplateComponent implements AfterViewInit {
   @ViewChild('animatedSection', { static: true }) animatedSection!: ElementRef;
   @ViewChild('greenCard', { static: true }) greenCard!: ElementRef;

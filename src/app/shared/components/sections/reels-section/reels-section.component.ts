@@ -6,8 +6,7 @@ import {
   Inject,
   HostListener,
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
-} from '@angular/core';
+  ChangeDetectorRef} from '@angular/core';
 import { PLATFORM_ID } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { Subject } from 'rxjs';
@@ -16,7 +15,7 @@ import { ModalComponent } from '../../generic/modal/modal.component';
 import { InstagramserviceService } from '../../../../core/services/data-access/instagram/instagramservice.service';
 import { AppGenericCarouselComponent, CarouselConfig } from '../../generic/generic-carousel/generic-carousel.component';
 import { CarouselItemDirective } from '../../../utils/directives/carousel-slide.directive';
-import { Heart, LUCIDE_ICONS, LucideAngularModule, LucideIconProvider, Sparkle } from 'lucide-angular';
+import { LucideAngularModule } from 'lucide-angular';
 
 
 @Component({
@@ -29,19 +28,7 @@ import { Heart, LUCIDE_ICONS, LucideAngularModule, LucideIconProvider, Sparkle }
     CarouselItemDirective,
     LucideAngularModule
   ],
-  templateUrl: './reels-section.component.html', providers: [
-    {
-      provide: LUCIDE_ICONS,
-      multi: true,
-      useValue: new LucideIconProvider({
-        Sparkle,
-        Heart
-      })
-    }
-  ],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-
-})
+  templateUrl: './reels-section.component.html', changeDetection: ChangeDetectionStrategy.OnPush})
 export class ReelsSectionComponent implements OnInit, OnDestroy {
 
   // ── Estado del modal ─────────────────────────────────────────────────────
@@ -131,8 +118,7 @@ export class ReelsSectionComponent implements OnInit, OnDestroy {
       showIndicators: true,
       ornament: true,
       dragEnabled: true,
-      animationDuration: 450,
-    };
+      animationDuration: 450};
   }
 
   private updateCarouselConfig(): void {
@@ -191,12 +177,10 @@ export class ReelsSectionComponent implements OnInit, OnDestroy {
               url: item.media_url,
               type: item.media_type === 'VIDEO' || item.media_type === 'REELS'
                 ? 'video'
-                : 'image',
-            }]
+                : 'image'}]
           ),
           profile_picture_url: item.profile_picture_url || '',
-          username: item.username || 'aldana_vilcabana',
-        })
+          username: item.username || 'aldana_vilcabana'})
       );
     } catch {
       this.reels = [];
@@ -292,8 +276,7 @@ export class ReelsSectionComponent implements OnInit, OnDestroy {
     if (isVideoType && this.selectedReel.media_url) {
       return {
         url: this.selectedReel.media_url,
-        type: 'video',
-      };
+        type: 'video'};
     }
 
     // Para carousel o fallback a imagen de thumbnail si no hay stream mp4
@@ -305,8 +288,7 @@ export class ReelsSectionComponent implements OnInit, OnDestroy {
     const isMVideo = (rawType.includes('video') || rawType.includes('reels')) && !!(m?.url || m?.media_url);
     return {
       url: m?.url || m?.media_url || m?.image_url || this.selectedReel.image_url || '',
-      type: isMVideo ? 'video' : 'image',
-    };
+      type: isMVideo ? 'video' : 'image'};
   }
 
   get hasMultipleMedia(): boolean {
@@ -430,8 +412,7 @@ export class ReelsSectionComponent implements OnInit, OnDestroy {
     const colors = [
       '#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A',
       '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E2',
-      '#F8B4D9', '#AED581', '#FFB74D', '#9575CD',
-    ];
+      '#F8B4D9', '#AED581', '#FFB74D', '#9575CD'];
 
     let hash = 0;
     for (let i = 0; i < username.length; i++) {
@@ -452,8 +433,7 @@ export class ReelsSectionComponent implements OnInit, OnDestroy {
       'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
       'linear-gradient(135deg, #30cfd0 0%, #330867 100%)',
       'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
-      'linear-gradient(135deg, #ff9a56 0%, #ff6a88 100%)',
-    ];
+      'linear-gradient(135deg, #ff9a56 0%, #ff6a88 100%)'];
 
     let hash = 0;
     for (let i = 0; i < username.length; i++) {

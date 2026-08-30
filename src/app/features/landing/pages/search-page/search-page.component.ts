@@ -16,7 +16,7 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Product } from '../../../../shared/utils/models/Products-supabase.interface';
 import { CardproductComponent } from '../../../../shared/components/generic/cardproduct/cardproduct.component';
 import { FormsModule } from '@angular/forms';
-import { LucideAngularModule, LUCIDE_ICONS, LucideIconProvider, ChevronDown, Search } from 'lucide-angular';
+import { LucideAngularModule } from 'lucide-angular';
 import { trigger, transition, style, animate, query, stagger } from '@angular/animations';
 import { ProductUtils } from '../../../../shared/utils/dataEx/products-utils';
 import { LinkHoverUnderlineDirective } from '../../../../shared/utils/directives/link-hover-underline.directive';
@@ -41,19 +41,14 @@ import { ProductsService } from '../../../../core/services/data-access/products/
     trigger('gridAnimation', [
       transition('* => *', [
         style({ transform: 'scale(0.98)', opacity: 0.8 }),
-        animate('400ms ease-out', style({ transform: 'scale(1)', opacity: 1 })),
-      ]),
-    ]),
+        animate('400ms ease-out', style({ transform: 'scale(1)', opacity: 1 }))])]),
     trigger('contentFade', [
       transition(':enter', [
         style({ opacity: 0, transform: 'translateY(8px)' }),
-        animate('300ms ease-out', style({ opacity: 1, transform: 'translateY(0)' })),
-      ]),
+        animate('300ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))]),
       transition(':leave', [
         style({ opacity: 1, transform: 'translateY(0)' }),
-        animate('200ms ease-in', style({ opacity: 0, transform: 'translateY(4px)' })),
-      ]),
-    ]),
+        animate('200ms ease-in', style({ opacity: 0, transform: 'translateY(4px)' }))])]),
     trigger('cardWaveAnimation', [
       transition('* => *', [
         query(':enter', [
@@ -71,15 +66,7 @@ import { ProductsService } from '../../../../core/services/data-access/products/
       ])
     ])
   ],
-  changeDetection: ChangeDetectionStrategy.Eager,
-  providers: [
-    {
-      provide: LUCIDE_ICONS,
-      multi: true,
-      useValue: new LucideIconProvider({ ChevronDown, Search })
-    }
-  ]
-})
+  changeDetection: ChangeDetectionStrategy.Eager})
 export class SearchPageComponent implements OnInit, OnDestroy {
   selectedColors: Record<string, string> = {};
   searchTerm: string = '';

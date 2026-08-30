@@ -6,7 +6,7 @@ import { AuthService } from '../../../../core/services/auth/auth.service';
 import { InputComponent } from '../../../../shared/components/generic/forms/input/input.component';
 import { InputpasswordComponent } from '../../../../shared/components/generic/forms/inputpassword/inputpassword.component';
 import { Subscription } from 'rxjs';
-import { LUCIDE_ICONS, LucideAngularModule, LucideIconProvider, Mail } from 'lucide-angular';
+import { LucideAngularModule } from 'lucide-angular';
 
 interface LoginForm {
   email: FormControl<string | null>;
@@ -22,17 +22,7 @@ interface ForgotPasswordForm {
   standalone: true,
   imports: [RouterModule, ReactiveFormsModule, CommonModule, InputComponent, InputpasswordComponent,LucideAngularModule],
   templateUrl: './login-page.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  providers: [
-        {
-          provide: LUCIDE_ICONS,
-          multi: true,
-          useValue: new LucideIconProvider({
-            Mail
-          })
-        }
-      ]
-})
+  changeDetection: ChangeDetectionStrategy.Eager})
 export class LoginPageComponent implements OnInit, OnDestroy {
   isSubmitting = false;
   authError: string | null = null;
@@ -49,12 +39,10 @@ export class LoginPageComponent implements OnInit, OnDestroy {
     password: this._fb.control(null, [
   Validators.required,
   Validators.minLength(6)
-]),
-  });
+])});
 
   formForgotPassword = this._fb.group<ForgotPasswordForm>({
-    email: this._fb.control(null, [Validators.required, Validators.email]),
-  });
+    email: this._fb.control(null, [Validators.required, Validators.email])});
 
   // LOGIN SUBMIT
   async onSubmit(): Promise<void> {
