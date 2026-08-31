@@ -1,5 +1,5 @@
-import { Component, ElementRef, ViewChild, AfterViewInit, Output, EventEmitter, OnDestroy, Renderer2, Inject, PLATFORM_ID, ChangeDetectionStrategy } from '@angular/core';
-import { isPlatformBrowser, NgOptimizedImage, NgFor } from '@angular/common';
+﻿import { Component, ElementRef, ViewChild, AfterViewInit, Output, EventEmitter, OnDestroy, Renderer2, Inject, PLATFORM_ID, ChangeDetectionStrategy } from '@angular/core';
+import { isPlatformBrowser, NgOptimizedImage } from '@angular/common';
 import { gsap } from 'gsap';
 import { DrawSVGPlugin } from 'gsap/DrawSVGPlugin';
 import { LoaderService } from '../../../../core/services/utils/loader.service';
@@ -9,7 +9,7 @@ gsap.registerPlugin(DrawSVGPlugin);
 @Component({
   standalone: true,
   selector: 'app-loading-screen-v2',
-  imports: [NgOptimizedImage, NgFor],
+  imports: [NgOptimizedImage],
   templateUrl: './loading-screen-v2.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./loading-screen-v2.component.css']
@@ -18,27 +18,21 @@ export class LoadingScreenV2Component implements AfterViewInit, OnDestroy {
 
   @ViewChild('screen') screen!: ElementRef<HTMLElement>;
 
-  // Logos (original — solo se agrega clase .active al logoSvg)
-  @ViewChild('logoTextGroup') logoTextGroup!: ElementRef<HTMLElement>;
-  @ViewChild('logoContainer') logoContainer!: ElementRef<HTMLElement>;
-  @ViewChild('logoSvg') logoSvg!: ElementRef<SVGElement>;
+  // Aldana Vilcabana SVG centrado
   @ViewChild('nameContainer') nameContainer!: ElementRef<HTMLElement>;
-  @ViewChild('vilcabanaSvg') vilcabanaSvg!: ElementRef<SVGElement>;
+  @ViewChild('logoSvg') logoSvg!: ElementRef<SVGSVGElement>;
 
-  // Wheel picker (tens + units → 0 a 99)
+  // Contador 00 → 99
   @ViewChild('counterContainer') counterContainer!: ElementRef<HTMLElement>;
-  @ViewChild('tensTrack') tensTrack!: ElementRef<HTMLElement>;
-  @ViewChild('unitsTrack') unitsTrack!: ElementRef<HTMLElement>;
+  @ViewChild('counterText') counterText!: ElementRef<HTMLElement>;
 
-  // Fotos centradas (4 boxes)
+  // 4 Fotos
   @ViewChild('box1') box1!: ElementRef<HTMLElement>;
   @ViewChild('box2') box2!: ElementRef<HTMLElement>;
   @ViewChild('box3') box3!: ElementRef<HTMLElement>;
   @ViewChild('box4') box4!: ElementRef<HTMLElement>;
 
   @Output() loadingFinished = new EventEmitter<void>();
-
-  readonly digits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 
   private isScrollBlocked = false;
   private imagesLoaded = 0;
@@ -69,24 +63,30 @@ export class LoadingScreenV2Component implements AfterViewInit, OnDestroy {
   private setupInitialStates(): void {
     if (!isPlatformBrowser(this.platformId)) return;
 
-    // Logos y wheel picker ocultos al inicio
+    // Fondo inicial #FEF5EC
+    if (this.screen?.nativeElement) {
+      this.renderer.setStyle(this.screen.nativeElement, 'backgroundColor', '#FEF5EC');
+    }
+
+    // Logo y counter ocultos al inicio
     [
       this.logoSvg?.nativeElement,
-      this.nameContainer?.nativeElement,
       this.counterContainer?.nativeElement
     ].filter(Boolean).forEach(el => {
       this.renderer.setStyle(el, 'opacity', '0');
       this.renderer.setStyle(el, 'visibility', 'hidden');
     });
 
-    // Fotos ocultas: scale(0) vía gsap.set, y visibility hidden
+    // Fotos ocultas
     [this.box1, this.box2, this.box3, this.box4].forEach(box => {
       if (box?.nativeElement) {
         this.renderer.setStyle(box.nativeElement, 'visibility', 'hidden');
-        gsap.set(box.nativeElement, { scale: 0, opacity: 0, transformOrigin: '50% 50%' });
+        this.renderer.setStyle(box.nativeElement, 'display', 'block');
+        gsap.set(box.nativeElement, { scale: 0.35, opacity: 0, transformOrigin: '50% 50%' });
       }
     });
 
+    this.setCounterDigits(0);
     this.setupImagePreloading();
   }
 
@@ -142,20 +142,21 @@ export class LoadingScreenV2Component implements AfterViewInit, OnDestroy {
     if (!isPlatformBrowser(this.platformId)) return;
 
     [
-      this.screen.nativeElement,
-      this.logoSvg.nativeElement,
-      this.nameContainer.nativeElement,
-      this.counterContainer.nativeElement,
-      this.box1.nativeElement,
-      this.box2.nativeElement,
-      this.box3.nativeElement,
-      this.box4.nativeElement
-    ].forEach(el => {
+      this.screen?.nativeElement,
+      this.logoSvg?.nativeElement,
+      this.counterContainer?.nativeElement,
+      this.box1?.nativeElement,
+      this.box2?.nativeElement,
+      this.box3?.nativeElement,
+      this.box4?.nativeElement
+    ].filter(Boolean).forEach(el => {
       this.renderer.setStyle(el, 'visibility', 'visible');
       (el as HTMLElement).style.backfaceVisibility = 'hidden';
     });
 
-    this.screen.nativeElement.offsetHeight; // force reflow
+    if (this.screen?.nativeElement) {
+      this.screen.nativeElement.offsetHeight;
+    }
   }
 
   private createAnimationSequence(): void {
@@ -164,63 +165,34 @@ export class LoadingScreenV2Component implements AfterViewInit, OnDestroy {
     });
 
     const tl = this.timeline;
-    const boxes = [this.box1, this.box2, this.box3, this.box4];
 
-    // ════════════════════════════════════════════════════════
-    // FASE 1 — Logo AV + Aldana Vilcabana se dibujan (animación
-    //          CSS ORIGINAL sin cambios) mientras wheel picker
-    //          cuenta 00 → 99 a la IZQUIERDA de los logos
-    // ════════════════════════════════════════════════════════
+    // ══════════════════════════════════════════════════════════════════
+    // FASE 1 — Fondo #FEF5EC + Dibujo SVG Aldana Vilcabana en #97ad92
+    //          + Contador con saltos variados de 10 en 10 / 20 en 20
+    // ══════════════════════════════════════════════════════════════════
 
-    // Estado inicial GSAP — el logo AV arranca desde opacity 0 + scale 0
-    // (lo mismo que hacía el original con logoSvg)
-    gsap.set(this.logoSvg.nativeElement, { scale: 0, opacity: 0, force3D: true });
-    gsap.set(this.nameContainer.nativeElement, { opacity: 0, y: 20, force3D: true });
-    gsap.set(this.counterContainer.nativeElement, { opacity: 0 });
+    const svg = this.logoSvg?.nativeElement;
+    const paths = svg ? (Array.from(svg.querySelectorAll('path')) as SVGPathElement[]) : [];
 
-    // Wheel picker fade in
-    tl.to(this.counterContainer.nativeElement, {
-      opacity: 1,
-      duration: 0.35,
-      ease: 'power2.out'
-    }, 0);
-
-    // Logo AV aparece con scale — IDÉNTICO al original
-    tl.to(this.logoSvg.nativeElement, {
-      scale: 1,
-      opacity: 1,
-      duration: 0.4,
-      ease: 'back.out(1.8)',
-      force3D: true,
-      onComplete: () => {
-        // Activa la animación CSS DrawSVG ORIGINAL (svg-elem-1..5)
-        this.logoSvg.nativeElement.classList.add('active');
-      }
-    }, 0);
-
-    // Nombre "Aldana Vilcabana" sube — IDÉNTICO al original
-    tl.to(this.nameContainer.nativeElement, {
-      opacity: 1,
-      y: 0,
-      duration: 0.6,
-      ease: 'power2.out'
-    }, '-=0.1');
-
-    // ─── SVG draw de Aldana Vilcabana — LÓGICA ORIGINAL INTACTA ───────────
-    const svg = this.vilcabanaSvg.nativeElement;
-    const paths = Array.from(svg.querySelectorAll('path')) as SVGPathElement[];
-
-    const sortedPaths = [...paths].sort((a, b) => {
+    // Ordenar paths de izquierda a derecha según su posición horizontal en el SVG
+    const sorted = [...paths].sort((a, b) => {
       const ax = a.getBBox?.()?.x ?? 0;
       const bx = b.getBBox?.()?.x ?? 0;
       return ax - bx;
     });
 
-    sortedPaths.forEach(path => {
+    // Color aldy-medium-2 (#97ad92)
+    const brandColor = '#97ad92';
+
+    gsap.set(this.screen.nativeElement, { backgroundColor: '#FEF5EC' });
+    gsap.set(svg, { opacity: 1, y: 15 });
+    gsap.set(this.counterContainer.nativeElement, { opacity: 0 });
+
+    sorted.forEach(path => {
       const len = path.getTotalLength?.() ?? 0;
       gsap.set(path, {
         fill: 'none',
-        stroke: '#d2e4cc',
+        stroke: brandColor,
         strokeWidth: 0.9,
         strokeDasharray: len,
         strokeDashoffset: len,
@@ -228,11 +200,22 @@ export class LoadingScreenV2Component implements AfterViewInit, OnDestroy {
       });
     });
 
+    // Contador fade in
+    tl.to(this.counterContainer.nativeElement, {
+      opacity: 1,
+      duration: 0.35,
+      ease: 'power2.out'
+    }, 0);
+
+    // Deslizar el SVG suavemente hacia su posición central
+    tl.to(svg, { y: 0, duration: 1.2, ease: 'expo.out' }, 0);
+
+    // Dibujar cada path en secuencia de izquierda a derecha (efecto handwriting)
     const writeDuration = 0.9;
     const staggerGap = 0.055;
-    const writeStart = tl.duration(); // relativo al punto donde el timeline está ahora
+    const writeStart = 0.15;
 
-    sortedPaths.forEach((path, i) => {
+    sorted.forEach((path, i) => {
       tl.to(
         path,
         { strokeDashoffset: 0, duration: writeDuration, ease: 'power2.inOut' },
@@ -240,146 +223,168 @@ export class LoadingScreenV2Component implements AfterViewInit, OnDestroy {
       );
     });
 
-    sortedPaths.forEach((path, i) => {
+    // Rellenar cada path cuando su trazo va al 60%
+    sorted.forEach((path, i) => {
       const fillStart = writeStart + i * staggerGap + writeDuration * 0.6;
       tl.to(
         path,
-        { fill: '#d2e4cc', strokeWidth: 0, strokeOpacity: 0, duration: 0.5, ease: 'power2.inOut' },
+        { fill: brandColor, strokeWidth: 0, strokeOpacity: 0, duration: 0.5, ease: 'power2.inOut' },
         fillStart
       );
     });
-    // ─── fin lógica original ───────────────────────────────────────────────
 
-    // Wheel picker: 00 → 99, sincronizado con el draw del SVG
-    const lastFillStart = writeStart + (sortedPaths.length - 1) * staggerGap + writeDuration * 0.6;
-    const drawEnd = lastFillStart + 0.5;
+    // Duración total exacta del dibujo
+    const totalDrawDuration = writeStart + (sorted.length - 1) * staggerGap + writeDuration * 0.6 + 0.5;
 
+    // Contador con saltos variados de 10 en 10 / 20 en 20
     const counterObj = { val: 0 };
     tl.to(counterObj, {
       val: 99,
-      duration: drawEnd,      // dura exactamente lo mismo que el draw
-      ease: 'none',
+      duration: totalDrawDuration,
+      ease: 'power2.out',
+      snap: {
+        val: [0, 18, 35, 54, 72, 88, 99]
+      },
       onUpdate: () => this.setCounterDigits(Math.round(counterObj.val))
     }, 0);
 
-    // ════════════════════════════════════════════════════════
-    // FASE 2 — SVGs pasan a blanco, todo el bloque logos +
-    //          picker hace fade out elegante en su posición
-    // ════════════════════════════════════════════════════════
+    // ══════════════════════════════════════════════════════════════════
+    // FASE 2 — Desaparecen en fade el logo y el contador
+    // ══════════════════════════════════════════════════════════════════
 
-    tl.addLabel('fadeOut', drawEnd + 0.2);
+    tl.addLabel('fadeOut', totalDrawDuration + 0.2);
 
-    // SVG Aldana Vilcabana → blanco
-    tl.to(sortedPaths, {
-      fill: '#ffffff',
-      stroke: '#ffffff',
-      duration: 0.3,
-      ease: 'power2.out'
-    }, 'fadeOut');
-
-    // Logo AV → invertido a blanco
-    tl.to(this.logoSvg.nativeElement, {
-      filter: 'brightness(0) invert(1)',
-      duration: 0.3,
-      ease: 'power2.out'
-    }, 'fadeOut');
-
-    // Fade out completo del bloque
     tl.to(
-      [this.logoTextGroup.nativeElement, this.counterContainer.nativeElement],
-      { opacity: 0, duration: 0.45, ease: 'power2.inOut' },
-      'fadeOut+=0.2'
+      [this.logoSvg.nativeElement, this.counterContainer.nativeElement],
+      { opacity: 0, duration: 0.4, ease: 'power2.inOut' },
+      'fadeOut'
     );
 
-    // ════════════════════════════════════════════════════════
-    // FASE 3 — 4 fotos centradas aparecen en cascade de scale,
-    //          cada una tapando a la anterior, la última crece
-    //          hasta cubrir la pantalla completa
-    // ════════════════════════════════════════════════════════
+    // ══════════════════════════════════════════════════════════════════
+    // FASE 3 — Secuencia fluida con overlap de imágenes:
+    //          Antes de que cada una termine de acomodarse en su
+    //          contenedor, arranca la siguiente con suavidad.
+    // ══════════════════════════════════════════════════════════════════
 
-    const stagger = 0.2;
+    const imgDuration = 0.8;
+    const imgEase = 'power3.out';
 
-    boxes.forEach((box, i) => {
-      const isLast = i === boxes.length - 1;
-      const startAt = `fadeOut+=${0.3 + i * stagger}`;
+    // Box 1: Entra escalando hacia su contenedor
+    tl.fromTo(this.box1.nativeElement,
+      { scale: 0.35, opacity: 0 },
+      { scale: 1, opacity: 1, duration: imgDuration, ease: imgEase, force3D: true },
+      'fadeOut+=0.15'
+    );
 
-      // Foto i: scale 0 → tamaño intermedio rápido
-      tl.to(box.nativeElement, {
-        scale: isLast ? 0.7 : 0.55 + i * 0.07,
-        opacity: 1,
-        duration: 0.35,
-        ease: 'back.out(1.1)',
-        force3D: true
-      }, startAt);
+    // Box 2: Entra ANTES de que Box 1 termine
+    tl.fromTo(this.box2.nativeElement,
+      { scale: 0.35, opacity: 0 },
+      { scale: 1, opacity: 1, duration: imgDuration, ease: imgEase, force3D: true },
+      'fadeOut+=0.55'
+    );
 
-      if (isLast) {
-        // La última foto crece hasta llenar la pantalla
-        tl.to(box.nativeElement, {
-          scale: 6,
-          duration: 0.6,
-          ease: 'power2.in',
-          force3D: true
-        }, `fadeOut+=${0.3 + i * stagger + 0.38}`);
-      }
-    });
+    // Box 3: Entra ANTES de que Box 2 termine
+    tl.fromTo(this.box3.nativeElement,
+      { scale: 0.35, opacity: 0 },
+      { scale: 1, opacity: 1, duration: imgDuration, ease: imgEase, force3D: true },
+      'fadeOut+=0.95'
+    );
 
-    const lastPhotoExpandEnd = `fadeOut+=${0.3 + (boxes.length - 1) * stagger + 0.38 + 0.6}`;
-    tl.addLabel('fullScreen', lastPhotoExpandEnd);
+    // Box 4: Entra ANTES de que Box 3 termine
+    tl.fromTo(this.box4.nativeElement,
+      { scale: 0.35, opacity: 0 },
+      { scale: 1, opacity: 1, duration: imgDuration, ease: imgEase, force3D: true },
+      'fadeOut+=1.35'
+    );
 
-    // ════════════════════════════════════════════════════════
-    // FASE 4 — El SVG "Aldana Vilcabana" (en BLANCO) aparece
-    //          con fade centrado, sobre la foto expandida
-    // ════════════════════════════════════════════════════════
+    // Box 4: El contenedor se expande suavemente a pantalla completa (100vw, 100vh)
+    tl.to(this.box4.nativeElement, {
+      width: '100vw',
+      height: '100vh',
+      maxWidth: '100vw',
+      maxHeight: '100vh',
+      boxShadow: 'none',
+      duration: 0.95,
+      ease: 'power2.inOut',
+      force3D: true
+    }, 'fadeOut+=2.05');
 
-    // Reposicionar el bloque de logos al centro antes de hacerlo visible
+    tl.addLabel('fullScreen', 'fadeOut+=3.0');
+
+    // ══════════════════════════════════════════════════════════════════
+    // FASE 4 — OPTIMIZACIÓN ANTI-LAG:
+    //          Al tapar Box 4 toda la pantalla, removemos las fotos
+    //          1, 2 y 3 (display: none) para liberar la GPU.
+    //          Aparece Aldana Vilcabana centrado en blanco sobre Box 4.
+    // ══════════════════════════════════════════════════════════════════
+
     tl.call(() => {
-      gsap.set(this.logoTextGroup.nativeElement, { xPercent: 0, x: 0 });
-      // Asegurar paths blancos
-      sortedPaths.forEach(p => gsap.set(p, { fill: '#ffffff', stroke: 'none', strokeOpacity: 0 }));
-      gsap.set(this.logoSvg.nativeElement, { filter: 'brightness(0) invert(1)' });
+      // Ocultar y remover del render las fotos anteriores para 0 lag
+      [this.box1.nativeElement, this.box2.nativeElement, this.box3.nativeElement].forEach(el => {
+        el.style.display = 'none';
+      });
+
+      // SVG preparado en blanco
+      sorted.forEach(p => gsap.set(p, { fill: '#ffffff', stroke: 'none', strokeOpacity: 0 }));
+      gsap.set(this.logoSvg.nativeElement, { y: 0, opacity: 0 });
     }, [], 'fullScreen');
 
-    tl.to(this.logoTextGroup.nativeElement, {
+    tl.to(this.logoSvg.nativeElement, {
       opacity: 1,
-      duration: 0.5,
+      duration: 0.6,
       ease: 'power2.out'
-    }, 'fullScreen+=0.05');
+    }, 'fullScreen+=0.1');
 
-    // ════════════════════════════════════════════════════════
-    // FASE 5 — La imagen de fondo transiciona al color del telón
-    //          (#AEC2A9), luego el screen SUBE completamente
-    //          llevándose el SVG "Aldana Vilcabana" consigo
-    // ════════════════════════════════════════════════════════
+    // ══════════════════════════════════════════════════════════════════
+    // FASE 5 — Transición suave y limpia a aldy-medium-2 (#97ad92),
+    //          Box 4 se desvanece y se oculta, y el telón sube fluido.
+    // ══════════════════════════════════════════════════════════════════
 
+    tl.addLabel('colorTransition', 'fullScreen+=0.75');
+
+    // Fondo del screen pasa a aldy-medium-2
     tl.to(this.screen.nativeElement, {
-      backgroundColor: '#AEC2A9',
-      duration: 0.7,
-      ease: 'power2.out',
+      backgroundColor: '#97ad92',
+      duration: 0.6,
+      ease: 'power2.inOut',
       onStart: () => {
         this.unblockScrollAndInteraction();
       }
-    }, 'fullScreen+=0.55');
+    }, 'colorTransition');
 
-    // El screen entero sube — lleva consigo el SVG centrado
+    // Box 4 se desvanece suavemente
+    tl.to(this.box4.nativeElement, {
+      opacity: 0,
+      duration: 0.6,
+      ease: 'power2.inOut',
+      onComplete: () => {
+        // Al terminar el desvanecimiento, remover Box 4 del render
+        if (this.box4?.nativeElement) {
+          this.box4.nativeElement.style.display = 'none';
+        }
+      }
+    }, 'colorTransition');
+
+    // SUBIDA DE TELÓN 100% FLUIDA (Cero imágenes pesadas en el DOM durante el movimiento)
     tl.to(this.screen.nativeElement, {
       y: '-100%',
-      duration: 0.65,
-      ease: 'power2.inOut',
+      duration: 0.85,
+      ease: 'power3.inOut',
+      force3D: true,
       onComplete: () => {
         this.cleanupWillChange();
       }
-    }, 'fullScreen+=1.1');
+    }, 'colorTransition+=0.68');
   }
 
-  /** Mueve los tracks del wheel picker según el número 0–99 */
+  /** Actualiza el contador de 00 a 99 */
   private setCounterDigits(num: number): void {
-    const v = Math.max(0, Math.min(99, num));
-    const tens = Math.floor(v / 10);
-    const units = v % 10;
+    const v = Math.max(0, Math.min(99, Math.floor(num)));
+    const formatted = v < 10 ? `0${v}` : `${v}`;
 
-    // CSS custom property --idx controla qué dígito es visible
-    this.tensTrack?.nativeElement.style.setProperty('--idx', tens.toString());
-    this.unitsTrack?.nativeElement.style.setProperty('--idx', units.toString());
+    if (this.counterText?.nativeElement) {
+      this.counterText.nativeElement.textContent = formatted;
+    }
   }
 
   private hideAndComplete(): void {
@@ -400,8 +405,8 @@ export class LoadingScreenV2Component implements AfterViewInit, OnDestroy {
 
     [
       this.screen?.nativeElement,
-      this.logoSvg?.nativeElement,
       this.nameContainer?.nativeElement,
+      this.logoSvg?.nativeElement,
       this.counterContainer?.nativeElement
     ].filter(Boolean).forEach((el: any) => {
       if (el?.style) {
