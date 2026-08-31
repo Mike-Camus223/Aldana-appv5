@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild, AfterViewInit, Output, EventEmitter, OnDestroy, Renderer2, Inject, PLATFORM_ID, ChangeDetectionStrategy } from '@angular/core';
+﻿import { Component, ElementRef, ViewChild, AfterViewInit, Output, EventEmitter, OnDestroy, Renderer2, Inject, PLATFORM_ID, ChangeDetectionStrategy } from '@angular/core';
 import { isPlatformBrowser, NgOptimizedImage } from '@angular/common';
 import { gsap } from 'gsap';
 import { DrawSVGPlugin } from 'gsap/DrawSVGPlugin';
@@ -16,16 +16,16 @@ gsap.registerPlugin(DrawSVGPlugin);
 })
 export class LoadingScreenComponent implements AfterViewInit, OnDestroy {
 
-  @ViewChild('screen') screen!: ElementRef;
-  @ViewChild('circleGroup') circleGroup!: ElementRef;
-  @ViewChild('box1') box1!: ElementRef;
-  @ViewChild('box2') box2!: ElementRef;
-  @ViewChild('box3') box3!: ElementRef;
-  @ViewChild('box4') box4!: ElementRef;
-  @ViewChild('logoContainer') logoContainer!: ElementRef;
-  @ViewChild('logoSvg') logoSvg!: ElementRef;
-  @ViewChild('nameContainer') nameContainer!: ElementRef;
-  @ViewChild('vilcabanaSvg') vilcabanaSvg!: ElementRef;
+  @ViewChild('screen') screen!: ElementRef<HTMLElement>;
+  @ViewChild('nameContainer') nameContainer!: ElementRef<HTMLElement>;
+  @ViewChild('logoSvg') logoSvg!: ElementRef<SVGSVGElement>;
+  @ViewChild('counterContainer') counterContainer!: ElementRef<HTMLElement>;
+  @ViewChild('tensStrip') tensStrip!: ElementRef<HTMLElement>;
+  @ViewChild('unitsStrip') unitsStrip!: ElementRef<HTMLElement>;
+  @ViewChild('box1') box1!: ElementRef<HTMLElement>;
+  @ViewChild('box2') box2!: ElementRef<HTMLElement>;
+  @ViewChild('box3') box3!: ElementRef<HTMLElement>;
+  @ViewChild('box4') box4!: ElementRef<HTMLElement>;
 
   @Output() loadingFinished = new EventEmitter<void>();
 
@@ -48,45 +48,53 @@ export class LoadingScreenComponent implements AfterViewInit, OnDestroy {
     if (isPlatformBrowser(this.platformId)) {
       this.blockScrollAndInteraction();
       this.setupInitialStates();
-      
+
       setTimeout(() => {
         this.initializeAnimation();
-      }, 100);
+      }, 50);
     }
   }
 
   private setupInitialStates(): void {
     if (!isPlatformBrowser(this.platformId)) return;
 
-    const elements = [
-      this.box1?.nativeElement,
-      this.box2?.nativeElement,
-      this.box3?.nativeElement,
-      this.box4?.nativeElement,
-      this.logoSvg?.nativeElement,
-      this.nameContainer?.nativeElement
-    ].filter(el => el);
+    if (this.screen?.nativeElement) {
+      this.renderer.setStyle(this.screen.nativeElement, 'backgroundColor', '#FEF5EC');
+    }
 
-    elements.forEach(el => {
+    [
+      this.logoSvg?.nativeElement,
+      this.counterContainer?.nativeElement
+    ].filter(Boolean).forEach(el => {
       this.renderer.setStyle(el, 'opacity', '0');
       this.renderer.setStyle(el, 'visibility', 'hidden');
+    });
+
+    if (this.tensStrip?.nativeElement) {
+      gsap.set(this.tensStrip.nativeElement, { yPercent: 0, force3D: true });
+    }
+    if (this.unitsStrip?.nativeElement) {
+      gsap.set(this.unitsStrip.nativeElement, { yPercent: 0, force3D: true });
+    }
+
+    [this.box1, this.box2, this.box3, this.box4].forEach(box => {
+      if (box?.nativeElement) {
+        this.renderer.setStyle(box.nativeElement, 'visibility', 'hidden');
+        this.renderer.setStyle(box.nativeElement, 'display', 'block');
+        gsap.set(box.nativeElement, { scale: 0, opacity: 0, transformOrigin: '50% 50%' });
+      }
     });
 
     this.setupImagePreloading();
   }
 
   private setupImagePreloading(): void {
-    const boxes = [this.box1, this.box2, this.box3, this.box4];
-    
-    boxes.forEach(box => {
+    [this.box1, this.box2, this.box3, this.box4].forEach(box => {
       if (box?.nativeElement) {
-        const img = box.nativeElement.querySelector('img');
+        const img = box.nativeElement.querySelector('img') as HTMLImageElement | null;
         if (img) {
           img.loading = 'eager';
           img.fetchPriority = 'high';
-          
-          this.renderer.setStyle(img, 'filter', 'grayscale(100%)');
-          
           if (img.complete) {
             this.onImageLoad();
           } else {
@@ -117,277 +125,227 @@ export class LoadingScreenComponent implements AfterViewInit, OnDestroy {
     if (this.imagesLoaded >= this.totalImages) {
       startAnimation();
     } else {
-      const timeoutId = setTimeout(() => {
-        startAnimation();
-      }, 2000);
-
+      const timeoutId = setTimeout(() => startAnimation(), 1500);
       const checkImages = setInterval(() => {
         if (this.imagesLoaded >= this.totalImages) {
           clearTimeout(timeoutId);
           clearInterval(checkImages);
           startAnimation();
         }
-      }, 100);
+      }, 50);
     }
   }
 
   private optimizePerformance(): void {
     if (!isPlatformBrowser(this.platformId)) return;
 
-    const allElements = [
-      this.screen.nativeElement,
-      this.circleGroup.nativeElement,
-      this.box1.nativeElement, this.box2.nativeElement, 
-      this.box3.nativeElement, this.box4.nativeElement,
-      this.logoSvg.nativeElement,
-      this.nameContainer.nativeElement
-    ];
-
-    allElements.forEach(el => {
+    [
+      this.screen?.nativeElement,
+      this.logoSvg?.nativeElement,
+      this.counterContainer?.nativeElement,
+      this.box1?.nativeElement,
+      this.box2?.nativeElement,
+      this.box3?.nativeElement,
+      this.box4?.nativeElement
+    ].filter(Boolean).forEach(el => {
       this.renderer.setStyle(el, 'visibility', 'visible');
-      el.style.transform = 'translateZ(0)';
-      el.style.backfaceVisibility = 'hidden';
-      el.style.perspective = '1000px';
+      (el as HTMLElement).style.backfaceVisibility = 'hidden';
     });
 
-    this.screen.nativeElement.offsetHeight;
+    if (this.screen?.nativeElement) {
+      this.screen.nativeElement.offsetHeight;
+    }
   }
 
   private createAnimationSequence(): void {
     this.timeline = gsap.timeline({
-      onComplete: () => {
-        this.hideAndComplete();
-      }
+      onComplete: () => this.hideAndComplete()
     });
 
-    this.timeline.eventCallback('onStart', () => {
-    });
+    const tl = this.timeline;
 
-    const boxes = [this.box1, this.box2, this.box3, this.box4];
-    
-    gsap.set(boxes.map(b => b.nativeElement), { 
-      scale: 0,
-      rotation: 0,
-      opacity: 0,
-      force3D: true
-    });
+    const svg = this.logoSvg?.nativeElement;
+    const paths = svg ? (Array.from(svg.querySelectorAll('path')) as SVGPathElement[]) : [];
 
-    boxes.forEach(box => {
-      const img = box.nativeElement.querySelector('img');
-      if (img) {
-        gsap.set(img, { 
-          filter: 'grayscale(100%)',
-          force3D: true,
-          willChange: "filter"
-        });
-      }
-    });
-
-    gsap.set(this.logoSvg.nativeElement, { 
-      scale: 0,
-      opacity: 0,
-      force3D: true
-    });
-
-    gsap.set(this.nameContainer.nativeElement, { 
-      opacity: 0, 
-      y: 20,
-      force3D: true
-    });
-
-    this.timeline!.fromTo(this.box1.nativeElement, 
-      { 
-        scale: 0,
-        rotation: -5,
-        opacity: 0
-      },
-      { 
-        scale: 1,
-        rotation: 0,
-        opacity: 1,
-        duration: 1.1, 
-        ease: "back.out(1.4)",
-        force3D: true
-      }, 0);
-
-    this.timeline!.fromTo(this.box2.nativeElement, 
-      { 
-        scale: 0,
-        rotation: 3,
-        opacity: 0
-      },
-      { 
-        scale: 1,
-        rotation: 0,
-        opacity: 1,
-        duration: 1.1, 
-        ease: "back.out(1.6)",
-        force3D: true
-      }, 0.15);
-
-    this.timeline!.fromTo(this.box3.nativeElement, 
-      { 
-        scale: 0,
-        rotation: -4,
-        opacity: 0
-      },
-      { 
-        scale: 1,
-        rotation: 0,
-        opacity: 1,
-        duration: 1.1, 
-        ease: "back.out(1.5)",
-        force3D: true
-      }, 0.3);
-
-    this.timeline!.fromTo(this.box4.nativeElement, 
-      { 
-        scale: 0,
-        rotation: 4,
-        opacity: 0
-      },
-      { 
-        scale: 1,
-        rotation: 0,
-        opacity: 1,
-        duration: 1.1, 
-        ease: "back.out(1.7)",
-        force3D: true
-      }, 0.45);
-
-    this.timeline!.to(this.logoSvg.nativeElement, { 
-      scale: 1,
-      opacity: 1, 
-      duration: 0.4, 
-      ease: 'back.out(1.8)',
-      onComplete: () => {
-        this.logoSvg.nativeElement.classList.add('active');
-      }
-    }, '+=0.1');
-    
-    // Animate the new SVG with the same animation as triplesection
-    this.timeline!.to(this.nameContainer.nativeElement, { 
-      opacity: 1, 
-      y: 0, 
-      duration: 0.6, 
-      ease: 'power2.out'
-    }, '-=0.1');
-    
-    // SVG drawing animation
-    const svg = this.vilcabanaSvg.nativeElement;
-    const paths = Array.from(svg.querySelectorAll('path')) as SVGPathElement[];
-    
-    // Sort paths by x position
-    const sortedPaths = [...paths].sort((a, b) => {
+    const sorted = [...paths].sort((a, b) => {
       const ax = a.getBBox?.()?.x ?? 0;
       const bx = b.getBBox?.()?.x ?? 0;
       return ax - bx;
     });
-    
-    // Set initial state for paths
-    sortedPaths.forEach(path => {
+
+    const brandColor = '#97ad92';
+
+    gsap.set(this.screen.nativeElement, { backgroundColor: '#FEF5EC' });
+    gsap.set(svg, { opacity: 1, y: 12 });
+    gsap.set(this.counterContainer.nativeElement, { opacity: 0 });
+
+    sorted.forEach(path => {
       const len = path.getTotalLength?.() ?? 0;
       gsap.set(path, {
         fill: 'none',
-        stroke: '#d2e4cc',
+        stroke: brandColor,
         strokeWidth: 0.9,
         strokeDasharray: len,
         strokeDashoffset: len,
         opacity: 1
       });
     });
-    
-    // Animate SVG draw
-    const writeDuration = 0.9;
-    const staggerGap = 0.055;
-    const writeStart = this.timeline!.duration();
-    
-    sortedPaths.forEach((path, i) => {
-      this.timeline!.to(
+
+    tl.to(this.counterContainer.nativeElement, {
+      opacity: 1,
+      duration: 0.3,
+      ease: 'power2.out'
+    }, 0);
+
+    tl.to(svg, { y: 0, duration: 1.0, ease: 'expo.out' }, 0);
+
+    const writeDuration = 0.85;
+    const staggerGap = 0.048;
+    const writeStart = 0.10;
+
+    sorted.forEach((path, i) => {
+      tl.to(
         path,
         { strokeDashoffset: 0, duration: writeDuration, ease: 'power2.inOut' },
         writeStart + i * staggerGap
       );
     });
-    
-    // Fill paths
-    sortedPaths.forEach((path, i) => {
+
+    sorted.forEach((path, i) => {
       const fillStart = writeStart + i * staggerGap + writeDuration * 0.6;
-      this.timeline!.to(
+      tl.to(
         path,
-        { fill: '#d2e4cc', strokeWidth: 0, strokeOpacity: 0, duration: 0.5, ease: 'power2.inOut' },
+        { fill: brandColor, strokeWidth: 0, strokeOpacity: 0, duration: 0.45, ease: 'power2.inOut' },
         fillStart
       );
     });
-    
-    this.timeline!.to([this.box1, this.box2, this.box3, this.box4].map(box => 
-      box.nativeElement.querySelector('img')), { 
-        filter: 'grayscale(0%)', 
-        duration: 1, 
-        ease: 'power2.out',
-        force3D: true,
-        stagger: 0.1
-      }, '-=0');
 
-    this.timeline!.to(this.circleGroup.nativeElement, { 
-      opacity: 0, 
-      duration: 0.4, 
+    const totalDrawDuration = 1.95;
+
+    if (this.tensStrip?.nativeElement) {
+      tl.to(this.tensStrip.nativeElement, {
+        yPercent: -90,
+        duration: totalDrawDuration,
+        ease: 'power2.inOut',
+        force3D: true
+      }, 0);
+    }
+
+    if (this.unitsStrip?.nativeElement) {
+      const totalUnits = 31;
+      const targetPercent = -((totalUnits - 1) / totalUnits) * 100;
+      tl.to(this.unitsStrip.nativeElement, {
+        yPercent: targetPercent,
+        duration: totalDrawDuration,
+        ease: 'power2.inOut',
+        force3D: true
+      }, 0);
+    }
+
+    tl.to(
+      [this.logoSvg.nativeElement, this.counterContainer.nativeElement],
+      { opacity: 0, duration: 0.25, ease: 'power2.inOut' },
+      1.95
+    );
+
+    const imgDuration = 0.55;
+    const imgEase = 'power2.out';
+
+    // Box 1
+    tl.fromTo(this.box1.nativeElement,
+      { scale: 0, opacity: 0 },
+      { scale: 1, opacity: 1, duration: imgDuration, ease: imgEase, force3D: true },
+      2.10
+    );
+
+    // Box 2
+    tl.fromTo(this.box2.nativeElement,
+      { scale: 0, opacity: 0 },
+      { scale: 1, opacity: 1, duration: imgDuration, ease: imgEase, force3D: true },
+      2.38
+    );
+
+    // Box 3
+    tl.fromTo(this.box3.nativeElement,
+      { scale: 0, opacity: 0 },
+      { scale: 1, opacity: 1, duration: imgDuration, ease: imgEase, force3D: true },
+      2.66
+    );
+
+    // Box 4
+    tl.fromTo(this.box4.nativeElement,
+      { scale: 0, opacity: 0 },
+      { scale: 1, opacity: 1, duration: imgDuration, ease: imgEase, force3D: true },
+      2.94
+    );
+
+    // Box 4 expansion
+    tl.to(this.box4.nativeElement, {
+      width: '100vw',
+      height: '100vh',
+      maxWidth: '100vw',
+      maxHeight: '100vh',
+      boxShadow: 'none',
+      duration: 0.70,
+      ease: 'power3.inOut',
+      force3D: true
+    }, 3.35);
+
+    tl.call(() => {
+      [this.box1.nativeElement, this.box2.nativeElement, this.box3.nativeElement].forEach(el => {
+        el.style.display = 'none';
+      });
+
+      sorted.forEach(p => gsap.set(p, { fill: '#ffffff', stroke: 'none', strokeOpacity: 0 }));
+      gsap.set(this.logoSvg.nativeElement, { y: 0, opacity: 0 });
+    }, [], 4.05);
+
+    tl.to(this.logoSvg.nativeElement, {
+      opacity: 1,
+      duration: 0.30,
       ease: 'power2.out'
-    }, '+=0');
-    
-    this.timeline!.to(this.screen.nativeElement, { 
-      backgroundColor: '#AEC2A9', 
-      duration: 0.8, 
-      ease: 'power2.out',
+    }, 4.05);
+
+    tl.to(this.screen.nativeElement, {
+      backgroundColor: '#97ad92',
+      duration: 0.30,
+      ease: 'power2.inOut',
       onStart: () => {
         this.unblockScrollAndInteraction();
+      }
+    }, 4.35);
 
-        if (this.vilcabanaSvg && this.vilcabanaSvg.nativeElement) {
-          const svgElements = this.vilcabanaSvg.nativeElement.querySelectorAll('path');
-          svgElements.forEach((el: Element) => {
-            gsap.to(el, {
-              fill: '#ffffff',
-              duration: 0.3,
-              ease: 'power2.out'
-            });
-          });
+    tl.to(this.box4.nativeElement, {
+      opacity: 0,
+      duration: 0.30,
+      ease: 'power2.inOut',
+      onComplete: () => {
+        if (this.box4?.nativeElement) {
+          this.box4.nativeElement.style.display = 'none';
         }
       }
-    }, '-=0.4');
+    }, 4.35);
 
-    this.timeline!.to(this.logoSvg.nativeElement, { 
-      filter: 'brightness(0) invert(1)',
-      duration: 0.3,
-      ease: 'power2.out'
-    }, '-=0.7');
-
-    this.timeline!.to(this.vilcabanaSvg.nativeElement, { 
-      filter: 'brightness(0) invert(1)',
-      duration: 0.3,
-      ease: 'power2.out'
-    }, '-=0.7');
-
-    this.timeline!.to(this.screen.nativeElement, { 
-      y: '-100%', 
-      duration: 0.6, 
-      ease: 'power2.inOut',
+    tl.to(this.screen.nativeElement, {
+      y: '-100%',
+      duration: 0.77,
+      ease: 'power3.inOut',
+      force3D: true,
       onComplete: () => {
         this.cleanupWillChange();
       }
-    }, '-=0.3');
+    }, 4.55);
   }
 
   private hideAndComplete(): void {
     this.isAnimationComplete = true;
-    
     this.loaderService.setAnimationsEnabled(true);
-    
     this.unblockScrollAndInteraction();
-    
+
     if (this.screen?.nativeElement) {
       this.renderer.setStyle(this.screen.nativeElement, 'display', 'none');
     }
-    
+
     this.loadingFinished.emit();
     this.loaderService.finish('main');
   }
@@ -395,59 +353,42 @@ export class LoadingScreenComponent implements AfterViewInit, OnDestroy {
   private cleanupWillChange(): void {
     if (!isPlatformBrowser(this.platformId)) return;
 
-    const elements = [
+    [
       this.screen?.nativeElement,
-      this.circleGroup?.nativeElement,
+      this.nameContainer?.nativeElement,
       this.logoSvg?.nativeElement,
-      this.nameContainer?.nativeElement
-    ].filter(el => el);
-
-    elements.forEach((el: any) => {
-      if (el && el.style) {
+      this.counterContainer?.nativeElement
+    ].filter(Boolean).forEach((el: any) => {
+      if (el?.style) {
         el.style.willChange = 'auto';
         el.style.transform = '';
         el.style.backfaceVisibility = '';
-        el.style.perspective = '';
       }
     });
 
     [this.box1, this.box2, this.box3, this.box4].forEach(box => {
-      const img = box?.nativeElement?.querySelector('img');
-      if (img && img.style) {
-        img.style.willChange = 'auto';
-        img.style.transform = '';
-      }
+      const img = box?.nativeElement?.querySelector('img') as HTMLElement | null;
+      if (img?.style) img.style.willChange = 'auto';
     });
   }
 
   private blockScrollAndInteraction(): void {
     if (!isPlatformBrowser(this.platformId)) return;
-    
     if (this.isScrollBlocked) return;
-    
+
     this.isScrollBlocked = true;
-    
+
     if (typeof document !== 'undefined' && document.body) {
       this.renderer.addClass(document.body, 'reserve-scrollbar-space');
       this.renderer.setStyle(document.body, 'overflow', 'hidden');
       this.renderer.setStyle(document.body, 'overscrollBehavior', 'none');
     }
-    
-    this.wheelListener = (event: WheelEvent) => {
-      event.preventDefault();
-      event.stopPropagation();
-    };
-    
-    this.touchMoveListener = (event: TouchEvent) => {
-      event.preventDefault();
-      event.stopPropagation();
-    };
-    
-    this.keydownListener = (event: KeyboardEvent) => {
-      const keys = ['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' '];
-      if (keys.includes(event.key)) {
-        event.preventDefault();
-        event.stopPropagation();
+
+    this.wheelListener = (e: WheelEvent) => { e.preventDefault(); e.stopPropagation(); };
+    this.touchMoveListener = (e: TouchEvent) => { e.preventDefault(); e.stopPropagation(); };
+    this.keydownListener = (e: KeyboardEvent) => {
+      if (['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' '].includes(e.key)) {
+        e.preventDefault(); e.stopPropagation();
       }
     };
 
@@ -458,34 +399,28 @@ export class LoadingScreenComponent implements AfterViewInit, OnDestroy {
 
   private unblockScrollAndInteraction(): void {
     if (!this.isScrollBlocked) return;
-    
+
     this.isScrollBlocked = false;
-    
+
     if (typeof document !== 'undefined' && document.body) {
       this.renderer.removeClass(document.body, 'reserve-scrollbar-space');
       this.renderer.removeStyle(document.body, 'overflow');
       this.renderer.removeStyle(document.body, 'overscrollBehavior');
     }
-    
-    if (this.wheelListener) {
-      document.removeEventListener('wheel', this.wheelListener, { capture: true } as any);
-    }
-    if (this.touchMoveListener) {
-      document.removeEventListener('touchmove', this.touchMoveListener, { capture: true } as any);
-    }
-    if (this.keydownListener) {
-      document.removeEventListener('keydown', this.keydownListener, { capture: true } as any);
-    }
+
+    if (this.wheelListener) document.removeEventListener('wheel', this.wheelListener, { capture: true } as any);
+    if (this.touchMoveListener) document.removeEventListener('touchmove', this.touchMoveListener, { capture: true } as any);
+    if (this.keydownListener) document.removeEventListener('keydown', this.keydownListener, { capture: true } as any);
   }
 
   ngOnDestroy(): void {
     this.unblockScrollAndInteraction();
-    
+
     if (this.timeline) {
       this.timeline.kill();
       this.timeline = undefined;
     }
-    
+
     if (isPlatformBrowser(this.platformId)) {
       this.cleanupWillChange();
     }

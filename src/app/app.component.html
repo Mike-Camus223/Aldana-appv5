@@ -1,8 +1,8 @@
-<app-toast-notification></app-toast-notification>
+﻿<app-toast-notification></app-toast-notification>
 @if (showMainLoader) {
-  <app-loading-screen-v2
+  <app-loading-screen
     (loadingFinished)="onMainLoadingFinished()">
-  </app-loading-screen-v2>
+  </app-loading-screen>
 }
 
 <router-outlet></router-outlet>
