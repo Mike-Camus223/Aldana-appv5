@@ -22,9 +22,10 @@ export class LoadingScreenV2Component implements AfterViewInit, OnDestroy {
   @ViewChild('nameContainer') nameContainer!: ElementRef<HTMLElement>;
   @ViewChild('logoSvg') logoSvg!: ElementRef<SVGSVGElement>;
 
-  // Contador 00 → 99
+  // Contador Odometer (00 → 99)
   @ViewChild('counterContainer') counterContainer!: ElementRef<HTMLElement>;
-  @ViewChild('counterText') counterText!: ElementRef<HTMLElement>;
+  @ViewChild('tensStrip') tensStrip!: ElementRef<HTMLElement>;
+  @ViewChild('unitsStrip') unitsStrip!: ElementRef<HTMLElement>;
 
   // 4 Fotos
   @ViewChild('box1') box1!: ElementRef<HTMLElement>;
@@ -77,6 +78,14 @@ export class LoadingScreenV2Component implements AfterViewInit, OnDestroy {
       this.renderer.setStyle(el, 'visibility', 'hidden');
     });
 
+    // Reset tiras del odometer a posición inicial 0
+    if (this.tensStrip?.nativeElement) {
+      gsap.set(this.tensStrip.nativeElement, { yPercent: 0, force3D: true });
+    }
+    if (this.unitsStrip?.nativeElement) {
+      gsap.set(this.unitsStrip.nativeElement, { yPercent: 0, force3D: true });
+    }
+
     // Fotos ocultas
     [this.box1, this.box2, this.box3, this.box4].forEach(box => {
       if (box?.nativeElement) {
@@ -86,7 +95,6 @@ export class LoadingScreenV2Component implements AfterViewInit, OnDestroy {
       }
     });
 
-    this.setCounterDigits(0);
     this.setupImagePreloading();
   }
 
@@ -168,7 +176,7 @@ export class LoadingScreenV2Component implements AfterViewInit, OnDestroy {
 
     // ══════════════════════════════════════════════════════════════════
     // FASE 1 — Fondo #FEF5EC + Dibujo SVG Aldana Vilcabana en #97ad92
-    //          + Contador con saltos variados de 10 en 10 / 20 en 20
+    //          + Contador Odometer / Picker Wheel rodante continuo (00 → 99)
     // ══════════════════════════════════════════════════════════════════
 
     const svg = this.logoSvg?.nativeElement;
@@ -236,17 +244,28 @@ export class LoadingScreenV2Component implements AfterViewInit, OnDestroy {
     // Duración total exacta del dibujo
     const totalDrawDuration = writeStart + (sorted.length - 1) * staggerGap + writeDuration * 0.6 + 0.5;
 
-    // Contador con saltos variados de 10 en 10 / 20 en 20
-    const counterObj = { val: 0 };
-    tl.to(counterObj, {
-      val: 99,
-      duration: totalDrawDuration,
-      ease: 'power2.out',
-      snap: {
-        val: [0, 18, 35, 54, 72, 88, 99]
-      },
-      onUpdate: () => this.setCounterDigits(Math.round(counterObj.val))
-    }, 0);
+    // ─── Animación Odometer 00 → 99 (Estilo Adovasio) ───────────────
+    // Columna decenas: 10 dígitos (0..9) -> desplazamiento final a 9 (-90%)
+    if (this.tensStrip?.nativeElement) {
+      tl.to(this.tensStrip.nativeElement, {
+        yPercent: -90,
+        duration: totalDrawDuration,
+        ease: 'power2.inOut',
+        force3D: true
+      }, 0);
+    }
+
+    // Columna unidades: 31 dígitos -> desplazamiento final al último 9 (-96.774%)
+    if (this.unitsStrip?.nativeElement) {
+      const totalUnits = 31;
+      const targetPercent = -((totalUnits - 1) / totalUnits) * 100;
+      tl.to(this.unitsStrip.nativeElement, {
+        yPercent: targetPercent,
+        duration: totalDrawDuration,
+        ease: 'power2.inOut',
+        force3D: true
+      }, 0);
+    }
 
     // ══════════════════════════════════════════════════════════════════
     // FASE 2 — Desaparecen en fade el logo y el contador
@@ -262,8 +281,7 @@ export class LoadingScreenV2Component implements AfterViewInit, OnDestroy {
 
     // ══════════════════════════════════════════════════════════════════
     // FASE 3 — Secuencia fluida con overlap de imágenes:
-    //          Antes de que cada una termine de acomodarse en su
-    //          contenedor, arranca la siguiente con suavidad.
+    //          Box 1 → Box 2 → Box 3 → Box 4 escalando y desacelerando
     // ══════════════════════════════════════════════════════════════════
 
     const imgDuration = 0.8;
@@ -375,16 +393,6 @@ export class LoadingScreenV2Component implements AfterViewInit, OnDestroy {
         this.cleanupWillChange();
       }
     }, 'colorTransition+=0.68');
-  }
-
-  /** Actualiza el contador de 00 a 99 */
-  private setCounterDigits(num: number): void {
-    const v = Math.max(0, Math.min(99, Math.floor(num)));
-    const formatted = v < 10 ? `0${v}` : `${v}`;
-
-    if (this.counterText?.nativeElement) {
-      this.counterText.nativeElement.textContent = formatted;
-    }
   }
 
   private hideAndComplete(): void {

@@ -26,9 +26,61 @@
     </div>
   </div>
 
-  <!-- ── Contador 00 → 99 (Arriba al centro en mobile/tablet, a la izquierda en desktop) ── -->
-  <div #counterContainer class="counter-box absolute top-10 sm:top-14 lg:top-1/2 left-1/2 lg:left-20 -translate-x-1/2 lg:translate-x-0 lg:-translate-y-1/2 z-[100] flex items-center justify-center">
-    <span #counterText class="counter-number NewAldyTitle select-none">00</span>
+  <!-- ── Contador 00 → 99 estilo Odometer / Picker Wheel (Adovasio style) ── -->
+  <div #counterContainer class="counter-box absolute top-10 sm:top-14 lg:top-1/2 left-1/2 lg:left-20 -translate-x-1/2 lg:translate-x-0 lg:-translate-y-1/2 z-[100] flex items-center justify-center pointer-events-none">
+    <div class="odometer-wrapper flex items-center overflow-hidden">
+      <!-- Columna Decenas (0 → 9) -->
+      <div class="digit-column overflow-hidden h-full flex flex-col justify-start">
+        <div #tensStrip class="digit-strip flex flex-col will-change-transform">
+          <span class="counter-digit NewAldyTitle">0</span>
+          <span class="counter-digit NewAldyTitle">1</span>
+          <span class="counter-digit NewAldyTitle">2</span>
+          <span class="counter-digit NewAldyTitle">3</span>
+          <span class="counter-digit NewAldyTitle">4</span>
+          <span class="counter-digit NewAldyTitle">5</span>
+          <span class="counter-digit NewAldyTitle">6</span>
+          <span class="counter-digit NewAldyTitle">7</span>
+          <span class="counter-digit NewAldyTitle">8</span>
+          <span class="counter-digit NewAldyTitle">9</span>
+        </div>
+      </div>
+      <!-- Columna Unidades (Múltiples ciclos continuos terminando en 9) -->
+      <div class="digit-column overflow-hidden h-full flex flex-col justify-start">
+        <div #unitsStrip class="digit-strip flex flex-col will-change-transform">
+          <span class="counter-digit NewAldyTitle">0</span>
+          <span class="counter-digit NewAldyTitle">1</span>
+          <span class="counter-digit NewAldyTitle">2</span>
+          <span class="counter-digit NewAldyTitle">3</span>
+          <span class="counter-digit NewAldyTitle">4</span>
+          <span class="counter-digit NewAldyTitle">5</span>
+          <span class="counter-digit NewAldyTitle">6</span>
+          <span class="counter-digit NewAldyTitle">7</span>
+          <span class="counter-digit NewAldyTitle">8</span>
+          <span class="counter-digit NewAldyTitle">9</span>
+          <span class="counter-digit NewAldyTitle">0</span>
+          <span class="counter-digit NewAldyTitle">1</span>
+          <span class="counter-digit NewAldyTitle">2</span>
+          <span class="counter-digit NewAldyTitle">3</span>
+          <span class="counter-digit NewAldyTitle">4</span>
+          <span class="counter-digit NewAldyTitle">5</span>
+          <span class="counter-digit NewAldyTitle">6</span>
+          <span class="counter-digit NewAldyTitle">7</span>
+          <span class="counter-digit NewAldyTitle">8</span>
+          <span class="counter-digit NewAldyTitle">9</span>
+          <span class="counter-digit NewAldyTitle">0</span>
+          <span class="counter-digit NewAldyTitle">1</span>
+          <span class="counter-digit NewAldyTitle">2</span>
+          <span class="counter-digit NewAldyTitle">3</span>
+          <span class="counter-digit NewAldyTitle">4</span>
+          <span class="counter-digit NewAldyTitle">5</span>
+          <span class="counter-digit NewAldyTitle">6</span>
+          <span class="counter-digit NewAldyTitle">7</span>
+          <span class="counter-digit NewAldyTitle">8</span>
+          <span class="counter-digit NewAldyTitle">9</span>
+          <span class="counter-digit NewAldyTitle">9</span>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- ── Aldana Vilcabana SVG centrado ─────────────── -->

@@ -9,7 +9,7 @@
   aspect-ratio: 16 / 10;
   max-height: 52vh;
   transform-origin: 50% 50%;
-  will-change: transform, opacity;
+  will-change: transform, opacity, width, height;
   pointer-events: none;
   box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.35);
   backface-visibility: hidden;
@@ -21,7 +21,6 @@
     width: min(88vw, 380px);
     aspect-ratio: 16 / 11;
     max-height: 50vh;
-
     box-shadow: 0 15px 35px -8px rgba(0, 0, 0, 0.3);
   }
 }
@@ -33,17 +32,44 @@
   display: block;
 }
 
-/* ─── Contador 00 → 99 ─── */
+/* ─── Contador 00 → 99 Odometer / Picker Wheel (Adovasio style) ─── */
 .counter-box {
   will-change: opacity;
 }
 
-.counter-number {
+.odometer-wrapper {
+  height: clamp(2.4rem, 5.5vw, 3.8rem);
+  line-height: clamp(2.4rem, 5.5vw, 3.8rem);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.digit-column {
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+  width: clamp(1.4rem, 3.2vw, 2.2rem);
+  text-align: center;
+}
+
+.digit-strip {
+  display: flex;
+  flex-direction: column;
+  will-change: transform;
+}
+
+.counter-digit {
+  height: clamp(2.4rem, 5.5vw, 3.8rem);
+  line-height: clamp(2.4rem, 5.5vw, 3.8rem);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-family: 'NewAldyFont', sans-serif;
+  color: #97ad92;
   font-size: clamp(2.2rem, 5.5vw, 3.8rem);
   font-weight: 300;
-  line-height: 1;
-  color: #97ad92;
-  letter-spacing: 0.05em;
   font-variant-numeric: tabular-nums;
+  user-select: none;
 }
