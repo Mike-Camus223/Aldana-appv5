@@ -51,10 +51,34 @@ export class CustomCursorComponent implements OnInit, OnDestroy {
     }
   };
 
-  private mouseDownHandler = () => {
+  private createWaterRipple(x: number, y: number) {
+    if (!this.isBrowser) return;
+    const ripple = document.createElement('div');
+    ripple.className = 'custom-cursor-ripple';
+    ripple.style.left = `${x}px`;
+    ripple.style.top = `${y}px`;
+    document.body.appendChild(ripple);
+
+    ripple.addEventListener('animationend', () => {
+      ripple.remove();
+    });
+
+    setTimeout(() => {
+      if (ripple.parentNode) {
+        ripple.remove();
+      }
+    }, 1000);
+  }
+
+  private mouseDownHandler = (e: MouseEvent) => {
     this.isClicked = true;
     if (this.cursorContainer) {
       this.cursorContainer.nativeElement.classList.add('clicked');
+    }
+    const x = e.clientX || this.mouseX;
+    const y = e.clientY || this.mouseY;
+    if (x >= 0 && y >= 0) {
+      this.createWaterRipple(x, y);
     }
   };
 
@@ -131,6 +155,9 @@ export class CustomCursorComponent implements OnInit, OnDestroy {
 
   private focusInHandler = (e: FocusEvent) => {
     const target = e.target as HTMLElement;
+    if (this.cursorContainer) {
+      this.cursorContainer.nativeElement.classList.add('focused');
+    }
     if (target && target.matches('input, textarea, [contenteditable="true"]')) {
       if (this.cursorContainer) {
         this.cursorContainer.nativeElement.classList.add('on-input');
@@ -140,6 +167,7 @@ export class CustomCursorComponent implements OnInit, OnDestroy {
 
   private focusOutHandler = () => {
     if (this.cursorContainer) {
+      this.cursorContainer.nativeElement.classList.remove('focused');
       this.cursorContainer.nativeElement.classList.remove('on-input');
     }
   };
@@ -172,6 +200,10 @@ export class CustomCursorComponent implements OnInit, OnDestroy {
 
     setTimeout(() => {
       if (this.cursorDot && this.cursorRing) {
+        gsap.set([this.cursorDot.nativeElement, this.cursorRing.nativeElement], {
+          xPercent: -50,
+          yPercent: -50
+        });
         this.setDotX = gsap.quickSetter(this.cursorDot.nativeElement, 'x', 'px');
         this.setDotY = gsap.quickSetter(this.cursorDot.nativeElement, 'y', 'px');
         this.setRingX = gsap.quickSetter(this.cursorRing.nativeElement, 'x', 'px');

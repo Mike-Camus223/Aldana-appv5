@@ -20,6 +20,7 @@
 }
 
 @media (pointer: fine) and (min-width: 1024px) {
+
   .custom-cursor-dot,
   .custom-cursor-ring {
     display: block;
@@ -32,22 +33,22 @@
   height: 6px;
   background-color: var(--color-aldy-medium-2, #97ad92);
   transition: transform 0.2s cubic-bezier(0.25, 1, 0.5, 1),
-              background-color 0.25s ease,
-              opacity 0.25s ease;
+    background-color 0.25s ease,
+    opacity 0.25s ease;
 }
 
-/* Anillo seguidor elástico y suave (Estilo Benito Fernández) */
+/* Anillo seguidor elástico y suave */
 .custom-cursor-ring {
   width: 34px;
   height: 34px;
   border: 1.5px solid var(--color-aldy-medium-2, #97ad92);
   background-color: transparent;
   transition: width 0.3s cubic-bezier(0.25, 1, 0.5, 1),
-              height 0.3s cubic-bezier(0.25, 1, 0.5, 1),
-              border-color 0.3s ease,
-              background-color 0.3s ease,
-              transform 0.15s ease-out,
-              opacity 0.25s ease;
+    height 0.3s cubic-bezier(0.25, 1, 0.5, 1),
+    border-color 0.3s ease,
+    background-color 0.3s ease,
+    transform 0.18s cubic-bezier(0.25, 1, 0.5, 1),
+    opacity 0.25s ease;
 }
 
 /* Estado Hover sobre botones, enlaces y elementos interactivos */
@@ -57,27 +58,36 @@
 }
 
 .custom-cursor-container.hovered .custom-cursor-ring {
-  width: 50px;
-  height: 50px;
+  width: 48px;
+  height: 48px;
   border-color: var(--color-aldy-medium-2, #97ad92);
-  background-color: rgba(151, 173, 146, 0.15);
+  background-color: transparent;
 }
 
-/* Estado Click (MouseDown / Active) */
-.custom-cursor-container.clicked .custom-cursor-ring {
-  transform: translate(-50%, -50%) scale(0.8);
-  background-color: rgba(151, 173, 146, 0.28);
+/* Estado Click (MouseDown / Active) y Focus - Se reduce de tamaño tanto el anillo como el punto central */
+.custom-cursor-container.clicked .custom-cursor-ring,
+.custom-cursor-container.hovered.clicked .custom-cursor-ring,
+.custom-cursor-container.focused .custom-cursor-ring,
+.custom-cursor-container.hovered.focused .custom-cursor-ring {
+  width: 26px;
+  height: 26px;
+  background-color: transparent !important;
   border-color: var(--color-aldy-green-gray-bold, #4A5844);
 }
 
-.custom-cursor-container.clicked .custom-cursor-dot {
-  transform: translate(-50%, -50%) scale(1.2);
+.custom-cursor-container.clicked .custom-cursor-dot,
+.custom-cursor-container.hovered.clicked .custom-cursor-dot,
+.custom-cursor-container.focused .custom-cursor-dot,
+.custom-cursor-container.hovered.focused .custom-cursor-dot {
+  width: 3.5px;
+  height: 3.5px;
+  background-color: var(--color-aldy-green-gray-bold, #4A5844);
 }
 
 /* Estado Hover sobre campos de texto / inputs */
 .custom-cursor-container.on-input .custom-cursor-ring {
-  width: 42px;
-  height: 42px;
+  width: 38px;
+  height: 38px;
   border: 1px dashed var(--color-aldy-medium-2, #97ad92);
   background-color: transparent;
   opacity: 0.45;
@@ -85,6 +95,46 @@
 
 .custom-cursor-container.on-input .custom-cursor-dot {
   opacity: 0.25;
+}
+
+/* Animación de gota de agua al hacer click */
+.custom-cursor-ripple {
+  position: fixed;
+  width: 32px;
+  height: 32px;
+  margin-left: -16px;
+  margin-top: -16px;
+  border-radius: 50%;
+  border: 1px solid var(--color-aldy-medium-2, #97ad92);
+  box-shadow: 0 0 10px rgba(151, 173, 146, 0.35), inset 0 0 6px rgba(151, 173, 146, 0.2);
+  pointer-events: none;
+  z-index: 99998;
+  will-change: transform, opacity;
+  animation: waterDropRipple 0.75s cubic-bezier(0.1, 0.8, 0.25, 1) forwards;
+}
+
+@keyframes waterDropRipple {
+  0% {
+    transform: scale(0.35);
+    opacity: 0.35;
+    border-width: 0.5px;
+  }
+
+  50% {
+    opacity: 0.20;
+    border-color: var(--color-aldy-medium-2, #97ad92);
+  }
+
+  70% {
+    opacity: 0.15;
+    border-width: 0.1px;
+  }
+
+  100% {
+    transform: scale(2);
+    opacity: 0;
+    border-width: 0.5px;
+  }
 }
 
 /* Ocultar suavemente cuando sale de la ventana */
