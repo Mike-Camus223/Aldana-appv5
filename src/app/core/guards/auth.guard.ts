@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { CanActivate, CanActivateChild, Router, UrlTree } from '@angular/router';
-import { Observable, map, take, of, catchError } from 'rxjs';
+import { Observable, map, take, of, catchError, filter, switchMap } from 'rxjs';
 import { AuthService } from '../services/auth/auth.service';
 
 @Injectable({
@@ -24,18 +24,20 @@ export class AuthGuard implements CanActivate, CanActivateChild {
       return of(true);
     }
 
-    // 2. Verificación asíncrona reactiva con currentUser$
-    return this.authService.currentUser$.pipe(
+    // 2. Esperar a que la inicialización de autenticación (y resolución de OAuth) termine
+    return this.authService.authInitialized$.pipe(
+      filter(init => init === true),
       take(1),
-      map(user => {
+      switchMap(() => {
+        const user = this.authService.getCurrentUser();
         if (user) {
-          return true;
+          return of(true);
         }
 
-        // Si no hay usuario activo, redirigir a iniciar sesión limpiamente sin bucles ni llamadas destructivas
-        return this.router.createUrlTree(['/cuenta/iniciar-sesion'], {
+        // Si no hay usuario activo, redirigir a iniciar sesión limpiamente
+        return of(this.router.createUrlTree(['/cuenta/iniciar-sesion'], {
           queryParams: { returnUrl: this.router.url }
-        });
+        }));
       }),
       catchError(() => {
         return of(this.router.createUrlTree(['/cuenta/iniciar-sesion']));

@@ -1,6 +1,6 @@
 import { Injectable, inject, PLATFORM_ID } from '@angular/core';
 import { CanActivate, Router, UrlTree, ActivatedRouteSnapshot } from '@angular/router';
-import { Observable, of } from 'rxjs';
+import { Observable, of, filter, take, switchMap } from 'rxjs';
 import { AuthService } from '../services/auth/auth.service';
 import { isPlatformBrowser } from '@angular/common';
 
@@ -49,23 +49,29 @@ export class RedirectGuard implements CanActivate {
       this.recordSuspiciousAttempt();
     }
 
-    // 3. Verificar si el usuario YA está autenticado (lógica principal del guard)
-    const currentUser = this.authService.getCurrentUser();
-    
     // Permitir acceso a rutas de confirmación incluso si está autenticado
     if (currentPath === 'confirmar-registro' || currentPath === 'registro-exitoso') {
       return of(true);
     }
-    
-    if (currentUser) {      
-      this.logSecurityEvent('AUTHENTICATED_USER_REDIRECT', currentUser.email || 'unknown');
-      
-      // Usuario autenticado, redirigir al panel del usuario
+
+    // 3. Si ya está autenticado en memoria, redirigir inmediatamente a panel de control
+    if (this.authService.isAuthenticated()) {
       return of(this.router.createUrlTree(['/panel/panel-control']));
     }
 
-    // 4. Usuario NO autenticado → PERMITIR acceso (siempre para ecommerce)
-    return of(true);
+    // 4. Esperar a que AuthService termine su inicialización
+    return this.authService.authInitialized$.pipe(
+      filter(init => init === true),
+      take(1),
+      switchMap(() => {
+        const currentUser = this.authService.getCurrentUser();
+        if (currentUser) {
+          this.logSecurityEvent('AUTHENTICATED_USER_REDIRECT', currentUser.email || 'unknown');
+          return of(this.router.createUrlTree(['/panel/panel-control']));
+        }
+        return of(true);
+      })
+    );
   }
 
   private shouldApplyRateLimit(): boolean {

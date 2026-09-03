@@ -122,7 +122,7 @@ export class UserpanelLayoutComponent implements OnInit, AfterViewInit, OnDestro
     this.authSubscription = this.authService.currentUser$.subscribe(user => {
       this.currentUser = user;
       if (!user) {
-        this.router.navigate(['/login']);
+        this.router.navigate(['/cuenta/iniciar-sesion']);
       } else {
         // Pre-cargar órdenes en segundo plano para que abran instantáneamente
         this.ordersService.getUserOrders(false).catch(() => { });

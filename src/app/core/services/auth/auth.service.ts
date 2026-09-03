@@ -22,6 +22,8 @@ export class AuthService {
   private supabase: SupabaseClient;
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   private sessionSubject = new BehaviorSubject<Session | null>(null);
+  private authInitializedSubject = new BehaviorSubject<boolean>(false);
+  public authInitialized$ = this.authInitializedSubject.asObservable();
   private sessionTimeoutSubscription?: Subscription;
   private platformId = inject(PLATFORM_ID);
   private isBrowser = isPlatformBrowser(this.platformId);
@@ -53,9 +55,11 @@ export class AuthService {
       const { data: { session } } = await this.supabase.auth.getSession();
       this.sessionSubject.next(session);
       this.currentUserSubject.next(session?.user ?? null);
+      this.authInitializedSubject.next(true);
       // No iniciar timers ni listeners en SSR
     } catch (error) {
       console.error('Error initializing auth in SSR:', error);
+      this.authInitializedSubject.next(true);
     }
   }
 
@@ -121,6 +125,8 @@ export class AuthService {
         this.currentUserSubject.next(null);
       }
 
+      this.authInitializedSubject.next(true);
+
       this.supabase.auth.onAuthStateChange(async (event, session) => {
         this.sessionSubject.next(session);
 
@@ -135,9 +141,17 @@ export class AuthService {
           this.startSessionMonitoring(session);
           this.logSecurityEvent('USER_SIGNED_IN', session.user.email);
           await this.handleEmailConfirmation();
+
+          if (this.isBrowser) {
+            const currentPath = window.location.pathname;
+            if (currentPath.startsWith('/cuenta') || currentPath.includes('iniciar-sesion') || currentPath.includes('login') || window.location.hash.includes('access_token')) {
+              this.router.navigate(['/panel/panel-control']);
+            }
+          }
         } else if (event === 'SIGNED_OUT') {
           this.stopSessionMonitoring();
           this.logSecurityEvent('USER_SIGNED_OUT', 'unknown');
+          this.router.navigate(['/cuenta/iniciar-sesion']);
         } else if (event === 'TOKEN_REFRESHED' && session) {
           this.logSecurityEvent('TOKEN_REFRESHED', session.user?.email || 'unknown');
           this.startSessionMonitoring(session); // Reiniciar monitoreo con nueva sesión
@@ -146,6 +160,7 @@ export class AuthService {
     } catch (error) {
       console.error('Error initializing auth:', error);
       this.logSecurityEvent('AUTH_INIT_ERROR', 'unknown', { error: (error as Error).message });
+      this.authInitializedSubject.next(true);
     }
   }
 

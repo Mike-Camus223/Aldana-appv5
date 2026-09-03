@@ -393,7 +393,7 @@ export class ShippingComponent implements OnInit, OnDestroy, AfterViewInit {
           'Error de autenticación',
           'No se pudo verificar tu identidad. Por favor, inicia sesión nuevamente.'
         );
-        this.router.navigate(['/auth/login']);
+        this.router.navigate(['/cuenta/iniciar-sesion']);
         return;
       }
 

@@ -417,7 +417,8 @@ export class NavbarComponent implements OnInit, OnDestroy {
       document.body.style.overflow = '';
     }
 
-    if (this.isAuthenticated) {
+    const isUserLoggedIn = this.isAuthenticated || this.authService.isAuthenticated() || !!this.authService.getCurrentUser();
+    if (isUserLoggedIn) {
       this.router.navigate(['/panel/panel-control']);
     } else {
       this.router.navigate(['/cuenta/iniciar-sesion']);
