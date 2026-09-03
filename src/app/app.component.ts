@@ -1,4 +1,4 @@
-﻿import { Component, OnInit, OnDestroy, Inject, PLATFORM_ID, ChangeDetectionStrategy, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, Inject, PLATFORM_ID, ChangeDetectionStrategy, inject } from '@angular/core';
 import { Router, NavigationEnd, RouterOutlet } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
 import { filter } from 'rxjs/operators';
@@ -6,7 +6,7 @@ import { Subscription } from 'rxjs';
 import { LoadingScreenGenericComponent } from "./shared/components/system/loading-screen-generic/loading-screen-generic.component";
 import { LoadingScreenComponent } from './shared/components/system/loading-screen/loading-screen.component';
 import { ToastNotificationComponent } from './shared/components/system/toast-notification/toast-notification.component';
-import { CustomCursorComponent } from './shared/components/system/custom-cursor/custom-cursor.component';
+import { CustomCursorComponent } from './shared/layouts/components/custom-cursor/custom-cursor.component';
 import { LoaderService } from './core/services/utils/loader.service';
 import { SmoothScrollService } from './core/services/utils/smooth-scroll.service';
 

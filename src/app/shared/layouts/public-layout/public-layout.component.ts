@@ -1,8 +1,8 @@
 import { Component, OnInit, OnDestroy, AfterViewInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { Footerv2Component } from '../../components/system/footerv2/footerv2.component';
+import { FooterComponent } from '../components/footer/footer.component';
 import { LoaderService } from '../../../core/services/utils/loader.service';
-import { NavbarPublicv3Component } from '../../components/system/navbar-publicv3/navbar-publicv3.component';
+import { NavbarComponent } from '../components/navbar/navbar.component';
 import { DiscountLeafComponent } from '../../components/system/discount-leaf/discount-leaf.component';
 import { SmoothScrollService } from '../../../core/services/utils/smooth-scroll.service';
 
@@ -11,8 +11,8 @@ import { SmoothScrollService } from '../../../core/services/utils/smooth-scroll.
   standalone: true,
   imports: [
     RouterOutlet,
-    NavbarPublicv3Component,
-    Footerv2Component,
+    NavbarComponent,
+    FooterComponent,
     DiscountLeafComponent,
   ],
   templateUrl: './public-layout.component.html',

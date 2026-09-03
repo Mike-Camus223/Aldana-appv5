@@ -1,14 +1,14 @@
 export interface OrderProduct {
-    id: string;
-    name: string;
-    quantity: number;
-    price: number;
-    color: string | null;
-    size: string | null;
-    image: string;
-  }
-  
-  export interface OrderModel {
+  id: string;
+  name: string;
+  quantity: number;
+  price: number;
+  color: string | null;
+  size: string | null;
+  image: string;
+}
+
+export interface OrderModel {
     id: string;
     order_number: string;
     customer_first_name: string;
@@ -34,7 +34,7 @@ export interface OrderProduct {
     discount_code?: string;
     discount_type?: 'percent' | 'fixed';
     total_final: number;
-    status: 'pending' | 'in_transit' | 'completed' | 'rejected';
+    status: 'pending' | 'preparing' | 'in_transit' | 'completed' | 'rejected';
     payment_method?: 'mercadopago' | 'transfer' | 'cash';
     payment_status?: 'pending' | 'approved' | 'rejected' | 'in_process' | 'authorized' | 'in_mediation' | 'rejected' | 'cancelled' | 'refunded' | 'charged_back';
     payment_id?: string;

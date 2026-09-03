@@ -4,9 +4,9 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { LucideAngularModule } from 'lucide-angular';
 import { OrdersService } from '../../../../core/services/orders/orders.service';
 import { InvoiceService } from '../../../../core/services/invoice/invoice.service';
-import { OrderModel, OrderProduct } from '../../../../shared/models/order.interface';
-import { AuthService } from '../../../../core/services/auth/auth.service';
-import { getPaymentRejectionInfo, PaymentRejectionInfo } from '../../../utils/helpers/payment-status-helper';
+import { OrderModel, OrderProduct, Order } from '../../../../shared/models/order.interface';
+import { AuthService } from '../../../../core/auth/auth.service';
+import { getPaymentRejectionInfo, PaymentRejectionInfo } from '../../../../shared/utils/helpers/payment-status-helper';
 
 export interface Step {
   id: number;
@@ -18,50 +18,15 @@ export interface Step {
   icon: string;
 }
 
-export interface Order {
-  id: string;
-  order_number: string;
-  status: 'pending' | 'preparing' | 'in_transit' | 'completed' | 'rejected';
-  created_at: string;
-  updated_at: string;
-  total_final: number;
-  subtotal: number;
-  discount_applied?: number;
-  discount_code?: string;
-  customer_first_name: string;
-  customer_last_name: string;
-  customer_email?: string;
-  customer_phone?: string;
-  customer_notes?: string;
-  seller_notes?: string;
-  address_street: string;
-  address_number: string;
-  address_apartment?: string;
-  postal_code?: string;
-  city: string;
-  province: string;
-  payment_method?: 'mercadopago' | 'transfer' | 'cash';
-  payment_status?: 'pending' | 'approved' | 'rejected';
-  whatsapp_message?: string;
-  wamid?: string;
-  estimated_delivery_at?: string;
-  products: Array<{
-    id: string;
-    name: string;
-    price: number;
-    quantity: number;
-    image?: string;
-    color?: string;
-    size?: string;
-  }>;
-}
-
 @Component({
-  selector: 'app-order-status',
+  selector: 'app-order-details, app-order-status',
   standalone: true,
-  imports: [CommonModule, RouterModule, LucideAngularModule], templateUrl: './order-status.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush})
-export class OrderStatusComponent implements OnInit, OnDestroy {
+  imports: [CommonModule, RouterModule, LucideAngularModule],
+  templateUrl: './order-details.component.html',
+  styleUrls: ['./order-details.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
+})
+export class OrderDetailsComponent implements OnInit, OnDestroy {
   order: Order | null = null;
   paymentRecord: any = null;
   rejectionInfo: PaymentRejectionInfo | null = null;
@@ -361,3 +326,5 @@ export class OrderStatusComponent implements OnInit, OnDestroy {
     return parts.join(' • ');
   }
 }
+
+export { OrderDetailsComponent as OrderStatusComponent };

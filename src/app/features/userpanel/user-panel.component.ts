@@ -18,7 +18,7 @@ import { Subscription } from 'rxjs';
 import { AppMenuItem } from '../../shared/models/app-menu-item.model';
 import { LucideAngularModule } from 'lucide-angular';
 import { LoaderService } from '../../core/services/utils/loader.service';
-import { NavbarPublicv3Component } from '../../shared/components/system/navbar-publicv3/navbar-publicv3.component';
+import { NavbarComponent } from '../../shared/layouts/components/navbar/navbar.component';
 import { SmoothScrollService } from '../../core/services/utils/smooth-scroll.service';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -30,7 +30,7 @@ gsap.registerPlugin(ScrollTrigger);
 @Component({
   selector: 'app-user-panel',
   standalone: true,
-  imports: [CommonModule, RouterModule, LucideAngularModule, NavbarPublicv3Component],
+  imports: [CommonModule, RouterModule, LucideAngularModule, NavbarComponent],
   templateUrl: './user-panel.component.html', styleUrls: ['./user-panel.component.css']
 })
 export class UserPanelComponent implements OnInit, AfterViewInit, OnDestroy {

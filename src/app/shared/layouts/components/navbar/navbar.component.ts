@@ -32,10 +32,11 @@ import { LucideAngularModule } from 'lucide-angular';
 
 
 @Component({
-  selector: 'app-navbar-publicv3',
+  selector: 'app-navbar, app-navbar-publicv3',
   imports: [CommonModule, RouterModule, LinkHoverUnderlineDirective, LucideAngularModule],
-  templateUrl: './navbar-publicv3.component.html',
-  styleUrl: './navbar-publicv3.component.css', changeDetection: ChangeDetectionStrategy.Eager,
+  templateUrl: './navbar.component.html',
+  styleUrl: './navbar.component.css',
+  changeDetection: ChangeDetectionStrategy.Eager,
   animations: [
     trigger('dropdownAnimation', [
       transition(':enter', [
@@ -75,7 +76,7 @@ import { LucideAngularModule } from 'lucide-angular';
     ])
   ]
 })
-export class NavbarPublicv3Component implements OnInit, OnDestroy {
+export class NavbarComponent implements OnInit, OnDestroy {
   private isBrowser: boolean;
   private cdr = inject(ChangeDetectorRef);
   private scrollTriggerInstance?: any;
@@ -422,5 +423,6 @@ export class NavbarPublicv3Component implements OnInit, OnDestroy {
       this.router.navigate(['/cuenta/iniciar-sesion']);
     }
   }
-
 }
+
+export { NavbarComponent as NavbarPublicv3Component };

@@ -1,19 +1,19 @@
 import { Component, ChangeDetectionStrategy, AfterViewInit, OnDestroy, inject } from '@angular/core';
 import { RouterModule, Router, NavigationEnd } from '@angular/router';
-import { CartService } from '../../../../core/services/cart.service';
-import { SmoothScrollService } from '../../../../core/services/utils/smooth-scroll.service';
+import { CartService } from '../../../core/services/cart.service';
+import { SmoothScrollService } from '../../../core/services/smooth-scroll.service';
 import { filter } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-cart',
+  selector: 'app-checkout-layout, app-cart',
   standalone: true,
   imports: [RouterModule],
-  templateUrl: './cart.component.html',
+  templateUrl: './checkout-layout.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrls: ['./cart.component.css']
+  styleUrls: ['./checkout-layout.component.css']
 })
-export class CartComponent implements AfterViewInit, OnDestroy {
+export class CheckoutLayoutComponent implements AfterViewInit, OnDestroy {
   cartIsEmpty = true;
   private smoothScroll = inject(SmoothScrollService);
   private routerSubscription?: Subscription;
@@ -44,3 +44,5 @@ export class CartComponent implements AfterViewInit, OnDestroy {
     this.routerSubscription?.unsubscribe();
   }
 }
+
+export { CheckoutLayoutComponent as CartComponent };

@@ -6,13 +6,14 @@ import { NewsletterService } from '../../../../core/services/newsletter/newslett
 import { NotificationService } from '../../../../core/services/notification.service';
 
 @Component({
-  selector: 'app-footerv2',
+  selector: 'app-footer, app-footerv2',
   standalone: true,
   imports: [RouterModule, AcordiongenericComponent, LucideAngularModule],
-  templateUrl: './footerv2.component.html',
-  styleUrl: './footerv2.component.css',
-  changeDetection: ChangeDetectionStrategy.Eager})
-export class Footerv2Component {
+  templateUrl: './footer.component.html',
+  styleUrl: './footer.component.css',
+  changeDetection: ChangeDetectionStrategy.Eager
+})
+export class FooterComponent {
 
   private newsletterService = inject(NewsletterService);
   private notificationService = inject(NotificationService);
@@ -76,3 +77,5 @@ export class Footerv2Component {
     }
   }
 }
+
+export { FooterComponent as Footerv2Component };

@@ -127,4 +127,6 @@ export class CollectionBridesService {
             }
         } as any;
     }
-}
+}
+
+export { CollectionBridesService as BridesCollectionsService };

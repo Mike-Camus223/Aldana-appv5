@@ -5,13 +5,13 @@ import { User } from '@supabase/supabase-js';
 import { filter } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 import { LoaderService } from '../../../core/services/loader.service';
-import { Footerv2Component } from '../../../shared/components/system/footerv2/footerv2.component';
+import { FooterComponent } from '../../../shared/layouts/components/footer/footer.component';
 import { SmoothScrollService } from '../../../core/services/smooth-scroll.service';
 
 @Component({
   selector: 'app-auth-layout',
   standalone: true,
-  imports: [RouterModule, Footerv2Component],
+  imports: [RouterModule, FooterComponent],
   templateUrl: './auth-layout.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./auth-layout.component.css']

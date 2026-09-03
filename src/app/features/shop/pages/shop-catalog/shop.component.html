@@ -1,7 +1,121 @@
 <div class="h-[72px] lg:h-[88px]"></div>
-<section class="overflow-x-hidden">
-  <app-breadcrumb [items]="breadcrumbItemsShop"></app-breadcrumb>
+<section>
+    <app-breadcrumb [items]="breadcrumbItemsShop"></app-breadcrumb>
 </section>
-<div class="mb-6">
-  <app-store-template></app-store-template>
+<div
+  class="px-4 py-2 sm:px-6 bg-aldy-white lg:px-12 xl:px-16 2xl:px-24 inline-flex justify-between items-center w-full">
+  <button type="button" (click)="toggleFilters()"
+    class="inline-flex text-xs NewAldyFontType4 gap-2 items-center border cursor-pointer border-aldy-medium-2 px-6 py-3 tracking-wider font-medium uppercase transition-all duration-300 text-aldy-green-gray ease-in-out hover:bg-aldy-medium-2 hover:text-white">
+    <lucide-icon name="Funnel" class="h-4 w-4"></lucide-icon>
+    <span>{{ showFilters ? 'Ocultar filtros' : 'Mostrar filtros' }}</span>
+    <lucide-icon [name]="showFilters ? 'Plus' : 'Minus'" class="h-4 w-4"></lucide-icon>
+  </button>
+  <div #productsControls id="productsControls" class="w-40 h-auto justify-end gap-2 hidden lg:flex">
+    <button type="button" (click)="setProductColumns(2)" [ngClass]="productColumns === 2 ? 'bg-aldy-medium-2' : ''"
+      class="group py-[7px] px-2 hover:bg-aldy-medium-2 transition-all duration-300 ease-in-out cursor-pointer border border-aldy-medium-2">
+      <div class="grid grid-cols-2 gap-[2px] grid-rows-2">
+        @for (n of [1,2,3,4]; track n) {
+        <span class="h-[12px] w-[12px] transition-all duration-300 ease-in-out"
+          [ngClass]="productColumns === 2 ? 'bg-aldy-white' : 'bg-aldy-medium-2 group-hover:bg-aldy-white'"></span>
+        }
+      </div>
+    </button>
+
+    <button type="button" (click)="setProductColumns(3)" [ngClass]="productColumns === 3 ? 'bg-aldy-medium-2' : ''"
+      class="group py-[7px] px-2 hover:bg-aldy-medium-2 transition-all duration-300 ease-in-out cursor-pointer border border-aldy-medium-2">
+      <div class="grid grid-cols-3 gap-[2px] grid-rows-3">
+        @for (n of [1,2,3,4,5,6,7,8,9]; track n) {
+        <span class="h-[8px] w-[8px] transition-all duration-300 ease-in-out"
+          [ngClass]="productColumns === 3 ? 'bg-aldy-white' : 'bg-aldy-medium-2 group-hover:bg-aldy-white'"></span>
+        }
+      </div>
+    </button>
+
+    <button type="button" (click)="setProductColumns(4)" [ngClass]="productColumns === 4 ? 'bg-aldy-medium-2' : ''"
+      class="group py-[7px] px-2 hover:bg-aldy-medium-2 transition-all duration-300 ease-in-out cursor-pointer border border-aldy-medium-2">
+      <div class="grid grid-cols-4 gap-[2px] grid-rows-4">
+        @for (n of [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]; track n) {
+        <span class="h-[5px] w-[5px] transition-all duration-300 ease-in-out"
+          [ngClass]="productColumns === 4 ? 'bg-aldy-white' : 'bg-aldy-medium-2 group-hover:bg-aldy-white'"></span>
+        }
+      </div>
+    </button>
+  </div>
+</div>
+<div class="w-full border-b bg-aldy-white border-[#d9e2d8] mb-2 relative">
+  <app-loadingbar [loading]="loading"></app-loadingbar>
+</div>
+<div class="px-4 bg-aldy-white sm:px-6 lg:px-12 xl:px-16 2xl:px-24 py-2 w-full">
+  <div class="max-w-screen-3xl mx-auto">
+
+    <div #storeLayout class="flex flex-col lg:flex-row relative transition-all duration-500 ease-in-out"
+      [ngClass]="{ 'gap-4': showFilters && !isMobileView, 'gap-0': !showFilters || isMobileView }">
+
+      <app-filter [(showFilters)]="showFilters" [isMobileView]="isMobileView" [topCollections]="topCollections"
+        [topBridesCollections]="topBridesCollections" [(activeCategory)]="activeCategory"
+        [(selectedCollectionId)]="selectedCollectionId" (filterApplied)="applyFiltersAction(isMobileView)"></app-filter>
+
+      <div #productsContainer class="relative w-full h-auto min-h-[420px] overflow-hidden">
+        @if (loading) {
+        <div #spinnerContainer class="flex items-center justify-center w-full min-h-[420px] py-24 bg-aldy-white z-20">
+          <div class="spinner"></div>
+        </div>
+        }
+        @if (!loading && filteredProducts.length === 0 && newDropCollections.length === 0) {
+        <div
+          class="flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-10 px-6 sm:px-10 py-10 bg-aldy-white my-8 max-w-2xl mx-auto text-center sm:text-left">
+          <div
+            class="flex-shrink-0 w-32 h-32 sm:w-44 sm:h-44 rounded-full flex items-center justify-center overflow-hidden border border-[#EAE5DF]/70 bg-[#F5F2EE]">
+            <img draggable="false" src="assets/images/sections/misc/circle_mannequin.png" alt="Maniquí AV"
+              class="w-full h-full object-cover scale-115" />
+          </div>
+          <div class="flex flex-col items-center sm:items-start">
+            <h3 class="NewAldyTitle text-lg sm:text-xl font-light text-aldy-green-gray-bold tracking-wider">
+              No hay productos disponibles
+            </h3>
+            <p
+              class="mt-2 text-xs text-aldy-green-gray-bold NewAldyFontType4 tracking-wider font-light leading-relaxed max-w-sm">
+              Actualmente no encontramos prendas en esta categoría o colección.<br class="hidden sm:inline">
+              Prueba seleccionando otra categoría en el menú de filtros.
+            </p>
+          </div>
+        </div>
+        }
+        @if (!loading && (pagedProducts.length > 0 || newDropCollections.length > 0)) {
+        <div #productsGrid class="grid gap-5" [ngClass]="[
+            productColumns === 2
+              ? 'grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-2 mx-0 xl:mx-60'
+              : '',
+            productColumns === 3 ? 'grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 mx-0' : '',
+            productColumns === 4 ? 'grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 mx-0' : ''
+          ]">
+
+          <!-- Tarjetas de colección en New Drop y Novias -->
+          @if ((activeCategory === 'new-drop' || activeCategory === 'novias') && currentPage === 1) {
+          @for (col of newDropCollections; track (col.id + '-' + activeCategory)) {
+          <app-newdropcollection [collection]="col" [isMobileView]="isMobileView" [canAnimate]="cardsReady"
+            (collectionSelected)="onCollectionCardSelected(col)">
+          </app-newdropcollection>
+          }
+          }
+
+          <!-- Listado de prendas individuales -->
+          @for (product of pagedProducts; track (product.id + '-' + activeCategory)) {
+          <app-cardproduct [product]="product" [selectedColor]="selectedColors[product.id]"
+            [displayImage]="product.main_image" [mobileMode]="'ismobile'" [desktopMode]="'isdesktop'"
+            [canAnimate]="cardsReady" (colorSelected)="selectColor($event)">
+          </app-cardproduct>
+          }
+        </div>
+        }
+        <div>
+          @if (!loading && totalProductsCount > itemsPerPage) {
+          <app-paginator class="pt-4 w-full justify-center flex" [currentPage]="currentPage" [totalPages]="totalPages"
+            (pageChange)="goToPage($event)">
+          </app-paginator>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

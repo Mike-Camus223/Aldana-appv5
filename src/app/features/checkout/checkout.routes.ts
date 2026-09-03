@@ -5,7 +5,7 @@ export const checkoutRoutes: Routes = [
   {
     path: '',
     loadComponent: () =>
-      import('../../features/landing/pages/cart/cart.component').then(c => c.CartComponent),
+      import('./layout/checkout-layout.component').then(c => c.CheckoutLayoutComponent),
     children: [
       {
         path: '',

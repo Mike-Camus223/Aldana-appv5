@@ -8,7 +8,7 @@ import {
   HostListener,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
-  Inject,
+  inject,
   PLATFORM_ID
 } from '@angular/core';
 import { isPlatformBrowser, CommonModule } from '@angular/common';
@@ -115,14 +115,15 @@ export class ItemsCollectionComponent implements OnInit, AfterViewInit, OnDestro
     }
   }
 
+  private platformId = inject(PLATFORM_ID);
+
   constructor(
     private route: ActivatedRoute,
     private bridesProducts: BridesProductsService,
     private collections: CollectionService,
     private collectionBrides: CollectionBridesService,
     private loaderService: LoaderService,
-    private cdr: ChangeDetectorRef,
-    @Inject(PLATFORM_ID) private platformId: Object
+    private cdr: ChangeDetectorRef
   ) {
     this.isBrowser = isPlatformBrowser(this.platformId);
   }

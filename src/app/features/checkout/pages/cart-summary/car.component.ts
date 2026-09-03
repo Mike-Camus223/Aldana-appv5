@@ -5,12 +5,12 @@ import { CartService } from '../../../../core/services/cart.service';
 import { Router } from '@angular/router';
 import { CheckoutStepperProgressService } from '../../../../core/services/checkout-stepper-progress.service';
 import { FormsModule } from '@angular/forms';
-import { NavbarPublicv3Component } from "../../../../shared/components/system/navbar-publicv3/navbar-publicv3.component";
+import { NavbarComponent } from '../../../../shared/layouts/components/navbar/navbar.component';
 
 @Component({
   selector: 'app-cartship',
   standalone: true,
-  imports: [CommonModule, FormsModule, NavbarPublicv3Component],
+  imports: [CommonModule, FormsModule, NavbarComponent],
   templateUrl: './car.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./car.component.css'],

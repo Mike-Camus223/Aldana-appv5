@@ -4,8 +4,7 @@ import { CartItem } from '../../../shared/models/cartItems-model';
 import { ShippingData, DiscountData } from '../../../core/services/shipping.service';
 import { AuthService } from '../../../core/auth/auth.service';
 import { environment } from '../../../../environments/environment';
-import { OrderModel, OrderSummary } from '../../../shared/models/order.interface';
-import { Order } from '../../../shared/components/templates/order-status/order-status.component';
+import { OrderModel, OrderSummary, Order } from '../../../shared/models/order.interface';
 
 export interface OrderData {
   order_number: string;

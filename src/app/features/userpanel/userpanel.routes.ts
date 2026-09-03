@@ -22,7 +22,7 @@ export const userPanelRoutes: Routes = [
       },
       {
         path: 'order-details/:id',
-        loadComponent: () => import('../../shared/components/templates/order-status/order-status.component').then(c => c.OrderStatusComponent),
+        loadComponent: () => import('./pages/order-details/order-details.component').then(c => c.OrderDetailsComponent),
       },
       {
         path: 'informacion-cuenta',

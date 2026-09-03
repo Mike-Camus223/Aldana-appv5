@@ -17,9 +17,9 @@ import { filter } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 import { AppMenuItem } from '../../../shared/models/app-menu-item.model';
 import { LucideAngularModule } from 'lucide-angular';
-import { LoaderService } from '../../../core/services/loader.service';
-import { NavbarPublicv3Component } from '../../../shared/components/system/navbar-publicv3/navbar-publicv3.component';
+import { NavbarComponent } from '../../../shared/layouts/components/navbar/navbar.component';
 import { SmoothScrollService } from '../../../core/services/smooth-scroll.service';
+import { LoaderService } from '../../../core/services/loader.service';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -30,7 +30,7 @@ gsap.registerPlugin(ScrollTrigger);
 @Component({
   selector: 'app-userpanel-layout',
   standalone: true,
-  imports: [CommonModule, RouterModule, LucideAngularModule, NavbarPublicv3Component],
+  imports: [CommonModule, RouterModule, LucideAngularModule, NavbarComponent],
   templateUrl: './userpanel-layout.component.html',
   styleUrls: ['./userpanel-layout.component.css']
 })
