@@ -389,6 +389,7 @@ export class ItemsCollectionComponent implements OnInit, AfterViewInit, OnDestro
             end: () => `+=${Math.max(0, images.offsetHeight - text.offsetHeight)}`,
             pin: text,
             pinSpacing: false,
+            fastScrollEnd: true,
             invalidateOnRefresh: true
           });
 
@@ -447,6 +448,7 @@ export class ItemsCollectionComponent implements OnInit, AfterViewInit, OnDestro
               trigger: img,
               start: "top 85%",
               once: true,
+              fastScrollEnd: true,
               toggleActions: "play none none none"
             },
             onComplete: () => {

@@ -111,7 +111,7 @@ export class FadeUpLetterDirective implements AfterViewInit, OnDestroy {
       try {
         const nativeElement = this.el.nativeElement;
         
-        if (!this.dimensionsCalculated) {
+        if (!this.dimensionsCalculated || this.originalDimensions.height === 0) {
           this.calculateAndReserveDimensions();
         }
 

@@ -88,6 +88,10 @@ export class WordRevealDirective implements AfterViewInit, OnDestroy {
       try {
         const nativeElement = this.el.nativeElement;
         
+        if (!this.originalContent || !this.originalContent.trim()) {
+          this.originalContent = nativeElement?.innerHTML || nativeElement?.textContent || '';
+        }
+
         if (!nativeElement || !this.originalContent.trim()) {
           this.renderer.setStyle(nativeElement, 'opacity', '1');
           return;

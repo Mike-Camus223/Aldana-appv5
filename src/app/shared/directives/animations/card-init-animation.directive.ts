@@ -136,16 +136,41 @@ export class CardInitAnimationDirective implements AfterViewInit, OnDestroy {
     }
   }
 
+  private observer: IntersectionObserver | null = null;
+
   private createScrollTrigger(element: HTMLElement): void {
     if (this.hasAnimated || !this.isBrowser) return;
 
+    // 1. IntersectionObserver ultra-rápido como red de seguridad infalible
+    if (typeof IntersectionObserver !== 'undefined') {
+      this.observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting || entry.boundingClientRect.top <= window.innerHeight) {
+            this.startAnimation(element);
+            this.observer?.disconnect();
+          }
+        });
+      }, { rootMargin: '120px 0px 120px 0px', threshold: 0 });
+      this.observer.observe(element);
+    }
+
+    // 2. ScrollTrigger GSAP
     this.scrollTrigger = ScrollTrigger.create({
       trigger: element,
-      start: "top 88%",
+      start: "top 95%",
       once: true,
+      fastScrollEnd: true,
       markers: false,
       onEnter: () => {
         this.startAnimation(element);
+      },
+      onEnterBack: () => {
+        this.startAnimation(element);
+      },
+      onUpdate: (self) => {
+        if (self.progress > 0 && !this.hasAnimated) {
+          this.startAnimation(element);
+        }
       }
     });
 
@@ -157,6 +182,11 @@ export class CardInitAnimationDirective implements AfterViewInit, OnDestroy {
   private startAnimation(element: HTMLElement): void {
     if (this.hasAnimated) return;
     this.hasAnimated = true;
+
+    if (this.observer) {
+      this.observer.disconnect();
+      this.observer = null;
+    }
 
     if (this.scrollTrigger) {
       this.scrollTrigger.kill();
