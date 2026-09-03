@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { SelectsComponent } from '../../../../shared/components/generic/forms/selects/selects.component';
 import { PaginatorComponent } from '../../../../shared/components/generic/paginator/paginator.component';
 import { OrdersService } from '../../../../core/services/orders/orders.service';
-import { OrderSummary } from '../../../../shared/utils/models/order.interface';
+import { OrderSummary } from '../../../../shared/models/order.interface';
 import { LucideAngularModule } from 'lucide-angular';
 
 @Component({

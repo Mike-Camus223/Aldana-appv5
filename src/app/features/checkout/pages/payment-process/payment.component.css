@@ -1,0 +1,12 @@
+::ng-deep .p-accordionheader {
+    padding: 10px 0 !important;
+}
+
+::ng-deep .p-accordioncontent-content {
+    padding: 0 !important;
+}
+
+::ng-deep .p-chip {
+    background: var(--color-aldy-primary-600) !important;
+    padding: 5px 15px !important;
+}

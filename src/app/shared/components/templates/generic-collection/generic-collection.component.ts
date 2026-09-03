@@ -2,14 +2,14 @@ import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { BreadcrumbComponent } from '../../system/breadcrump/breadcrump.component';
-import { AppMenuItem } from '../../../utils/models/app-menu-item.model';
+import { AppMenuItem } from '../../../models/app-menu-item.model';
 import { CollectionService } from '../../../../core/services/data-access/collection/collection.service';
 import { SupabaseService } from '../../../../core/services/data-access/supabase.service';
-import { ProductUtils } from '../../../utils/dataEx/products-utils';
-import { CardInitAnimationDirective } from '../../../utils/directives/card-init-animation.directive';
+import { ProductUtils } from '../../../utils/mappers/product.mapper';
+import { CardInitAnimationDirective } from '../../../directives/animations/card-init-animation.directive';
 import { VideoComponent } from '../../generic/video/video.component';
-import { WordRevealDirective } from '../../../utils/directives/word-reveal.directive';
-import { FadeUpLetterDirective } from '../../../utils/directives/fadeupletter.directive';
+import { WordRevealDirective } from '../../../directives/animations/word-reveal.directive';
+import { FadeUpLetterDirective } from '../../../directives/animations/fadeupletter.directive';
 
 type CollectionItemCard = {
   id: string;

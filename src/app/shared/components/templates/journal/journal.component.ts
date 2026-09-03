@@ -14,9 +14,9 @@ import {
   RouterModule} from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 
-import { WordRevealDirective } from '../../../utils/directives/word-reveal.directive';
-import { LinkHoverUnderlineDirective } from '../../../utils/directives/link-hover-underline.directive';
-import { CardInitAnimationDirective } from '../../../utils/directives/card-init-animation.directive';
+import { WordRevealDirective } from '../../../directives/animations/word-reveal.directive';
+import { LinkHoverUnderlineDirective } from '../../../directives/animations/link-hover-underline.directive';
+import { CardInitAnimationDirective } from '../../../directives/animations/card-init-animation.directive';
 
 import { JournalService } from '../../../../core/services/data-access/journal/journal.service';
 import {

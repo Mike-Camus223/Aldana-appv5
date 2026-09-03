@@ -18,11 +18,11 @@ import {
 import { CommonModule, isPlatformBrowser, NgOptimizedImage } from '@angular/common';
 import { PLATFORM_ID } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
-import { Product, ProductVariant, MediaItemJSONB } from '../../../utils/models/Products-supabase.interface';
-import { ProductUtils } from '../../../utils/dataEx/products-utils';
+import { Product, ProductVariant, MediaItemJSONB } from '../../../models/Products-supabase.interface';
+import { ProductUtils } from '../../../utils/mappers/product.mapper';
 import { LucideAngularModule } from 'lucide-angular';
-import { MoveupFadeDirective } from '../../../utils/directives/moveup-fade.directive';
-import { PanimationcardDirective } from '../../../utils/directives/panimationcard.directive';
+import { MoveupFadeDirective } from '../../../directives/animations/moveup-fade.directive';
+import { PanimationcardDirective } from '../../../directives/animations/panimationcard.directive';
 import { FavoritesService } from '../../../../core/services/favorites/favorites.service';
 import { AuthService } from '../../../../core/services/auth/auth.service';
 import { NotificationService } from '../../../../core/services/notification.service';

@@ -1,0 +1,349 @@
+import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
+import { Router, NavigationStart, NavigationEnd, NavigationCancel, NavigationError } from '@angular/router';
+import { BehaviorSubject, filter } from 'rxjs';
+import { isPlatformBrowser } from '@angular/common';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class LoaderService {
+  public isFirstLoad = true;
+  private isMainLoaderComplete = false;
+  private skipGenericLoaderMatchers: Array<string | RegExp> = [];
+  private isBrowser: boolean;
+  private isNavigationSkipped = false;
+  
+  private activeLocks = 0;
+  private pendingNavigationEnd = false;
+  private lockTimeoutRef: any = null;
+  
+  // Track the active loader component
+  private currentLoaderSubject = new BehaviorSubject<'main' | 'generic' | null>('main');
+  public currentLoader$ = this.currentLoaderSubject.asObservable();
+
+  // Signal indicating when GSAP animations can start
+  private animationsEnabledSubject = new BehaviorSubject<boolean>(false);
+  public animationsEnabled$ = this.animationsEnabledSubject.asObservable();
+
+  // Track navigation state for the generic loader transition
+  private navigationStateSubject = new BehaviorSubject<'start' | 'end' | null>(null);
+  public navigationState$ = this.navigationStateSubject.asObservable();
+  
+  constructor(
+    private router: Router,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {
+    this.isBrowser = isPlatformBrowser(this.platformId);
+    
+    if (this.isBrowser) {
+      this.initRouterListener();
+    } else {
+      // In SSR, mark everything complete immediately
+      this.isMainLoaderComplete = true;
+      this.isFirstLoad = false;
+      this.animationsEnabledSubject.next(true);
+      this.currentLoaderSubject.next(null);
+    }
+  }
+
+  private isValidRoute(url: string): boolean {
+    const path = url.split('?')[0].split('#')[0];
+    
+    if (path === '' || path === '/') {
+      return true;
+    }
+
+    // Exact matches
+    const exactMatches = [
+      '/confirmar-registro',
+      '/registro-exitoso',
+      '/contacto',
+      '/acerca-de-mi',
+      '/journal',
+      '/busqueda',
+      '/error'
+    ];
+    if (exactMatches.includes(path)) {
+      return true;
+    }
+
+    // Valid prefixes & dynamic routes
+    const patterns = [
+      // Auth Panel
+      /^\/cuenta$/,
+      /^\/cuenta\/iniciar-sesion$/,
+      /^\/cuenta\/registro$/,
+
+      // Checkout
+      /^\/checkout$/,
+      /^\/checkout\/carrito$/,
+      /^\/checkout\/envio$/,
+      /^\/checkout\/pago$/,
+      /^\/checkout\/success$/,
+
+      // User Panel
+      /^\/panel$/,
+      /^\/panel\/panel-control$/,
+      /^\/panel\/orders-history$/,
+      /^\/panel\/order-details\/[^/]+$/,
+      /^\/panel\/informacion-cuenta$/,
+      /^\/panel\/favoritos$/,
+
+      // Shop & Products
+      /^\/tienda$/,
+      /^\/tienda\/categoria\/[^/]+$/,
+      /^\/tienda\/categoria\/[^/]+\/[^/]+$/,
+      /^\/tienda\/categoria\/[^/]+\/subcategoria\/[^/]+$/,
+      /^\/tienda\/categoria\/[^/]+\/[^/]+\/subcategoria\/[^/]+$/,
+      /^\/producto\/[^/]+$/,
+
+      // Collections
+      /^\/pret-a-porter$/,
+      /^\/pret-a-porter\/[^/]+$/,
+      /^\/pret-a-porter\/[^/]+\/[^/]+$/,
+      /^\/pret-a-porter\/[^/]+\/[^/]+\/[^/]+$/,
+      
+      // Brides Collections
+      /^\/novias-colecciones$/,
+      /^\/novias-colecciones\/[^/]+$/,
+      /^\/novias-colecciones\/[^/]+\/[^/]+$/,
+      /^\/novias-colecciones\/[^/]+\/[^/]+\/[^/]+$/,
+
+      // Journal posts
+      /^\/journal\/[^/]+\/[^/]+\/[^/]+\/[^/]+$/
+    ];
+
+    return patterns.some(pattern => pattern.test(path));
+  }
+
+  public getShowMainLoader(url: string): boolean {
+    const cleanUrl = url.startsWith('/') ? url.substring(1) : url;
+    const targetSegment = cleanUrl.split('/')[0];
+    const isCheckoutRoute = targetSegment === 'checkout';
+    const isValid = this.isValidRoute(url);
+    return this.isFirstLoad && isValid && !isCheckoutRoute;
+  }
+
+  private initRouterListener(): void {
+    let lastUrl = '';
+
+    this.router.events.pipe(
+      filter(event => 
+        event instanceof NavigationStart || 
+        event instanceof NavigationEnd || 
+        event instanceof NavigationCancel || 
+        event instanceof NavigationError
+      )
+    ).subscribe(event => {
+      if (event instanceof NavigationStart) {
+        // Compare base paths (ignoring query params/hash)
+        const currentUrl = lastUrl.split('?')[0].split('#')[0];
+        const targetUrl = event.url.split('?')[0].split('#')[0];
+        
+        if (currentUrl === targetUrl && lastUrl !== '') {
+          return;
+        }
+
+        const getFirstSegment = (url: string) => {
+          const cleanUrl = url.startsWith('/') ? url.substring(1) : url;
+          return cleanUrl.split('/')[0];
+        };
+        const currentSegment = getFirstSegment(currentUrl);
+        const targetSegment = getFirstSegment(targetUrl);
+
+        const isUserPanelInternal = currentUrl !== '' && currentSegment === 'panel' && targetSegment === 'panel';
+        const isAuthInternal = currentUrl !== '' && currentSegment === 'cuenta' && targetSegment === 'cuenta';
+
+        const isInternalBypass = isUserPanelInternal || isAuthInternal;
+
+        // Check if this route should skip the generic loader
+        if (!this.isFirstLoad && (isInternalBypass || this.shouldSkipGeneric(event.url))) {
+          this.isNavigationSkipped = true;
+          this.animationsEnabledSubject.next(false);
+          this.currentLoaderSubject.next(null);
+          return;
+        }
+
+        this.isNavigationSkipped = false;
+
+        // Determine which loader to show
+        const isCheckoutRoute = targetSegment === 'checkout';
+        const isValid = this.isValidRoute(event.url);
+        const shouldShowMain = this.isFirstLoad && isValid && !isCheckoutRoute;
+
+        if (shouldShowMain) {
+          this.animationsEnabledSubject.next(false);
+          this.currentLoaderSubject.next('main');
+        } else {
+          this.animationsEnabledSubject.next(false);
+          this.currentLoaderSubject.next('generic');
+          this.navigationStateSubject.next('start');
+        }
+      } else {
+        // NavigationEnd, NavigationCancel, NavigationError
+        const url = (event as any).url || '';
+        lastUrl = url;
+
+        if (this.isNavigationSkipped) {
+          // If we skipped the loader, trigger animations immediately after navigation ends
+          this.animationsEnabledSubject.next(true);
+          
+          if (this.currentLoaderSubject.value === 'generic') {
+            this.navigationStateSubject.next('end');
+          } else {
+            this.currentLoaderSubject.next(null);
+          }
+          this.isNavigationSkipped = false;
+          
+          if (this.isBrowser) {
+            setTimeout(() => {
+              if (typeof ScrollTrigger !== 'undefined') {
+                ScrollTrigger.refresh();
+              }
+            }, 10);
+          }
+        } else if (this.currentLoaderSubject.value === 'generic') {
+          if (this.activeLocks > 0) {
+            this.pendingNavigationEnd = true;
+          } else {
+            // Tell the generic loader to play its exit animation
+            this.navigationStateSubject.next('end');
+          }
+        }
+      }
+    });
+  }
+
+  finish(loaderType?: 'main' | 'generic') {
+    this.activeLocks = 0;
+    this.pendingNavigationEnd = false;
+    if (this.lockTimeoutRef) {
+      clearTimeout(this.lockTimeoutRef);
+      this.lockTimeoutRef = null;
+    }
+    this.animationsEnabledSubject.next(true);
+    this.currentLoaderSubject.next(null);
+    this.navigationStateSubject.next(null);
+
+    if (loaderType === 'main' || (loaderType === 'generic' && this.isFirstLoad)) {
+      this.isFirstLoad = false;
+      this.isMainLoaderComplete = true;
+    }
+    
+    if (this.isBrowser) {
+      setTimeout(() => {
+        if (typeof ScrollTrigger !== 'undefined') {
+          ScrollTrigger.refresh();
+        }
+        if (typeof ScrollSmoother !== 'undefined') {
+          ScrollSmoother.get()?.refresh();
+        }
+      }, 10);
+    }
+  }
+
+  refreshScrollTrigger() {
+    if (this.isBrowser && typeof ScrollTrigger !== 'undefined') {
+      ScrollTrigger.refresh();
+    }
+  }
+
+  clearAllAnimations(): void {
+    if (this.isBrowser && typeof ScrollTrigger !== 'undefined') {
+      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+    }
+  }
+
+  reset() {
+    this.currentLoaderSubject.next(null);
+    this.navigationStateSubject.next(null);
+    this.isFirstLoad = true;
+    this.isMainLoaderComplete = false;
+    this.animationsEnabledSubject.next(false);
+  }
+
+  canShowGenericLoader(): boolean {
+    return this.isMainLoaderComplete;
+  }
+
+  setAnimationsEnabled(enabled: boolean): void {
+    this.animationsEnabledSubject.next(enabled);
+  }
+
+  setSkipGenericLoaderMatchers(matchers: (string | RegExp)[]) {
+    this.skipGenericLoaderMatchers = matchers;
+  }
+
+  addSkipGenericLoaderMatcher(matcher: string | RegExp) {
+    this.skipGenericLoaderMatchers.push(matcher);
+  }
+
+  private shouldSkipGeneric(url: string): boolean {
+    return this.skipGenericLoaderMatchers.some(m =>
+      typeof m === 'string' ? url.startsWith(m) : (m as RegExp).test(url)
+    );
+  }
+
+  // Force animations trigger (for skipped pages if needed)
+  triggerAnimations() {
+    this.animationsEnabledSubject.next(false);
+    if (this.isBrowser) {
+      setTimeout(() => {
+        this.animationsEnabledSubject.next(true);
+        if (typeof ScrollTrigger !== 'undefined') {
+          ScrollTrigger.refresh();
+        }
+      }, 10);
+    } else {
+      this.animationsEnabledSubject.next(true);
+    }
+  }
+
+  // Backward compatibility compatibility layer (deprecated/no-op)
+  showLoaderOnNavigation() {}
+  showLoaderOnNavigationIfAllowed(url: string) {}
+  setUserPanelNavigationState(isInUserPanel: boolean) {}
+  setContext(context: 'public' | 'user-panel') {}
+  pageReady() {}
+
+  holdLoader() {
+    this.activeLocks++;
+    
+    // Limpiar timeout de seguridad si ya existía
+    if (this.lockTimeoutRef) {
+      clearTimeout(this.lockTimeoutRef);
+      this.lockTimeoutRef = null;
+    }
+    
+    // Limitar espera a un máximo de 4 segundos por seguridad si algo falla
+    if (this.isBrowser) {
+      this.lockTimeoutRef = setTimeout(() => {
+        if (this.activeLocks > 0) {
+          console.warn('Loader safety timeout reached. Releasing locks.');
+          this.activeLocks = 0;
+          if (this.pendingNavigationEnd) {
+            this.pendingNavigationEnd = false;
+            this.navigationStateSubject.next('end');
+          }
+        }
+      }, 4000);
+    }
+  }
+
+  releaseLoader() {
+    if (this.activeLocks > 0) {
+      this.activeLocks--;
+      if (this.activeLocks === 0) {
+        if (this.lockTimeoutRef) {
+          clearTimeout(this.lockTimeoutRef);
+          this.lockTimeoutRef = null;
+        }
+        if (this.pendingNavigationEnd) {
+          this.pendingNavigationEnd = false;
+          this.navigationStateSubject.next('end');
+        }
+      }
+    }
+  }
+}

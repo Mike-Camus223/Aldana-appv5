@@ -1,0 +1,259 @@
+<div class="w-full flex flex-col items-center">
+
+  <div class="w-full flex justify-center mb-5">
+    <a routerLink="/">
+      <img [draggable]="false" src="../../../../../assets/svg/logo-4.svg" alt="Aldana Vilcabana"
+        class="h-24 w-auto object-contain" />
+      </a>
+    </div>
+
+    <form class="w-full" [formGroup]="form" (ngSubmit)="onSubmit()">
+
+      <div class="mb-7 text-center">
+        <p class="NewAldyFontType4 tracking-[0.28em] uppercase text-[12px] mb-1 text-aldy-green-gray">
+          CREAR UNA CUENTA
+        </p>
+      </div>
+
+      <div class="mb-5 grid grid-cols-2 gap-3">
+
+        <div>
+          <label class="NewAldyFontType4 tracking-[0.2em] uppercase text-[10px] mb-2 text-aldy-green-gray block">Nombre</label>
+          <app-input label="Tu nombre" formControlName="nombre"></app-input>
+          @if (form.get('nombre')?.touched && form.get('nombre')?.errors?.['required']) {
+            <div class="NewAldyFontType4 text-[12px] tracking-wider mt-1.5 text-red-400"
+              >
+              El nombre es obligatorio
+            </div>
+          }
+        </div>
+
+        <div>
+          <label class="NewAldyFontType4 tracking-[0.2em] uppercase text-[10px] mb-2 text-aldy-green-gray block">Apellido</label>
+          <app-input label="Tu apellido" formControlName="apellido"></app-input>
+          @if (form.get('apellido')?.touched && form.get('apellido')?.errors?.['required']) {
+            <div class="NewAldyFontType4 text-[12px] tracking-wider mt-1.5 text-red-400"
+              >
+              El apellido es obligatorio
+            </div>
+          }
+        </div>
+
+      </div>
+
+      <div class="mb-5">
+        <label class="NewAldyFontType4 tracking-[0.2em] uppercase text-[10px] mb-2 text-aldy-green-gray block">
+          Correo electrónico
+        </label>
+        <div class="relative flex items-center">
+          <span class="absolute left-3 z-10 pointer-events-none">
+            <lucide-icon name="mail" [size]="17" color="#889287" [strokeWidth]="1.5"></lucide-icon>
+          </span>
+          <div class="w-full [&_input]:pl-9">
+            <app-input label="tu@email.com" formControlName="email"></app-input>
+          </div>
+        </div>
+        @if (form.get('email')?.touched && form.get('email')?.invalid) {
+          <div class="NewAldyFontType4 text-[12px] tracking-wider mt-1.5 text-red-400"
+            >
+            El correo electrónico es obligatorio y debe ser válido
+          </div>
+        }
+      </div>
+
+      <div class="mb-5">
+        <label class="NewAldyFontType4 tracking-[0.2em] uppercase text-[10px] mb-2 text-aldy-green-gray block">
+          Contraseña
+        </label>
+        <app-inputpassword label="Contraseña" formControlName="password"></app-inputpassword>
+        @if (form.get('password')?.touched && form.get('password')?.invalid) {
+          <div class="NewAldyFontType4 text-[12px] tracking-wider mt-1.5 text-red-400"
+            >
+            {{ passwordErrorMessage }}
+          </div>
+        }
+      </div>
+
+      <div class="mb-5">
+        <label class="NewAldyFontType4 tracking-[0.2em] uppercase text-[10px] mb-2 text-aldy-green-gray block">
+          Confirmar contraseña
+        </label>
+        <app-inputpassword label="Repetir Contraseña" formControlName="repeatPassword"></app-inputpassword>
+        @if ((form.get('repeatPassword')?.touched && form.get('repeatPassword')?.invalid) ||
+          (form.errors?.['passwordNotMatch'] && form.get('repeatPassword')?.touched)) {
+          <div class="NewAldyFontType4 text-[12px] tracking-wider mt-1.5 text-red-400"
+            >
+            {{ repeatPasswordErrorMessage }}
+          </div>
+        }
+      </div>
+
+      <div class="mb-5">
+        <label class="NewAldyFontType4 tracking-[0.2em] uppercase text-[10px] mb-2 text-aldy-green-gray block">
+          Fecha de nacimiento
+        </label>
+        <div class="grid grid-cols-3 gap-2">
+
+          <div class="flex flex-col">
+            <div class="flex items-center justify-between w-full border border-[#C8C4BA] bg-aldy-white px-3"
+              style="min-height:52px;">
+              <select formControlName="birthDay"
+                class="flex-1 bg-transparent focus:outline-none NewAldyFontType4 tracking-wide appearance-none cursor-pointer"
+                style="font-size:13px;"
+                [class.text-[#B0ADA5]]="!form.get('birthDay')?.value"
+                [class.text-[#5A5A4A]]="form.get('birthDay')?.value">
+                <option value="" disabled selected class="text-[#B0ADA5]">Día</option>
+                @for (d of days; track d) {
+                  <option [value]="d">{{ d }}</option>
+                }
+              </select>
+              <lucide-icon name="chevron-down" [size]="14" color="#B0ADA5" [strokeWidth]="1.5"
+              class="flex-shrink-0 pointer-events-none"></lucide-icon>
+            </div>
+            @if (form.get('birthDay')?.touched && form.get('birthDay')?.invalid) {
+              <div class="NewAldyFontType4 text-[12px] tracking-wider mt-1.5 text-red-400 text-center"
+                >
+                Día inválido
+              </div>
+            }
+          </div>
+
+          <div class="flex flex-col">
+            <div class="flex items-center justify-between w-full border border-[#C8C4BA] bg-aldy-white px-3"
+              style="min-height:52px;">
+              <select formControlName="birthMonth"
+                class="flex-1 bg-transparent focus:outline-none NewAldyFontType4 tracking-wide appearance-none cursor-pointer"
+                style="font-size:13px;"
+                [class.text-[#B0ADA5]]="!form.get('birthMonth')?.value"
+                [class.text-[#5A5A4A]]="form.get('birthMonth')?.value">
+                <option value="" disabled selected class="text-[#B0ADA5]">Mes</option>
+                @for (m of months; track m) {
+                  <option [value]="m.value">{{ m.label }}</option>
+                }
+              </select>
+              <lucide-icon name="chevron-down" [size]="14" color="#B0ADA5" [strokeWidth]="1.5"
+              class="flex-shrink-0 pointer-events-none"></lucide-icon>
+            </div>
+            @if (form.get('birthMonth')?.touched && form.get('birthMonth')?.invalid) {
+              <div class="NewAldyFontType4 text-[12px] tracking-wider mt-1.5 text-red-400 text-center"
+                >
+                Mes inválido
+              </div>
+            }
+          </div>
+
+          <div class="flex flex-col">
+            <div class="flex items-center justify-between w-full border border-[#C8C4BA] bg-aldy-white px-3"
+              style="min-height:52px;">
+              <select formControlName="birthYear"
+                class="flex-1 bg-transparent focus:outline-none NewAldyFontType4 tracking-wide appearance-none cursor-pointer"
+                style="font-size:13px;"
+                [class.text-[#B0ADA5]]="!form.get('birthYear')?.value"
+                [class.text-[#5A5A4A]]="form.get('birthYear')?.value">
+                <option value="" disabled selected class="text-[#B0ADA5]">Año</option>
+                @for (y of years; track y) {
+                  <option [value]="y">{{ y }}</option>
+                }
+              </select>
+              <lucide-icon name="chevron-down" [size]="14" color="#B0ADA5" [strokeWidth]="1.5"
+              class="flex-shrink-0 pointer-events-none"></lucide-icon>
+            </div>
+            @if (form.get('birthYear')?.touched && form.get('birthYear')?.invalid) {
+              <div class="NewAldyFontType4 text-[12px] tracking-wider mt-1.5 text-red-400 text-center"
+                >
+                Año inválido
+              </div>
+            }
+          </div>
+
+        </div>
+      </div>
+
+      <div class="mb-5">
+        <p class="NewAldyFontType4 text-[12px] tracking-wider text-[#8A8A7A] mb-3">
+          *Quiero recibir newsletters
+        </p>
+        <div class="flex gap-6">
+
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input type="radio" [value]="true" formControlName="newsletter"
+            class="h-[14px] w-[14px] appearance-none border border-[#C8C4BA] bg-aldy-white cursor-pointer
+                   checked:bg-aldy-medium checked:border-white
+                   checked:shadow-[0_0_0_2px_var(--color-aldy-medium)]
+                   transition-all duration-150" />
+              <span class="NewAldyFontType4 text-[12px] tracking-wider text-[#5A5A4A]">Sí</span>
+            </label>
+
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="radio" [value]="false" formControlName="newsletter"
+            class="h-[14px] w-[14px] appearance-none border border-[#C8C4BA] bg-aldy-white cursor-pointer
+                   checked:bg-aldy-medium checked:border-white
+                   checked:shadow-[0_0_0_2px_var(--color-aldy-medium)]
+                   transition-all duration-150" />
+                <span class="NewAldyFontType4 text-[12px] tracking-wider text-[#5A5A4A]">No</span>
+              </label>
+
+            </div>
+          </div>
+
+          <div class="mb-6">
+            <label class="flex items-start gap-2.5 cursor-pointer">
+              <input type="checkbox" formControlName="termsAccepted"
+          class="mt-[2px] h-[14px] w-[14px] flex-shrink-0 appearance-none border border-[#C8C4BA] bg-aldy-white cursor-pointer
+                 checked:bg-aldy-medium checked:border-white
+                 checked:shadow-[0_0_0_2px_var(--color-aldy-medium)]
+                 transition-all duration-150" />
+                <span class="NewAldyFontType4 text-[12px] tracking-wider text-[#8A8A7A] leading-[1.6] select-none">
+                  He leído y acepto las
+                  <a href="#" class="text-aldy-green-gray underline hover:opacity-70 transition">Condiciones Generales de Venta</a>
+                  y la
+                  <a href="#" class="text-aldy-green-gray underline hover:opacity-70 transition">Política de Privacidad</a>.
+                </span>
+              </label>
+              @if (form.get('termsAccepted')?.touched && form.get('termsAccepted')?.invalid) {
+                <p
+                  class="NewAldyFontType4 text-[12px] tracking-wider mt-1.5 text-red-400">
+                  Debes aceptar los términos y condiciones
+                </p>
+              }
+            </div>
+
+            <div class="mb-5">
+              <button type="submit"
+                [ngClass]="{ 'cursor-pointer': !isSubmitting, 'cursor-wait': isSubmitting }"
+                class="w-full py-4 text-center transition focus:outline-none bg-aldy-medium hover:bg-aldy-medium-2 text-white"
+                [class.bg-aldy-medium-2]="isSubmitting">
+                <span class="NewAldyFontType4 uppercase text-xs tracking-[0.25em]">
+                  {{ isSubmitting ? 'Registrando...' : 'Crear Cuenta' }}
+                </span>
+              </button>
+            </div>
+
+            @if (authError) {
+              <div class="mb-4 p-3 border border-red-200 bg-red-50">
+                <div class="flex items-center gap-2">
+                  <i class="fas fa-exclamation-triangle text-red-400 text-sm"></i>
+                  <p class="NewAldyFontType4 text-[12px] tracking-wider text-red-600">{{ authError }}</p>
+                </div>
+              </div>
+            }
+
+            <div class="flex items-center justify-center gap-2 w-full mb-8">
+              <p class="NewAldyFontType4 text-[12px] tracking-wider text-[#8A8A7A]">¿Ya tenés cuenta?</p>
+              <a routerLink="/cuenta/iniciar-sesion"
+                class="NewAldyFontType4 text-[12px] tracking-wider text-aldy-green-gray hover:underline transition">
+                Iniciar sesión
+              </a>
+            </div>
+
+          </form>
+
+          <div class="text-center w-full pb-6">
+            <p class="NewAldyFontType4 tracking-wider text-[10.5px] leading-relaxed text-[#8A8A7A]">
+              Al registrarte, aceptás nuestras
+              <a href="#" class="hover:underline text-[#8A8A7A]">Políticas de Privacidad</a> y
+              <a href="#" class="hover:underline text-[#8A8A7A]">Términos de Servicio</a>.
+            </p>
+          </div>
+
+        </div>

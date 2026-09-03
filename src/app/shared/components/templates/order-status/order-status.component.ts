@@ -4,7 +4,7 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { LucideAngularModule } from 'lucide-angular';
 import { OrdersService } from '../../../../core/services/orders/orders.service';
 import { InvoiceService } from '../../../../core/services/invoice/invoice.service';
-import { OrderModel, OrderProduct } from '../../../../shared/utils/models/order.interface';
+import { OrderModel, OrderProduct } from '../../../../shared/models/order.interface';
 import { AuthService } from '../../../../core/services/auth/auth.service';
 import { getPaymentRejectionInfo, PaymentRejectionInfo } from '../../../utils/helpers/payment-status-helper';
 

@@ -1,0 +1,126 @@
+:host {
+    display: block;
+    width: 100%;
+}
+
+::ng-deep .p-checkbox-input::checkmark {
+    background-color: var(--color-aldy-primary-600) !important;
+}
+
+
+::ng-deep .p-slider-range {
+    background-color: var(--color-aldy-medium) !important;
+}
+
+::ng-deep .p-slider {
+    background: var(--color-aldy-green-gray) !important;
+}
+
+.searchbar-container {
+  display: grid;
+  place-items: center;
+  width: 100%;
+}
+
+.searchbar {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  width: 100%;
+  column-gap: 0.5rem;
+}
+
+.search-input {
+  width: 100%;
+  background: transparent;
+  outline: none;
+  line-height: 1.15;
+  padding: 0;
+  margin: 0;
+  caret-color: currentColor; 
+}
+
+.search-input::selection {
+  background: #889287;  
+  color: white;       
+}
+
+.search-input::-moz-selection {
+    background: #889287;  
+  color: white;        
+}
+
+
+.product-card {
+  cursor: pointer;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+  touch-action: manipulation;
+}
+
+.product-card:active {
+  transform: scale(0.98);
+  transition: transform 0.1s ease-in-out;
+}
+
+.product-link {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.color-selector button {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.spinner {
+  width: 100px;
+  height: 100px;
+  border: 10px solid #D2E4CC;
+  border-top-color: var(--aldy-green-gray, #AEC2A9);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 768px) {
+  .product-card {
+    padding: 2px;
+  }
+}
+
+@media (max-width: 320px) {
+  .content-wrapper {
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+  }
+}
+
+/* New classes */
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 2px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}

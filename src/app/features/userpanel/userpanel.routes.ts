@@ -1,10 +1,10 @@
 import { Routes } from '@angular/router';
-import { AuthGuard } from '../../core/guards/auth.guard';
+import { AuthGuard } from '../../core/auth/auth.guard';
 
 export const userPanelRoutes: Routes = [
   {
     path: '',
-    loadComponent: () => import('./user-panel.component').then(m => m.UserPanelComponent),
+    loadComponent: () => import('./layout/userpanel-layout.component').then(m => m.UserpanelLayoutComponent),
     canActivate: [AuthGuard],
     children: [
       {
@@ -14,7 +14,7 @@ export const userPanelRoutes: Routes = [
       },
       {
         path: 'panel-control',
-        loadComponent: () => import('./pages/control-panel/control-panel.component').then(c => c.ControlPanelComponent),
+        loadComponent: () => import('./pages/dashboard/control-panel.component').then(c => c.ControlPanelComponent),
       },
       {
         path: 'orders-history',
@@ -26,11 +26,11 @@ export const userPanelRoutes: Routes = [
       },
       {
         path: 'informacion-cuenta',
-        loadComponent: () => import('./pages/account-info/account-info.component').then(c => c.AccountInfoComponent),
+        loadComponent: () => import('./pages/account-profile/account-info.component').then(c => c.AccountInfoComponent),
       },
       {
         path: 'favoritos',
-        loadComponent: () => import('./pages/whitelist/whitelist.component').then(c => c.WhitelistComponent),
+        loadComponent: () => import('./pages/wishlist/whitelist.component').then(c => c.WhitelistComponent),
       },
       {
         path: '**',

@@ -1,0 +1,21 @@
+/* ═══════════════════════════════════════════════════════════
+   REELS SECTION  —  solo lo que Tailwind no puede hacer
+   ═══════════════════════════════════════════════════════════ */
+
+/* Ocultar scrollbar pero mantener scroll funcional */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Spinner de carga de media */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+.animate-spin {
+  animation: spin 0.8s linear infinite;
+}
+

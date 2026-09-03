@@ -1,0 +1,360 @@
+<div class="w-full max-w-5xl mx-auto space-y-6">
+
+  <!-- Botón Volver -->
+  <div class="flex items-center justify-between">
+    <button
+      type="button"
+      (click)="goBack()"
+      class="inline-flex items-center gap-1.5 NewAldyFontType4 text-xs font-light text-aldy-green-gray hover:text-aldy-green-gray-bold transition-colors cursor-pointer tracking-wider">
+      <lucide-icon name="chevron-left" [size]="16" [strokeWidth]="1.5"></lucide-icon>
+      <span>Volver a mis pedidos</span>
+    </button>
+  </div>
+
+  <!-- Loading State -->
+  @if (loading) {
+    <div class="border border-[#e0d8cf] bg-aldy-white p-12 flex flex-col items-center justify-center min-h-[350px]">
+      <div class="spinner"></div>
+      <p class="mt-4 NewAldyFontType4 text-xs font-light text-aldy-green-gray tracking-wider">
+        Cargando detalles del pedido...
+      </p>
+    </div>
+  }
+
+  <!-- Error State -->
+  @if (error && !loading) {
+    <div class="border border-[#e0d8cf] bg-aldy-white p-8 text-center space-y-4">
+      <div class="w-12 h-12 rounded-full bg-[#FBEAEA] text-[#9E5252] flex items-center justify-center mx-auto">
+        <lucide-icon name="alert-circle" [size]="24" [strokeWidth]="1.8"></lucide-icon>
+      </div>
+      <h3 class="NewAldyTitle font-light text-lg text-aldy-green-gray-bold tracking-wider">
+        Error al cargar el pedido
+      </h3>
+      <p class="NewAldyFontType4 text-xs font-light text-aldy-green-gray">
+        {{ error }}
+      </p>
+      <button
+        (click)="goBack()"
+        class="mt-2 px-6 py-2.5 bg-aldy-medium text-white text-xs NewAldyFontType4 tracking-[0.10em] uppercase hover:bg-aldy-medium-2 transition-colors duration-300 cursor-pointer">
+        Volver al listado
+      </button>
+    </div>
+  }
+
+  <!-- Order Details -->
+  @if (!loading && !error && order) {
+    <div class="space-y-6">
+
+      <!-- ============================================== -->
+      <!-- 1. ENCABEZADO DEL PEDIDO                       -->
+      <!-- ============================================== -->
+      <div class="border border-[#e0d8cf] bg-aldy-white p-6 sm:p-7">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#e0d8cf]">
+          <div>
+            <div class="flex items-center gap-3 flex-wrap">
+              <h1 class="NewAldyTitle font-light text-xl sm:text-2xl text-aldy-green-gray-bold tracking-[0.18em]">
+                Pedido #{{ order.order_number }}
+              </h1>
+              <span
+                class="inline-flex items-center px-3 py-0.5 rounded-sm text-[11px] font-light NewAldyFontType4 tracking-wider"
+                [ngClass]="getStatusBadgeClass(order.status)">
+                {{ getStatusLabel(order.status) }}
+              </span>
+            </div>
+            <p class="NewAldyFontType4 text-xs font-light text-aldy-green-gray mt-1 tracking-wide">
+              Realizado el {{ formatDate(order.created_at) }} a las {{ formatTime(order.created_at) }} hs
+            </p>
+          </div>
+
+          <div class="text-left sm:text-right">
+            <span class="NewAldyFontType4 text-[9px] font-normal tracking-[0.18em] uppercase text-aldy-green-gray block mb-0.5">
+              Total del pedido
+            </span>
+            <span class="NewAldyTitle text-xl font-medium text-aldy-green-gray-bold tracking-wider">
+              {{ formatPrice(order.total_final) }}
+            </span>
+          </div>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- 2. BANNER DE ESTADO DEL PAGO (SI FUE RECHAZADO) -->
+        <!-- ============================================== -->
+        @if (order.status === 'rejected') {
+          <div class="mt-6 p-5 sm:p-6 bg-[#FBEAEA]/60 border border-[#e5a8a8] space-y-4">
+            <div class="flex items-start gap-4">
+              <div class="w-10 h-10 rounded-full bg-[#FBEAEA] text-[#9E5252] flex items-center justify-center shrink-0 mt-0.5">
+                <lucide-icon name="alert-circle" [size]="20" [strokeWidth]="1.8"></lucide-icon>
+              </div>
+              <div class="flex-1">
+                <div class="flex items-center gap-2 flex-wrap mb-1">
+                  <h3 class="NewAldyTitle font-medium text-sm text-[#9E5252] tracking-wider">
+                    {{ rejectionInfo?.title || 'Pago no completado' }}
+                  </h3>
+                  <span class="text-[9px] px-2 py-0.5 bg-[#FBEAEA] text-[#9E5252] font-medium NewAldyFontType4 uppercase tracking-wider rounded-xs border border-[#e5a8a8]">
+                    {{ rejectionInfo?.badge || 'Rechazado' }}
+                  </span>
+                </div>
+                <p class="NewAldyFontType4 text-xs font-light text-aldy-green-gray-bold leading-relaxed tracking-wide">
+                  {{ rejectionInfo?.message }}
+                </p>
+
+                <!-- Tip explicativo -->
+                <div class="mt-3 p-3 bg-white/80 border border-[#e5a8a8] rounded-xs flex items-start gap-2.5">
+                  <lucide-icon name="shield-alert" [size]="14" [strokeWidth]="1.8" class="text-[#9E5252] shrink-0 mt-0.5"></lucide-icon>
+                  <p class="NewAldyFontType4 text-[11px] font-light text-aldy-green-gray-bold leading-relaxed">
+                    <strong>Recomendación:</strong> {{ rejectionInfo?.tip }}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Acción limpia para volver a la tienda -->
+            <div class="flex items-center gap-3 pt-2">
+              <button
+                type="button"
+                routerLink="/tienda"
+                class="px-6 py-2 bg-aldy-medium text-white NewAldyFontType4 text-xs tracking-[0.10em] uppercase hover:bg-aldy-medium-2 transition-colors duration-300 cursor-pointer">
+                Volver a la tienda
+              </button>
+            </div>
+          </div>
+        }
+
+        <!-- ============================================== -->
+        <!-- 3. BANNER DE PAGO PENDIENTE                    -->
+        <!-- ============================================== -->
+        @if (order.status === 'pending') {
+          <div class="mt-6 p-4 sm:p-5 bg-[#FDF6B2]/40 border border-[#F5EBE1] flex items-start gap-3.5">
+            <div class="w-9 h-9 rounded-full bg-[#FDF6B2] text-[#92400E] flex items-center justify-center shrink-0 mt-0.5">
+              <lucide-icon name="clock" [size]="18" [strokeWidth]="1.8"></lucide-icon>
+            </div>
+            <div>
+              <h4 class="NewAldyTitle text-xs font-medium text-[#92400E] tracking-wider mb-0.5">
+                Pago en proceso de verificación
+              </h4>
+              <p class="NewAldyFontType4 text-xs font-light text-aldy-green-gray-bold leading-relaxed">
+                Mercado Pago está procesando la acreditación de tu pago. Ni bien se confirme, comenzaremos con la confección y preparación de tu pedido.
+              </p>
+            </div>
+          </div>
+        }
+
+        <!-- ============================================== -->
+        <!-- 4. STEPPER LOGÍSTICO (SI ESTÁ EN CURSO/EXITOSO)-->
+        <!-- ============================================== -->
+        @if (order.status !== 'rejected' && steps.length > 0) {
+          <div class="mt-8 pt-6 border-t border-[#e0d8cf]">
+            <div class="flex items-center gap-4 mb-6">
+              <span class="NewAldyTitle text-[10px] font-light tracking-[0.22em] uppercase text-aldy-green-gray shrink-0">
+                Estado del Envío
+              </span>
+              <div class="flex-1 h-px bg-[#e0d8cf]"></div>
+            </div>
+
+            <!-- Timeline Stepper Horizontal en Desktop / Vertical en Móvil -->
+            <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 sm:gap-2">
+              @for (step of steps; track step.id; let last = $last) {
+                <div class="flex sm:flex-col items-start sm:items-center relative text-left sm:text-center group">
+                  <!-- Línea conectora horizontal para Desktop -->
+                  @if (!last) {
+                    <div
+                      class="hidden sm:block absolute top-4 left-1/2 w-full h-0.5 -z-0"
+                      [ngClass]="step.completed ? 'bg-[#6b8f6b]' : 'bg-[#e0d8cf]'">
+                    </div>
+                  }
+
+                  <!-- Círculo del Paso -->
+                  <div
+                    class="w-8 h-8 rounded-full flex items-center justify-center shrink-0 z-10 transition-colors duration-300"
+                    [ngClass]="{
+                      'bg-[#6b8f6b] text-white': step.completed,
+                      'bg-white border-2 border-aldy-medium text-aldy-medium': step.active && !step.completed,
+                      'bg-white border border-[#e0d8cf] text-[#bbb]': !step.active && !step.completed
+                    }">
+                    @if (step.completed) {
+                      <lucide-icon name="check" [size]="14" [strokeWidth]="2.2"></lucide-icon>
+                    } @else {
+                      <span class="text-xs font-medium NewAldyFontType4">{{ step.id }}</span>
+                    }
+                  </div>
+
+                  <!-- Textos del Paso -->
+                  <div class="ml-3 sm:ml-0 sm:mt-2.5">
+                    <p
+                      class="NewAldyFontType4 text-xs tracking-wider"
+                      [ngClass]="step.completed || step.active ? 'font-medium text-aldy-green-gray-bold' : 'font-light text-aldy-green-gray/70'">
+                      {{ step.label }}
+                    </p>
+                    @if (step.date) {
+                      <span class="NewAldyFontType4 text-[10px] font-light text-aldy-green-gray block mt-0.5">
+                        {{ step.time }} • {{ step.date }}
+                      </span>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- ============================================== -->
+      <!-- 5. DETALLE DE PRODUCTOS Y RESUMEN FINANCIERO   -->
+      <!-- ============================================== -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+        <!-- Columna Izquierda: Lista de Productos -->
+        <div class="lg:col-span-7 border border-[#e0d8cf] bg-aldy-white p-6 space-y-4">
+          <div class="flex items-center gap-4 pb-2 border-b border-[#e0d8cf]">
+            <span class="NewAldyTitle text-[10px] font-light tracking-[0.22em] uppercase text-aldy-green-gray shrink-0">
+              Productos en el pedido ({{ order.products.length || 0 }})
+            </span>
+          </div>
+
+          <div class="divide-y divide-[#e0d8cf]">
+            @for (item of order.products; track item.id || $index) {
+              <div class="py-4 flex items-center gap-4">
+                <img
+                  [src]="item.image || 'assets/images/Novias.jpeg'"
+                  [alt]="item.name"
+                  class="w-16 h-20 sm:w-20 sm:h-24 object-cover rounded-xs border border-[#e0d8cf] shrink-0"
+                  onerror="this.src='assets/images/Novias.jpeg'"
+                />
+                <div class="flex-1 min-w-0">
+                  <h4 class="NewAldyTitle font-light text-sm text-aldy-green-gray-bold tracking-wide truncate">
+                    {{ item.name }}
+                  </h4>
+                  @if (getVariantInfo(item)) {
+                    <p class="NewAldyFontType4 text-xs font-light text-aldy-green-gray mt-0.5">
+                      {{ getVariantInfo(item) }}
+                    </p>
+                  }
+                  <p class="NewAldyFontType4 text-xs font-light text-aldy-green-gray-bold mt-1">
+                    Cantidad: <span class="font-normal">{{ item.quantity }}</span>
+                  </p>
+                </div>
+                <div class="text-right shrink-0">
+                  <span class="NewAldyFontType4 text-sm font-medium text-aldy-green-gray-bold tracking-wide">
+                    {{ formatPrice(item.price * item.quantity) }}
+                  </span>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Columna Derecha: Envío, Pago y Desglose -->
+        <div class="lg:col-span-5 space-y-6">
+
+          <!-- Card de Envío -->
+          <div class="border border-[#e0d8cf] bg-aldy-white p-5 space-y-3">
+            <div class="flex items-center gap-2 text-aldy-green-gray-bold pb-2 border-b border-[#e0d8cf]">
+              <lucide-icon name="truck" [size]="15" [strokeWidth]="1.5"></lucide-icon>
+              <span class="NewAldyTitle text-[10px] font-light tracking-[0.22em] uppercase">
+                Información de Entrega
+              </span>
+            </div>
+
+            <div class="text-xs space-y-1 text-aldy-green-gray-bold NewAldyFontType4 font-light">
+              <p class="font-normal">{{ order.customer_first_name }} {{ order.customer_last_name }}</p>
+              @if (isSucursal) {
+                <p class="text-aldy-medium font-normal">Retiro en Sucursal Correo Argentino</p>
+                <p class="text-[11px] text-aldy-green-gray">Sucursal ID: {{ agencyCode }}</p>
+              } @else {
+                <p>{{ order.address_street }} {{ order.address_number }}{{ order.address_apartment ? ', Depto ' + order.address_apartment : '' }}</p>
+                <p>{{ order.city }}, {{ order.province }} {{ order.postal_code ? '(CP ' + order.postal_code + ')' : '' }}</p>
+              }
+              @if (order.customer_phone) {
+                <p class="text-[11px] text-aldy-green-gray pt-1">Tel: {{ order.customer_phone }}</p>
+              }
+            </div>
+          </div>
+
+          <!-- Card de Pago -->
+          <div class="border border-[#e0d8cf] bg-aldy-white p-5 space-y-3">
+            <div class="flex items-center gap-2 text-aldy-green-gray-bold pb-2 border-b border-[#e0d8cf]">
+              <lucide-icon name="credit-card" [size]="15" [strokeWidth]="1.5"></lucide-icon>
+              <span class="NewAldyTitle text-[10px] font-light tracking-[0.22em] uppercase">
+                Detalle de Pago
+              </span>
+            </div>
+
+            <div class="flex justify-between items-center text-xs NewAldyFontType4">
+              <span class="text-aldy-green-gray font-light">Método:</span>
+              <span class="font-normal text-aldy-green-gray-bold">Mercado Pago (Tarjeta)</span>
+            </div>
+            <div class="flex justify-between items-center text-xs NewAldyFontType4">
+              <span class="text-aldy-green-gray font-light">Estado:</span>
+              <span
+                class="px-2 py-0.5 text-[10px] font-medium rounded-xs uppercase tracking-wider"
+                [ngClass]="{
+                  'bg-[#E2EAE0] text-[#556F52]': order.payment_status === 'approved',
+                  'bg-[#FDF6B2] text-[#92400E]': order.payment_status === 'pending',
+                  'bg-[#FBEAEA] text-[#9E5252]': order.payment_status === 'rejected'
+                }">
+                {{ order.payment_status === 'approved' ? 'Aprobado' : order.payment_status === 'pending' ? 'Pendiente' : 'Rechazado' }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Desglose de Totales -->
+          <div class="border border-[#e0d8cf] bg-[#fbf9f6] p-5 space-y-2.5 text-xs NewAldyFontType4">
+            <div class="flex justify-between text-aldy-green-gray font-light">
+              <span>Subtotal</span>
+              <span>{{ formatPrice(order.subtotal || order.total_final) }}</span>
+            </div>
+
+            @if (order.discount_applied && order.discount_applied > 0) {
+              <div class="flex justify-between text-aldy-medium font-normal">
+                <span>Descuento {{ order.discount_code ? '(' + order.discount_code + ')' : '' }}</span>
+                <span>-{{ formatPrice(order.discount_applied) }}</span>
+              </div>
+            }
+
+            <div class="flex justify-between text-aldy-green-gray font-light">
+              <span>Envío</span>
+              <span>
+                {{ (order.total_final - (order.subtotal || 0) + (order.discount_applied || 0)) > 0 
+                  ? formatPrice(order.total_final - (order.subtotal || 0) + (order.discount_applied || 0)) 
+                  : 'Gratis' }}
+              </span>
+            </div>
+
+            <div class="pt-3 border-t border-[#e0d8cf] flex justify-between items-center">
+              <span class="NewAldyTitle text-xs font-medium text-aldy-green-gray-bold uppercase tracking-wider">
+                Total Pagado
+              </span>
+              <span class="NewAldyTitle text-base font-medium text-aldy-green-gray-bold tracking-wider">
+                {{ formatPrice(order.total_final) }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Botones de Acción para Pedidos Aprobados/En Curso -->
+          @if (order.status !== 'rejected') {
+            <div class="border border-[#e0d8cf] bg-aldy-white p-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+              <button
+                type="button"
+                (click)="downloadInvoice()"
+                class="w-full sm:w-auto px-5 py-2.5 bg-aldy-medium text-white NewAldyFontType4 text-xs tracking-[0.10em] uppercase hover:bg-aldy-medium-2 transition-colors duration-300 cursor-pointer flex items-center justify-center gap-2">
+                <lucide-icon name="arrow-down-to-line" [size]="14" [strokeWidth]="1.8"></lucide-icon>
+                <span>Descargar factura</span>
+              </button>
+
+              <button
+                type="button"
+                (click)="contactSupport()"
+                class="w-full sm:w-auto px-5 py-2.5 border border-[#e0d8cf] text-aldy-green-gray-bold NewAldyFontType4 text-xs tracking-[0.10em] uppercase hover:bg-[#f5f1ec] transition-colors duration-300 cursor-pointer flex items-center justify-center gap-2 bg-white">
+                <lucide-icon name="message-circle" [size]="14" [strokeWidth]="1.6"></lucide-icon>
+                <span>Consultar por WhatsApp</span>
+              </button>
+            </div>
+          }
+
+        </div>
+      </div>
+
+    </div>
+  }
+
+</div>

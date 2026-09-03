@@ -1,7 +1,7 @@
 import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { CartItem } from '../../shared/utils/models/cartItems-model';
+import { CartItem } from '../../shared/models/cartItems-model';
 import { CookieService } from 'ngx-cookie-service';
 
 @Injectable({

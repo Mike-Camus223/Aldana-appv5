@@ -26,12 +26,12 @@ import { BreadcrumbComponent } from '../../system/breadcrump/breadcrump.componen
 import { GenGalleryVanillaComponent } from '../../generic/gen-gallery-vanilla/gen-gallery-vanilla.component';
 import { LoaderService } from '../../../../core/services/utils/loader.service';
 
-import { AppMenuItem } from '../../../utils/models/app-menu-item.model';
-import { MediaItem } from '../../../utils/models/objectsGallery.model';
-import { MediaItemJSONB, ProductVariant } from '../../../utils/models/Products-supabase.interface';
-import { WordRevealDirective } from '../../../utils/directives/word-reveal.directive';
-import { FadeUpLetterDirective } from '../../../utils/directives/fadeupletter.directive';
-import { CardInitAnimationDirective } from '../../../utils/directives/card-init-animation.directive';
+import { AppMenuItem } from '../../../models/app-menu-item.model';
+import { MediaItem } from '../../../models/objectsGallery.model';
+import { MediaItemJSONB, ProductVariant } from '../../../models/Products-supabase.interface';
+import { WordRevealDirective } from '../../../directives/animations/word-reveal.directive';
+import { FadeUpLetterDirective } from '../../../directives/animations/fadeupletter.directive';
+import { CardInitAnimationDirective } from '../../../directives/animations/card-init-animation.directive';
 
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger);
@@ -134,7 +134,7 @@ export class ItemsCollectionComponent implements OnInit, AfterViewInit, OnDestro
       setTimeout(() => {
         this.initScroll();
         this.cdr.detectChanges();
-      }, 80);
+      }, 50);
     }
   }
 
@@ -146,7 +146,9 @@ export class ItemsCollectionComponent implements OnInit, AfterViewInit, OnDestro
       .pipe(takeUntil(this.destroy$))
       .subscribe((enabled) => {
         this.animationsEnabled = enabled;
-        this.checkAndInitScroll();
+        if (enabled) {
+          this.checkAndInitScroll();
+        }
       });
 
     // Carga de producto en cambio de ruta
@@ -162,7 +164,9 @@ export class ItemsCollectionComponent implements OnInit, AfterViewInit, OnDestro
   ngAfterViewInit(): void {
     if (this.isBrowser) {
       setTimeout(() => {
-        this.setupInitialHeroImagesState();
+        if (this.product) {
+          this.initScroll();
+        }
       }, 50);
     }
   }
@@ -194,29 +198,37 @@ export class ItemsCollectionComponent implements OnInit, AfterViewInit, OnDestro
     }
 
     const main = this.product.main_image;
-    const collectionImages = this.normalizeMedia(this.product.media)
-      .filter(m => m.type === 'image' && m.use?.includes('collection'))
+    const allMedia = this.normalizeMedia(this.product.media);
+    
+    // Si hay medios con use 'collection', priorizarlos; si no, usar todos los medios disponibles del producto
+    const collectionMedia = allMedia.filter(m => Array.isArray(m.use) && m.use.includes('collection'));
+    const mediaPool = collectionMedia.length > 0 ? collectionMedia : allMedia;
+
+    const collectionImages = mediaPool
+      .filter(m => m.type === 'image' || !m.type)
       .map(m => m.url);
 
-    this.heroImages = [main, ...collectionImages.slice(0, 2)]
+    // Hero images: máximo 3 imágenes para el bloque del hero
+    const combinedHero = [main, ...collectionImages];
+    this.heroImages = combinedHero
       .filter(Boolean)
-      .filter((v, i, arr) => arr.indexOf(v) === i);
+      .filter((v, i, arr) => arr.indexOf(v) === i)
+      .slice(0, 3);
 
     const rows: { label: string; items: MediaItem[] }[] = [];
     const used = new Set<string>();
 
     const map = (m: MediaItemJSONB): MediaItem => ({
       url: m.url,
-      type: m.type,
+      type: m.type || 'image',
       poster: m.poster,
       alt: this.product?.name,
       fit: 'cover'
     });
 
-    const base = this.normalizeMedia(this.product.media)
-      .filter(m => m.use?.includes('collection'))
+    const base = mediaPool
       .filter(m => {
-        if (used.has(m.url)) return false;
+        if (!m?.url || used.has(m.url)) return false;
         used.add(m.url);
         return true;
       })
@@ -224,17 +236,19 @@ export class ItemsCollectionComponent implements OnInit, AfterViewInit, OnDestro
 
     for (let i = 0; i < base.length; i += 5) {
       rows.push({
-        label: i === 0 ? this.product.name : `${this.product.name} (Cont.)`,
+        label: i === 0 ? (this.product.name || 'Galería') : `${this.product.name} (Cont.)`,
         items: base.slice(i, i + 5)
       });
     }
 
     (this.product.variants || []).forEach((v, idx) => {
-      const media = this.normalizeMedia(v.media);
-      const items = media
-        .filter(m => m.use?.includes('collection'))
+      const vMedia = this.normalizeMedia(v.media);
+      const vColl = vMedia.filter(m => Array.isArray(m.use) && m.use.includes('collection'));
+      const vPool = vColl.length > 0 ? vColl : vMedia;
+
+      const items = vPool
         .filter(m => {
-          if (used.has(m.url)) return false;
+          if (!m?.url || used.has(m.url)) return false;
           used.add(m.url);
           return true;
         })
@@ -338,64 +352,50 @@ export class ItemsCollectionComponent implements OnInit, AfterViewInit, OnDestro
 
     this.cdr.detectChanges();
 
-    // Preload hero images
     const preloadUrls = [...this.heroImages];
     const uniqueUrls = Array.from(new Set(preloadUrls)).filter(Boolean);
 
     this.preloadImages(uniqueUrls).then(() => {
       this.cdr.detectChanges();
-      if (this.isBrowser) {
-        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-        this.setupInitialHeroImagesState();
-      }
-      setTimeout(() => {
-        this.loaderService.releaseLoader();
-        this.cdr.detectChanges();
-        this.checkAndInitScroll();
-      }, 50);
-    });
-  }
+      this.loaderService.releaseLoader();
 
-  private setupInitialHeroImagesState(): void {
-    if (!this.isBrowser || !this.imagesContainer) return;
-    const heroImgs = this.imagesContainer.nativeElement.querySelectorAll('.hero-image-reveal');
-    heroImgs.forEach((imgNode: Element) => {
-      const img = imgNode as HTMLElement;
-      gsap.killTweensOf(img);
-      gsap.set(img, {
-        opacity: 0,
-        y: 35,
-        clipPath: 'inset(100% 0 0 0)',
-        willChange: 'transform, opacity, clip-path'
-      });
+      if (this.isBrowser) {
+        setTimeout(() => {
+          this.initScroll();
+          this.cdr.detectChanges();
+        }, 80);
+      }
     });
   }
 
   initScroll(): void {
     if (!this.isBrowser) return;
-    if (!this.stickyText || !this.imagesContainer || !this.heroSection) return;
+    if (!this.imagesContainer || !this.heroSection) return;
 
     this.cleanupTriggers();
 
-    const text = this.stickyText.nativeElement;
     const images = this.imagesContainer.nativeElement;
     const hero = this.heroSection.nativeElement;
+    const text = this.stickyText?.nativeElement;
 
-    // Pinning sticky text
-    ScrollTrigger.matchMedia({
-      "(min-width: 1024px)": () => {
-        const pinTrigger = ScrollTrigger.create({
-          trigger: hero,
-          start: "top top+=88",
-          end: () => `+=${Math.max(0, images.offsetHeight - text.offsetHeight)}`,
-          pin: text,
-          pinSpacing: false,
-          invalidateOnRefresh: true});
+    // Pinning sticky text si está presente
+    if (text) {
+      ScrollTrigger.matchMedia({
+        "(min-width: 1024px)": () => {
+          const pinTrigger = ScrollTrigger.create({
+            trigger: hero,
+            start: "top top+=88",
+            end: () => `+=${Math.max(0, images.offsetHeight - text.offsetHeight)}`,
+            pin: text,
+            pinSpacing: false,
+            invalidateOnRefresh: true
+          });
 
-        this.triggers.push(pinTrigger);
-      },
-      "(max-width: 1023px)": () => {}
-    });
+          this.triggers.push(pinTrigger);
+        },
+        "(max-width: 1023px)": () => {}
+      });
+    }
 
     const heroImgs = images.querySelectorAll('.hero-image-reveal');
 
@@ -404,19 +404,19 @@ export class ItemsCollectionComponent implements OnInit, AfterViewInit, OnDestro
       gsap.killTweensOf(img);
 
       if (i === 0) {
-        // Primera imagen del hero: se anima con entrada fluida inmediatamente tras salir el loader
+        // Primera imagen del hero: se anima con entrada fluida inmediatamente
         gsap.fromTo(
           img,
           {
             opacity: 0,
             y: 35,
-            clipPath: 'inset(100% 0 0 0)'
+            clipPath: 'inset(100% 0% 0% 0%)'
           },
           {
             opacity: 1,
             y: 0,
-            clipPath: 'inset(0% 0 0 0)',
-            duration: 1.3,
+            clipPath: 'inset(0% 0% 0% 0%)',
+            duration: 1.2,
             ease: 'power2.out',
             delay: 0.05,
             onComplete: () => {
@@ -428,33 +428,34 @@ export class ItemsCollectionComponent implements OnInit, AfterViewInit, OnDestro
           }
         );
       } else {
-        // Imágenes subsiguientes (2, 3, etc.): se animan PROGRESIVAMENTE con el scroll del usuario
-        gsap.set(img, {
-          opacity: 0,
-          y: 40,
-          clipPath: 'inset(100% 0 0 0)',
-          willChange: 'transform, opacity, clip-path'
-        });
-
-        const anim = gsap.to(img, {
-          opacity: 1,
-          y: 0,
-          clipPath: 'inset(0% 0 0 0)',
-          duration: 1.2,
-          ease: 'power2.out',
-          scrollTrigger: {
-            trigger: img,
-            start: "top 85%",
-            once: true,
-            toggleActions: "play none none none"
+        // Imágenes subsiguientes (2, 3): se animan progresivamente con el scroll del usuario
+        const anim = gsap.fromTo(
+          img,
+          {
+            opacity: 0,
+            y: 40,
+            clipPath: 'inset(100% 0% 0% 0%)'
           },
-          onComplete: () => {
-            img.style.clipPath = 'none';
-            img.style.opacity = '1';
-            img.style.transform = 'none';
-            img.style.willChange = 'auto';
+          {
+            opacity: 1,
+            y: 0,
+            clipPath: 'inset(0% 0% 0% 0%)',
+            duration: 1.1,
+            ease: 'power2.out',
+            scrollTrigger: {
+              trigger: img,
+              start: "top 85%",
+              once: true,
+              toggleActions: "play none none none"
+            },
+            onComplete: () => {
+              img.style.clipPath = 'none';
+              img.style.opacity = '1';
+              img.style.transform = 'none';
+              img.style.willChange = 'auto';
+            }
           }
-        });
+        );
 
         if (anim.scrollTrigger) {
           this.triggers.push(anim.scrollTrigger);

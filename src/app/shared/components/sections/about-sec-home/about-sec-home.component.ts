@@ -7,15 +7,12 @@ import {
   OnDestroy,
   ChangeDetectionStrategy
 } from '@angular/core';
-
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Subject, takeUntil } from 'rxjs';
-// import { WordRevealDirective } from '../../utils/directives/word-reveal.directive';
-// import { FadeUpLetterDirective } from '../../utils/directives/fadeupletter.directive';
-import { LoaderService } from '../../../../core/services/utils/loader.service';
-import { WordRevealDirective } from '../../../utils/directives/word-reveal.directive';
-import { FadeUpLetterDirective } from '../../../utils/directives/fadeupletter.directive';
+import { LoaderService } from '../../../../core/services/loader.service';
+import { WordRevealDirective } from '../../../directives/animations/word-reveal.directive';
+import { FadeUpLetterDirective } from '../../../directives/animations/fadeupletter.directive';
 import { RouterModule } from '@angular/router';
 
 if (typeof window !== 'undefined') {

@@ -9,13 +9,13 @@ import {
   ChangeDetectorRef
 } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { Collection } from '../../../utils/models/collection.model';
+import { Collection } from '../../../models/collection.model';
 import { RouterModule, Router } from '@angular/router';
 import { CollectionBridesService } from '../../../../core/services/data-access/collection-brides/collection_brides.service';
 import { trigger, transition, style, animate, state } from '@angular/animations';
-import { CardInitAnimationDirective } from '../../../utils/directives/card-init-animation.directive';
-import { WordRevealDirective } from '../../../utils/directives/word-reveal.directive';
-import { FadeUpLetterDirective } from "../../../utils/directives/fadeupletter.directive";
+import { CardInitAnimationDirective } from '../../../directives/animations/card-init-animation.directive';
+import { WordRevealDirective } from '../../../directives/animations/word-reveal.directive';
+import { FadeUpLetterDirective } from '../../../directives/animations/fadeupletter.directive';
 
 @Component({
   selector: 'app-novias-template',

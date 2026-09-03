@@ -12,9 +12,9 @@ import gsap from 'gsap';
 import ScrollTrigger from 'gsap/ScrollTrigger';
 import { ReelsSectionComponent } from "../../sections/reels-section/reels-section.component";
 import { LucideAngularModule } from 'lucide-angular';
-import { CardInitAnimationDirective } from '../../../utils/directives/card-init-animation.directive';
-import { FadeUpLetterDirective } from '../../../utils/directives/fadeupletter.directive';
-import { WordRevealDirective } from '../../../utils/directives/word-reveal.directive';
+import { CardInitAnimationDirective } from '../../../directives/animations/card-init-animation.directive';
+import { FadeUpLetterDirective } from '../../../directives/animations/fadeupletter.directive';
+import { WordRevealDirective } from '../../../directives/animations/word-reveal.directive';
 
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger);

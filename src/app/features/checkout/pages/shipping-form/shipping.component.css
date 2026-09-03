@@ -1,0 +1,120 @@
+/* Estilos base para el skeleton - sin animaciones complejas */
+.skeleton-bg {
+  background-color: #f3f4f6;
+}
+
+.skeleton-text {
+  background-color: #e5e7eb;
+  border-radius: 4px;
+}
+
+.skeleton-card {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+
+
+/* Skeleton specific styles */
+.skeleton-bg {
+  background-color: #f3f4f6;
+}
+
+.skeleton-text {
+  background-color: #e5e7eb;
+  border-radius: 4px;
+}
+
+.skeleton-card {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Existing styles */
+::ng-deep .p-inputtext {
+  border: none !important;
+  border-bottom: 1px solid !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+::ng-deep .p-inputtext:enabled:focus {
+  border-bottom: 1px solid var(--color-aldy-primary-400) !important;
+}
+
+::ng-deep .p-floatlabel label {
+  font-weight: 300 !important;
+}
+
+::ng-deep .p-floatlabel:has(input:focus) label {
+  color: var(--color-aldy-primary-600) !important;
+ }
+
+::ng-deep .p-select {
+  border: none !important;
+  border-bottom: 1px solid !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+::ng-deep .p-select:enabled:focus {
+  border-bottom: 1px solid var(--color-aldy-primary-400) !important;
+}
+
+::ng-deep .p-select-option.p-select-option-selected {
+  color: var(--color-aldy-primary-600) !important;
+}
+
+::ng-deep .p-select-option.p-select-option-selected.p-focus {
+  background: var(--color-aldy-primary-100) !important;
+}
+
+::ng-deep .p-inputtext.ng-invalid.ng-dirty {
+  border-bottom: 1px solid #FF6467 !important;
+  color: #FF6467 !important;
+}
+
+::ng-deep .p-floatlabel input.ng-invalid.ng-dirty + label,
+::ng-deep .p-floatlabel input.ng-invalid.ng-dirty.p-filled + label,
+::ng-deep .p-floatlabel input.ng-invalid.ng-dirty:focus + label {
+  color: #FF6467 !important;
+}
+
+.radioAldy {
+  border-radius: 2px;
+  -webkit-appearance: none;
+  appearance: none;
+  background-color: #fff;
+  border: 1px solid #646464;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: box-shadow 0.2s ease-in-out, background-color 0.2s ease-in-out;
+  width: 12px;
+  height: 12px;
+  font-size: 12px;
+  color: #ffffff;
+}
+
+.radioAldy:checked {
+  background-color: var(--color-aldy-medium);
+  box-shadow: 0 0 0 2px var(--color-aldy-medium);
+  border: 2px solid #ffffff;
+}
+
+.radioAldy:checked::after {
+  font-weight: 900;
+  position: absolute;
+  font-size: 10px;
+  color: #fff;
+}
+
+
+
+

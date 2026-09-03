@@ -1,12 +1,10 @@
-import { Routes } from "@angular/router";
-import { ConfirmationGuard } from "../../core/guards/confirmation.guard";
-import { RedirectGuard } from "../../core/guards/redirect.guard";
+import { Routes } from '@angular/router';
+import { RedirectGuard } from '../../core/auth/redirect.guard';
 
 export const AUTH_ROUTES: Routes = [
-
   {
     path: '',
-    loadComponent: () => import('./authPanel.component').then(m => m.AuthPanelComponent),
+    loadComponent: () => import('./layout/auth-layout.component').then(m => m.AuthLayoutComponent),
     children: [
       {
         path: '',
@@ -15,17 +13,17 @@ export const AUTH_ROUTES: Routes = [
       },
       {
         path: 'iniciar-sesion',
-        loadComponent: () => import('./pages/login-page/login-page.component').then(c => c.LoginPageComponent),
+        loadComponent: () => import('./pages/login/login-page.component').then(c => c.LoginPageComponent),
         canActivate: [RedirectGuard]
       },
       {
         path: 'registro',
-        loadComponent: () => import('./pages/register-page/register-page.component').then(c => c.RegisterPageComponent),
+        loadComponent: () => import('./pages/register/register-page.component').then(c => c.RegisterPageComponent),
         canActivate: [RedirectGuard]
       },
       {
         path: '**',
-        loadComponent: () => import('./pages/404auth/404auth.component').then(c => c.Auth404Component)
+        loadComponent: () => import('./pages/auth-error/404auth.component').then(c => c.Auth404Component)
       }
     ]
   }

@@ -1,0 +1,45 @@
+<div *ngIf="totalPages > 1" class="flex justify-center items-center gap-2 mt-6 select-none text-aldy-medium-2">
+  <button type="button" (click)="prevPage()" [disabled]="currentPage === 1"
+    class="w-10 h-10 border border-aldy-medium-2 text-aldy-medium-2 rounded-none flex items-center justify-center NewAldyFontType4 text-sm cursor-pointer disabled:opacity-40 disabled:cursor-default"
+    aria-label="Página anterior">
+    ‹
+  </button>
+  <ng-container *ngIf="pagesArray.length <= 8; else manyPages">
+    <button *ngFor="let p of pagesArray" type="button" (click)="goToPage(p)"
+      class="w-10 h-10 border border-aldy-medium-2 text-aldy-medium-2 rounded-none flex items-center justify-center NewAldyFontType4 text-sm cursor-pointer disabled:opacity-40 disabled:cursor-default"
+      [ngClass]="p === currentPage ? 'font-semibold' : ''">
+      {{ p }}
+    </button>
+  </ng-container>
+  <ng-template #manyPages>
+    <button type="button" (click)="goToPage(1)"
+      class="w-10 h-10 border border-aldy-medium-2 text-aldy-medium-2 rounded-none flex items-center justify-center NewAldyFontType4 text-sm cursor-pointer disabled:opacity-40 disabled:cursor-default"
+      [ngClass]="currentPage === 1 ? 'font-semibold' : ''">
+      1
+    </button>
+    <span class="px-2 NewAldyFontType4 text-sm text-aldy-medium-2">...</span>
+    <button *ngIf="currentPage > 2" type="button" (click)="goToPage(currentPage - 1)"
+      class="w-10 h-10 border border-aldy-medium-2 text-aldy-medium-2 rounded-none flex items-center justify-center NewAldyFontType4 text-sm cursor-pointer disabled:opacity-40 disabled:cursor-default">
+      {{ currentPage - 1 }}
+    </button>
+    <button type="button" (click)="goToPage(currentPage)"
+      class="w-10 h-10 border border-aldy-medium-2 text-aldy-medium-2 rounded-none flex items-center justify-center NewAldyFontType4 text-sm cursor-pointer font-semibold disabled:opacity-40 disabled:cursor-default">
+      {{ currentPage }}
+    </button>
+    <button *ngIf="currentPage < totalPages - 1" type="button" (click)="goToPage(currentPage + 1)"
+      class="w-10 h-10 border border-aldy-medium-2 text-aldy-medium-2 rounded-none flex items-center justify-center NewAldyFontType4 text-sm cursor-pointer disabled:opacity-40 disabled:cursor-default">
+      {{ currentPage + 1 }}
+    </button>
+    <span class="px-2 NewAldyFontType4 text-sm text-aldy-medium-2">...</span>
+    <button type="button" (click)="goToPage(totalPages)"
+      class="w-10 h-10 border border-aldy-medium-2 text-aldy-medium-2 rounded-none flex items-center justify-center NewAldyFontType4 text-sm cursor-pointer disabled:opacity-40 disabled:cursor-default"
+      [ngClass]="currentPage === totalPages ? 'font-semibold' : ''">
+      {{ totalPages }}
+    </button>
+  </ng-template>
+  <button type="button" (click)="nextPage()" [disabled]="currentPage === totalPages"
+    class="w-10 h-10 border border-aldy-medium-2 text-aldy-medium-2 rounded-none flex items-center justify-center NewAldyFontType4 text-sm cursor-pointer disabled:opacity-40 disabled:cursor-default"
+    aria-label="Página siguiente">
+    ›
+  </button>
+</div>

@@ -1,0 +1,649 @@
+<!-- Navbar -->
+<nav class="w-full border-b px-3 sm:px-4 md:px-6 border-aldy-medium bg-aldy-white">
+  <div class="max-w-3xl mx-auto h-14 sm:h-16 flex items-center justify-between">
+
+    <a href="/" class="flex items-center">
+      <img src="../../../../../assets/svg/logo_full-cropped.svg" alt="Aldana Vilcabana"
+        class="h-12 sm:h-14 w-auto object-contain" />
+    </a>
+
+    <a routerLink="/checkout/carrito" class="flex items-center">
+      <lucide-icon name="shopping-bag" class="w-5 h-5 sm:w-6 sm:h-6 text-aldy-green-gray"></lucide-icon>
+    </a>
+
+  </div>
+</nav>
+@if (showSkeleton) {
+<div #skeletonContainer class="w-full bg-aldy-white px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12">
+  <div #skeletonContent class="max-w-6xl mx-auto">
+    <div
+      class="w-full flex flex-col lg:flex-row justify-center gap-4 sm:gap-6 min-h-[calc(100vh-56px)] lg:min-h-[calc(100vh-64px)]">
+      <!-- Left Column Skeleton -->
+      <div class="w-full lg:w-1/2 flex justify-center">
+        <div class="relative py-4 sm:py-5 w-full">
+          <div class="space-y-4 sm:space-y-6">
+            <!-- Header Skeleton -->
+            <div class="space-y-3">
+              <div class="h-4 bg-aldy-green-gray/25 skeleton-item rounded w-32"></div>
+              <div class="h-10 bg-aldy-green-gray/25 skeleton-item rounded"></div>
+              <div class="h-3 bg-aldy-green-gray/25 skeleton-item rounded w-48"></div>
+            </div>
+            <!-- Form Fields Skeleton -->
+            <div class="space-y-4">
+              <div class="h-4 bg-aldy-green-gray/25 skeleton-item rounded w-24"></div>
+              <div class="h-10 bg-aldy-green-gray/25 skeleton-item rounded"></div>
+              <div class="h-10 bg-aldy-green-gray/25 skeleton-item rounded"></div>
+              <div class="grid grid-cols-2 gap-4">
+                <div class="h-10 bg-aldy-green-gray/25 skeleton-item rounded"></div>
+                <div class="h-10 bg-aldy-green-gray/25 skeleton-item rounded"></div>
+              </div>
+              <div class="h-10 bg-aldy-green-gray/25 skeleton-item rounded"></div>
+              <div class="h-10 bg-aldy-green-gray/25 skeleton-item rounded"></div>
+              <div class="grid grid-cols-2 gap-4">
+                <div class="h-10 bg-aldy-green-gray/25 skeleton-item rounded"></div>
+                <div class="h-10 bg-aldy-green-gray/25 skeleton-item rounded"></div>
+              </div>
+            </div>
+            <!-- Button Skeleton -->
+            <div class="h-12 bg-aldy-green-gray/25 skeleton-item rounded w-32 mt-6"></div>
+          </div>
+        </div>
+      </div>
+      <!-- Right Column Skeleton -->
+      <div
+        class="w-full lg:w-1/2 py-4 sm:py-5 bg-aldy-white lg:border-l lg:border-aldy-medium lg:pl-4 xl:pl-6 min-h-[calc(100vh-56px)] lg:min-h-[calc(100vh-64px)]">
+        <div class="space-y-4">
+          <!-- Product Items Skeleton -->
+          @for (i of [1,2]; track i) {
+          <div class="flex gap-2 sm:gap-3 md:gap-4 w-full mb-3 sm:mb-4">
+            <div class="w-16 sm:w-20 h-20 bg-aldy-green-gray/25 skeleton-item rounded"></div>
+            <div class="flex flex-col justify-between w-full">
+              <div class="space-y-2">
+                <div class="h-3 bg-aldy-green-gray/25 skeleton-item rounded w-32"></div>
+                <div class="h-2 bg-aldy-green-gray/25 skeleton-item rounded w-20"></div>
+                <div class="h-2 bg-aldy-green-gray/25 skeleton-item rounded w-16"></div>
+              </div>
+              <div class="h-3 bg-aldy-green-gray/25 skeleton-item rounded w-20"></div>
+            </div>
+          </div>
+          }
+          <!-- Summary Skeleton -->
+          <div class="pt-3 sm:pt-4 mt-4 sm:mt-6 border-t border-gray-200 space-y-2">
+            <div class="flex justify-between">
+              <div class="h-3 bg-aldy-green-gray/25 skeleton-item rounded w-16"></div>
+              <div class="h-3 bg-aldy-green-gray/25 skeleton-item rounded w-20"></div>
+            </div>
+            <div class="flex justify-between">
+              <div class="h-3 bg-aldy-green-gray/25 skeleton-item rounded w-12"></div>
+              <div class="h-3 bg-aldy-green-gray/25 skeleton-item rounded w-16"></div>
+            </div>
+            <div class="flex justify-between pt-2">
+              <div class="h-4 bg-aldy-green-gray/25 skeleton-item rounded w-12"></div>
+              <div class="h-4 bg-aldy-green-gray/25 skeleton-item rounded w-20"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+}
+<!-- Main Content -->
+<div #mainContentContainer [class.hidden]="isLoading"
+  class="w-full bg-aldy-white px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12 opacity-0">
+  <div class="max-w-6xl mx-auto">
+    <div #mainLayoutContainer
+      class="w-full flex flex-col lg:flex-row justify-center gap-4 sm:gap-6 min-h-[calc(100vh-56px)] lg:min-h-[calc(100vh-64px)]">
+      <div class="w-full lg:w-1/2 flex justify-center" [class.lg:sticky]="!showForm" [class.lg:top-16]="!showForm" [class.lg:self-start]="!showForm">
+        <div class="relative py-4 sm:py-5 w-full">
+          <div class="space-y-4 sm:space-y-6">
+            <div [formGroup]="form" class="space-y-4 sm:space-y-6">
+              <div>
+                <h2
+                  class="text-xs sm:text-sm NewAldyTitle tracking-widest text-aldy-green-gray-bold font-light uppercase mb-1 sm:mb-2">
+                  Datos de contacto
+                </h2>
+                <label
+                  class="NewAldyFontType4 tracking-[0.2em] uppercase text-[10px] mb-2 text-aldy-green-gray block">Email</label>
+                <app-input label="Email" formControlName="email"></app-input>
+                @if (form.get('email')?.invalid && form.get('email')?.touched) {
+                <div class="text-red-400 text-xs NewAldyFontType4 tracking-wider mt-1">
+                  @if (form.get('email')?.errors?.['required']) {
+                  <div>
+                    El email es obligatorio.
+                  </div>
+                  }
+                  @if (form.get('email')?.errors?.['email']) {
+                  <div>
+                    Ingresá un email válido.
+                  </div>
+                  }
+                </div>
+                }
+                <label class="flex items-center mt-1 sm:mt-2">
+                  <input type="checkbox" class="mr-2 scale-90 sm:scale-100" AldyCheckboxV1
+                    formControlName="receiveOffers" />
+                  <span
+                    class="text-[11px] sm:text-xs NewAldyFontType4 relative top-[1px] tracking-wider text-aldy-green-gray">
+                    Quiero recibir ofertas y novedades por e-mail</span>
+                </label>
+              </div>
+              @if (!showForm) {
+              <div>
+                <h2
+                  class="text-xs sm:text-sm NewAldyTitle tracking-widest text-aldy-green-gray-bold font-light uppercase mb-1 sm:mb-2">
+                  Entrega
+                </h2>
+                <div class="relative">
+                  <label
+                    class="NewAldyFontType4 tracking-[0.2em] uppercase text-[10px] mb-2 text-aldy-green-gray block">Código
+                    postal</label>
+                  <app-input label="Código postal" formControlName="zipCode"></app-input>
+                  <a href="https://www.oca.com.ar/Busquedas/CodigosPostales" target="_blank"
+                    class="absolute top-0 right-3 sm:right-4 text-xs NewAldyFontType4 tracking-wider text-aldy-green-gray">
+                    No sé mi codigo postal
+                  </a>
+                </div>
+                @if (
+                form.get('zipCode')?.touched && form.get('zipCode')?.invalid
+                ) {
+                <div class="text-red-400 text-xs NewAldyFontType4 tracking-wider mt-1">
+                  @if (form.get('zipCode')?.errors?.['required']) {
+                  El código postal es obligatorio.
+                  }
+                  @if (form.get('zipCode')?.errors?.['invalidPostalCode']) {
+                  Código postal inválido. Por favor, ingresá un código postal
+                  válido.
+                  }
+                </div>
+                }
+                <button
+                  class="mt-3 sm:mt-4 px-4 sm:px-5 py-2 bg-aldy-medium cursor-pointer text-white NewAldyFontType4 text-sm tracking-wider hover:bg-aldy-medium-2 transition-colors duration-500 ease-in-out"
+                  (click)="continue()">
+                  Continuar
+                </button>
+              </div>
+              }
+            </div>
+          </div>
+          @if (showForm) {
+          <form [formGroup]="form" (ngSubmit)="submitForm()" class="space-y-6 mt-10">
+            <div>
+              <div class="flex justify-between items-center mb-3 sm:mb-4">
+                <h2
+                  class="text-xs sm:text-sm NewAldyTitle tracking-widest text-aldy-green-gray-bold font-light uppercase">
+                  {{ showAllOptions ? "Envío a domicilio" : "Envío" }}
+                </h2>
+                <button type="button"
+                  class="text-xs cursor-pointer NewAldyFontType4 tracking-wider text-aldy-green-gray"
+                  (click)="changeZipCode()">
+                  Cambiar mi ZIP
+                </button>
+              </div>
+              <div class="space-y-3 sm:space-y-4">
+                @if (!showAllOptions && selected) {
+                <div
+                  class="flex justify-between items-center p-3 sm:p-4 rounded border border-aldy-medium bg-aldy-light-gray">
+                  <div class="flex items-start gap-2 sm:gap-3">
+                    <input type="checkbox" class="mt-1 radioAldy" [checked]="true" readonly />
+                    <div>
+                      <p
+                        class="text-[11px] sm:text-xs font-semibold NewAldyFontType4 tracking-wider text-aldy-green-gray">
+                        {{
+                        selected === "estandar"
+                        ? "Correo Argentino - En domicilio"
+                        : "Correo Argentino - En sucursal"
+                        }}
+                      </p>
+                      <p class="text-xs NewAldyFontType4 tracking-wider text-aldy-green-gray">
+                        {{
+                        selected === "estandar"
+                        ? homeDeliveryTime
+                        : agencyDeliveryTime
+                        }}
+                      </p>
+                    </div>
+                  </div>
+                  <div class="flex flex-col items-end justify-center">
+                    <span class="text-xs sm:text-sm font-semibold NewAldyFontType4 tracking-wider text-aldy-green-gray">
+                      {{ shippingCost | currency : "ARS" : "symbol-narrow" : "1.2-2" : "es-AR" }}
+                    </span>
+                  </div>
+                </div>
+                }
+                @if (showAllOptions) {
+                <div [@toggleOptions] class="space-y-3">
+                  <!-- Domicilio -->
+                  <div
+                    class="flex justify-between items-center p-3 sm:p-4 rounded border cursor-pointer transition-all duration-300"
+                    [ngClass]="{'border-aldy-green-gray-bold bg-aldy-light-gray': selected === 'estandar', 'border-aldy-medium': selected !== 'estandar'}"
+                    (click)="select('estandar')">
+                    <div class="flex items-center gap-2 sm:gap-3">
+                      <input type="radio" class="radioAldy" [checked]="selected === 'estandar'" readonly />
+                      <div>
+                        <p
+                          class="text-[11px] sm:text-xs font-semibold NewAldyFontType4 tracking-wider text-aldy-green-gray">
+                          Correo Argentino - Envío a domicilio
+                        </p>
+                        <p class="text-xs NewAldyFontType4 tracking-wider text-aldy-green-gray">
+                          {{ homeDeliveryTime }}
+                        </p>
+                      </div>
+                    </div>
+                    <div class="flex flex-col items-end">
+                      <span
+                        class="text-xs sm:text-sm font-semibold NewAldyFontType4 tracking-wider text-aldy-green-gray">
+                        {{ homeShippingPrice | currency : "ARS" : "symbol-narrow" : "1.2-2" : "es-AR" }}
+                      </span>
+                    </div>
+                  </div>
+                  <!-- Sucursal -->
+                  <div
+                    class="flex justify-between items-center p-3 sm:p-4 rounded border cursor-pointer transition-all duration-300"
+                    [ngClass]="{'border-aldy-green-gray-bold bg-aldy-light-gray': selected === 'retiro', 'border-aldy-medium': selected !== 'retiro'}"
+                    (click)="select('retiro')">
+                    <div class="flex items-center gap-2 sm:gap-3">
+                      <input type="radio" class="radioAldy" [checked]="selected === 'retiro'" readonly />
+                      <div>
+                        <p
+                          class="text-[11px] sm:text-xs font-semibold NewAldyFontType4 tracking-wider text-aldy-green-gray">
+                          Correo Argentino - Retiro en sucursal
+                        </p>
+                        <p class="text-xs NewAldyFontType4 tracking-wider text-aldy-green-gray">
+                          {{ agencyDeliveryTime }}
+                        </p>
+                      </div>
+                    </div>
+                    <div class="flex flex-col items-end">
+                      <span
+                        class="text-xs sm:text-sm font-semibold NewAldyFontType4 tracking-wider text-aldy-green-gray">
+                        {{ agencyShippingPrice | currency : "ARS" : "symbol-narrow" : "1.2-2" : "es-AR" }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                }
+                <!-- Selección de Sucursal -->
+                @if (selected === 'retiro') {
+                <div class="mt-4 p-4 border border-dashed border-aldy-medium bg-aldy-white rounded space-y-3">
+                  <h4 class="text-xs sm:text-sm NewAldyTitle font-semibold tracking-wider text-aldy-green-gray">
+                    Selecciona la sucursal de retiro:
+                  </h4>
+                  @if (agencies && agencies.length > 0) {
+                  <div>
+                    <app-selects formControlName="agencyCode" [options]="agencies" optionLabel="name" label="Sucursal"
+                      placeholder="Seleccionar sucursal" id="sucursal">
+                    </app-selects>
+                    @if (selectedAgency) {
+                    <div class="mt-3 p-3 bg-gray-50 rounded text-xs text-aldy-green-gray space-y-1">
+                      <p><strong>Dirección:</strong> {{ selectedAgency.streetName }} {{ selectedAgency.streetNumber }},
+                        {{ selectedAgency.city }}</p>
+                      @if (selectedAgency.hours) {
+                      <p><strong>Horario:</strong> {{ selectedAgency.hours }}</p>
+                      }
+                    </div>
+                    }
+                  </div>
+                  } @else {
+                  <p class="text-xs text-red-500 NewAldyFontType4">
+                    No hay sucursales disponibles de Correo Argentino para la provincia seleccionada. Por favor,
+                    selecciona otra provincia de facturación arriba para listar sus agencias correspondientes.
+                  </p>
+                  }
+                </div>
+                }
+                <div class="flex justify-center w-full h-auto">
+                  <button type="button"
+                    class="mt-4 cursor-pointer text-sm NewAldyFontType4 tracking-wider text-aldy-green-gray"
+                    (click)="toggleAllOptions()">
+                    {{
+                    showAllOptions ? "Ocultar opciones" : "Ver todas las opciones"
+                    }}
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="grid grid-cols-1 gap-4 sm:gap-6">
+              <h2
+                class="text-xs sm:text-sm NewAldyTitle tracking-widest text-aldy-green-gray-bold font-light uppercase">
+                Datos de facturación
+              </h2>
+              <div>
+                <label
+                  class="NewAldyFontType4 tracking-[0.2em] uppercase text-[10px] mb-2 text-aldy-green-gray block">DNI o
+                  CUIT</label>
+                <app-input label="DNI o CUIT" formControlName="hasDniCuit" inputmode="numeric" [numericMax11]="true">
+                </app-input>
+                @if (
+                form.get('hasDniCuit')?.touched &&
+                form.get('hasDniCuit')?.invalid
+                ) {
+                <div class="text-red-400 text-xs NewAldyFontType4 tracking-wider mt-1">
+                  @if (form.get('hasDniCuit')?.errors?.['required']) {
+                  El DNI o CUIT es obligatorio.
+                  }
+                  @if (form.get('hasDniCuit')?.errors?.['invalidDni']) {
+                  El DNI no es válido. Debe tener entre 7 y 8 dígitos.
+                  }
+                  @if (form.get('hasDniCuit')?.errors?.['invalidCuit']) {
+                  El CUIT no es válido. Verificá que sea correcto.
+                  }
+                  @if (form.get('hasDniCuit')?.errors?.['invalidDniCuit']) {
+                  Debe ingresar un DNI (7-8 dígitos) o un CUIT (11 dígitos).
+                  }
+                </div>
+                }
+              </div>
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label
+                    class="NewAldyFontType4 tracking-[0.2em] uppercase text-[10px] mb-2 text-aldy-green-gray block">Nombre</label>
+                  <app-input label="Nombre" formControlName="name"></app-input>
+                  @if (form.get('name')?.invalid && form.get('name')?.touched) {
+                  <div class="text-red-400 text-xs NewAldyFontType4 tracking-wider mt-1">
+                    El nombre es obligatorio.
+                  </div>
+                  }
+                </div>
+                <div>
+                  <label
+                    class="NewAldyFontType4 tracking-[0.2em] uppercase text-[10px] mb-2 text-aldy-green-gray block">Apellido</label>
+                  <app-input label="Apellido" formControlName="surname"></app-input>
+                  @if (
+                  form.get('surname')?.invalid && form.get('surname')?.touched
+                  ) {
+                  <div class="text-red-400 text-xs NewAldyFontType4 tracking-wider mt-1">
+                    El apellido es obligatorio.
+                  </div>
+                  }
+                </div>
+              </div>
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label
+                    class="NewAldyFontType4 tracking-[0.2em] uppercase text-[10px] mb-2 text-aldy-green-gray block">Teléfono</label>
+                  <app-input label="Teléfono" formControlName="phone"></app-input>
+                  @if (
+                  form.get('phone')?.hasError('required') &&
+                  form.get('phone')?.touched
+                  ) {
+                  <div class="text-red-400 text-xs NewAldyFontType4 tracking-wider mt-1">
+                    El teléfono es obligatorio.
+                  </div>
+                  }
+                  @if (
+                  form.get('phone')?.hasError('invalidPhone') &&
+                  form.get('phone')?.touched
+                  ) {
+                  <div class="text-red-400 text-xs NewAldyFontType4 tracking-wider mt-1">
+                    Ingresá un teléfono válido de Argentina.
+                  </div>
+                  }
+                </div>
+                <div>
+                  @if (showForm) {
+                  <label
+                    class="NewAldyFontType4 tracking-[0.2em] uppercase text-[10px] mb-2 text-aldy-green-gray block">Código
+                    Postal</label>
+                  }
+                  @if (showForm) {
+                  <app-input label="Código Postal" formControlName="zipCodeDisplay">
+                  </app-input>
+                  }
+                </div>
+              </div>
+              <div class="space-y-4">
+                <label class="flex items-center space-x-2">
+                  <input type="checkbox" formControlName="otherPerson" AldyCheckboxV1 />
+                  <span
+                    class="text-sm NewAldyFontType4 cursor-pointer relative top-[1px] tracking-wider text-aldy-green-gray">Otra
+                    persona va a retirar el pedido</span>
+                </label>
+                @if (isAnotherPerson) {
+                <div class="grid grid-cols-2 gap-4">
+                  <div>
+                    <label
+                      class="NewAldyFontType4 tracking-[0.2em] uppercase text-[10px] mb-2 text-aldy-green-gray block">Nombre</label>
+                    <app-input label="Nombre" formControlName="otherPersonName"></app-input>
+                    @if (
+                    form.get('otherPersonName')?.invalid &&
+                    form.get('otherPersonName')?.touched
+                    ) {
+                    <div class="text-red-400 text-xs NewAldyFontType4 tracking-wider mt-1">
+                      El nombre de la persona que retira es obligatorio.
+                    </div>
+                    }
+                  </div>
+                  <div>
+                    <label
+                      class="NewAldyFontType4 tracking-[0.2em] uppercase text-[10px] mb-2 text-aldy-green-gray block">Apellido</label>
+                    <app-input label="Apellido" formControlName="otherPersonSurname"></app-input>
+                    @if (
+                    form.get('otherPersonSurname')?.invalid &&
+                    form.get('otherPersonSurname')?.touched
+                    ) {
+                    <div class="text-red-400 text-xs NewAldyFontType4 tracking-wider mt-1">
+                      El apellido de la persona que retira es obligatorio.
+                    </div>
+                    }
+                  </div>
+                </div>
+                }
+              </div>
+              <div>
+                <label
+                  class="NewAldyFontType4 tracking-[0.2em] uppercase text-[10px] mb-2 text-aldy-green-gray block">Calle</label>
+                <app-input label="Calle" formControlName="street"></app-input>
+                @if (form.get('street')?.invalid && form.get('street')?.touched) {
+                <div class="text-red-400 text-xs NewAldyFontType4 tracking-wider mt-1">
+                  La calle es obligatoria.
+                </div>
+                }
+              </div>
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label
+                    class="NewAldyFontType4 tracking-[0.2em] uppercase text-[10px] mb-2 text-aldy-green-gray block">Número</label>
+                  <app-input label="Número" formControlName="streetNumber"></app-input>
+                  @if (
+                  form.get('streetNumber')?.invalid &&
+                  form.get('streetNumber')?.touched
+                  ) {
+                  <div class="text-red-400 text-xs NewAldyFontType4 tracking-wider mt-1">
+                    El número es obligatorio.
+                  </div>
+                  }
+                </div>
+                <div>
+                  <label
+                    class="NewAldyFontType4 tracking-[0.2em] uppercase text-[10px] mb-2 text-aldy-green-gray block">Departamento
+                    (opcional)</label>
+                  <app-input label="Departamento" formControlName="apartment"></app-input>
+                </div>
+              </div>
+              <div>
+                <label
+                  class="NewAldyFontType4 tracking-[0.2em] uppercase text-[10px] mb-2 text-aldy-green-gray block">Provincia</label>
+                <app-selects formControlName="province" [options]="provinces" optionLabel="name" optionValue="name" label="Provincia"
+                  placeholder="Seleccionar provincia" id="provincia">
+                </app-selects>
+                @if (
+                form.get('province')?.invalid && form.get('province')?.touched
+                ) {
+                <div class="text-red-400 text-xs NewAldyFontType4 tracking-wider mt-1">
+                  La provincia es obligatoria.
+                </div>
+                }
+              </div>
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label
+                    class="NewAldyFontType4 tracking-[0.2em] uppercase text-[10px] mb-2 text-aldy-green-gray block">Ciudad</label>
+                  <app-selects formControlName="city" [options]="ciudades" optionLabel="name" optionValue="name" label="Ciudad"
+                    placeholder="Seleccionar ciudad" id="ciudad">
+                  </app-selects>
+                  @if (form.get('city')?.invalid && form.get('city')?.touched) {
+                  <div class="text-red-400 text-xs NewAldyFontType4 tracking-wider mt-1">
+                    La ciudad es obligatoria.
+                  </div>
+                  }
+                </div>
+                <div>
+                  <label
+                    class="NewAldyFontType4 tracking-[0.2em] uppercase text-[10px] mb-2 text-aldy-green-gray block">Barrio
+                    (opcional)</label>
+                  <app-input label="Barrio (opcional)" formControlName="neighborhood"></app-input>
+                </div>
+              </div>
+            </div>
+            <button type="submit"
+              class="w-full px-5 py-2 bg-aldy-medium cursor-pointer text-white NewAldyFontType4 text-sm tracking-wider hover:bg-aldy-medium-2 transition-colors duration-500 ease-in-out">
+              Continuar
+            </button>
+          </form>
+          }
+        </div>
+      </div>
+      <div
+        class="w-full lg:w-1/2 py-4 sm:py-5 bg-aldy-white lg:border-l lg:border-aldy-medium lg:pl-4 xl:pl-6 min-h-[calc(100vh-56px)] lg:min-h-[calc(100vh-64px)]">
+        <div #checkoutSidebar class="top-0 self-start" [class.lg:top-16]="showForm">
+          @for (item of cartItems; track item) {
+          <div class="flex gap-2 sm:gap-3 md:gap-4 w-full mb-3 sm:mb-4">
+            <img draggable="false" [src]="item.variantMainImage || item.image" alt="Producto"
+              class="w-16 sm:w-20 min-w-[64px] sm:min-w-[80px] max-w-[64px] sm:max-w-[80px] h-full object-cover" />
+            <div class="flex flex-col justify-between w-full">
+              <div>
+                <h3
+                  class="text-xs sm:text-sm NewAldyTitle tracking-widest text-aldy-green-gray-bold font-light uppercase">
+                  {{ item.name }} x{{ item.quantity }}
+                </h3>
+                @if (item.color) {
+                <p
+                  class="text-[10px] sm:text-xs text-aldy-green-gray NewAldyFontType4 mt-0.5 sm:mt-1 flex items-center gap-1 sm:gap-2">
+                  Color: <span class="capitalize">{{ item.color }}</span>
+                  <span class="inline-block w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-xs ring-1 sm:ring-2 ring-aldy-green-gray"
+                    [ngStyle]="{ 'background-color': getColorHex(item.color) }"></span>
+                </p>
+                }
+                @if (item.size) {
+                <p
+                  class="text-[10px] sm:text-xs text-aldy-green-gray flex items-center gap-1 sm:gap-2 NewAldyFontType4 mt-0.5 sm:mt-1">
+                  Talla:
+                  <span class="bg-gray-100 px-1.5 sm:px-2 py-0.5 text-[9px] sm:text-[10px] NewAldyFontType4">{{
+                    item.size }}</span>
+                </p>
+                }
+              </div>
+              <div class="mt-1 sm:mt-2">
+                @if (discountCodeApplied) {
+                <span class="line-through text-aldy-green-gray NewAldyFontType4 text-[10px] sm:text-xs">
+                  {{
+                  item.price * item.quantity
+                  | currency : "ARS" : "symbol-narrow" : "1.2-2" : "es-AR"
+                  }}
+                </span>
+                <span class="text-aldy-green-gray text-[10px] sm:text-xs font-light NewAldyFontType4 ml-1 sm:ml-2">
+                  {{
+                  item.price * item.quantity -
+                  (item.price * item.quantity * appliedDiscount) / subtotal
+                  | currency : "ARS" : "symbol-narrow" : "1.2-2" : "es-AR"
+                  }}
+                </span>
+                } @else {
+                <h3 class="text-xs sm:text-sm NewAldyFontType4 tracking-wider text-aldy-green-gray">
+                  {{
+                  item.price * item.quantity
+                  | currency : "ARS" : "symbol-narrow" : "1.2-2" : "es-AR"
+                  }}
+                </h3>
+                }
+              </div>
+            </div>
+          </div>
+          }
+          <div
+            class="pt-3 sm:pt-4 mt-4 sm:mt-6 border-t border-aldy-medium text-xs sm:text-sm space-y-0.5 sm:space-y-1">
+            <div class="flex justify-between">
+              <span
+                class="text-[10px] sm:text-xs uppercase NewAldyFontType4 tracking-wider text-aldy-green-gray">Subtotal</span>
+              <span class="text-xs sm:text-sm NewAldyFontType4 tracking-wider text-aldy-green-gray">{{
+                subtotal | currency : "ARS" : "symbol-narrow" : "1.2-2" : "es-AR"
+                }}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-xs uppercase NewAldyFontType4 tracking-wider text-aldy-green-gray">
+                Envío
+              </span>
+              <span class="text-sm NewAldyFontType4 tracking-wider text-aldy-green-gray">
+                {{
+                shippingCost === 0
+                ? "Gratis"
+                : (shippingCost
+                | currency : "ARS" : "symbol-narrow" : "1.2-2" : "es-AR")
+                }}
+              </span>
+            </div>
+            <div class="flex justify-between font-light text-base pt-2">
+              <span class="text-sm uppercase NewAldyFontType4 tracking-wider text-aldy-green-gray">Total</span>
+              <span class="text-sm NewAldyFontType4 relative top-[1px] tracking-wider text-aldy-green-gray">
+                {{
+                subtotal - appliedDiscount + shippingCost
+                | currency : "ARS" : "symbol-narrow" : "1.2-2" : "es-AR"
+                }}
+              </span>
+            </div>
+            @if (discountCodeApplied) {
+            <div class="mt-2 text-sm text-green-700">
+              Código de descuento aplicado: <strong>{{ discountCodeApplied }}</strong>
+            </div>
+            }
+          </div>
+          @if (!discountCodeApplied) {
+          <div [formGroup]="form" class="mt-6">
+            <label
+              class="flex items-center gap-2 text-sm NewAldyFontType4 cursor-pointer relative top-[1px] tracking-wider text-aldy-green-gray">
+              <input type="checkbox" formControlName="hasCupon" AldyCheckboxV1 />
+              ¿Tienes un cupón o crédito?
+            </label>
+            @if (form.get('hasCupon')?.value) {
+            <div class="relative mt-6">
+              <div class="relative">
+                <input type="text" placeholder=" " formControlName="discountCode" [ngClass]="{
+                    'border-red-400 text-red-400 focus:border-red-400': discountError,
+                    'border-aldy-medium focus:border-aldy-medium':
+                      !discountError && !form.get('discountCode')?.disabled,
+                    'bg-aldy-white text-aldy-green-gray':
+                      $safeNavigationMigration(form.get('discountCode')?.disabled)
+                  }"
+                  class="peer block w-full border-b-1 px-2.5 pt-4 pb-2.5 text-sm bg-transparent appearance-none focus:outline-none focus:ring-0 transition-all duration-300 ease-in-out" />
+                <label [ngClass]="{
+                    'text-red-400 peer-focus:text-red-400': discountError,
+                    'text-aldy-green-gray peer-disabled:text-aldy-green-gray':
+                      $safeNavigationMigration(form.get('discountCode')?.disabled),
+                    'text-aldy-green-gray-bold peer-focus:text-aldy-medium':
+                      !discountError && !form.get('discountCode')?.disabled
+                  }"
+                  class="pointer-events-none NewAldyFontType4 absolute start-1 top-2 z-10 origin-[0] -translate-y-4 scale-75 transform bg-aldy-white tracking-wider px-2 text-sm transition-all duration-300 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-75">
+                  Ingrese su código de descuento
+                </label>
+                <span class="absolute right-3 top-3 cursor-pointer" (click)="applyDiscountCode()" [ngClass]="{
+                    'text-red-400': discountError,
+                    'text-aldy-green-gray': !discountError
+                  }">
+                  <i class="fas fa-chevron-right font-light"></i>
+                </span>
+              </div>
+              @if (discountError) {
+              <div class="mt-1 text-red-400 text-xs NewAldyFontType4 tracking-wider">
+                {{ discountError }}
+              </div>
+              }
+            </div>
+            }
+          </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

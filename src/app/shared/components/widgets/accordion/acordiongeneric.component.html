@@ -1,0 +1,46 @@
+<div class="border-b border-aldy-medium">
+  <button (click)="onToggle()"
+    class="w-full flex NewAldyFontType4 justify-between cursor-pointer items-center py-4 px-3 text-left hover:text-aldy-medium transition-colors duration-200 font-light tracking-wider text-sm"
+    [ngClass]="{
+      'text-aldy-medium font-light': isOpen(),
+      'text-aldy-medium-2': !isOpen()
+    }">
+    <div class="flex items-center gap-4">
+      @if (useIcon) {
+        @if (icon) {
+          <i [class]="icon" class="leading-none">
+          </i>
+        }
+        @if (iconImg) {
+          <img [src]="iconImg" alt="icon_item" [class]="iconImgStyle">
+        }
+      }
+      <div [class]="classTitle">{{ title }}</div>
+    </div>
+    <span class="relative w-5 h-5 flex items-center justify-center">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+        class="absolute transition-all duration-300 ease-in-out" [ngClass]="{
+          'opacity-0 scale-90 rotate-90': isOpen(),
+          'opacity-100 scale-100 rotate-0': !isOpen()
+        }">
+        <path d="M5 12h14" />
+        <path d="M12 5v14" />
+      </svg>
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+        class="absolute transition-all duration-300 ease-in-out" [ngClass]="{
+          'opacity-100 scale-100 rotate-0': isOpen(),
+          'opacity-0 scale-90 -rotate-90': !isOpen()
+        }">
+        <path d="M5 12h14" />
+      </svg>
+    </span>
+  </button>
+
+  <div class="overflow-hidden"
+    [ngClass]="disableTransition ? 'transition-none' : 'transition-all duration-300 ease-in-out'"
+    [style.maxHeight]="disableTransition && isOpen() ? 'none' : contentHeight + 'px'" #contentWrapper>
+    <ng-content></ng-content>
+  </div>
+</div>

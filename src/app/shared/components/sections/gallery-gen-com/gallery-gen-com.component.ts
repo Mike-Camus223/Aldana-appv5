@@ -8,7 +8,7 @@ import {
   PLATFORM_ID
 } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { MediaItem } from '../../../utils/models/objectsGallery.model';
+import { MediaItem } from '../../../models/objectsGallery.model';
 
 @Component({
   selector: 'app-gallery-gen-com',

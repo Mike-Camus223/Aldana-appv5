@@ -11,12 +11,12 @@ import {
 } from '@angular/core';
 import { isPlatformBrowser, CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
-import { Collection } from '../../../utils/models/collection.model';
+import { Collection } from '../../../models/collection.model';
 import { trigger, transition, style, animate, state } from '@angular/animations';
 import { CollectionService } from '../../../../core/services/data-access/collection/collection.service';
-import { WordRevealDirective } from '../../../utils/directives/word-reveal.directive';
-import { CardInitAnimationDirective } from '../../../utils/directives/card-init-animation.directive';
-import { FadeUpLetterDirective } from "../../../utils/directives/fadeupletter.directive";
+import { WordRevealDirective } from '../../../directives/animations/word-reveal.directive';
+import { CardInitAnimationDirective } from '../../../directives/animations/card-init-animation.directive';
+import { FadeUpLetterDirective } from '../../../directives/animations/fadeupletter.directive';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 @Component({

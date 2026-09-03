@@ -7,7 +7,7 @@ import {
   ChangeDetectionStrategy
 } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { Product } from '../../../utils/models/Products-supabase.interface';
+import { Product } from '../../../models/Products-supabase.interface';
 import { CardproductComponent } from '../../generic/cardproduct/cardproduct.component';
 import { LucideAngularModule } from 'lucide-angular';
 

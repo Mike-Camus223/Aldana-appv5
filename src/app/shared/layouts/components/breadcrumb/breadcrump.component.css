@@ -1,0 +1,21 @@
+::ng-deep .p-breadcrumb-item-link:hover {
+  color: var(--color-aldy-medium) !important;
+}
+
+::ng-deep .p-breadcrumb {
+    padding: 16px 0 !important;
+    background-color: var(--color-aldy-white) !important;
+}
+
+::ng-deep .p-breadcrumb-item-link {
+  color: var(--color-aldy-green-gray) !important;
+}
+
+::ng-deep .p-iconwrapper  {
+  height: 10px !important;
+  width: 10px !important;
+}
+
+::ng-deep .truncate {
+font-weight: 400 !important;
+}

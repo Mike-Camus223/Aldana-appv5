@@ -5,9 +5,9 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { InputComponent } from '../../generic/forms/input/input.component';
 import { TextareaComponent } from '../../generic/forms/textarea/textarea.component';
 import { SelectsComponent } from '../../generic/forms/selects/selects.component';
-import { WordRevealDirective } from '../../../utils/directives/word-reveal.directive';
-import { FadeUpLetterDirective } from '../../../utils/directives/fadeupletter.directive';
-import { CardInitAnimationDirective } from '../../../utils/directives/card-init-animation.directive';
+import { WordRevealDirective } from '../../../directives/animations/word-reveal.directive';
+import { FadeUpLetterDirective } from '../../../directives/animations/fadeupletter.directive';
+import { CardInitAnimationDirective } from '../../../directives/animations/card-init-animation.directive';
 
 @Component({
   selector: 'app-contact-template',

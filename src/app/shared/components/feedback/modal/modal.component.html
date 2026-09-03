@@ -1,0 +1,22 @@
+@if (open) {
+  <div
+    @backdropAnim
+    class="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-[9999] will-change-transform"
+    (click)="close()"
+    >
+    <div
+      @modalAnim
+      class="relative bg-white shadow-2xl overflow-hidden will-change-transform z-[10000]"
+      [ngClass]="[Mostyles]"
+      (click)="$event.stopPropagation()"
+      >
+      <button
+        (click)="close()"
+        class="absolute top-3 right-3 cursor-pointer transition-colors duration-200 z-10"
+        >
+        <i class="fa-solid fa-xmark text-md text-aldy-medium-2"></i>
+      </button>
+      <ng-content></ng-content>
+    </div>
+  </div>
+}

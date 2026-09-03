@@ -1,15 +1,15 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
-import { AppMenuItem } from '../../../utils/models/app-menu-item.model';
+import { AppMenuItem } from '../../../models/app-menu-item.model';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { BreadcrumbComponent } from '../../system/breadcrump/breadcrump.component';
 
 import { CollectionBridesService } from '../../../../core/services/data-access/collection-brides/collection_brides.service';
 import { BridesProductsService } from '../../../../core/services/data-access/brides-products/brides-products.service';
-import { BridesProductUtils } from '../../../utils/dataEx/brides-products-utils';
-import { CardInitAnimationDirective } from '../../../utils/directives/card-init-animation.directive';
+import { BridesProductUtils } from '../../../utils/mappers/bridal-product.mapper';
+import { CardInitAnimationDirective } from '../../../directives/animations/card-init-animation.directive';
 import { VideoComponent } from '../../generic/video/video.component';
-import { WordRevealDirective } from '../../../utils/directives/word-reveal.directive';
-import { FadeUpLetterDirective } from '../../../utils/directives/fadeupletter.directive';
+import { WordRevealDirective } from '../../../directives/animations/word-reveal.directive';
+import { FadeUpLetterDirective } from '../../../directives/animations/fadeupletter.directive';
 
 type BridesCollectionItemCard = {
   id: string;

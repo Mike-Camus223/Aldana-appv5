@@ -15,23 +15,23 @@ export const checkoutRoutes: Routes = [
       {
         path: 'carrito',
         loadComponent: () =>
-          import('./pages/car/car.component').then(c => c.CarComponent),
+          import('./pages/cart-summary/car.component').then(c => c.CarComponent),
       },
       {
         path: 'envio',
         loadComponent: () =>
-          import('./pages/shipping/shipping.component').then(c => c.ShippingComponent),
+          import('./pages/shipping-form/shipping.component').then(c => c.ShippingComponent),
       },
       {
         path: 'pago',
         loadComponent: () =>
-          import('./pages/payment/payment.component').then(c => c.PaymentComponent),
+          import('./pages/payment-process/payment.component').then(c => c.PaymentComponent),
       },
       {
         path: 'resultado',
         canActivate: [resultScreenGuard],
         loadComponent: () =>
-          import('./pages/result-screen/result-screen.component').then(c => c.ResultScreenComponent),
+          import('./pages/payment-result/result-screen.component').then(c => c.ResultScreenComponent),
       },
       {
         path: '**',

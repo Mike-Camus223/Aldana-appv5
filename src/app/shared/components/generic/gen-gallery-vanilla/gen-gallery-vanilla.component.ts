@@ -1,9 +1,9 @@
 import { Component, Input, ChangeDetectionStrategy, OnChanges, SimpleChanges, ChangeDetectorRef, Inject, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { MediaItem } from '../../../utils/models/objectsGallery.model';
+import { MediaItem } from '../../../models/objectsGallery.model';
 import { GenLightboxVanillaComponent } from '../gen-lightbox-vanilla/gen-lightbox-vanilla.component';
-import { CardInitAnimationDirective } from '../../../utils/directives/card-init-animation.directive';
-import { WordRevealDirective } from '../../../utils/directives/word-reveal.directive';
+import { CardInitAnimationDirective } from '../../../directives/animations/card-init-animation.directive';
+import { WordRevealDirective } from '../../../directives/animations/word-reveal.directive';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 @Component({

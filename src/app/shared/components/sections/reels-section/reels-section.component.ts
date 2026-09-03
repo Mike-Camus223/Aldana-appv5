@@ -14,7 +14,7 @@ import { debounceTime, takeUntil } from 'rxjs/operators';
 import { ModalComponent } from '../../generic/modal/modal.component';
 import { InstagramserviceService } from '../../../../core/services/data-access/instagram/instagramservice.service';
 import { AppGenericCarouselComponent, CarouselConfig } from '../../generic/generic-carousel/generic-carousel.component';
-import { CarouselItemDirective } from '../../../utils/directives/carousel-slide.directive';
+import { CarouselItemDirective } from '../../../directives/ui/carousel-slide.directive';
 import { LucideAngularModule } from 'lucide-angular';
 
 

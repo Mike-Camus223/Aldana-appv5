@@ -11,10 +11,10 @@ import {
   JournalPostBlock,
   JournalPostDetail} from '../../../../core/services/data-access/journal/journal.models';
 
-import { LinkHoverUnderlineDirective } from '../../../utils/directives/link-hover-underline.directive';
-import { CardInitAnimationDirective } from '../../../utils/directives/card-init-animation.directive';
-import { WordRevealDirective } from '../../../utils/directives/word-reveal.directive';
-import { FadeUpLetterDirective } from '../../../utils/directives/fadeupletter.directive';
+import { LinkHoverUnderlineDirective } from '../../../directives/animations/link-hover-underline.directive';
+import { CardInitAnimationDirective } from '../../../directives/animations/card-init-animation.directive';
+import { WordRevealDirective } from '../../../directives/animations/word-reveal.directive';
+import { FadeUpLetterDirective } from '../../../directives/animations/fadeupletter.directive';
 
 export interface SectionGroup {
   group: number;

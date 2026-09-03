@@ -15,7 +15,7 @@ import { AuthService } from '../../core/services/auth/auth.service';
 import { User } from '@supabase/supabase-js';
 import { filter } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
-import { AppMenuItem } from '../../shared/utils/models/app-menu-item.model';
+import { AppMenuItem } from '../../shared/models/app-menu-item.model';
 import { LucideAngularModule } from 'lucide-angular';
 import { LoaderService } from '../../core/services/utils/loader.service';
 import { NavbarPublicv3Component } from '../../shared/components/system/navbar-publicv3/navbar-publicv3.component';

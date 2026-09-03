@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { getDataHelperService } from '../data-access/getDataHelper.service';
-import { CartItem } from '../../../shared/utils/models/cartItems-model';
+import { CartItem } from '../../../shared/models/cartItems-model';
 import { ShippingData, DiscountData } from '../shipping.service';
 import { AuthService } from '../auth/auth.service';
 import { environment } from '../../../../environments/environment';
-import { OrderModel, OrderSummary } from '../../../shared/utils/models/order.interface';
+import { OrderModel, OrderSummary } from '../../../shared/models/order.interface';
 import { Order } from '../../../shared/components/templates/order-status/order-status.component';
 
 export interface OrderData {

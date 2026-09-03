@@ -1,0 +1,20 @@
+<div class="relative w-full">
+  <div class="w-full border px-3 transition-all duration-200" [ngClass]="{
+      'bg-white border-red-400': invalid,
+      'bg-white border-[#7A8C6E]': !invalid && isFocused,
+      'bg-aldy-white border-[#C8C4BA]': !invalid && !isFocused,
+      'opacity-60': disabled
+    }">
+
+    <textarea [id]="id" [rows]="rows" [value]="value" (input)="onInput($event)" (focus)="onFocus()" (blur)="onBlur()"
+      [disabled]="disabled" [placeholder]="label"
+      class="w-full resize-none bg-transparent py-3 text-[13px] NewAldyFontType4 tracking-wide focus:outline-none focus:ring-0"
+      [ngClass]="{
+        'text-red-400 placeholder-red-400': invalid,
+        'text-[#5A5A4A] placeholder-[#B0ADA5]': !invalid && !disabled,
+        'text-[#8A8A7A] placeholder-[#B0ADA5]': disabled
+      }">
+    </textarea>
+
+  </div>
+</div>

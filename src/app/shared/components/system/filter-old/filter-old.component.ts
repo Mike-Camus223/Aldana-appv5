@@ -3,9 +3,9 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule } from 'lucide-angular';
 import { AcordiongenericComponent } from '../../generic/acordiongeneric/acordiongeneric.component';
-import { AldyCheckboxV1Directive } from '../../../utils/directives/aldy-checkbox-v1.directive';
-import { Product } from '../../../utils/models/Products-supabase.interface';
-import { ProductUtils } from '../../../utils/dataEx/products-utils';
+import { AldyCheckboxV1Directive } from '../../../directives/ui/aldy-checkbox.directive';
+import { Product } from '../../../models/Products-supabase.interface';
+import { ProductUtils } from '../../../utils/mappers/product.mapper';
 
 @Component({
   selector: 'app-filter-old',

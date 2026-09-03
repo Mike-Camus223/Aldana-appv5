@@ -1,0 +1,281 @@
+<div class="h-[72px] lg:h-[88px]"></div>
+
+<div class="min-h-[calc(100vh-72px)] lg:min-h-[calc(100vh-88px)] bg-aldy-white w-full flex flex-col items-center justify-start pt-10 pb-16">
+  <div class="relative w-full max-w-screen px-2 xs:px-4 content-wrapper flex flex-col items-center w-full flex-grow">
+    <div class="searchbar-container">
+      <div class="searchbar max-w-[18rem] xs:max-w-sm sm:max-w-xl md:max-w-4xl w-full">
+        <input type="text"
+          class="search-input NewAldyTitle text-xl xs:text-2xl sm:text-4xl md:text-5xl lg:text-5xl text-aldy-green-gray-bold font-medium tracking-wide"
+          [value]="searchTerm" (input)="onInput($event)" (keyup.enter)="applyFiltersAction(false)" placeholder="Buscar"
+          autofocus #inputElement />
+        <button type="button" (click)="applyFiltersAction(false)" [disabled]="loading"
+          class="flex items-center justify-center text-aldy-green-gray hover:text-white border border-aldy-green-gray hover:bg-aldy-medium-2 hover:border-aldy-medium-2 transition-all duration-300 cursor-pointer uppercase tracking-widest text-xs NewAldyFontType4 h-[42px] w-[42px]"
+          [ngClass]="loading ? 'opacity-60 cursor-not-allowed' : ''">
+          <lucide-icon name="Search" [size]="20" [strokeWidth]="2"></lucide-icon>
+        </button>
+      </div>
+      <div class="border-b-1 w-full max-w-[18rem] xs:max-w-sm sm:max-w-xl md:max-w-4xl border-[#AEC2A9]"></div>
+    </div>
+
+    <!-- RESULTS INFO -->
+    @if (!loading && hasSearched && products.length > 0) {
+      <div [@cardEnterAnimation]="products.length"
+        class="w-full text-center py-6 NewAldyFontType4 text-sm text-aldy-green-gray">
+        @if (displayedSearchTerm) {
+          <span>
+            Se encontraron {{ products.length }} resultados para "{{ displayedSearchTerm }}"
+          </span>
+        }
+      </div>
+    }
+
+    <!-- NO RESULTS INFO -->
+    @if (!loading && hasSearched && products.length === 0 && originalProducts.length > 0) {
+      <div
+        [@cardEnterAnimation]="products.length"
+        class="w-full text-center py-6 NewAldyFontType4 text-sm text-aldy-green-gray">
+        @if (displayedSearchTerm) {
+          <span>
+            No se encontraron resultados para "{{ displayedSearchTerm }}"
+          </span>
+        }
+      </div>
+    }
+
+    <!-- CONTROLS BAR -->
+    @if (originalProducts.length > 0 && !loading) {
+      <div
+        class="px-4 pb-2 sm:px-6 bg-aldy-white py-2 border-y border-[#AEC2A9] lg:px-12 xl:px-16 2xl:px-24 flex justify-between items-center w-full">
+        <div></div>
+        <div class="flex items-center gap-4">
+          <!-- Column Controls (Desktop) -->
+          <div #productsControls id="productsControls" class="w-40 h-auto justify-end gap-2 hidden lg:flex">
+            <button type="button" (click)="setProductColumns(2)"
+              [ngClass]="productColumns === 2 ? 'bg-aldy-medium-2' : ''"
+              class="group py-[7px] px-2 hover:bg-aldy-medium-2 transition-all duration-300 ease-in-out cursor-pointer border border-aldy-medium-2">
+              <div class="grid grid-cols-2 gap-[2px] grid-rows-2">
+                @for (n of [1, 2, 3, 4]; track n) {
+                  <span class="h-[12px] w-[12px] transition-all duration-300 ease-in-out"
+                [ngClass]="
+                  productColumns === 2
+                    ? 'bg-aldy-white'
+                    : 'bg-aldy-medium-2 group-hover:bg-aldy-white'
+                "></span>
+                }
+              </div>
+            </button>
+            <button type="button" (click)="setProductColumns(3)"
+              [ngClass]="productColumns === 3 ? 'bg-aldy-medium-2' : ''"
+              class="group py-[7px] px-2 hover:bg-aldy-medium-2 transition-all duration-300 ease-in-out cursor-pointer border border-aldy-medium-2">
+              <div class="grid grid-cols-3 gap-[2px] grid-rows-3">
+                @for (n of [1, 2, 3, 4, 5, 6, 7, 8, 9]; track n) {
+                  <span
+                class="h-[8px] w-[8px] transition-all duration-300 ease-in-out" [ngClass]="
+                  productColumns === 3
+                    ? 'bg-aldy-white'
+                    : 'bg-aldy-medium-2 group-hover:bg-aldy-white'
+                "></span>
+                }
+              </div>
+            </button>
+            <button type="button" (click)="setProductColumns(4)"
+              [ngClass]="productColumns === 4 ? 'bg-aldy-medium-2' : ''"
+              class="group py-[7px] px-2 hover:bg-aldy-medium-2 transition-all duration-300 ease-in-out cursor-pointer border border-aldy-medium-2">
+              <div class="grid grid-cols-4 gap-[2px] grid-rows-4">
+                @for (
+                  n of [
+                  1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16
+                  ]
+                  ; track
+                  n) {
+<span class="h-[5px] w-[5px] transition-all duration-300 ease-in-out" [ngClass]="
+                  productColumns === 4
+                    ? 'bg-aldy-white'
+                    : 'bg-aldy-medium-2 group-hover:bg-aldy-white'
+                "></span>
+                }
+              </div>
+            </button>
+          </div>
+          <!-- Sort Dropdown -->
+          <div class="relative group h-[42px]">
+            <select [(ngModel)]="sortOption" (change)="onSortChange($event)"
+              class="appearance-none h-full bg-transparent border border-aldy-medium-2 pl-4 pr-10 text-xs uppercase tracking-wider font-medium text-aldy-green-gray focus:outline-none cursor-pointer hover:bg-aldy-medium-2 hover:text-white transition-colors">
+              @for (opt of sortOptions; track opt) {
+                <option [value]="opt.value" class="text-gray-800 bg-white">
+                  {{ opt.label }}
+                </option>
+              }
+            </select>
+            <lucide-icon name="ChevronDown"
+            class="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 pointer-events-none text-aldy-green-gray group-hover:text-white transition-colors"></lucide-icon>
+          </div>
+        </div>
+      </div>
+    }
+
+
+    <!-- MAIN CONTENT (Grid only) -->
+    @if (originalProducts.length > 0 && !loading) {
+      <div
+        class="px-4 bg-aldy-white sm:px-6 lg:px-12 xl:px-16 2xl:px-24 py-6 w-full">
+        <div class="max-w-screen-3xl mx-auto">
+          <div class="w-full">
+            <!-- PRODUCTS GRID -->
+            <div #productsContainer class="relative transition-all duration-500 ease-in-out w-full">
+              @if (!loading && hasSearched && products.length === 0) {
+                <div [@cardEnterAnimation]="products.length"
+                  class="absolute inset-0 flex items-center justify-center text-center text-gray-500 NewAldyFontType4">
+                  <span>
+                    No se encontró el producto
+                  </span>
+                </div>
+              }
+              <!-- Grid -->
+              @if (!loading && products.length > 0) {
+                <div [@cardWaveAnimation]="pagedProducts.length"
+              class="grid gap-5 transition-all duration-500 ease-in-out" [ngClass]="[
+                productColumns === 2
+                  ? 'grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-2 mx-0 xl:mx-60'
+                  : '',
+                productColumns === 3
+                  ? 'grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 mx-0'
+                  : '',
+                productColumns === 4
+                  ? 'grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 mx-0'
+                  : ''
+              ]">
+                  @for (product of pagedProducts; track trackByProductId(i, product); let i = $index) {
+                    <div class="w-full"
+                      [@cardEnterAnimation] [style.animation-delay]="i * 100 + 'ms'">
+                      <app-cardproduct [product]="product" [selectedColor]="selectedColors[product.id] || ''"
+                        [displayImage]="product.main_image" [mobileMode]="'ismobile'" [desktopMode]="'isdesktop'"
+                        (colorSelected)="onColorSelected($event)" (wishlistToggled)="onWishlistToggled($event)">
+                      </app-cardproduct>
+                    </div>
+                  }
+                </div>
+              }
+              <!-- PAGINATION -->
+              @if (!loading && pagedProducts.length > 0 && totalPages > 1) {
+                <div
+                  class="flex justify-center items-center gap-2 mt-6 select-none text-aldy-medium-2">
+                  <button type="button" (click)="prevPage()" [disabled]="currentPage === 1"
+                    class="w-10 h-10 border border-aldy-medium-2 text-aldy-medium-2 rounded-none flex items-center justify-center NewAldyFontType4 text-sm cursor-pointer disabled:opacity-40 disabled:cursor-default"
+                    aria-label="Página anterior">
+                    ‹
+                  </button>
+                  @if (pagesArray.length <= 8) {
+                    @for (p of pagesArray; track p) {
+                      <button type="button" (click)="goToPage(p)"
+                        class="w-10 h-10 border border-aldy-medium-2 text-aldy-medium-2 rounded-none flex items-center justify-center NewAldyFontType4 text-sm cursor-pointer disabled:opacity-40 disabled:cursor-default"
+                        [ngClass]="p === currentPage ? 'font-semibold' : ''">
+                        {{ p }}
+                      </button>
+                    }
+                  } @else {
+                    <button type="button" (click)="goToPage(1)"
+                      class="w-10 h-10 border border-aldy-medium-2 text-aldy-medium-2 rounded-none flex items-center justify-center NewAldyFontType4 text-sm cursor-pointer disabled:opacity-40 disabled:cursor-default"
+                      [ngClass]="currentPage === 1 ? 'font-semibold' : ''">
+                      1
+                    </button>
+                    <span class="px-2 NewAldyFontType4 text-sm text-aldy-medium-2">...</span>
+                    @if (currentPage > 2) {
+                      <button type="button" (click)="goToPage(currentPage - 1)"
+                        class="w-10 h-10 border border-aldy-medium-2 text-aldy-medium-2 rounded-none flex items-center justify-center NewAldyFontType4 text-sm cursor-pointer disabled:opacity-40 disabled:cursor-default">
+                        {{ currentPage - 1 }}
+                      </button>
+                    }
+                    <button type="button" (click)="goToPage(currentPage)"
+                      class="w-10 h-10 border border-aldy-medium-2 text-aldy-medium-2 rounded-none flex items-center justify-center NewAldyFontType4 text-sm cursor-pointer font-semibold disabled:opacity-40 disabled:cursor-default">
+                      {{ currentPage }}
+                    </button>
+                    @if (currentPage < totalPages - 1) {
+                      <button type="button" (click)="goToPage(currentPage + 1)"
+                        class="w-10 h-10 border border-aldy-medium-2 text-aldy-medium-2 rounded-none flex items-center justify-center NewAldyFontType4 text-sm cursor-pointer disabled:opacity-40 disabled:cursor-default">
+                        {{ currentPage + 1 }}
+                      </button>
+                    }
+                    <span class="px-2 NewAldyFontType4 text-sm text-aldy-medium-2">...</span>
+                    <button type="button" (click)="goToPage(totalPages)"
+                      class="w-10 h-10 border border-aldy-medium-2 text-aldy-medium-2 rounded-none flex items-center justify-center NewAldyFontType4 text-sm cursor-pointer disabled:opacity-40 disabled:cursor-default"
+                      [ngClass]="currentPage === totalPages ? 'font-semibold' : ''">
+                      {{ totalPages }}
+                    </button>
+                  }
+                  <button type="button" (click)="nextPage()" [disabled]="currentPage === totalPages"
+                    class="w-10 h-10 border border-aldy-medium-2 text-aldy-medium-2 rounded-none flex items-center justify-center NewAldyFontType4 text-sm cursor-pointer disabled:opacity-40 disabled:cursor-default"
+                    aria-label="Página siguiente">
+                    ›
+                  </button>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- LOADING SPINNER (Moved inside content-wrapper) -->
+    @if (hasSearched && loading) {
+      <div class="flex-grow flex items-center justify-center min-h-[300px] md:min-h-[400px] w-full py-12">
+        <div class="w-full flex justify-center">
+          <div class="w-full max-w-[18rem] xs:max-w-sm sm:max-w-xl md:max-w-4xl">
+            <div class="w-full flex items-center justify-center">
+              <div class="spinner" style="animation: spin 0.7s linear infinite;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- RECENT SEARCHES OR NO RESULTS (Moved inside content-wrapper) -->
+    @if (!hasSearched || (!loading && originalProducts.length === 0)) {
+      <div
+        class="pb-7 pt-5 flex items-center justify-center min-h-[160px] w-full mb-4">
+        @if (!hasSearched && recentSearches.length > 0 && originalProducts.length === 0) {
+          <div
+            class="w-full flex justify-center" [@cardEnterAnimation]="recentSearches.length">
+            <div class="w-full max-w-[18rem] xs:max-w-sm sm:max-w-xl md:max-w-4xl space-y-4">
+              <div class="flex items-center justify-between">
+                <h3 class="text-sm NewAldyFontType4 tracking-wider text-aldy-green-gray uppercase">Últimas búsquedas</h3>
+              </div>
+              <ul class="space-y-3 text-sm font-semibold NewAldyFontType4 text-aldy-green-gray">
+                @for (optionsTracking of recentSearches; track optionsTracking; let i = $index) {
+                  <li [@cardEnterAnimation]
+                    [style.animation-delay]="i * 100 + 'ms'">
+                    <button type="button" appLinkHoverUnderline [underlineHeight]="'1px'" (click)="onRecentClick(optionsTracking)"
+                      class="w-auto cursor-pointer text-left hover:text-aldy-medium-2">
+                      {{ optionsTracking }}
+                    </button>
+                  </li>
+                }
+              </ul>
+            </div>
+          </div>
+        }
+        @if (hasSearched && !loading && originalProducts.length === 0) {
+          <div class="w-full flex justify-center"
+            [@cardEnterAnimation]="originalProducts.length">
+            <div class="w-full max-w-[18rem] xs:max-w-sm sm:max-w-xl md:max-w-4xl">
+              <div
+                class="text-center flex items-center justify-center text-aldy-green-gray px-2 xs:px-4 NewAldyFontType4 text-sm">
+                @if (displayedSearchTerm) {
+                  <span>
+                    No se encontraron resultados para "{{ displayedSearchTerm }}"
+                  </span>
+                }
+                @if (!displayedSearchTerm) {
+                  <span>
+                    No se encontraron resultados para su búsqueda.
+                  </span>
+                }
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+  </div> <!-- Close content-wrapper -->
+</div> <!-- Close outer container -->
