@@ -54,6 +54,8 @@ export class GenLightboxVanillaComponent implements OnInit, OnChanges, AfterView
   private _dragMoved = false;
   private _swipeMoved = false;
   private _rafPending = false;
+  private _rafId: number | null = null;
+  private _slideTimeline: gsap.core.Timeline | null = null;
 
   // Posición actual acumulada (en coordenadas post-zoom)
   private _tx = 0;
@@ -62,11 +64,16 @@ export class GenLightboxVanillaComponent implements OnInit, OnChanges, AfterView
   private _pendingTy = 0;
   private _currentBounds = { maxX: 0, maxY: 0 };
 
-  // Zoom drag
+  // Zoom drag & momentum
   private _dragStartX = 0;
   private _dragStartY = 0;
   private _dragOriginX = 0;
   private _dragOriginY = 0;
+  private _lastDragX = 0;
+  private _lastDragY = 0;
+  private _lastDragTime = 0;
+  private _velocityX = 0;
+  private _velocityY = 0;
 
   // Swipe drag (unzoomed slide navigation)
   private _swipeStartX = 0;
@@ -271,6 +278,12 @@ export class GenLightboxVanillaComponent implements OnInit, OnChanges, AfterView
     const imgEl = this.getActiveImgEl();
     if (!imgEl) return;
 
+    if (this._slideTimeline && this._slideTimeline.isActive()) {
+      this._slideTimeline.progress(1);
+      this._slideTimeline = null;
+      this.isAnimating = false;
+    }
+
     this.zoomed = !this.zoomed;
 
     if (this.zoomed) {
@@ -370,10 +383,21 @@ export class GenLightboxVanillaComponent implements OnInit, OnChanges, AfterView
       const imgEl = this.getActiveImgEl();
       if (imgEl) gsap.killTweensOf(imgEl);
 
+      if (this._rafId !== null) {
+        cancelAnimationFrame(this._rafId);
+        this._rafId = null;
+        this._rafPending = false;
+      }
+
       this.isDragging = true;
       this._dragMoved = false;
       this._dragStartX = clientX;
       this._dragStartY = clientY;
+      this._lastDragX = clientX;
+      this._lastDragY = clientY;
+      this._lastDragTime = performance.now();
+      this._velocityX = 0;
+      this._velocityY = 0;
       this._dragOriginX = this._tx;
       this._dragOriginY = this._ty;
       this._currentBounds = this.getBounds();
@@ -403,6 +427,17 @@ export class GenLightboxVanillaComponent implements OnInit, OnChanges, AfterView
         this._dragMoved = true;
       }
 
+      // Track velocity with exponential smoothing for silky momentum throw
+      const now = performance.now();
+      const dt = Math.max(1, now - this._lastDragTime);
+      const instantVx = (clientX - this._lastDragX) / dt;
+      const instantVy = (clientY - this._lastDragY) / dt;
+      this._velocityX = this._velocityX * 0.35 + instantVx * 0.65;
+      this._velocityY = this._velocityY * 0.35 + instantVy * 0.65;
+      this._lastDragX = clientX;
+      this._lastDragY = clientY;
+      this._lastDragTime = now;
+
       const targetX = this._dragOriginX + dx;
       const targetY = this._dragOriginY + dy;
 
@@ -423,9 +458,10 @@ export class GenLightboxVanillaComponent implements OnInit, OnChanges, AfterView
       const imgEl = this.getActiveImgEl();
       if (imgEl && !this._rafPending) {
         this._rafPending = true;
-        requestAnimationFrame(() => {
+        this._rafId = requestAnimationFrame(() => {
           gsap.set(imgEl, { x: curX, y: curY, force3D: true });
           this._rafPending = false;
+          this._rafId = null;
         });
       }
     } else if (!this.zoomed && this.isSlideDragging) {
@@ -455,19 +491,43 @@ export class GenLightboxVanillaComponent implements OnInit, OnChanges, AfterView
   onPointerUp(): void {
     if (this.zoomed && this.isDragging) {
       this.isDragging = false;
+
+      if (this._rafId !== null) {
+        cancelAnimationFrame(this._rafId);
+        this._rafId = null;
+        this._rafPending = false;
+      }
+
       const imgEl = this.getActiveImgEl();
 
       if (imgEl) {
-        const { maxX, maxY } = this.getBounds();
-        // Permite recorrer con total libertad la prenda completa y regresa suavemente al borde si se estiró de más
-        this._tx = Math.max(-maxX, Math.min(maxX, this._pendingTx));
-        this._ty = Math.max(-maxY, Math.min(maxY, this._pendingTy));
+        const timeSinceLastMove = performance.now() - this._lastDragTime;
+        if (timeSinceLastMove > 80) {
+          this._velocityX = 0;
+          this._velocityY = 0;
+        }
 
+        // Empuje de inercia suave (momentum throw) como en Bo & Luca
+        const momentumDurationMs = 175;
+        const throwX = this._velocityX * momentumDurationMs;
+        const throwY = this._velocityY * momentumDurationMs;
+
+        const destX = this._pendingTx + throwX;
+        const destY = this._pendingTy + throwY;
+
+        const { maxX, maxY } = this.getBounds();
+        this._tx = Math.max(-maxX, Math.min(maxX, destX));
+        this._ty = Math.max(-maxY, Math.min(maxY, destY));
+
+        const speed = Math.hypot(this._velocityX, this._velocityY);
+        const duration = Math.min(0.95, Math.max(0.55, 0.55 + speed * 0.25));
+
+        gsap.killTweensOf(imgEl);
         gsap.to(imgEl, {
           x: this._tx,
           y: this._ty,
-          duration: 0.5,
-          ease: 'power3.out',
+          duration: duration,
+          ease: 'power4.out',
           overwrite: 'auto'
         });
       }
@@ -604,6 +664,11 @@ export class GenLightboxVanillaComponent implements OnInit, OnChanges, AfterView
       return;
     }
 
+    if (this._slideTimeline) {
+      this._slideTimeline.kill();
+      this._slideTimeline = null;
+    }
+
     this.isAnimating = true;
     this.resetZoom();
 
@@ -644,16 +709,20 @@ export class GenLightboxVanillaComponent implements OnInit, OnChanges, AfterView
       onComplete: () => {
         gsap.set(currentEl, { opacity: 0, zIndex: 0, x: 0, pointerEvents: 'none' });
         gsap.set(nextEl, { opacity: 1, zIndex: 1, x: 0, pointerEvents: 'auto' });
-        this.resetZoomOnCurrentImage();
-        this.zoomed = false;
+        if (!this.zoomed) {
+          this.resetZoomOnCurrentImage();
+        }
         this.isDragging = false;
         this.isSlideDragging = false;
         this._dragMoved = false;
         this._swipeMoved = false;
         this.isAnimating = false;
+        this._slideTimeline = null;
         this.cdr.markForCheck();
       }
     });
+
+    this._slideTimeline = tl;
 
     tl.to(currentEl, {
       x: xOut,
