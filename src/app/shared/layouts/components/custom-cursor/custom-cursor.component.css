@@ -137,8 +137,9 @@
   }
 }
 
-/* Ocultar suavemente cuando sale de la ventana */
+/* Ocultar cuando sale de la ventana o en elementos con cursores nativos/propios */
 .custom-cursor-container.hidden-cursor .custom-cursor-dot,
 .custom-cursor-container.hidden-cursor .custom-cursor-ring {
-  opacity: 0;
+  opacity: 0 !important;
+  visibility: hidden;
 }

@@ -19,6 +19,8 @@ export class CustomCursorComponent implements OnInit, OnDestroy {
   isClicked = false;
   isHidden = true;
 
+  private isSuppressed = false;
+
   private platformId = inject(PLATFORM_ID);
   private isBrowser: boolean = isPlatformBrowser(this.platformId);
   private mouseX = -100;
@@ -32,9 +34,28 @@ export class CustomCursorComponent implements OnInit, OnDestroy {
   private setRingX?: any;
   private setRingY?: any;
 
+  private isExcludedTarget(target: HTMLElement | null): boolean {
+    if (!target) return false;
+    return !!target.closest(
+      'app-fancy-carousel img, app-fancy-carousel video, app-gen-lightbox-vanilla img, app-gen-lightbox-vanilla video, .cursor-plus, .cursor-minus, .cursor-grabbing, [data-no-custom-cursor], .no-custom-cursor'
+    );
+  }
+
   private mouseMoveHandler = (e: MouseEvent) => {
     this.mouseX = e.clientX;
     this.mouseY = e.clientY;
+
+    const target = e.target as HTMLElement | null;
+    if (this.isExcludedTarget(target)) {
+      if (!this.isSuppressed) {
+        this.isSuppressed = true;
+        this.hideCursor();
+      }
+      return;
+    } else if (this.isSuppressed) {
+      this.isSuppressed = false;
+      this.showCursor();
+    }
 
     if (this.isHidden) {
       this.isHidden = false;
@@ -52,7 +73,7 @@ export class CustomCursorComponent implements OnInit, OnDestroy {
   };
 
   private createWaterRipple(x: number, y: number) {
-    if (!this.isBrowser) return;
+    if (!this.isBrowser || this.isSuppressed) return;
     const ripple = document.createElement('div');
     ripple.className = 'custom-cursor-ripple';
     ripple.style.left = `${x}px`;
@@ -71,6 +92,9 @@ export class CustomCursorComponent implements OnInit, OnDestroy {
   }
 
   private mouseDownHandler = (e: MouseEvent) => {
+    const target = e.target as HTMLElement | null;
+    if (this.isExcludedTarget(target)) return;
+
     this.isClicked = true;
     if (this.cursorContainer) {
       this.cursorContainer.nativeElement.classList.add('clicked');
@@ -97,6 +121,7 @@ export class CustomCursorComponent implements OnInit, OnDestroy {
   };
 
   private showCursor = () => {
+    if (this.isSuppressed) return;
     this.isHidden = false;
     if (this.cursorContainer) {
       this.cursorContainer.nativeElement.classList.remove('hidden-cursor');
@@ -106,6 +131,12 @@ export class CustomCursorComponent implements OnInit, OnDestroy {
   private mouseOverHandler = (e: MouseEvent) => {
     const target = e.target as HTMLElement;
     if (!target) return;
+
+    if (this.isExcludedTarget(target)) {
+      this.isSuppressed = true;
+      this.hideCursor();
+      return;
+    }
 
     const isText = target.closest('input:not([type="button"]):not([type="submit"]):not([type="checkbox"]):not([type="radio"]), textarea, [contenteditable="true"]');
     if (isText) {
@@ -137,6 +168,11 @@ export class CustomCursorComponent implements OnInit, OnDestroy {
     if (!target) return;
 
     const relatedTarget = e.relatedTarget as HTMLElement;
+
+    if (this.isExcludedTarget(target) && !this.isExcludedTarget(relatedTarget)) {
+      this.isSuppressed = false;
+      this.showCursor();
+    }
 
     if (this.cursorContainer && (!relatedTarget || !relatedTarget.closest('input:not([type="button"]):not([type="submit"]):not([type="checkbox"]):not([type="radio"]), textarea, [contenteditable="true"]'))) {
       this.cursorContainer.nativeElement.classList.remove('on-input');

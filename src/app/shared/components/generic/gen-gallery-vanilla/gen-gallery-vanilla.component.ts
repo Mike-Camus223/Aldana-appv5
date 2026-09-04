@@ -42,9 +42,14 @@ export class GenGalleryVanillaComponent implements OnChanges {
   }
 
   openLightbox(items: MediaItem[], index: number) {
-    this.lightboxItems = items;
+    this.lightboxItems = [...items];
     this.lightboxIndex = index;
     this.lightboxOpen = true;
+    this.cdr.markForCheck();
+  }
+
+  onLightboxIndexChange(index: number) {
+    this.lightboxIndex = index;
     this.cdr.markForCheck();
   }
 

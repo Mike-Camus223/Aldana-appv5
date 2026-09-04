@@ -76,11 +76,11 @@
 
     <!-- THUMBS -->
     <div class="flex w-full h-[120px] flex-shrink-0 items-center mb-2 justify-center gap-4 px-16 z-10">
-      @for (item of items; track item; let i = $index) {
+      @for (item of items; track i; let i = $index) {
         <button (click)="goTo(i)"
-          class="h-12 w-12 flex-shrink-0 hover:scale-110 cursor-pointer overflow-hidden rounded-full transition-all ease-out duration-300 md:h-[80px] md:w-[80px]"
+          class="h-12 w-12 flex-shrink-0 hover:scale-110 cursor-pointer overflow-hidden rounded-full ring-2 transition-all ease-out duration-300 md:h-[80px] md:w-[80px]"
         [ngClass]="{
-          'ring-2 ring-aldy-medium': i === activeIndex,
+          'ring-aldy-medium': i === activeIndex,
           'ring-transparent': i !== activeIndex
         }">
           <img [src]="getThumb(item)" class="h-full w-full object-cover" loading="lazy" />

@@ -16,7 +16,8 @@ import {
   Renderer2,
   Inject,
   PLATFORM_ID,
-  ChangeDetectionStrategy
+  ChangeDetectionStrategy,
+  ChangeDetectorRef
 } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { MediaItem } from '../../../models/objectsGallery.model';
@@ -75,6 +76,7 @@ export class GenLightboxVanillaComponent implements OnInit, OnChanges, AfterView
   constructor(
     private el: ElementRef,
     private renderer: Renderer2,
+    private cdr: ChangeDetectorRef,
     @Inject(PLATFORM_ID) private platformId: Object
   ) { }
 
@@ -85,25 +87,37 @@ export class GenLightboxVanillaComponent implements OnInit, OnChanges, AfterView
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    const openChanged = changes['isOpen']?.currentValue === true && changes['isOpen']?.previousValue === false;
+    const openChanged = !!changes['isOpen']?.currentValue && !changes['isOpen']?.previousValue;
 
     if (openChanged) {
       this.activeIndex = this.clampIndex(this.startIndex);
       this.lockScroll();
+      this.cdr.markForCheck();
       setTimeout(() => {
         this.initSlides();
         this.animateOpen();
+        this.cdr.markForCheck();
       }, 0);
     }
 
     if (!openChanged && this.isOpen && (changes['startIndex'] || changes['items'])) {
       this.activeIndex = this.clampIndex(this.startIndex);
-      setTimeout(() => this.initSlides(), 0);
+      this.cdr.markForCheck();
+      setTimeout(() => {
+        this.initSlides();
+        this.cdr.markForCheck();
+      }, 0);
     }
   }
 
   ngAfterViewInit(): void {
     this.initSlides();
+    if (this.slideRefs) {
+      this.slideRefs.changes.subscribe(() => {
+        this.initSlides();
+        this.cdr.markForCheck();
+      });
+    }
   }
 
   ngOnDestroy(): void {
@@ -448,7 +462,7 @@ export class GenLightboxVanillaComponent implements OnInit, OnChanges, AfterView
     // Reset zoom del slide actual
     this.resetZoom();
 
-    const slides = this.slideRefs.toArray();
+    const slides = this.slideRefs?.toArray() || [];
     const currentIdx = this.activeIndex;
     const nextIdx = targetIndex !== undefined
       ? this.clampIndex(targetIndex)
@@ -459,8 +473,18 @@ export class GenLightboxVanillaComponent implements OnInit, OnChanges, AfterView
       return;
     }
 
-    const currentEl = slides[currentIdx].nativeElement;
-    const nextEl = slides[nextIdx].nativeElement;
+    // Actualizar activeIndex de inmediato para que el ring/borde de miniaturas y estado activo respondan al instante con su animación
+    this.activeIndex = nextIdx;
+    this.indexChange.emit(this.activeIndex);
+    this.cdr.markForCheck();
+
+    const currentEl = slides[currentIdx]?.nativeElement;
+    const nextEl = slides[nextIdx]?.nativeElement;
+
+    if (!currentEl || !nextEl) {
+      this.isAnimating = false;
+      return;
+    }
 
     const DIST = 1200;
     const xOut = dir === 'next' ? -DIST : DIST;
@@ -485,8 +509,6 @@ export class GenLightboxVanillaComponent implements OnInit, OnChanges, AfterView
       currentEl.style.zIndex = '0';
       nextEl.style.transition = '';
       nextEl.style.zIndex = '1';
-      this.activeIndex = nextIdx;
-      this.indexChange.emit(this.activeIndex);
 
       // Resetear el zoom en la nueva imagen
       setTimeout(() => {
@@ -497,6 +519,7 @@ export class GenLightboxVanillaComponent implements OnInit, OnChanges, AfterView
       this.isDragging = false;
       this._dragMoved = false;
       this.isAnimating = false;
+      this.cdr.markForCheck();
     }, 500);
   }
 
@@ -529,6 +552,7 @@ export class GenLightboxVanillaComponent implements OnInit, OnChanges, AfterView
       this._dragMoved = false;
       this.unlockScroll();
       this.closed.emit();
+      this.cdr.markForCheck();
     });
   }
 

@@ -31,5 +31,5 @@
 </div>
 }
 <app-gen-lightbox-vanilla [isOpen]="lightboxOpen" [items]="lightboxItems" [startIndex]="lightboxIndex"
-  (closed)="closeLightbox()">
+  (closed)="closeLightbox()" (indexChange)="onLightboxIndexChange($event)">
 </app-gen-lightbox-vanilla>
