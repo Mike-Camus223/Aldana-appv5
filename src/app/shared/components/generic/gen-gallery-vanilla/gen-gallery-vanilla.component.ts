@@ -21,6 +21,7 @@ export class GenGalleryVanillaComponent implements OnChanges {
   lightboxOpen = false;
   lightboxIndex = 0;
   lightboxItems: MediaItem[] = [];
+  lightboxTitle = '';
 
   constructor(
     private cdr: ChangeDetectorRef,
@@ -41,9 +42,10 @@ export class GenGalleryVanillaComponent implements OnChanges {
     }
   }
 
-  openLightbox(items: MediaItem[], index: number) {
+  openLightbox(items: MediaItem[], index: number, rowLabel?: string) {
     this.lightboxItems = [...items];
     this.lightboxIndex = index;
+    this.lightboxTitle = rowLabel || items[index]?.alt || '';
     this.lightboxOpen = true;
     this.cdr.markForCheck();
   }

@@ -28,6 +28,7 @@ import { LucideAngularModule } from 'lucide-angular';
   changeDetection: ChangeDetectionStrategy.Eager})
 export class FancyCarouselComponent implements AfterViewInit, OnChanges, OnDestroy {
   @Input() images: { src: string; thumb: string; type?: 'image' | 'video'; poster?: string }[] = [];
+  @Input() title = '';
   @ViewChild('thumbContainer') thumbContainer!: ElementRef<HTMLElement>;
 
   currentSlideIndex = 0;

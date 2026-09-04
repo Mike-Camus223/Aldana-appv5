@@ -5,7 +5,7 @@
   </h3>
   <div class="grid grid-cols-2 lg:grid-cols-5 gap-4">
     @for (item of row.items; track item.url || $index; let i = $index) {
-    <div (click)="openLightbox(row.items, i)" class="cursor-pointer overflow-hidden group">
+    <div (click)="openLightbox(row.items, i, row.label)" class="cursor-pointer overflow-hidden group">
       <div class="aspect-[3/5] w-full overflow-hidden relative bg-[#f3efe9]">
         @if (item.type === 'image') {
         <img [src]="item.url" loading="lazy" appCardInitAnimation="up" decoding="async" [alt]="item.alt || row.label"
@@ -30,6 +30,6 @@
   </div>
 </div>
 }
-<app-gen-lightbox-vanilla [isOpen]="lightboxOpen" [items]="lightboxItems" [startIndex]="lightboxIndex"
+<app-gen-lightbox-vanilla [isOpen]="lightboxOpen" [items]="lightboxItems" [startIndex]="lightboxIndex" [title]="lightboxTitle"
   (closed)="closeLightbox()" (indexChange)="onLightboxIndexChange($event)">
 </app-gen-lightbox-vanilla>

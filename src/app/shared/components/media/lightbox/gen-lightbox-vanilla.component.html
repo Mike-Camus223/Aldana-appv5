@@ -1,55 +1,55 @@
 <!-- El lightbox SIEMPRE está en el DOM — GSAP controla opacity/visibility -->
 <div #lightboxRoot style="z-index: 2000; opacity: 0; visibility: hidden;"
-  class="fixed inset-0 flex max-h-screen w-full flex-col pointer-events-none">
+  (mousedown)="onPointerDown($event)" (touchstart)="onPointerDown($event)" (wheel)="onWheel($event)"
+  class="fixed inset-0 flex max-h-screen w-full flex-col pointer-events-none select-none touch-none">
 
-  <div class="h-11 w-full"></div>
   <!-- BACKGROUND -->
   <div class="absolute inset-0 bg-aldy-white z-0"></div>
 
+  <!-- TITLE & COUNTER (Top-Left, aligned with Close Button - pointer-events-none so it never blocks dragging in zoom) -->
+  <div class="absolute top-6 left-6 z-30 flex h-12 items-center px-4 md:px-5 border border-aldy-medium bg-aldy-white pointer-events-none select-none">
+    <span class="text-xs sm:text-sm font-light text-aldy-green-gray-bold uppercase tracking-widest NewAldyTitle truncate max-w-[180px] sm:max-w-[320px] md:max-w-[480px]">
+      {{ displayTitle ? (displayTitle + ' ') : '' }}{{ activeIndex + 1 }}/{{ items.length }}
+    </span>
+  </div>
+
   <!-- CLOSE -->
-  <button (click)="close()"
-    class="absolute top-6 right-6 z-30 flex h-12 w-12 cursor-pointer items-center justify-center border border-aldy-medium text-aldy-medium transition-all duration-200 ease-in-out hover:scale-110">
+  <button (click)="close(); $event.stopPropagation()" (mousedown)="$event.stopPropagation()" (touchstart)="$event.stopPropagation()"
+    class="absolute top-6 right-6 z-30 flex h-12 w-12 cursor-pointer items-center justify-center border border-aldy-medium text-aldy-medium transition-all duration-200 ease-in-out hover:scale-110 pointer-events-auto">
     <lucide-icon name="x" color="#AEC2A9" [size]="16" [strokeWidth]="1.5"></lucide-icon>
   </button>
 
   <!-- CONTENT -->
-  <div class="relative z-10 flex w-full h-full flex-col">
+  <div class="relative z-10 flex w-full h-full flex-col pt-16 md:pt-14 pointer-events-auto">
 
     <!-- SLIDER -->
-    <div class="relative flex-1" (wheel)="onWheel($event)">
+    <div class="relative flex-1">
 
       <!-- PREV -->
-      <button (click)="prev()"
-        class="absolute left-4 top-1/2 z-30 flex h-12 w-12 -translate-y-1/2 cursor-pointer items-center justify-center border border-aldy-medium transition-all duration-200 ease-in-out hover:scale-110 md:left-10">
+      <button (click)="prev(); $event.stopPropagation()" (mousedown)="$event.stopPropagation()" (touchstart)="$event.stopPropagation()"
+        class="absolute left-4 top-1/2 z-30 flex h-12 w-12 -translate-y-1/2 cursor-pointer items-center justify-center border border-aldy-medium bg-aldy-white transition-all duration-200 ease-in-out hover:scale-110 md:left-10 pointer-events-auto">
         <lucide-icon name="chevron-left" color="#AEC2A9" [strokeWidth]="1.5"></lucide-icon>
       </button>
 
       <!-- NEXT -->
-      <button (click)="next()"
-        class="absolute right-4 top-1/2 z-30 flex h-12 w-12 -translate-y-1/2 cursor-pointer items-center justify-center border border-aldy-medium transition-all duration-200 ease-in-out hover:scale-110 md:right-10">
+      <button (click)="next(); $event.stopPropagation()" (mousedown)="$event.stopPropagation()" (touchstart)="$event.stopPropagation()"
+        class="absolute right-4 top-1/2 z-30 flex h-12 w-12 -translate-y-1/2 cursor-pointer items-center justify-center border border-aldy-medium bg-aldy-white transition-all duration-200 ease-in-out hover:scale-110 md:right-10 pointer-events-auto">
         <lucide-icon name="chevron-right" color="#AEC2A9" [strokeWidth]="1.5"></lucide-icon>
       </button>
 
       @for (item of items; track i; let i = $index) {
         <div #slideRef
-          class="absolute inset-0 justify-center">
-        <div class="
-          w-full
-          h-[75vh]
-          flex
-          items-center
-          justify-center
-        ">
+          class="absolute inset-0 flex items-center justify-center will-change-transform">
+          <div class="w-full h-[70vh] md:h-[75vh] flex items-center justify-center pointer-events-auto">
             <!-- IMAGE -->
             <!-- GSAP owns transform/scale/x/y — NO inline [style.transform] binding -->
             @if (!isVideo(item)) {
-              <img [src]="item.url" (click)="onImgClick($event)" (mousedown)="startDrag($event)"
-                (mousemove)="onDrag($event)" (dragstart)="$event.preventDefault()"
-            [style.pointerEvents]="i === activeIndex ? 'auto' : 'none'" [ngClass]="{
-    'cursor-plus': !zoomed && i === activeIndex,
-    'cursor-grabbing': isDragging && i === activeIndex,
-    'cursor-minus': zoomed && !isDragging && i === activeIndex
-  }" style="transform-origin: center center;"
+              <img [src]="item.url" (click)="onImgClick($event)" (dragstart)="$event.preventDefault()"
+                [style.pointerEvents]="i === activeIndex ? 'auto' : 'none'" [ngClass]="{
+                  'cursor-plus': !zoomed && i === activeIndex,
+                  'cursor-grabbing': (isDragging || isSlideDragging) && i === activeIndex,
+                  'cursor-minus': zoomed && !isDragging && i === activeIndex
+                }" style="transform-origin: center center;"
                 class="block max-h-full max-w-full select-none object-contain touch-none will-change-transform" />
             }
             <!-- VIDEO -->
@@ -75,15 +75,15 @@
     </div>
 
     <!-- THUMBS -->
-    <div class="flex w-full h-[120px] flex-shrink-0 items-center mb-2 justify-center gap-4 px-16 z-10">
+    <div class="flex w-full h-[120px] flex-shrink-0 items-center mb-2 justify-center gap-4 px-16 z-10 pointer-events-auto">
       @for (item of items; track i; let i = $index) {
         <button (click)="goTo(i)"
           class="h-12 w-12 flex-shrink-0 hover:scale-110 cursor-pointer overflow-hidden rounded-full ring-2 transition-all ease-out duration-300 md:h-[80px] md:w-[80px]"
-        [ngClass]="{
-          'ring-aldy-medium': i === activeIndex,
-          'ring-transparent': i !== activeIndex
-        }">
-          <img [src]="getThumb(item)" class="h-full w-full object-cover" loading="lazy" />
+          [ngClass]="{
+            'ring-aldy-medium': i === activeIndex,
+            'ring-transparent': i !== activeIndex
+          }">
+          <img [src]="getThumb(item)" class="h-full w-full object-cover pointer-events-none" loading="lazy" />
         </button>
       }
     </div>

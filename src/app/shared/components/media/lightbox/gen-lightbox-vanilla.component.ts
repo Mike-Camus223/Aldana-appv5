@@ -37,6 +37,7 @@ export class GenLightboxVanillaComponent implements OnInit, OnChanges, AfterView
   @Input() isOpen = false;
   @Input() items: MediaItem[] = [];
   @Input() startIndex = 0;
+  @Input() title = '';
   @Output() closed = new EventEmitter<void>();
   @Output() indexChange = new EventEmitter<number>();
 
@@ -46,25 +47,32 @@ export class GenLightboxVanillaComponent implements OnInit, OnChanges, AfterView
   activeIndex = 0;
   zoomed = false;
   isDragging = false;
+  isSlideDragging = false;
 
   private isClosing = false;
   private isAnimating = false;
   private _dragMoved = false;
+  private _swipeMoved = false;
+  private _rafPending = false;
 
   // Posición actual acumulada (en coordenadas post-zoom)
   private _tx = 0;
   private _ty = 0;
+  private _pendingTx = 0;
+  private _pendingTy = 0;
+  private _currentBounds = { maxX: 0, maxY: 0 };
 
-
-  // Drag
+  // Zoom drag
   private _dragStartX = 0;
   private _dragStartY = 0;
   private _dragOriginX = 0;
   private _dragOriginY = 0;
 
-  // Zoom point
-  private _zoomPointX = 0.5;
-  private _zoomPointY = 0.5;
+  // Swipe drag (unzoomed slide navigation)
+  private _swipeStartX = 0;
+  private _swipeStartY = 0;
+  private _swipeStartTime = 0;
+  private _swipeDeltaX = 0;
 
   // Video
   videoPaused = false;
@@ -72,13 +80,20 @@ export class GenLightboxVanillaComponent implements OnInit, OnChanges, AfterView
   videoOverlayIcon: 'play' | 'pause' = 'pause';
   private videoOverlayTimeout?: ReturnType<typeof setTimeout>;
 
-
   constructor(
     private el: ElementRef,
     private renderer: Renderer2,
     private cdr: ChangeDetectorRef,
     @Inject(PLATFORM_ID) private platformId: Object
   ) { }
+
+  get displayTitle(): string {
+    if (this.title && this.title.trim() !== '') return this.title;
+    const active = this.items[this.activeIndex];
+    if (active?.alt && active.alt.trim() !== '') return active.alt;
+    if (this.items[0]?.alt && this.items[0].alt.trim() !== '') return this.items[0].alt;
+    return '';
+  }
 
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
@@ -130,12 +145,9 @@ export class GenLightboxVanillaComponent implements OnInit, OnChanges, AfterView
   }
 
   private get zoomScale(): number {
-    if (!isPlatformBrowser(this.platformId)) return 3;
-
-    return window.innerWidth >= 1024 ? 3 : 2;
+    if (!isPlatformBrowser(this.platformId)) return 2.8;
+    return window.innerWidth >= 1024 ? 2.8 : 2.3;
   }
-
-
 
   // ─── Scroll lock ─────────────────────────────────────────────────────────────
 
@@ -162,7 +174,7 @@ export class GenLightboxVanillaComponent implements OnInit, OnChanges, AfterView
     gsap.set(el, { visibility: 'visible', pointerEvents: 'auto' });
     gsap.fromTo(el,
       { opacity: 0 },
-      { opacity: 1, duration: 0.4, ease: 'power2.out' }
+      { opacity: 1, duration: 0.45, ease: 'power3.out' }
     );
   }
 
@@ -172,8 +184,8 @@ export class GenLightboxVanillaComponent implements OnInit, OnChanges, AfterView
     gsap.killTweensOf(el);
     gsap.to(el, {
       opacity: 0,
-      duration: 0.3,
-      ease: 'power2.in',
+      duration: 0.35,
+      ease: 'power3.in',
       onComplete: () => {
         gsap.set(el, { visibility: 'hidden', pointerEvents: 'none' });
         onComplete();
@@ -189,13 +201,14 @@ export class GenLightboxVanillaComponent implements OnInit, OnChanges, AfterView
 
     slides.forEach((s, i) => {
       const el = s.nativeElement;
-      el.style.opacity = i === this.activeIndex ? '1' : '0';
       el.style.pointerEvents = i === this.activeIndex ? 'auto' : 'none';
-      el.style.transform = 'translateX(0px)';
-      el.style.zIndex = i === this.activeIndex ? '1' : '0';
+      gsap.set(el, {
+        opacity: i === this.activeIndex ? 1 : 0,
+        x: 0,
+        zIndex: i === this.activeIndex ? 1 : 0
+      });
     });
 
-    // Asegurar que la imagen tiene transform-origin correcto
     setTimeout(() => {
       this.resetZoomOnCurrentImage();
     }, 50);
@@ -204,11 +217,12 @@ export class GenLightboxVanillaComponent implements OnInit, OnChanges, AfterView
   private resetZoomOnCurrentImage(): void {
     const imgEl = this.getActiveImgEl();
     if (imgEl) {
-      gsap.set(imgEl, { scale: 1, x: 0, y: 0, clearProps: 'transform' });
+      gsap.killTweensOf(imgEl);
+      gsap.set(imgEl, { scale: 1, x: 0, y: 0, transformOrigin: 'center center', clearProps: 'transform' });
       this._tx = 0;
       this._ty = 0;
-      this._zoomPointX = 0.5;
-      this._zoomPointY = 0.5;
+      this._pendingTx = 0;
+      this._pendingTy = 0;
     }
   }
 
@@ -216,7 +230,6 @@ export class GenLightboxVanillaComponent implements OnInit, OnChanges, AfterView
 
   // ─── Image Helpers ───────────────────────────────────────────────────────────
 
-  /** Devuelve el <img> del slide activo (null si es video o no encontrado) */
   private getActiveImgEl(): HTMLImageElement | null {
     const slides = this.slideRefs?.toArray();
     if (!slides?.length) return null;
@@ -225,25 +238,29 @@ export class GenLightboxVanillaComponent implements OnInit, OnChanges, AfterView
     return slideEl.querySelector('img');
   }
 
-  // ─── Límites dinámicos ────────────────────────────────────────────────────────
+  // ─── Límites dinámicos con margen holgado (sin dejar nada inaccesible) ──────
 
   private getBounds(): { maxX: number; maxY: number } {
     const imgEl = this.getActiveImgEl();
     if (!imgEl) return { maxX: 0, maxY: 0 };
 
-    const rect = imgEl.getBoundingClientRect();
     const scale = this.zoomScale;
+    const unscaledW = imgEl.offsetWidth || 500;
+    const unscaledH = imgEl.offsetHeight || 750;
 
-    const imgW = rect.width;
-    const imgH = rect.height;
-    const containerW = rect.width;
-    const containerH = rect.height;
+    const scaledW = unscaledW * scale;
+    const scaledH = unscaledH * scale;
 
-    const overflowX = imgW * scale - containerW;
-    const overflowY = imgH * scale - containerH;
+    const viewW = window.innerWidth;
+    const viewH = window.innerHeight;
 
-    const maxX = overflowX > 0 ? (overflowX / 2) / scale : 0;
-    const maxY = overflowY > 0 ? (overflowY / 2) / scale : 0;
+    // Margen holgado y elegante para que no se sienta ultra compacto
+    const paddingX = 140;
+    const paddingY = 180;
+
+    // Cobertura total de la imagen escalada más el margen holgado
+    const maxX = Math.max(paddingX, (scaledW - Math.min(unscaledW, viewW * 0.75)) / 2 + paddingX);
+    const maxY = Math.max(paddingY, (scaledH - Math.min(unscaledH, viewH * 0.65)) / 2 + paddingY);
 
     return { maxX, maxY };
   }
@@ -252,84 +269,73 @@ export class GenLightboxVanillaComponent implements OnInit, OnChanges, AfterView
 
   toggleZoom(event?: MouseEvent): void {
     const imgEl = this.getActiveImgEl();
-    if (!imgEl) {
-      console.warn('No se encontró imagen para hacer zoom');
-      return;
-    }
-
-    if (!this.zoomed && event) {
-      // Calcular punto de zoom basado en el clic
-      const rect = imgEl.getBoundingClientRect();
-      const clickX = event.clientX - rect.left;
-      const clickY = event.clientY - rect.top;
-
-      // Calcular porcentaje (0 a 1) dentro de la imagen
-      this._zoomPointX = Math.max(0, Math.min(1, clickX / rect.width));
-      this._zoomPointY = Math.max(0, Math.min(1, clickY / rect.height));
-
-      // Calcular la nueva posición basada en el punto de zoom
-      const { maxX, maxY } = this.getBounds();
-
-      // Convertir el punto de zoom a coordenadas de desplazamiento
-      // El centro de la imagen zoomed debe alinearse con el punto de clic
-      const targetX = (this._zoomPointX - 0.5) * 2 * maxX;
-      const targetY = (this._zoomPointY - 0.5) * 2 * maxY;
-
-      this._tx = Math.max(-maxX, Math.min(maxX, targetX));
-      this._ty = Math.max(-maxY, Math.min(maxY, targetY));
-    }
+    if (!imgEl) return;
 
     this.zoomed = !this.zoomed;
 
     if (this.zoomed) {
-      // Establecer transform-origin en el punto de clic
-      const percentX = this._zoomPointX * 100;
-      const percentY = this._zoomPointY * 100;
-      gsap.set(imgEl, { transformOrigin: `${percentX}% ${percentY}%` });
+      const { maxX, maxY } = this.getBounds();
 
-      // Aplicar zoom con la posición calculada
+      if (event) {
+        const rect = imgEl.getBoundingClientRect();
+        const clickX = event.clientX - rect.left;
+        const clickY = event.clientY - rect.top;
+
+        const px = Math.max(0, Math.min(1, clickX / rect.width));
+        const py = Math.max(0, Math.min(1, clickY / rect.height));
+
+        const unscaledW = imgEl.offsetWidth || rect.width;
+        const unscaledH = imgEl.offsetHeight || rect.height;
+        const scale = this.zoomScale;
+
+        // Desplazamiento para centrar el punto seleccionado por el usuario
+        const targetX = (0.5 - px) * (unscaledW * (scale - 1));
+        const targetY = (0.5 - py) * (unscaledH * (scale - 1));
+
+        this._tx = Math.max(-maxX, Math.min(maxX, targetX));
+        this._ty = Math.max(-maxY, Math.min(maxY, targetY));
+      } else {
+        this._tx = 0;
+        this._ty = 0;
+      }
+
+      this._pendingTx = this._tx;
+      this._pendingTy = this._ty;
+
+      gsap.set(imgEl, { transformOrigin: 'center center' });
       gsap.killTweensOf(imgEl);
       gsap.to(imgEl, {
         scale: this.zoomScale,
         x: this._tx,
         y: this._ty,
-        duration: 0.7,
-        ease: "power4.out",
-        overwrite: true,
-        onUpdate: () => {
-          // Asegurar que la posición se mantiene dentro de los límites
-          const { maxX, maxY } = this.getBounds();
-          if (Math.abs(this._tx) > maxX || Math.abs(this._ty) > maxY) {
-            this._tx = Math.max(-maxX, Math.min(maxX, this._tx));
-            this._ty = Math.max(-maxY, Math.min(maxY, this._ty));
-            gsap.set(imgEl, { x: this._tx, y: this._ty });
-          }
-        }
+        duration: 0.65,
+        ease: 'power4.out'
       });
     } else {
-      // Resetear zoom
+      this._tx = 0;
+      this._ty = 0;
+      this._pendingTx = 0;
+      this._pendingTy = 0;
+
       gsap.killTweensOf(imgEl);
       gsap.to(imgEl, {
         scale: 1,
         x: 0,
         y: 0,
-        duration: 0.4,
-        ease: "power3.out",
-        overwrite: true,
+        duration: 0.45,
+        ease: 'power4.out',
         onComplete: () => {
-          this._tx = 0;
-          this._ty = 0;
-          this._zoomPointX = 0.5;
-          this._zoomPointY = 0.5;
           gsap.set(imgEl, { transformOrigin: 'center center' });
         }
       });
     }
+    this.cdr.markForCheck();
   }
 
   onImgClick(event: MouseEvent): void {
-    if (this._dragMoved) {
+    if (this._dragMoved || this._swipeMoved) {
       this._dragMoved = false;
+      this._swipeMoved = false;
       return;
     }
     this.toggleZoom(event);
@@ -342,77 +348,202 @@ export class GenLightboxVanillaComponent implements OnInit, OnChanges, AfterView
     this.zoomed = false;
     this._tx = 0;
     this._ty = 0;
-    this._zoomPointX = 0.5;
-    this._zoomPointY = 0.5;
+    this._pendingTx = 0;
+    this._pendingTy = 0;
 
     gsap.killTweensOf(imgEl);
     gsap.set(imgEl, { scale: 1, x: 0, y: 0, transformOrigin: 'center center' });
   }
 
-  // ─── Drag ─────────────────────────────────────────────────────────────────────
+  // ─── Pointer Drag & Swipe System ──────────────────────────────────────────────
 
-  startDrag(e: MouseEvent): void {
-    const imgEl = this.getActiveImgEl();
-    if (!this.zoomed || !imgEl) return;
+  onPointerDown(e: MouseEvent | TouchEvent): void {
+    if (!this.isOpen || this.isAnimating) return;
 
-    e.preventDefault();
-    this.isDragging = true;
-    this._dragMoved = false;
-    this._dragStartX = e.clientX;
-    this._dragStartY = e.clientY;
-    this._dragOriginX = this._tx;
-    this._dragOriginY = this._ty;
+    const isMouse = e instanceof MouseEvent;
+    if (isMouse && e.button !== 0) return;
+
+    const clientX = isMouse ? e.clientX : e.touches[0].clientX;
+    const clientY = isMouse ? e.clientY : e.touches[0].clientY;
+
+    if (this.zoomed) {
+      const imgEl = this.getActiveImgEl();
+      if (imgEl) gsap.killTweensOf(imgEl);
+
+      this.isDragging = true;
+      this._dragMoved = false;
+      this._dragStartX = clientX;
+      this._dragStartY = clientY;
+      this._dragOriginX = this._tx;
+      this._dragOriginY = this._ty;
+      this._currentBounds = this.getBounds();
+    } else {
+      this.isSlideDragging = true;
+      this._swipeMoved = false;
+      this._swipeStartX = clientX;
+      this._swipeStartY = clientY;
+      this._swipeStartTime = performance.now();
+      this._swipeDeltaX = 0;
+    }
   }
 
-  onDrag(e: MouseEvent): void {
-    if (!this.isDragging || !this.zoomed) return;
-    e.preventDefault();
-    this._dragMoved = true;
+  onPointerMove(e: MouseEvent | TouchEvent): void {
+    if (!this.isOpen) return;
 
-    const imgEl = this.getActiveImgEl();
-    if (!imgEl) return;
+    const isMouse = e instanceof MouseEvent;
+    const clientX = isMouse ? e.clientX : (e.touches?.[0]?.clientX ?? this._dragStartX);
+    const clientY = isMouse ? e.clientY : (e.touches?.[0]?.clientY ?? this._dragStartY);
 
-    const scale = this.zoomScale;
-    const dx = (e.clientX - this._dragStartX) / scale;
-    const dy = (e.clientY - this._dragStartY) / scale;
+    if (this.zoomed && this.isDragging) {
+      if (e.cancelable) e.preventDefault();
+      const dx = clientX - this._dragStartX;
+      const dy = clientY - this._dragStartY;
 
-    const { maxX, maxY } = this.getBounds();
+      if (Math.hypot(dx, dy) > 3) {
+        this._dragMoved = true;
+      }
 
-    this._tx = Math.max(-maxX, Math.min(maxX, this._dragOriginX + dx));
-    this._ty = Math.max(-maxY, Math.min(maxY, this._dragOriginY + dy));
+      const targetX = this._dragOriginX + dx;
+      const targetY = this._dragOriginY + dy;
 
-    gsap.to(imgEl, {
-      x: this._tx,
-      y: this._ty,
-      duration: 0.3,
-      ease: "power4.out"
-    });
+      const { maxX, maxY } = this._currentBounds;
+      let curX = targetX;
+      let curY = targetY;
+
+      // Resistencia elástica suave al sobrepasar los límites permitidos
+      if (curX > maxX) curX = maxX + (curX - maxX) * 0.25;
+      else if (curX < -maxX) curX = -maxX + (curX + maxX) * 0.25;
+
+      if (curY > maxY) curY = maxY + (curY - maxY) * 0.25;
+      else if (curY < -maxY) curY = -maxY + (curY + maxY) * 0.25;
+
+      this._pendingTx = targetX;
+      this._pendingTy = targetY;
+
+      const imgEl = this.getActiveImgEl();
+      if (imgEl && !this._rafPending) {
+        this._rafPending = true;
+        requestAnimationFrame(() => {
+          gsap.set(imgEl, { x: curX, y: curY, force3D: true });
+          this._rafPending = false;
+        });
+      }
+    } else if (!this.zoomed && this.isSlideDragging) {
+      const dx = clientX - this._swipeStartX;
+
+      if (Math.abs(dx) > 6) {
+        this._swipeMoved = true;
+        this._swipeDeltaX = dx;
+
+        const slides = this.slideRefs?.toArray() || [];
+        const currentEl = slides[this.activeIndex]?.nativeElement;
+        const targetIdx = this.clampIndex(this.activeIndex + (dx < 0 ? 1 : -1));
+        const adjEl = slides[targetIdx]?.nativeElement;
+        const w = window.innerWidth;
+
+        if (currentEl) {
+          gsap.set(currentEl, { x: dx, opacity: 1, zIndex: 1, force3D: true });
+        }
+        if (adjEl && targetIdx !== this.activeIndex) {
+          const startAdjX = dx < 0 ? w : -w;
+          gsap.set(adjEl, { x: startAdjX + dx, opacity: 1, zIndex: 2, force3D: true });
+        }
+      }
+    }
   }
 
-  stopDrag(): void {
-    this.isDragging = false;
-    setTimeout(() => (this._dragMoved = false), 0);
+  onPointerUp(): void {
+    if (this.zoomed && this.isDragging) {
+      this.isDragging = false;
+      const imgEl = this.getActiveImgEl();
+
+      if (imgEl) {
+        const { maxX, maxY } = this.getBounds();
+        // Permite recorrer con total libertad la prenda completa y regresa suavemente al borde si se estiró de más
+        this._tx = Math.max(-maxX, Math.min(maxX, this._pendingTx));
+        this._ty = Math.max(-maxY, Math.min(maxY, this._pendingTy));
+
+        gsap.to(imgEl, {
+          x: this._tx,
+          y: this._ty,
+          duration: 0.5,
+          ease: 'power3.out',
+          overwrite: 'auto'
+        });
+      }
+
+      setTimeout(() => (this._dragMoved = false), 60);
+      this.cdr.markForCheck();
+    } else if (!this.zoomed && this.isSlideDragging) {
+      this.isSlideDragging = false;
+
+      if (this._swipeMoved) {
+        const elapsed = performance.now() - this._swipeStartTime;
+        const velocity = this._swipeDeltaX / (elapsed || 1);
+
+        const shouldNext = this._swipeDeltaX < -50 || velocity < -0.25;
+        const shouldPrev = this._swipeDeltaX > 50 || velocity > 0.25;
+
+        if (shouldNext) {
+          this.animateSlide('next', undefined, this._swipeDeltaX);
+        } else if (shouldPrev) {
+          this.animateSlide('prev', undefined, this._swipeDeltaX);
+        } else {
+          // Rebotar suavemente a la posición central si no superó el umbral
+          const slides = this.slideRefs?.toArray() || [];
+          const currentEl = slides[this.activeIndex]?.nativeElement;
+          const targetIdx = this.clampIndex(this.activeIndex + (this._swipeDeltaX < 0 ? 1 : -1));
+          const adjEl = slides[targetIdx]?.nativeElement;
+          const w = window.innerWidth;
+
+          if (currentEl) {
+            gsap.to(currentEl, { x: 0, duration: 0.5, ease: 'power4.out', overwrite: 'auto' });
+          }
+          if (adjEl && targetIdx !== this.activeIndex) {
+            gsap.to(adjEl, {
+              x: this._swipeDeltaX < 0 ? w : -w,
+              duration: 0.5,
+              ease: 'power4.out',
+              overwrite: 'auto',
+              onComplete: () => {
+                gsap.set(adjEl, { opacity: 0, zIndex: 0 });
+              }
+            });
+          }
+        }
+        setTimeout(() => (this._swipeMoved = false), 60);
+      }
+      this.cdr.markForCheck();
+    }
   }
 
-  // ─── Wheel ────────────────────────────────────────────────────────────────────
+  // ─── Wheel con límites holgados ───────────────────────────────────────────────
 
   onWheel(e: WheelEvent): void {
-    if (!this.zoomed) return;
+    if (!this.isOpen || !this.zoomed) return;
     e.preventDefault();
 
     const imgEl = this.getActiveImgEl();
     if (!imgEl) return;
 
-    const scale = this.zoomScale;
     const { maxY } = this.getBounds();
+    // Clamping con holgura para cubrir escote, falda y borde inferior con margen
+    this._ty = Math.max(-maxY, Math.min(maxY, this._ty - e.deltaY * 0.85));
+    this._pendingTy = this._ty;
 
-    this._ty = Math.max(-maxY, Math.min(maxY, this._ty - e.deltaY / scale));
-    gsap.set(imgEl, { y: this._ty });
+    gsap.to(imgEl, {
+      y: this._ty,
+      duration: 0.35,
+      ease: 'power3.out',
+      overwrite: 'auto'
+    });
   }
 
   // ─── Video ────────────────────────────────────────────────────────────────────
 
   toggleVideo(video: HTMLVideoElement): void {
+    if (this._swipeMoved) return;
+
     if (video.paused) {
       video.play();
       this.videoPaused = false;
@@ -432,7 +563,9 @@ export class GenLightboxVanillaComponent implements OnInit, OnChanges, AfterView
       this.showVideoOverlay = true;
       this.videoOverlayTimeout = setTimeout(() => {
         this.showVideoOverlay = false;
+        this.cdr.markForCheck();
       }, 900);
+      this.cdr.markForCheck();
     });
   }
 
@@ -451,82 +584,119 @@ export class GenLightboxVanillaComponent implements OnInit, OnChanges, AfterView
   prev(): void { this.animateSlide('prev'); }
 
   goTo(i: number): void {
+    if (this._dragMoved || this._swipeMoved) {
+      this._dragMoved = false;
+      this._swipeMoved = false;
+      return;
+    }
     if (i === this.activeIndex) return;
     this.animateSlide(i > this.activeIndex ? 'next' : 'prev', i);
   }
 
-  private animateSlide(dir: 'next' | 'prev', targetIndex?: number): void {
-    if (this.isAnimating) return;
-    this.isAnimating = true;
-
-    // Reset zoom del slide actual
-    this.resetZoom();
-
+  private animateSlide(dir: 'next' | 'prev', targetIndex?: number, fromOffset?: number): void {
     const slides = this.slideRefs?.toArray() || [];
     const currentIdx = this.activeIndex;
     const nextIdx = targetIndex !== undefined
       ? this.clampIndex(targetIndex)
       : this.clampIndex(currentIdx + (dir === 'next' ? 1 : -1));
 
-    if (currentIdx === nextIdx) {
-      this.isAnimating = false;
+    if (currentIdx === nextIdx && fromOffset === undefined) {
       return;
     }
 
-    // Actualizar activeIndex de inmediato para que el ring/borde de miniaturas y estado activo respondan al instante con su animación
-    this.activeIndex = nextIdx;
-    this.indexChange.emit(this.activeIndex);
-    this.cdr.markForCheck();
+    this.isAnimating = true;
+    this.resetZoom();
 
     const currentEl = slides[currentIdx]?.nativeElement;
     const nextEl = slides[nextIdx]?.nativeElement;
+
+    // Actualizar activeIndex de inmediato para que el ring/borde de miniaturas y contador respondan al instante
+    this.activeIndex = nextIdx;
+    this.indexChange.emit(this.activeIndex);
+    this.cdr.markForCheck();
 
     if (!currentEl || !nextEl) {
       this.isAnimating = false;
       return;
     }
 
-    const DIST = 1200;
-    const xOut = dir === 'next' ? -DIST : DIST;
-    const xIn = dir === 'next' ? DIST : -DIST;
+    const w = window.innerWidth;
+    const xOut = dir === 'next' ? -w : w;
+    const startInX = dir === 'next' ? w : -w;
 
-    nextEl.style.transition = 'none';
-    nextEl.style.transform = `translateX(${xIn}px)`;
-    nextEl.style.opacity = '1';
-    nextEl.style.zIndex = '2';
+    gsap.killTweensOf([currentEl, nextEl]);
 
-    requestAnimationFrame(() => {
-      const ease = 'cubic-bezier(0.45, 0, 0.25, 1)';
-      currentEl.style.transition = `transform 0.5s ${ease}`;
-      nextEl.style.transition = `transform 0.5s ${ease}`;
-      currentEl.style.transform = `translateX(${xOut}px)`;
-      nextEl.style.transform = `translateX(0px)`;
+    if (fromOffset !== undefined) {
+      gsap.set(currentEl, { x: fromOffset, opacity: 1, zIndex: 1, force3D: true });
+      gsap.set(nextEl, { x: startInX + fromOffset, opacity: 1, zIndex: 2, force3D: true });
+    } else {
+      gsap.set(currentEl, { x: 0, opacity: 1, zIndex: 1, force3D: true });
+      gsap.set(nextEl, { x: startInX, opacity: 1, zIndex: 2, force3D: true });
+    }
+
+    slides.forEach((s, i) => {
+      if (i !== currentIdx && i !== nextIdx) {
+        gsap.set(s.nativeElement, { opacity: 0, zIndex: 0, x: 0 });
+      }
     });
 
-    setTimeout(() => {
-      currentEl.style.opacity = '0';
-      currentEl.style.transition = '';
-      currentEl.style.zIndex = '0';
-      nextEl.style.transition = '';
-      nextEl.style.zIndex = '1';
-
-      // Resetear el zoom en la nueva imagen
-      setTimeout(() => {
+    const tl = gsap.timeline({
+      onComplete: () => {
+        gsap.set(currentEl, { opacity: 0, zIndex: 0, x: 0, pointerEvents: 'none' });
+        gsap.set(nextEl, { opacity: 1, zIndex: 1, x: 0, pointerEvents: 'auto' });
         this.resetZoomOnCurrentImage();
-      }, 50);
+        this.zoomed = false;
+        this.isDragging = false;
+        this.isSlideDragging = false;
+        this._dragMoved = false;
+        this._swipeMoved = false;
+        this.isAnimating = false;
+        this.cdr.markForCheck();
+      }
+    });
 
-      this.zoomed = false;
-      this.isDragging = false;
-      this._dragMoved = false;
-      this.isAnimating = false;
-      this.cdr.markForCheck();
-    }, 500);
+    tl.to(currentEl, {
+      x: xOut,
+      duration: 0.75,
+      ease: 'power4.out'
+    }, 0);
+
+    tl.to(nextEl, {
+      x: 0,
+      duration: 0.75,
+      ease: 'power4.out'
+    }, 0);
   }
 
   // ─── Host Listeners ───────────────────────────────────────────────────────────
 
+  @HostListener('document:mousemove', ['$event'])
+  onDocMouseMove(evt: MouseEvent): void {
+    if (this.isOpen && (this.isDragging || this.isSlideDragging)) {
+      this.onPointerMove(evt);
+    }
+  }
+
+  @HostListener('document:touchmove', ['$event'])
+  onDocTouchMove(evt: TouchEvent): void {
+    if (this.isOpen && (this.isDragging || this.isSlideDragging)) {
+      this.onPointerMove(evt);
+    }
+  }
+
   @HostListener('document:mouseup')
-  onMouseUp(): void { this.stopDrag(); }
+  onDocMouseUp(): void {
+    if (this.isOpen && (this.isDragging || this.isSlideDragging)) {
+      this.onPointerUp();
+    }
+  }
+
+  @HostListener('document:touchend')
+  onDocTouchEnd(): void {
+    if (this.isOpen && (this.isDragging || this.isSlideDragging)) {
+      this.onPointerUp();
+    }
+  }
 
   @HostListener('document:keydown', ['$event'])
   onKeydown(evt: KeyboardEvent): void {
@@ -546,10 +716,10 @@ export class GenLightboxVanillaComponent implements OnInit, OnChanges, AfterView
       this.isClosing = false;
       this.isOpen = false;
       this.zoomed = false;
-      this._tx = 0;
-      this._ty = 0;
       this.isDragging = false;
+      this.isSlideDragging = false;
       this._dragMoved = false;
+      this._swipeMoved = false;
       this.unlockScroll();
       this.closed.emit();
       this.cdr.markForCheck();
